@@ -58,6 +58,11 @@ public sealed class ContentImporter
             var blobName = $"{name}/{name}.zip";
             var blobClient = containerClient.GetBlobClient(blobName);
 
+            if (await blobClient.ExistsAsync(cancellationToken).ConfigureAwait(false))
+            {
+                continue;
+            }
+
             var fileInfo = new FileInfo(zipPath);
             try
             {

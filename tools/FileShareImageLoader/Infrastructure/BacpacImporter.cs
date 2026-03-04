@@ -13,6 +13,7 @@ public sealed class BacpacImporter
         if (await BatchTableExistsAsync(connectionString, cancellationToken).ConfigureAwait(false))
         {
             Console.WriteLine("[BacpacImporter] Batch table exists. No import required.");
+            await EnsureIndexStatusColumnAsync(connectionString, cancellationToken).ConfigureAwait(false);
             BacpacImportState.MarkCompleted();
             return;
         }
@@ -34,7 +35,33 @@ public sealed class BacpacImporter
         }, cancellationToken).ConfigureAwait(false);
 
         Console.WriteLine("[BacpacImporter] Bacpac import complete.");
+
+        await EnsureIndexStatusColumnAsync(connectionString, cancellationToken).ConfigureAwait(false);
         BacpacImportState.MarkCompleted();
+    }
+
+    private static async Task EnsureIndexStatusColumnAsync(string connectionString, CancellationToken cancellationToken)
+    {
+        await using var connection = new SqlConnection(connectionString);
+        await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        await using var cmd = connection.CreateCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.CommandTimeout = 30;
+
+        cmd.CommandText = @"
+IF COL_LENGTH('[Batch]', 'IndexStatus') IS NULL
+BEGIN
+    ALTER TABLE [Batch]
+        ADD [IndexStatus] INT NOT NULL
+            CONSTRAINT [DF_Batch_IndexStatus] DEFAULT (0);
+
+    UPDATE [Batch]
+        SET [IndexStatus] = [Status];
+END
+";
+
+        await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private static async Task<bool> BatchTableExistsAsync(string connectionString, CancellationToken cancellationToken)
