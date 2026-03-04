@@ -28,7 +28,15 @@ public class AppHost
             : RunMode.Services;
 
         var storage = builder.AddAzureStorage(ServiceNames.Storage)
-            .RunAsEmulator(e => { e.WithDataBindMount(azureStoragePathValue); });
+            .RunAsEmulator(e =>
+            {
+                e.WithDataBindMount(azureStoragePathValue);
+
+                // The Azure Storage (Azurite) emulator supports two URL styles.
+                // We use IP/path-style URLs from other containers, e.g. http://storage:10000/devstoreaccount1/container.
+                // Ensure Azurite parses the account name from the request URI path.
+                e.WithArgs("--disableProductStyleUrl");
+            });
 
         var storageQueue = storage.AddQueues(ServiceNames.Queues);
         var storageTable = storage.AddTables(ServiceNames.Tables);
@@ -115,7 +123,7 @@ public class AppHost
                         "if [ -z \"$(ls -A /seed 2>/dev/null)\" ]; then echo '[data-seeder] Seeding volume...'; rm -f /seed/.seed.complete; cp -a /data/. /seed/; echo 'ok' > /seed/.seed.complete; else echo '[data-seeder] Volume already seeded.'; fi");
 
                 builder.AddContainer(ServiceNames.FileShareLoader, loaderDataImage)
-                    .WithDockerfile("../FileShareImageLoader", "Dockerfile")
+                    .WithDockerfile("../../tools/FileShareImageLoader", "Dockerfile")
                     .WithBuildArg("BUILD_CONFIGURATION", "Debug")
                     .WithEnvironment("environment", environmentParameter)
                     .WithReference(storageBlob)
