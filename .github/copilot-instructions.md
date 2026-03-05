@@ -4,9 +4,9 @@ You are an agent. Continue working until queries are fully resolved.
 Be concise but complete. Prefer current research (Microsoft Learn) for Microsoft technologies.
 
 ## Quick Principles
-- Use feature branches (primary branch: `main`).
 - Verify each command succeeds before proceeding; run commands sequentially.
 - Prefer latest C#/.NET features; async/await; nullable reference types.
+- Do not interact with git (no branch creation, no git commands) unless explicitly requested.
 
 ## MCP Tool Selection
 - Azure DevOps intent: use Azure DevOps tools.

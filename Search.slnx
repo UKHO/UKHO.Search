@@ -26,4 +26,8 @@
     <Project Path="file-share-service/UKHO.FileShareService.API/UKHO.FileShareService.API/UKHO.FileShareService.API.csproj" />
     <Project Path="file-share-service/UKHO.FileShareService.API/UKHO.FileShareService.Common/UKHO.FileShareService.Common.csproj" />
   </Folder>
+  <Folder Name="/@test/" />
+  <Folder Name="/@test/00 Domain/">
+    <Project Path="test/UKHO.Search.Tests/UKHO.Search.Tests.csproj" Id="be8fa9d3-90f0-449f-9ad0-795a833a3b38" />
+  </Folder>
 </Solution>

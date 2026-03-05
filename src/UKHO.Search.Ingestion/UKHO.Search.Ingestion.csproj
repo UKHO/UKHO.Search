@@ -17,4 +17,8 @@
     <ProjectReference Include="..\UKHO.Search\UKHO.Search.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Serialization\" />
+  </ItemGroup>
+
 </Project>
