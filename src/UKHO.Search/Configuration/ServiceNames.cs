@@ -14,7 +14,7 @@
 
         public const string SqlServer = "sql-server";
 
-        public const string ElasticSearch = "elastic";
+        public const string ElasticSearch = "elasticsearch";
 
         public const string Configuration = "configuration";
 

@@ -1,3 +1,4 @@
+using AppHost.Elastic;
 using AppHost.Extensions;
 using Docker.DotNet;
 using Docker.DotNet.Models;
@@ -15,6 +16,16 @@ namespace AppHost
 
             var keyCloakUsernameParameter = builder.AddParameter("keycloak-username");
             var keyCloakPasswordParameter = builder.AddParameter("keycloak-password", true);
+
+            var pwd2 = await keyCloakPasswordParameter.Resource.GetValueAsync(CancellationToken.None);
+
+            // Old code (non-secret parameter) retained for reference.
+            // This can lead to Aspire/Elasticsearch helpers generating/overriding the value.
+            // var elasticPasswordParameter = builder.AddParameter("elastic-password");
+
+            var elasticPasswordParameter = builder.AddParameter("elastic-password", true);
+
+            var pwd = await elasticPasswordParameter.Resource.GetValueAsync(CancellationToken.None);
 
             var environmentParameter = builder.AddParameter("environment");
             var environment = await environmentParameter.Resource.GetValueAsync(CancellationToken.None) ?? string.Empty;
@@ -62,28 +73,27 @@ namespace AppHost
                         .WithRealmImport("./Realms")
                         .WithLifetime(ContainerLifetime.Persistent);
 
-                    var elasticSearch = builder.AddElasticsearch(ServiceNames.ElasticSearch)
-                        .WithLifetime(ContainerLifetime.Persistent)
-                        .WithDataVolume()
-                        .WaitFor(storage);
+                        var elasticsearch = builder
+                        .AddElasticsearchWithKibana(ServiceNames.ElasticSearch, elasticPasswordParameter)
+                        .WithElasticsearchSetup(kibanaAdminUsername:"admin");
 
-                    var ingestionService = builder.AddProject<IngestionServiceHost>(ServiceNames.Ingestion)
+                        var ingestionService = builder.AddProject<IngestionServiceHost>(ServiceNames.Ingestion)
                         .WithExternalHttpEndpoints()
                         .WithReference(storageQueue)
                         .WithReference(storageTable)
                         .WithReference(storageBlob)
-                        .WithReference(elasticSearch)
+                        .WithReference(elasticsearch)
                         .WaitFor(storageQueue)
                         .WaitFor(storageTable)
                         .WaitFor(storageBlob)
-                        .WaitFor(elasticSearch);
+                        .WaitFor(elasticsearch);
 
                     var queryService = builder.AddProject<QueryServiceHost>(ServiceNames.Query)
                         .WithExternalHttpEndpoints()
                         .WithReference(keycloak)
-                        .WithReference(elasticSearch)
+                        .WithReference(elasticsearch)
                         .WaitFor(keycloak)
-                        .WaitFor(elasticSearch);
+                        .WaitFor(elasticsearch);
 
                     var fileShareEmulator = builder.AddProject<FileShareEmulator>(ServiceNames.FileShareEmulator)
                         .WithExternalHttpEndpoints()
