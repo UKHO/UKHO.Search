@@ -1,6 +1,6 @@
+using IngestionServiceHost.Components;
 using UKHO.Aspire.Configuration;
 using UKHO.Search.Configuration;
-using UKHO.Search.Ingestion.Components;
 using Radzen;
 using Radzen.Blazor;
 
@@ -14,6 +14,8 @@ public class Program
         builder.AddServiceDefaults();
 
         builder.AddConfiguration(ServiceNames.Ingestion, ServiceNames.Configuration);
+
+        builder.AddElasticsearchClient(ServiceNames.ElasticSearch);
 
         // Add services to the container.
         builder.Services.AddRazorComponents()

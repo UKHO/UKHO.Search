@@ -68,7 +68,7 @@ public class AppHost
                     .WithDataVolume()
                     .WaitFor(storage);
 
-                var ingestionService = builder.AddProject<UKHO_Search_Ingestion>(ServiceNames.Ingestion)
+                var ingestionService = builder.AddProject<IngestionServiceHost>(ServiceNames.Ingestion)
                     .WithExternalHttpEndpoints()
                     .WithReference(storageQueue)
                     .WithReference(storageTable)
@@ -79,7 +79,7 @@ public class AppHost
                     .WaitFor(storageBlob)
                     .WaitFor(elasticSearch);
 
-                var queryService = builder.AddProject<UKHO_Search_Query>(ServiceNames.Query)
+                var queryService = builder.AddProject<QueryServiceHost>(ServiceNames.Query)
                     .WithExternalHttpEndpoints()
                     .WithReference(keycloak)
                     .WithReference(elasticSearch)
@@ -100,8 +100,8 @@ public class AppHost
                 if (builder.ExecutionContext.IsRunMode)
                 {
                     builder.AddConfigurationEmulator(ServiceNames.Configuration, [ingestionService, queryService!],
-                        [fileShareEmulator], @"../../configuration/configuration.json",
-                        @"../../configuration/external-services.json");
+                        [fileShareEmulator], @"../../../configuration/configuration.json",
+                        @"../../../configuration/external-services.json");
                 }
                 else
                 {
@@ -145,7 +145,7 @@ public class AppHost
                         "if [ -z \"$(ls -A /seed 2>/dev/null)\" ]; then echo '[data-seeder] Seeding volume...'; rm -f /seed/.seed.complete; cp -a /data/. /seed/; echo 'ok' > /seed/.seed.complete; else echo '[data-seeder] Volume already seeded.'; fi");
 
                 builder.AddContainer(ServiceNames.FileShareLoader, loaderDataImage)
-                    .WithDockerfile("../../tools/FileShareImageLoader", "Dockerfile")
+                    .WithDockerfile("../../../tools/FileShareImageLoader", "Dockerfile")
                     .WithBuildArg("BUILD_CONFIGURATION", "Debug")
                     .WithEnvironment("environment", environmentParameter)
                     .WithEnvironment("dataimage", loaderDataImage)

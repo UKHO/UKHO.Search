@@ -2,14 +2,15 @@
   <Folder Name="/00 Domain/">
     <Project Path="src/UKHO.Search/UKHO.Search.csproj" Id="4a3ac56d-82a6-4196-9333-770d951c5178" />
   </Folder>
-  <Folder Name="/01 Infrastructure/" />
-  <Folder Name="/02 Services/">
-    <Project Path="src/UKHO.Search.Ingestion/UKHO.Search.Ingestion.csproj" />
-    <Project Path="src/UKHO.Search.Query/UKHO.Search.Query.csproj" />
+  <Folder Name="/01 Services/" />
+  <Folder Name="/02 Infrastructure/" />
+  <Folder Name="/03 Hosts/">
+    <Project Path="src/Hosts/IngestionServiceHost/IngestionServiceHost.csproj" />
+    <Project Path="src/Hosts/QueryServiceHost/QueryServiceHost.csproj" />
+    <Project Path="src/Hosts/UKHO.Search.ServiceDefaults/UKHO.Search.ServiceDefaults.csproj" />
   </Folder>
-  <Folder Name="/02 Services/@local/">
-    <Project Path="src/UKHO.Search.AppHost/UKHO.Search.AppHost.csproj" Id="12fec950-df4c-4201-902e-48e1747a2c64" />
-    <Project Path="src/UKHO.Search.Services/UKHO.Search.Services.csproj" Id="4b8fdea9-337a-4428-921b-e630e772a305" />
+  <Folder Name="/03 Hosts/@local/">
+    <Project Path="src/Hosts/AppHost/AppHost.csproj" />
   </Folder>
   <Folder Name="/99 Tools/">
     <Project Path="tools/FileShareEmulator/FileShareEmulator.csproj" />

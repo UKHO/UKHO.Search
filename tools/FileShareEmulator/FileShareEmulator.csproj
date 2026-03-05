@@ -15,7 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\UKHO.Search.Services\UKHO.Search.Services.csproj" />
+		<ProjectReference Include="..\..\src\Hosts\UKHO.Search.ServiceDefaults\UKHO.Search.ServiceDefaults.csproj" />
 		<ProjectReference Include="..\..\src\UKHO.Search\UKHO.Search.csproj" />
 	</ItemGroup>
 
