@@ -1,3 +1,4 @@
+using AppHost.Elastic;
 using AppHost.Extensions;
 using Docker.DotNet;
 using Docker.DotNet.Models;
@@ -14,7 +15,7 @@ namespace AppHost
             var builder = DistributedApplication.CreateBuilder(args);
 
             var keyCloakUsernameParameter = builder.AddParameter("keycloak-username");
-            var keyCloakPasswordParameter = builder.AddParameter("keycloak-password", true);
+            var keyCloakPasswordParameter = builder.AddParameter("keycloak-password");
 
             var environmentParameter = builder.AddParameter("environment");
             var environment = await environmentParameter.Resource.GetValueAsync(CancellationToken.None) ?? string.Empty;
@@ -56,25 +57,17 @@ namespace AppHost
                 {
                     var addsEnvironment = builder.AddPublishOnlyParameter("addsEnvironment");
 
+                    var elasticPasswordParameter = builder.AddParameter("elastic-password");
+
                     var keycloak = builder.AddKeycloak(ServiceNames.KeyCloak, 8080, keyCloakUsernameParameter,
                             keyCloakPasswordParameter)
                         .WithDataVolume()
                         .WithRealmImport("./Realms")
                         .WithLifetime(ContainerLifetime.Persistent);
 
-                    var elasticsearch = builder.AddElasticsearch(ServiceNames.ElasticSearch)
-                        .WithDataVolume()
-                        .WithLifetime(ContainerLifetime.Persistent)
-                        .WithEnvironment("xpack.security.enabled", "false")
-                        .WithEnvironment("xpack.security.http.ssl.enabled", "false")
-                        .WithEnvironment("xpack.security.transport.ssl.enabled", "false");
-
-                    var elasticHq = builder.AddContainer("elastichq", "elastichq/elasticsearch-hq")
-                        .WithExternalHttpEndpoints()
-                        .WithHttpEndpoint(targetPort: 5000, name: "http")
-                        .WithEnvironment("HQ_DEFAULT_URL", "http://" + ServiceNames.ElasticSearch + ":9200")
-                        .WithLifetime(ContainerLifetime.Persistent)
-                        .WaitFor(elasticsearch);
+                    var elasticsearch =
+                        builder.AddElasticsearchWithKibana(ServiceNames.ElasticSearch, elasticPasswordParameter)
+                            .WithElasticsearchSetup();
 
                     var ingestionService = builder.AddProject<IngestionServiceHost>(ServiceNames.Ingestion)
                         .WithExternalHttpEndpoints()
