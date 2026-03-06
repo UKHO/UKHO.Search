@@ -25,6 +25,7 @@ Naming & structure
 Braces & formatting
 - Braces must always be on a new line (Allman style).
 - Do not use single-line brace patterns (e.g. `if (x) { DoThing(); }`).
+- Always use block-scoped namespaces (e.g., `namespace X.Y { ... }`) rather than file-scoped namespaces.
 
 Code commenting
 - In addition to XML documentation for public APIs, add clear and concise developer comments explaining algorithms or logical flow when it is not simple or obvious.

@@ -4,9 +4,33 @@ You are an agent. Continue working until queries are fully resolved.
 Be concise but complete. Prefer current research (Microsoft Learn) for Microsoft technologies.
 
 ## Quick Principles
-- Use feature branches (primary branch: `main`).
 - Verify each command succeeds before proceeding; run commands sequentially.
 - Prefer latest C#/.NET features; async/await; nullable reference types.
+- Always use block-scoped namespaces (e.g., `namespace X.Y { ... }`) rather than file-scoped namespaces when creating or updating C# files in this workspace.
+- Use Allman braces style for C# code.
+- Add `//` comments on their own line for non-obvious logic.
+- Do not interact with git (no branch creation, no git commands) unless explicitly requested.
+
+## Coding Standards
+- Never declare multiple classes/interfaces/enums in the same C# file; split each type into its own file.
+
+## Architecture (Onion)
+This repository uses **Onion Architecture**.
+
+Dependency direction (must point inward):  
+`Hosts (Web/Worker) -> Infrastructure -> Services -> Domain`
+
+Layer mapping:
+- **Domain**: `src/UKHO.Search/UKHO.Search.csproj`, `src/UKHO.Search.Query/UKHO.Search.Query.csproj`, `src/UKHO.Search.Ingestion/UKHO.Search.Ingestion.csproj`
+- **Services**: projects named `UKHO.Search.Services.*.csproj`
+- **Infrastructure**: projects named `UKHO.Search.Infrastructure.*.csproj`
+- **Hosts/UI**: projects under `src/Hosts/*` (and any other web/host projects)
+
+Rules:
+- Domain projects must not reference Services, Infrastructure, or Host projects.
+- Services projects must not reference Infrastructure or Host projects.
+- Infrastructure projects must not reference Host projects.
+- Only Host projects contain UI/endpoints and startup/DI wiring. Do not place domain logic or infrastructure implementations in hosts.
 
 ## MCP Tool Selection
 - Azure DevOps intent: use Azure DevOps tools.
@@ -19,8 +43,14 @@ Be concise but complete. Prefer current research (Microsoft Learn) for Microsoft
 - Do not overwrite prior work packages; create the next incremental folder (e.g. `002-...`).
 - Use appropriate prompt family & phase from `.github/prompts/`.
 
+## Emulator Constraints
+- All emulator code must reside within the existing emulator project; do not add new projects due to Docker constraints.
+
 ## Testing Guidelines
 - Prefer Playwright end-to-end tests over bUnit/component tests for Blazor UI verification in this repository.
+
+## .csproj File Editing Guidelines
+- When editing `.csproj` files, keep `PackageReference` entries in `ItemGroup` blocks that contain only `PackageReference` entries (do not mix `ProjectReference` and `PackageReference` in the same `ItemGroup`).
 
 ## Detailed Topic Guides
 Refer to specialized instruction files for full detail:

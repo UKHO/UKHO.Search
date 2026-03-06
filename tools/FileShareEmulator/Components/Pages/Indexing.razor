@@ -1,0 +1,139 @@
+@page "/indexing"
+@using FileShareEmulator.Services
+@inject StatisticsService StatisticsService
+@inject IndexService IndexService
+
+<PageTitle>Indexing</PageTitle>
+
+<RadzenCard Style="max-width: 900px;">
+    <h1 style="margin: 0;">Indexing</h1>
+
+    @if (_status is null)
+    {
+        <RadzenText TextStyle="TextStyle.Body1" Style="margin-top: 1rem;">Loading...</RadzenText>
+    }
+    else
+    {
+        <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem" Style="margin-top: 1rem;">
+            <RadzenText TextStyle="TextStyle.Body1">Total Batches: @_status.TotalBatches.ToString("N0")</RadzenText>
+            <RadzenText TextStyle="TextStyle.Body1">Indexed @_status.IndexedBatches.ToString("N0") Batches Of @_status.TotalBatches.ToString("N0")</RadzenText>
+        </RadzenStack>
+    }
+
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" Gap="1rem" Style="margin-top: 1rem; flex-wrap: wrap;">
+        <RadzenButton Text="Index All" ButtonStyle="ButtonStyle.Primary" Disabled="@_isIndexing" Click="@IndexAllAsync"/>
+
+        <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem">
+            <RadzenLabel Text="Count" Component="indexCount"/>
+            <RadzenNumeric id="indexCount" TValue="int" Style="width: 8rem" Min="1" Value="@(_count ?? 0)" Change="@(args => SetCount(args))"/>
+        </RadzenStack>
+
+        <RadzenButton Text="Index" ButtonStyle="ButtonStyle.Secondary" Disabled="@(!_canIndex || _isIndexing)" Click="@IndexNextAsync"/>
+
+        <RadzenButton Text="Reset All" ButtonStyle="ButtonStyle.Light" Disabled="@_isIndexing" Click="@ResetAllAsync"/>
+    </RadzenStack>
+</RadzenCard>
+
+@code
+{
+    private StatisticsService.IndexingStatus? _status;
+    private PeriodicTimer? _timer;
+
+    private int? _count = 1;
+    private bool _canIndex;
+    private bool _isIndexing;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ValidateCount();
+        _status = await StatisticsService.GetIndexingStatusAsync().ConfigureAwait(false);
+
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        _ = PollAsync();
+    }
+
+    private async Task PollAsync()
+    {
+        if (_timer is null) return;
+
+        try
+        {
+            while (await _timer.WaitForNextTickAsync().ConfigureAwait(false))
+            {
+                _status = await StatisticsService.GetIndexingStatusAsync().ConfigureAwait(false);
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    private int? Count
+    {
+        get => _count;
+        set => SetCount(value);
+    }
+
+    private void SetCount(int? value)
+    {
+        _count = value;
+        ValidateCount();
+    }
+
+    private void ValidateCount()
+    {
+        _canIndex = _count is > 0;
+    }
+
+    private async Task IndexAllAsync()
+    {
+        if (_isIndexing) return;
+
+        _isIndexing = true;
+        try
+        {
+            _ = await IndexService.IndexAllPendingAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            _isIndexing = false;
+        }
+    }
+
+    private async Task IndexNextAsync()
+    {
+        if (_isIndexing || !_canIndex || _count is null) return;
+
+        _isIndexing = true;
+        try
+        {
+            _ = await IndexService.IndexNextPendingAsync(_count.Value).ConfigureAwait(false);
+        }
+        finally
+        {
+            _isIndexing = false;
+        }
+    }
+
+    private async Task ResetAllAsync()
+    {
+        if (_isIndexing) return;
+
+        _isIndexing = true;
+        try
+        {
+            _ = await IndexService.ResetAllToPendingAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            _isIndexing = false;
+        }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        _timer?.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}

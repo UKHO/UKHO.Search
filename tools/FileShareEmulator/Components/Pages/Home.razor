@@ -1,0 +1,60 @@
+﻿@page "/"
+@using FileShareEmulator.Services
+@attribute [StreamRendering]
+@inject StatisticsService StatisticsService
+
+<PageTitle>Home</PageTitle>
+
+<RadzenCard Style="max-width: 900px;">
+    <h2 style="margin: 0;">Statistics</h2>
+
+    @if (_snapshot is null)
+    {
+        <RadzenText TextStyle="TextStyle.Body1">Loading...</RadzenText>
+    }
+    else
+    {
+        <RadzenDataGrid Data="@Rows" TItem="DisplayRow" AllowPaging="false" AllowSorting="false" AllowFiltering="false"
+                        AllowColumnResize="true" ShowPagingSummary="false" Style="margin-top: 1rem;">
+            <Columns>
+                <RadzenDataGridColumn TItem="DisplayRow" Property="Name" Title="Name" Width="22rem">
+                    <Template Context="row">
+                        <span style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">@row.Name</span>
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="DisplayRow" Property="Value" Title="Value"/>
+            </Columns>
+        </RadzenDataGrid>
+    }
+</RadzenCard>
+
+@code
+{
+    private StatisticsSnapshot? _snapshot;
+
+    private IEnumerable<DisplayRow> Rows => _snapshot is null
+        ? Array.Empty<DisplayRow>()
+        : GetRows(_snapshot);
+
+    private static IEnumerable<DisplayRow> GetRows(StatisticsSnapshot snapshot)
+    {
+        yield return new DisplayRow(snapshot.Labels[nameof(StatisticsSnapshot.BatchCount)], snapshot.BatchCount.ToString("N0"));
+        yield return new DisplayRow(snapshot.Labels[nameof(StatisticsSnapshot.FileCount)], snapshot.FileCount.ToString("N0"));
+        yield return new DisplayRow(snapshot.Labels[nameof(StatisticsSnapshot.BatchAttributeCount)], snapshot.BatchAttributeCount.ToString("N0"));
+        yield return new DisplayRow(snapshot.Labels[nameof(StatisticsSnapshot.FileAttributeCount)], snapshot.FileAttributeCount.ToString("N0"));
+        yield return new DisplayRow(snapshot.Labels[nameof(StatisticsSnapshot.BatchReadUserCount)], snapshot.BatchReadUserCount.ToString("N0"));
+        yield return new DisplayRow(snapshot.Labels[nameof(StatisticsSnapshot.BatchReadGroupCount)], snapshot.BatchReadGroupCount.ToString("N0"));
+
+        foreach (var item in snapshot.LocalMetadata)
+        {
+            yield return new DisplayRow(item.Key, string.IsNullOrWhiteSpace(item.Value) ? "-" : item.Value);
+        }
+    }
+
+    private sealed record DisplayRow(string Name, string Value);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _snapshot = await StatisticsService.GetAsync().ConfigureAwait(false);
+    }
+}

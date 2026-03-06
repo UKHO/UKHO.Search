@@ -1,19 +1,45 @@
 <Solution>
   <Folder Name="/00 Domain/">
-    <Project Path="src/UKHO.ADDS.Search/UKHO.ADDS.Search.csproj" Id="7bd0b4da-071e-4464-ac91-fe1db62aaac1" />
+    <Project Path="src/UKHO.Search.Ingestion/UKHO.Search.Ingestion.csproj" Id="c245f1bc-029a-4b84-93fc-fdf4f19c567e" />
+    <Project Path="src/UKHO.Search.Query/UKHO.Search.Query.csproj" Id="52a17483-574c-441e-b037-af616b6306b2" />
+    <Project Path="src/UKHO.Search/UKHO.Search.csproj" Id="4a3ac56d-82a6-4196-9333-770d951c5178" />
   </Folder>
-  <Folder Name="/02 Services/">
-    <Project Path="src/UKHO.ADDS.Search.Ingestion/UKHO.ADDS.Search.Ingestion.csproj" Id="091be898-80e9-4b08-9cd0-9cd007b9fa1c" />
-    <Project Path="src/UKHO.ADDS.Search.Query/UKHO.ADDS.Search.Query.csproj" Id="78aaa21b-cb07-4343-91a9-fda3f2f978d1" />
+  <Folder Name="/01 Services/">
+    <Project Path="src/UKHO.Search.Services.Ingestion/UKHO.Search.Services.Ingestion.csproj" Id="385d35f0-aa5a-458c-9eb7-b992c81a09b7" />
+    <Project Path="src/UKHO.Search.Services.Query/UKHO.Search.Services.Query.csproj" Id="2471e589-cf95-4e95-9373-9d689fcfb19a" />
+    <Project Path="src/UKHO.Search.Services/UKHO.Search.Services.csproj" Id="efcc5cd8-55df-459b-bd47-97094b081370" />
   </Folder>
-  <Folder Name="/02 Services/@local/">
-    <Project Path="src/UKHO.ADDS.Search.AppHost/UKHO.ADDS.Search.AppHost.csproj" Id="6c8dc487-5bc1-4a95-ab07-26a260b26474" />
+  <Folder Name="/02 Providers/">
+    <Project Path="src/UKHO.Search.Ingestion.Providers.FileShare/UKHO.Search.Ingestion.Providers.FileShare.csproj" Id="0f6ff02f-b01f-4af0-810e-f17486008344" />
   </Folder>
-  <Folder Name="/02 Services/@Providers/" />
-  <Folder Name="/@external/">
-    <Project Path="src/UKHO.ADDS.Search.FileShareEmulator/UKHO.ADDS.Search.FileShareEmulator.csproj" />
+  <Folder Name="/03 Infrastructure/">
+    <Project Path="src/UKHO.Search.Infrastructure.Ingestion/UKHO.Search.Infrastructure.Ingestion.csproj" Id="cdb73126-6bb7-4d74-bf3e-8bec3f75a48c" />
+    <Project Path="src/UKHO.Search.Infrastructure.Query/UKHO.Search.Infrastructure.Query.csproj" Id="38339a3b-8fbc-453c-877e-8dcfc1ce184a" />
+    <Project Path="src/UKHO.Search.Infrastructure/UKHO.Search.Infrastructure.csproj" Id="b73eb1ec-a022-4467-a0bc-b72565a7bb3e" />
   </Folder>
-  <Folder Name="/@tools/">
-    <Project Path="src/FileShareImageBuilder/FileShareImageBuilder.csproj" Id="8b00358d-0918-4577-b1b2-1592c04bea55" />
+  <Folder Name="/04 Hosts/">
+    <Project Path="src/Hosts/IngestionServiceHost/IngestionServiceHost.csproj" />
+    <Project Path="src/Hosts/QueryServiceHost/QueryServiceHost.csproj" />
+    <Project Path="src/Hosts/UKHO.Search.ServiceDefaults/UKHO.Search.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/04 Hosts/@local/">
+    <Project Path="src/Hosts/AppHost/AppHost.csproj" />
+  </Folder>
+  <Folder Name="/99 Tools/">
+    <Project Path="tools/FileShareEmulator/FileShareEmulator.csproj" />
+    <Project Path="tools/FileShareImageBuilder/FileShareImageBuilder.csproj" Id="d05948ce-767a-4d18-8fb0-d2a13e1f4557" />
+    <Project Path="tools/FileShareImageLoader/FileShareImageLoader.csproj" Id="8ed6b18d-5417-4ec9-be3a-88729c2eb987" />
+  </Folder>
+  <Folder Name="/@configuration/">
+    <Project Path="configuration/UKHO.Aspire.Configuration.Emulator/UKHO.Aspire.Configuration.Emulator.csproj" />
+    <Project Path="configuration/UKHO.Aspire.Configuration.Hosting/UKHO.Aspire.Configuration.Hosting.csproj" />
+    <Project Path="configuration/UKHO.Aspire.Configuration.Seeder/UKHO.Aspire.Configuration.Seeder.csproj" />
+    <Project Path="configuration/UKHO.Aspire.Configuration/UKHO.Aspire.Configuration.csproj" />
+  </Folder>
+  <Folder Name="/@test/" />
+  <Folder Name="/@test/00 Domain/">
+    <Project Path="test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj" />
+    <Project Path="test/UKHO.Search.Query.Tests/UKHO.Search.Query.Tests.csproj" />
+    <Project Path="test/UKHO.Search.Tests/UKHO.Search.Tests.csproj" Id="be8fa9d3-90f0-449f-9ad0-795a833a3b38" />
   </Folder>
 </Solution>

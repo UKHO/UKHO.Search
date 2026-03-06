@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+@inject IHostEnvironment Env
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <base href="/"/>
+    <style>
+        html, body { background-color: #050A23; }
+    </style>
+    <ResourcePreloader/>
+    <link rel="stylesheet" href="@Assets["UKHO.Search.Ingestion.styles.css"]"/>
+    <ImportMap/>
+    <link rel="icon" type="image/png" href="favicon.png"/>
+    <HeadOutlet @rendermode="InteractiveServer"/>
+    <RadzenTheme Theme="material-dark"/>
+</head>
+
+<body class="rz-scrollbars">
+<Routes @rendermode="InteractiveServer"/>
+<div id="blazor-error-ui">
+    @if (Env.IsDevelopment())
+    {
+        <text>
+            An unhandled exception has occurred. See browser dev tools for details.
+        </text>
+    }
+    else
+    {
+        <text>
+            An error has occurred. This app may no longer respond until reloaded.
+        </text>
+    }
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+<script src="_framework/blazor.web.js"></script>
+<script async src="js/highlight.pack.js"></script>
+<script src="_content/Radzen.Blazor/Radzen.Blazor.min.js?v=@(typeof(Colors).Assembly.GetName().Version)"></script>
+<script src="js/download.js"></script>
+</body>
+
+</html>

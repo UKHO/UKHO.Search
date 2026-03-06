@@ -1,0 +1,36 @@
+﻿<Project Sdk="Aspire.AppHost.Sdk/13.1.2">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>05e3be4d-c2d6-4cf0-bf12-3e250febfac1</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="Realms\ADDSSearch-realm.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Aspire.Hosting.Azure.Storage" Version="13.1.2" />
+		<PackageReference Include="Aspire.Hosting.Elasticsearch" Version="13.1.0" />
+		<PackageReference Include="Aspire.Hosting.Keycloak" Version="13.1.2-preview.1.26125.13" />
+		<PackageReference Include="Aspire.Hosting.SqlServer" Version="13.1.2" />
+    <PackageReference Include="Docker.DotNet" Version="3.125.15" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\configuration\UKHO.Aspire.Configuration.Hosting\UKHO.Aspire.Configuration.Hosting.csproj" IsAspireProjectResource="false" />
+	  <ProjectReference Include="..\..\..\tools\FileShareEmulator\FileShareEmulator.csproj" />
+	  <ProjectReference Include="..\..\..\tools\FileShareImageBuilder\FileShareImageBuilder.csproj" />
+	  <ProjectReference Include="..\..\..\tools\FileShareImageLoader\FileShareImageLoader.csproj" />
+	  <ProjectReference Include="..\..\UKHO.Search\UKHO.Search.csproj" IsAspireProjectResource="false" />
+	  <ProjectReference Include="..\IngestionServiceHost\IngestionServiceHost.csproj" />
+	  <ProjectReference Include="..\QueryServiceHost\QueryServiceHost.csproj" />
+	</ItemGroup>
+
+
+</Project>

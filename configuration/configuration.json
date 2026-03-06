@@ -1,0 +1,58 @@
+{
+    "local": {
+        "ingestion": {
+            "indexname": "ukho-search"
+        },
+        "query": {
+            "indexname": "ukho-search"
+        }
+    },
+    "dev": {
+        "ingestion": {
+            "indexname": "ukho-search"
+        },
+        "query": {
+            "indexname": "ukho-search"
+        }
+    },
+    "vni": {
+        "ingestion": {
+            "indexname": "ukho-search"
+        },
+        "query": {
+            "indexname": "ukho-search"
+        }
+    },
+    "vne": {
+        "ingestion": {
+            "indexname": "ukho-search"
+        },
+        "query": {
+            "indexname": "ukho-search"
+        }
+    },
+    "iat": {
+        "ingestion": {
+            "indexname": "ukho-search"
+        },
+        "query": {
+            "indexname": "ukho-search"
+        }
+    },
+    "prp": {
+        "ingestion": {
+            "indexname": "ukho-search"
+        },
+        "query": {
+            "indexname": "ukho-search"
+        }
+    },
+    "live": {
+        "ingestion": {
+            "indexname": "ukho-search"
+        },
+        "query": {
+            "indexname": "ukho-search"
+        }
+    }
+}

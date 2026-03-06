@@ -1,0 +1,110 @@
+﻿namespace UKHO.Aspire.Configuration
+{
+    public sealed class AddsEnvironment : IEquatable<AddsEnvironment>
+    {
+        public static readonly AddsEnvironment Local = new("local");
+        public static readonly AddsEnvironment Development = new("dev");
+        public static readonly AddsEnvironment VNextIat = new("vni");
+        public static readonly AddsEnvironment VNextE2E = new("vne");
+        public static readonly AddsEnvironment Iat = new("iat");
+        public static readonly AddsEnvironment PreProd = new("prp");
+        public static readonly AddsEnvironment Live = new("live");
+
+        private static readonly Dictionary<string, AddsEnvironment> _known = new(StringComparer.OrdinalIgnoreCase)
+        {
+            [Local.Value] = Local,
+            [Development.Value] = Development,
+            [VNextIat.Value] = VNextIat,
+            [VNextE2E.Value] = VNextE2E,
+            [Iat.Value] = Iat,
+            [PreProd.Value] = PreProd,
+            [Live.Value] = Live
+        };
+
+        private AddsEnvironment(string value)
+        {
+            Value = value;
+        }
+
+        public string Value { get; }
+
+        public bool Equals(AddsEnvironment? other)
+        {
+            return other is not null && StringComparer.OrdinalIgnoreCase.Equals(Value, other.Value);
+        }
+
+        public static bool TryParse(string? input, out AddsEnvironment? result)
+        {
+            if (input != null && _known.TryGetValue(input, out var env))
+            {
+                result = env;
+                return true;
+            }
+
+            result = null;
+            return false;
+        }
+
+        public static AddsEnvironment Parse(string input)
+        {
+            if (TryParse(input, out var env))
+                return env ?? throw new InvalidOperationException($"Parsed AddsEnvironment cannot be null: '{input}'");
+
+            throw new ArgumentException($"Invalid AddsEnvironment: '{input}'", nameof(input));
+        }
+
+        public static AddsEnvironment GetEnvironment()
+        {
+            var env = Environment.GetEnvironmentVariable(WellKnownConfigurationName.AddsEnvironmentName);
+
+            if (string.IsNullOrEmpty(env) || !TryParse(env, out _))
+                throw new InvalidOperationException(
+                    $"Environment variable '{WellKnownConfigurationName.AddsEnvironmentName}' is not set or invalid. Make sure the caller is registered using UKHO.ADDS.Aspire.Configuration.Hosting");
+
+            return Parse(env);
+        }
+
+        /// <summary>
+        ///     The local environment.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsLocal()
+        {
+            return this == Local;
+        }
+
+        /// <summary>
+        ///     The ADDS Azure Dev environment.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsDev()
+        {
+            return this == Development;
+        }
+
+        public override string ToString()
+        {
+            return Value;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as AddsEnvironment);
+        }
+
+        public override int GetHashCode()
+        {
+            return StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+        }
+
+        public static bool operator ==(AddsEnvironment? left, AddsEnvironment? right)
+        {
+            return EqualityComparer<AddsEnvironment>.Default.Equals(left, right);
+        }
+
+        public static bool operator !=(AddsEnvironment? left, AddsEnvironment? right)
+        {
+            return !(left == right);
+        }
+    }
+}
