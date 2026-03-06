@@ -9,6 +9,9 @@ Be concise but complete. Prefer current research (Microsoft Learn) for Microsoft
 - Always use block-scoped namespaces (e.g., `namespace X.Y { ... }`) rather than file-scoped namespaces when creating or updating C# files in this workspace.
 - Do not interact with git (no branch creation, no git commands) unless explicitly requested.
 
+## Coding Standards
+- Never declare multiple classes/interfaces/enums in the same C# file; split each type into its own file.
+
 ## Architecture (Onion)
 This repository uses **Onion Architecture**.
 

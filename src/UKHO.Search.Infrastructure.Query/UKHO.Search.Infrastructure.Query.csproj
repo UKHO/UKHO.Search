@@ -1,14 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\UKHO.Search.Infrastructure\UKHO.Search.Infrastructure.csproj" />
-    <ProjectReference Include="..\UKHO.Search.Services.Query\UKHO.Search.Services.Query.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Aspire.Elastic.Clients.Elasticsearch" Version="13.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\UKHO.Search.Infrastructure\UKHO.Search.Infrastructure.csproj" />
+		<ProjectReference Include="..\UKHO.Search.Services.Query\UKHO.Search.Services.Query.csproj" />
+	</ItemGroup>
 
 </Project>

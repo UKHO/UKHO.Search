@@ -1,20 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Radzen.Blazor" Version="8.7.4" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Radzen.Blazor" Version="8.7.4" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\configuration\UKHO.Aspire.Configuration\UKHO.Aspire.Configuration.csproj" />
-    <ProjectReference Include="..\..\UKHO.Search.Infrastructure.Ingestion\UKHO.Search.Infrastructure.Ingestion.csproj" />
-    <ProjectReference Include="..\UKHO.Search.ServiceDefaults\UKHO.Search.ServiceDefaults.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\configuration\UKHO.Aspire.Configuration\UKHO.Aspire.Configuration.csproj" />
+		<ProjectReference Include="..\..\UKHO.Search.Infrastructure.Ingestion\UKHO.Search.Infrastructure.Ingestion.csproj" />
+		<ProjectReference Include="..\UKHO.Search.ServiceDefaults\UKHO.Search.ServiceDefaults.csproj" />
+	</ItemGroup>
 
 </Project>
