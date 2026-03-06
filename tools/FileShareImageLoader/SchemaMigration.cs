@@ -1,7 +1,7 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 
-namespace FileShareImageLoader.Infrastructure
+namespace FileShareImageLoader
 {
     public sealed class SchemaMigration
     {

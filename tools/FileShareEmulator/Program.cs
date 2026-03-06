@@ -1,4 +1,5 @@
 using FileShareEmulator.Components;
+using FileShareEmulator.Api;
 using FileShareEmulator.Services;
 using Radzen;
 using Radzen.Blazor;
@@ -30,6 +31,7 @@ namespace FileShareEmulator
             var app = builder.Build();
 
             app.MapDefaultEndpoints();
+            app.MapBatchFilesApi();
 
             // Configure the HTTP request pipeline
             if (!app.Environment.IsDevelopment())

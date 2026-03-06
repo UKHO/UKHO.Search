@@ -1,4 +1,4 @@
-namespace FileShareImageLoader.Infrastructure
+namespace FileShareImageLoader
 {
     public sealed record LocalMetadataImageInfo(
         string? Version,

@@ -36,10 +36,6 @@
     <Project Path="configuration/UKHO.Aspire.Configuration.Seeder/UKHO.Aspire.Configuration.Seeder.csproj" />
     <Project Path="configuration/UKHO.Aspire.Configuration/UKHO.Aspire.Configuration.csproj" />
   </Folder>
-  <Folder Name="/@fss/">
-    <Project Path="file-share-service/UKHO.FileShareService.API/UKHO.FileShareService.API/UKHO.FileShareService.API.csproj" />
-    <Project Path="file-share-service/UKHO.FileShareService.API/UKHO.FileShareService.Common/UKHO.FileShareService.Common.csproj" />
-  </Folder>
   <Folder Name="/@test/" />
   <Folder Name="/@test/00 Domain/">
     <Project Path="test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj" />

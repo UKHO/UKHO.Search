@@ -2,7 +2,7 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.SqlServer.Dac;
 
-namespace FileShareImageLoader.Infrastructure
+namespace FileShareImageLoader
 {
     public sealed class BacpacImporter
     {

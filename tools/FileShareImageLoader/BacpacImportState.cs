@@ -1,4 +1,4 @@
-namespace FileShareImageLoader.Infrastructure
+namespace FileShareImageLoader
 {
     public static class BacpacImportState
     {

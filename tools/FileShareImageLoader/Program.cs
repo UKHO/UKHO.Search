@@ -1,5 +1,4 @@
 ﻿using FileShareImageLoader.Configuration;
-using FileShareImageLoader.Infrastructure;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 

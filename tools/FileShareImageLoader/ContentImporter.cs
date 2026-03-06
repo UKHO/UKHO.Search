@@ -1,7 +1,7 @@
-using Azure.Storage.Blobs;
 using Azure;
+using Azure.Storage.Blobs;
 
-namespace FileShareImageLoader.Infrastructure
+namespace FileShareImageLoader
 {
     public sealed class ContentImporter
     {
