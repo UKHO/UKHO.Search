@@ -16,6 +16,6 @@ namespace UKHO.Search.Ingestion.Requests
         Id,
         Guid,
         Uri,
-        StringArray,
+        StringArray
     }
 }

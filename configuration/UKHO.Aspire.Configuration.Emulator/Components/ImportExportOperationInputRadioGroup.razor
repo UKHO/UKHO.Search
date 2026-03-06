@@ -1,5 +1,4 @@
 @using System.Linq.Expressions
-
 <AzureInputRadioGroup AdditionalAttributes="@AdditionalAttributes" TValue="@string" Value="@Value" ValueChanged="@ValueChanged" ValueExpression="@ValueExpression">
     <AzureInputRadioLabel>
         <AzureInputRadio checked="@(Value is Operation.Import)" Value="@Operation.Import"/>
@@ -13,7 +12,9 @@
 </AzureInputRadioGroup>
 
 @code {
-    [Parameter(CaptureUnmatchedValues = true)] public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
     [Parameter] public string? Value { get; set; }
 

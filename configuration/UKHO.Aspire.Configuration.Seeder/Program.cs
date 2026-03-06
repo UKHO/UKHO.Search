@@ -9,7 +9,7 @@ namespace UKHO.Aspire.Configuration.Seeder
 {
     internal class Program
     {
-        static async Task<int> Main(string[] args)
+        private static async Task<int> Main(string[] args)
         {
             var sentinel = Environment.GetEnvironmentVariable(WellKnownConfigurationName.ConfigurationFilePath);
 
@@ -17,10 +17,7 @@ namespace UKHO.Aspire.Configuration.Seeder
             {
                 var parseResult = Parser.Default.ParseArguments<CommandLineParameters>(args);
 
-                if (parseResult.Value == null)
-                {
-                    return -1;
-                }
+                if (parseResult.Value == null) return -1;
 
                 var parameters = parseResult.Value;
 
@@ -30,7 +27,8 @@ namespace UKHO.Aspire.Configuration.Seeder
                     ValidateUri(parameters.AppConfigServiceUrl, nameof(parameters.AppConfigServiceUrl));
 
                     var configService = new ConfigurationService();
-                    var configClient = new ConfigurationClient(new Uri(parameters.AppConfigServiceUrl), new DefaultAzureCredential());
+                    var configClient = new ConfigurationClient(new Uri(parameters.AppConfigServiceUrl),
+                        new DefaultAzureCredential());
 
                     var addsEnvironment = AddsEnvironment.Parse(parameters.EnvironmentName);
 
@@ -50,46 +48,46 @@ namespace UKHO.Aspire.Configuration.Seeder
                     return -1;
                 }
             }
-            else
+
+            var environment = AddsEnvironment.GetEnvironment();
+
+            if (environment.IsLocal())
             {
-                var environment = AddsEnvironment.GetEnvironment();
+                var builder = Host.CreateApplicationBuilder(args);
 
-                if (environment.IsLocal())
+                var configFilePath = builder.Configuration[WellKnownConfigurationName.ConfigurationFilePath]!;
+                var serviceFilePath = builder.Configuration[WellKnownConfigurationName.ExternalServicesFilePath]!;
+
+                var serviceName = builder.Configuration[WellKnownConfigurationName.ServiceName]!;
+
+                builder.Services.AddSingleton<ConfigurationService>();
+
+                builder.Services.AddSingleton(x =>
                 {
-                    var builder = Host.CreateApplicationBuilder(args);
+                    var serviceEnvironmentKey =
+                        $"services__{WellKnownConfigurationName.ConfigurationServiceName}__http__0";
+                    var url = Environment.GetEnvironmentVariable(serviceEnvironmentKey)!;
 
-                    var configFilePath = builder.Configuration[WellKnownConfigurationName.ConfigurationFilePath]!;
-                    var serviceFilePath = builder.Configuration[WellKnownConfigurationName.ExternalServicesFilePath]!;
+                    var conStr = $"Endpoint={url};Id=aac-credential;Secret=c2VjcmV0;";
+                    return new ConfigurationClient(conStr);
+                });
 
-                    var serviceName = builder.Configuration[WellKnownConfigurationName.ServiceName]!;
+                builder.Services.AddHostedService(x =>
+                {
+                    var hostedLifetime = x.GetRequiredService<IHostApplicationLifetime>();
+                    var configService = x.GetRequiredService<ConfigurationService>();
 
-                    builder.Services.AddSingleton<ConfigurationService>();
+                    return new LocalSeederService(hostedLifetime, configService, serviceName,
+                        x.GetRequiredService<ConfigurationClient>(), configFilePath, serviceFilePath);
+                });
 
-                    builder.Services.AddSingleton(x =>
-                    {
-                        var serviceEnvironmentKey = $"services__{WellKnownConfigurationName.ConfigurationServiceName}__http__0";
-                        var url = Environment.GetEnvironmentVariable(serviceEnvironmentKey)!;
+                var app = builder.Build();
 
-                        var conStr = $"Endpoint={url};Id=aac-credential;Secret=c2VjcmV0;";
-                        return new ConfigurationClient(conStr);
-                    });
-
-                    builder.Services.AddHostedService(x =>
-                    {
-                        var hostedLifetime = x.GetRequiredService<IHostApplicationLifetime>();
-                        var configService = x.GetRequiredService<ConfigurationService>();
-
-                        return new LocalSeederService(hostedLifetime, configService, serviceName, x.GetRequiredService<ConfigurationClient>(), configFilePath, serviceFilePath);
-                    });
-
-                    var app = builder.Build();
-
-                    await app.RunAsync();
-                }
-
-                // We are running from Aspire
-                return 0;
+                await app.RunAsync();
             }
+
+            // We are running from Aspire
+            return 0;
         }
 
         private static void ValidateUri(string url, string name)
@@ -97,19 +95,14 @@ namespace UKHO.Aspire.Configuration.Seeder
             Console.WriteLine($"URL is {name} : {url}");
 
             if (!Uri.TryCreate(url, UriKind.Absolute, out _))
-            {
                 throw new ArgumentException($"Invalid URI: {url} ({name})");
-            }
         }
 
         private static void ValidateFilePath(string path, string name)
         {
             Console.WriteLine($"File path {name} : {path}");
 
-            if (!File.Exists(path))
-            {
-                throw new FileNotFoundException($"File not found: {path} ({name})");
-            }
+            if (!File.Exists(path)) throw new FileNotFoundException($"File not found: {path} ({name})");
         }
 
         public class CommandLineParameters

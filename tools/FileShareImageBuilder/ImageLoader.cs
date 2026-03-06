@@ -111,7 +111,8 @@ namespace FileShareImageBuilder
             await p.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
             await Task.WhenAll(stdoutClosed.Task, stderrClosed.Task).ConfigureAwait(false);
 
-            if (p.ExitCode != 0) throw new InvalidOperationException($"docker {args} failed with exit code {p.ExitCode}.");
+            if (p.ExitCode != 0)
+                throw new InvalidOperationException($"docker {args} failed with exit code {p.ExitCode}.");
         }
 
         private static async Task<string> RunDockerCaptureAsync(string args, CancellationToken cancellationToken)

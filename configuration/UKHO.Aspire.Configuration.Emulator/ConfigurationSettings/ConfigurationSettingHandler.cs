@@ -9,15 +9,17 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
 {
     public class ConfigurationSettingHandler
     {
-        public static async Task<Results<ConfigurationSettingResult, NoContent, PreconditionFailedResult, ReadOnlyResult>> Delete(
-            [FromServices] IConfigurationSettingRepository repository,
-            [FromRoute] string key,
-            [FromQuery] string label = LabelFilter.Null,
-            [FromHeader(Name = "If-Match")] string? ifMatch = default,
-            [FromHeader(Name = "If-None-Match")] string? ifNoneMatch = default,
-            CancellationToken cancellationToken = default)
+        public static async
+            Task<Results<ConfigurationSettingResult, NoContent, PreconditionFailedResult, ReadOnlyResult>> Delete(
+                [FromServices] IConfigurationSettingRepository repository,
+                [FromRoute] string key,
+                [FromQuery] string label = LabelFilter.Null,
+                [FromHeader(Name = "If-Match")] string? ifMatch = default,
+                [FromHeader(Name = "If-None-Match")] string? ifNoneMatch = default,
+                CancellationToken cancellationToken = default)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationSettingHandler)}.{nameof(Delete)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationSettingHandler)}.{nameof(Delete)}");
             activity?.SetTag(Telemetry.QueryLabel, label);
 
             ifMatch = ifMatch?.TrimStart('"').TrimEnd('"');
@@ -27,54 +29,43 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             key = Uri.UnescapeDataString(key);
             activity?.SetTag(Telemetry.RouteKey, key);
 
-            var setting = await repository.Get(key, label, cancellationToken: cancellationToken).SingleOrDefaultAsync(cancellationToken);
+            var setting = await repository.Get(key, label, cancellationToken: cancellationToken)
+                .SingleOrDefaultAsync(cancellationToken);
 
             if (setting == null)
             {
-                if (ifMatch != null && ifMatch == "*")
-                {
-                    return new PreconditionFailedResult();
-                }
+                if (ifMatch != null && ifMatch == "*") return new PreconditionFailedResult();
 
-                if (ifNoneMatch != null && ifNoneMatch != "*")
-                {
-                    return new PreconditionFailedResult();
-                }
+                if (ifNoneMatch != null && ifNoneMatch != "*") return new PreconditionFailedResult();
 
                 return TypedResults.NoContent();
             }
 
-            if (setting.Locked)
-            {
-                return new ReadOnlyResult(key);
-            }
+            if (setting.Locked) return new ReadOnlyResult(key);
 
-            if (ifMatch != null && (ifMatch != setting.Etag && ifMatch != "*"))
-            {
-                return new PreconditionFailedResult();
-            }
+            if (ifMatch != null && ifMatch != setting.Etag && ifMatch != "*") return new PreconditionFailedResult();
 
             if (ifNoneMatch != null && (ifNoneMatch == setting.Etag || ifNoneMatch == "*"))
-            {
                 return new PreconditionFailedResult();
-            }
 
             await repository.Remove(setting, cancellationToken);
 
             return new ConfigurationSettingResult(setting);
         }
 
-        public static async Task<Results<ConfigurationSettingResult, NotFound, NotModifiedResult, PreconditionFailedResult>> Get(
-            [FromServices] IConfigurationSettingRepository repository,
-            [FromRoute] string key,
-            [FromQuery] string label = LabelFilter.Null,
-            [FromQuery(Name = "$select")] string? select = default,
-            [FromHeader(Name = "Accept-Datetime")] DateTimeOffset? acceptDatetime = default,
-            [FromHeader(Name = "If-Match")] string? ifMatch = default,
-            [FromHeader(Name = "If-None-Match")] string? ifNoneMatch = default,
-            CancellationToken cancellationToken = default)
+        public static async
+            Task<Results<ConfigurationSettingResult, NotFound, NotModifiedResult, PreconditionFailedResult>> Get(
+                [FromServices] IConfigurationSettingRepository repository,
+                [FromRoute] string key,
+                [FromQuery] string label = LabelFilter.Null,
+                [FromQuery(Name = "$select")] string? select = default,
+                [FromHeader(Name = "Accept-Datetime")] DateTimeOffset? acceptDatetime = default,
+                [FromHeader(Name = "If-Match")] string? ifMatch = default,
+                [FromHeader(Name = "If-None-Match")] string? ifNoneMatch = default,
+                CancellationToken cancellationToken = default)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationSettingHandler)}.{nameof(Get)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationSettingHandler)}.{nameof(Get)}");
             activity?.SetTag(Telemetry.QueryLabel, label);
             activity?.SetTag(Telemetry.QuerySelect, select);
             activity?.SetTag(Telemetry.HeaderAcceptDatetime, acceptDatetime);
@@ -86,35 +77,30 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             key = Uri.UnescapeDataString(key);
             activity?.SetTag(Telemetry.RouteKey, key);
 
-            var setting = await repository.Get(key, label, acceptDatetime, cancellationToken).SingleOrDefaultAsync(cancellationToken);
+            var setting = await repository.Get(key, label, acceptDatetime, cancellationToken)
+                .SingleOrDefaultAsync(cancellationToken);
 
-            if (setting == null)
-            {
-                return TypedResults.NotFound();
-            }
+            if (setting == null) return TypedResults.NotFound();
 
-            if (ifMatch != null && (ifMatch != setting.Etag && ifMatch != "*"))
-            {
-                return new PreconditionFailedResult();
-            }
+            if (ifMatch != null && ifMatch != setting.Etag && ifMatch != "*") return new PreconditionFailedResult();
 
             if (ifNoneMatch != null && (ifNoneMatch == setting.Etag || ifNoneMatch == "*"))
-            {
                 return new NotModifiedResult();
-            }
 
             return new ConfigurationSettingResult(setting, acceptDatetime, select);
         }
 
-        public static async Task<Results<ConfigurationSettingsResult, InvalidCharacterResult, TooManyValuesResult>> List(
-            [FromServices] IConfigurationSettingRepository repository,
-            [FromQuery] string key = KeyFilter.Any,
-            [FromQuery] string label = LabelFilter.Any,
-            [FromQuery(Name = "$select")] string? select = default,
-            [FromHeader(Name = "Accept-Datetime")] DateTimeOffset? acceptDatetime = default,
-            CancellationToken cancellationToken = default)
+        public static async Task<Results<ConfigurationSettingsResult, InvalidCharacterResult, TooManyValuesResult>>
+            List(
+                [FromServices] IConfigurationSettingRepository repository,
+                [FromQuery] string key = KeyFilter.Any,
+                [FromQuery] string label = LabelFilter.Any,
+                [FromQuery(Name = "$select")] string? select = default,
+                [FromHeader(Name = "Accept-Datetime")] DateTimeOffset? acceptDatetime = default,
+                CancellationToken cancellationToken = default)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationSettingHandler)}.{nameof(List)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationSettingHandler)}.{nameof(List)}");
             activity?.SetTag(Telemetry.QueryKey, key);
             activity?.SetTag(Telemetry.QueryLabel, label);
             activity?.SetTag(Telemetry.QuerySelect, select);
@@ -122,31 +108,21 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
 
             if (key != KeyFilter.Any)
             {
-                if (new Regex(@"(?=.*(?<!\\),)(?=.*\*)").IsMatch(key))
-                {
-                    return new InvalidCharacterResult(nameof(key));
-                }
+                if (new Regex(@"(?=.*(?<!\\),)(?=.*\*)").IsMatch(key)) return new InvalidCharacterResult(nameof(key));
 
-                if (new Regex(@"(?:.*(?<!\\),){5,}").IsMatch(key))
-                {
-                    return new TooManyValuesResult(nameof(key));
-                }
+                if (new Regex(@"(?:.*(?<!\\),){5,}").IsMatch(key)) return new TooManyValuesResult(nameof(key));
             }
 
             if (label != LabelFilter.Any)
             {
                 if (new Regex(@"(?=.*(?<!\\),)(?=.*\*)").IsMatch(label))
-                {
                     return new InvalidCharacterResult(nameof(label));
-                }
 
-                if (new Regex(@"(?:.*(?<!\\),){5,}").IsMatch(label))
-                {
-                    return new TooManyValuesResult(nameof(label));
-                }
+                if (new Regex(@"(?:.*(?<!\\),){5,}").IsMatch(label)) return new TooManyValuesResult(nameof(label));
             }
 
-            var settings = await repository.Get(key, label, acceptDatetime, cancellationToken).ToListAsync(cancellationToken);
+            var settings = await repository.Get(key, label, acceptDatetime, cancellationToken)
+                .ToListAsync(cancellationToken);
 
             return new ConfigurationSettingsResult(settings, acceptDatetime, select);
         }
@@ -160,7 +136,8 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             [FromHeader(Name = "If-None-Match")] string? ifNoneMatch = default,
             CancellationToken cancellationToken = default)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationSettingHandler)}.{nameof(Set)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationSettingHandler)}.{nameof(Set)}");
             activity?.SetTag(Telemetry.QueryLabel, label);
 
             ifMatch = ifMatch?.TrimStart('"').TrimEnd('"');
@@ -172,22 +149,18 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
 
             var date = DateTimeOffset.UtcNow;
 
-            var setting = await repository.Get(key, label, cancellationToken: cancellationToken).SingleOrDefaultAsync(cancellationToken);
+            var setting = await repository.Get(key, label, cancellationToken: cancellationToken)
+                .SingleOrDefaultAsync(cancellationToken);
 
             if (setting == null)
             {
-                if (ifMatch != null && ifMatch == "*")
-                {
-                    return new PreconditionFailedResult();
-                }
+                if (ifMatch != null && ifMatch == "*") return new PreconditionFailedResult();
 
-                if (ifNoneMatch != null && ifNoneMatch != "*")
-                {
-                    return new PreconditionFailedResult();
-                }
+                if (ifNoneMatch != null && ifNoneMatch != "*") return new PreconditionFailedResult();
 
                 setting = new ConfigurationSetting(
-                    Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss")))),
+                    Convert.ToBase64String(
+                        SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss")))),
                     key,
                     date,
                     false,
@@ -201,22 +174,16 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
                 return new ConfigurationSettingResult(setting);
             }
 
-            if (setting.Locked)
-            {
-                return new ReadOnlyResult(key);
-            }
+            if (setting.Locked) return new ReadOnlyResult(key);
 
-            if (ifMatch != null && (ifMatch != setting.Etag && ifMatch != "*"))
-            {
-                return new PreconditionFailedResult();
-            }
+            if (ifMatch != null && ifMatch != setting.Etag && ifMatch != "*") return new PreconditionFailedResult();
 
             if (ifNoneMatch != null && (ifNoneMatch == setting.Etag || ifNoneMatch == "*"))
-            {
                 return new PreconditionFailedResult();
-            }
 
-            setting.Etag = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))));
+            setting.Etag =
+                Convert.ToBase64String(
+                    SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))));
             setting.LastModified = date;
             setting.ContentType = input.content_type;
             setting.Value = input.value;

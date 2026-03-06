@@ -4,7 +4,8 @@ namespace UKHO.Aspire.Configuration.Emulator.Data
 {
     public class SqliteDbCommandFactory(ILogger<SqliteDbCommandFactory>? logger = null) : IDbCommandFactory
     {
-        public DbCommand Create(DbConnection connection, string? text = null, IEnumerable<DbParameter>? parameters = null)
+        public DbCommand Create(DbConnection connection, string? text = null,
+            IEnumerable<DbParameter>? parameters = null)
         {
             logger?.LogDebug("Creating a command.");
             var command = connection.CreateCommand();
@@ -20,7 +21,9 @@ namespace UKHO.Aspire.Configuration.Emulator.Data
                 logger?.LogDebug("Enumerating the parameters.");
                 foreach (var parameter in parameters)
                 {
-                    logger?.LogDebug("Adding the parameter with the name '{ParameterName}' and the value '{ParameterValue}'.", parameter.ParameterName, parameter.Value);
+                    logger?.LogDebug(
+                        "Adding the parameter with the name '{ParameterName}' and the value '{ParameterValue}'.",
+                        parameter.ParameterName, parameter.Value);
                     command.Parameters.Add(parameter);
                 }
             }

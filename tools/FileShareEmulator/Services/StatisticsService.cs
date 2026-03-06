@@ -1,6 +1,6 @@
 using System.Data;
-using Microsoft.Data.SqlClient;
 using Humanizer;
+using Microsoft.Data.SqlClient;
 
 namespace FileShareEmulator.Services
 {
@@ -14,10 +14,14 @@ namespace FileShareEmulator.Services
             {
                 [nameof(StatisticsSnapshot.BatchCount)] = HumanizeLabel(nameof(StatisticsSnapshot.BatchCount)),
                 [nameof(StatisticsSnapshot.FileCount)] = HumanizeLabel(nameof(StatisticsSnapshot.FileCount)),
-                [nameof(StatisticsSnapshot.BatchAttributeCount)] = HumanizeLabel(nameof(StatisticsSnapshot.BatchAttributeCount)),
-                [nameof(StatisticsSnapshot.FileAttributeCount)] = HumanizeLabel(nameof(StatisticsSnapshot.FileAttributeCount)),
-                [nameof(StatisticsSnapshot.BatchReadUserCount)] = HumanizeLabel(nameof(StatisticsSnapshot.BatchReadUserCount)),
-                [nameof(StatisticsSnapshot.BatchReadGroupCount)] = HumanizeLabel(nameof(StatisticsSnapshot.BatchReadGroupCount))
+                [nameof(StatisticsSnapshot.BatchAttributeCount)] =
+                    HumanizeLabel(nameof(StatisticsSnapshot.BatchAttributeCount)),
+                [nameof(StatisticsSnapshot.FileAttributeCount)] =
+                    HumanizeLabel(nameof(StatisticsSnapshot.FileAttributeCount)),
+                [nameof(StatisticsSnapshot.BatchReadUserCount)] =
+                    HumanizeLabel(nameof(StatisticsSnapshot.BatchReadUserCount)),
+                [nameof(StatisticsSnapshot.BatchReadGroupCount)] =
+                    HumanizeLabel(nameof(StatisticsSnapshot.BatchReadGroupCount))
             };
 
         private readonly SqlConnection _sqlConnection;
@@ -26,8 +30,6 @@ namespace FileShareEmulator.Services
         {
             _sqlConnection = sqlConnection;
         }
-
-        public sealed record IndexingStatus(int TotalBatches, int IndexedBatches);
 
         public async Task<IndexingStatus> GetIndexingStatusAsync(CancellationToken cancellationToken = default)
         {
@@ -44,14 +46,11 @@ SELECT
             await using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken)
                 .ConfigureAwait(false);
 
-            if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-            {
-                return new IndexingStatus(0, 0);
-            }
+            if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) return new IndexingStatus(0, 0);
 
             return new IndexingStatus(
-                TotalBatches: checked((int)reader.GetInt64(0)),
-                IndexedBatches: checked((int)reader.GetInt64(1)));
+                checked((int)reader.GetInt64(0)),
+                checked((int)reader.GetInt64(1)));
         }
 
         public async Task<StatisticsSnapshot> GetAsync(CancellationToken cancellationToken = default)
@@ -75,9 +74,7 @@ SELECT
                 .ConfigureAwait(false);
 
             if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-            {
                 return new StatisticsSnapshot(0, 0, 0, 0, 0, 0, Labels, EmptyMetadata);
-            }
 
             var batchCount = checked((int)reader.GetInt64(0));
             var fileCount = checked((int)reader.GetInt64(1));
@@ -91,22 +88,20 @@ SELECT
             var localMetadata = await GetLocalMetadataAsync(_sqlConnection, cancellationToken).ConfigureAwait(false);
 
             return new StatisticsSnapshot(
-                BatchCount: batchCount,
-                FileCount: fileCount,
-                BatchAttributeCount: batchAttributeCount,
-                FileAttributeCount: fileAttributeCount,
-                BatchReadUserCount: batchReadUserCount,
-                BatchReadGroupCount: batchReadGroupCount,
-                Labels: Labels,
-                LocalMetadata: localMetadata);
+                batchCount,
+                fileCount,
+                batchAttributeCount,
+                fileAttributeCount,
+                batchReadUserCount,
+                batchReadGroupCount,
+                Labels,
+                localMetadata);
         }
 
         private async Task EnsureConnectionOpenAsync(CancellationToken cancellationToken)
         {
             if (_sqlConnection.State != ConnectionState.Open)
-            {
                 await _sqlConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-            }
         }
 
         private static async Task<IReadOnlyDictionary<string, string?>> GetLocalMetadataAsync(SqlConnection connection,
@@ -137,5 +132,7 @@ ORDER BY [Name];";
         {
             return value.Humanize(LetterCasing.Title);
         }
+
+        public sealed record IndexingStatus(int TotalBatches, int IndexedBatches);
     }
 }

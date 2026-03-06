@@ -14,7 +14,9 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
             DateTimeOffset? moment = default,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationClient)}.{nameof(GetConfigurationSettings)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity(
+                    $"{nameof(ConfigurationClient)}.{nameof(GetConfigurationSettings)}");
 
             LinkHeaderValue? link = null;
 
@@ -25,10 +27,7 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
 
                 using var request = new HttpRequestMessage(HttpMethod.Get, uri);
 
-                if (moment.HasValue)
-                {
-                    request.Headers.Add("Accept-Datetime", moment.Value.ToString("R"));
-                }
+                if (moment.HasValue) request.Headers.Add("Accept-Datetime", moment.Value.ToString("R"));
 
                 using var response = await httpClient.SendAsync(request, cancellationToken);
 
@@ -42,7 +41,6 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
                 using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
 
                 foreach (var element in document.RootElement.GetProperty("items").EnumerateArray())
-                {
                     yield return configurationSettingFactory.Create(
                         element.GetProperty("etag").GetString()!,
                         element.GetProperty("key").GetString()!,
@@ -62,14 +60,14 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
                                 property => property.Name,
                                 property => property.Value.GetString()!)
                             : null);
-                }
             } while (link is { Next: not null });
         }
 
         public async IAsyncEnumerable<string> GetKeys(
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationClient)}.{nameof(GetKeys)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationClient)}.{nameof(GetKeys)}");
 
             LinkHeaderValue? link = null;
 
@@ -91,16 +89,15 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
                 using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
 
                 foreach (var element in document.RootElement.GetProperty("items").EnumerateArray())
-                {
                     yield return element.GetProperty("name").GetString()!;
-                }
             } while (link is { Next: not null });
         }
 
         public async IAsyncEnumerable<string?> GetLabels(
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationClient)}.{nameof(GetLabels)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationClient)}.{nameof(GetLabels)}");
 
             LinkHeaderValue? link = null;
 
@@ -122,9 +119,7 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
                 using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
 
                 foreach (var element in document.RootElement.GetProperty("items").EnumerateArray())
-                {
                     yield return element.GetProperty("name").GetString();
-                }
             } while (link is { Next: not null });
         }
 
@@ -132,9 +127,13 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
             ConfigurationSetting setting,
             CancellationToken cancellationToken = default)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationClient)}.{nameof(SetConfigurationSetting)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity(
+                    $"{nameof(ConfigurationClient)}.{nameof(SetConfigurationSetting)}");
 
-            var uri = new Uri($"/kv/{Uri.EscapeDataString(setting.Key)}?label={Uri.EscapeDataString(setting.Label ?? LabelFilter.Null)}&api-version=1.0", UriKind.Relative);
+            var uri = new Uri(
+                $"/kv/{Uri.EscapeDataString(setting.Key)}?label={Uri.EscapeDataString(setting.Label ?? LabelFilter.Null)}&api-version=1.0",
+                UriKind.Relative);
 
             using var request = new HttpRequestMessage(HttpMethod.Put, uri);
             request.Content = JsonContent.Create(new

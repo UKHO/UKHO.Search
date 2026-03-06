@@ -23,15 +23,9 @@ namespace UKHO.Aspire.Configuration.Emulator
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Logging.AddOpenTelemetry(options =>
-            {
-                options.AddOtlpExporter();
-            });
+            builder.Logging.AddOpenTelemetry(options => { options.AddOtlpExporter(); });
 
-            builder.Services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = "MicrosoftEntraId";
-                })
+            builder.Services.AddAuthentication(options => { options.DefaultScheme = "MicrosoftEntraId"; })
                 .AddHmac()
                 .AddJwtBearer("MicrosoftEntraId", options =>
                 {
@@ -41,12 +35,8 @@ namespace UKHO.Aspire.Configuration.Emulator
                     options.ForwardDefaultSelector = context =>
                     {
                         if (AuthenticationHeaderValue.TryParse(context.Request.Headers.Authorization, out var value))
-                        {
                             if (value.Scheme.Equals("HMAC-SHA256", StringComparison.OrdinalIgnoreCase))
-                            {
                                 return HmacDefaults.AuthenticationScheme;
-                            }
-                        }
 
                         return null;
                     };
@@ -56,19 +46,14 @@ namespace UKHO.Aspire.Configuration.Emulator
 
             builder.Services.AddAzureClients(factory =>
             {
-                foreach (var section in builder.Configuration.GetSection("Messaging").GetSection("EventGridTopics").GetChildren())
-                {
-                    factory.AddEventGridPublisherClient(section).WithName(section.Key);
-                }
+                foreach (var section in builder.Configuration.GetSection("Messaging").GetSection("EventGridTopics")
+                             .GetChildren()) factory.AddEventGridPublisherClient(section).WithName(section.Key);
             });
 
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddOpenTelemetry()
-                .ConfigureResource(resource =>
-                {
-                    resource.AddService(builder.Environment.ApplicationName);
-                })
+                .ConfigureResource(resource => { resource.AddService(builder.Environment.ApplicationName); })
                 .WithMetrics(metrics =>
                 {
                     metrics.AddAspNetCoreInstrumentation();
@@ -125,7 +110,8 @@ namespace UKHO.Aspire.Configuration.Emulator
 
             app.Run();
 
-            IConfigurationSettingRepository ConfigurationSettingRepositoryImplementationFactory(IServiceProvider provider)
+            IConfigurationSettingRepository ConfigurationSettingRepositoryImplementationFactory(
+                IServiceProvider provider)
             {
                 IConfigurationSettingRepository repository = new ConfigurationSettingRepository(
                     provider.GetRequiredService<IDbCommandFactory>(),
@@ -134,13 +120,13 @@ namespace UKHO.Aspire.Configuration.Emulator
                     provider.GetRequiredService<ILogger<ConfigurationSettingRepository>>(),
                     provider.GetRequiredService<IDbParameterFactory>());
 
-                foreach (var section in builder.Configuration.GetSection("Messaging").GetSection("EventGridTopics").GetChildren())
-                {
+                foreach (var section in builder.Configuration.GetSection("Messaging").GetSection("EventGridTopics")
+                             .GetChildren())
                     repository = new EventGridMessagingConfigurationSettingRepository(
                         repository,
                         provider.GetRequiredService<IEventGridEventFactory>(),
-                        provider.GetRequiredService<IAzureClientFactory<EventGridPublisherClient>>().CreateClient(section.Key));
-                }
+                        provider.GetRequiredService<IAzureClientFactory<EventGridPublisherClient>>()
+                            .CreateClient(section.Key));
 
                 return repository;
             }

@@ -1,5 +1,4 @@
 @using System.Linq.Expressions
-
 <AzureInputSelect AdditionalAttributes="@AdditionalAttributes" TValue="@string?[]" Value="@Value" ValueChanged="@HandleValueChanged" ValueExpression="@ValueExpression">
     @if (Labels is not null)
     {
@@ -11,10 +10,12 @@
 </AzureInputSelect>
 
 @code {
-    [Parameter(CaptureUnmatchedValues = true)] public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
     [Parameter] public IEnumerable<string?>? Labels { get; set; }
-    
+
     [Parameter] public string?[]? Value { get; set; }
 
     [Parameter] public EventCallback<string?[]?> ValueChanged { get; set; }

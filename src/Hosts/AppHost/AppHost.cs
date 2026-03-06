@@ -1,4 +1,3 @@
-using AppHost.Elastic;
 using AppHost.Extensions;
 using Docker.DotNet;
 using Docker.DotNet.Models;
@@ -16,16 +15,6 @@ namespace AppHost
 
             var keyCloakUsernameParameter = builder.AddParameter("keycloak-username");
             var keyCloakPasswordParameter = builder.AddParameter("keycloak-password", true);
-
-            var pwd2 = await keyCloakPasswordParameter.Resource.GetValueAsync(CancellationToken.None);
-
-            // Old code (non-secret parameter) retained for reference.
-            // This can lead to Aspire/Elasticsearch helpers generating/overriding the value.
-            // var elasticPasswordParameter = builder.AddParameter("elastic-password");
-
-            var elasticPasswordParameter = builder.AddParameter("elastic-password", true);
-
-            var pwd = await elasticPasswordParameter.Resource.GetValueAsync(CancellationToken.None);
 
             var environmentParameter = builder.AddParameter("environment");
             var environment = await environmentParameter.Resource.GetValueAsync(CancellationToken.None) ?? string.Empty;
@@ -73,11 +62,21 @@ namespace AppHost
                         .WithRealmImport("./Realms")
                         .WithLifetime(ContainerLifetime.Persistent);
 
-                        var elasticsearch = builder
-                        .AddElasticsearchWithKibana(ServiceNames.ElasticSearch, elasticPasswordParameter)
-                        .WithElasticsearchSetup(kibanaAdminUsername:"admin");
+                    var elasticsearch = builder.AddElasticsearch(ServiceNames.ElasticSearch)
+                        .WithDataVolume()
+                        .WithLifetime(ContainerLifetime.Persistent)
+                        .WithEnvironment("xpack.security.enabled", "false")
+                        .WithEnvironment("xpack.security.http.ssl.enabled", "false")
+                        .WithEnvironment("xpack.security.transport.ssl.enabled", "false");
 
-                        var ingestionService = builder.AddProject<IngestionServiceHost>(ServiceNames.Ingestion)
+                    var elasticHq = builder.AddContainer("elastichq", "elastichq/elasticsearch-hq")
+                        .WithExternalHttpEndpoints()
+                        .WithHttpEndpoint(targetPort: 5000, name: "http")
+                        .WithEnvironment("HQ_DEFAULT_URL", "http://" + ServiceNames.ElasticSearch + ":9200")
+                        .WithLifetime(ContainerLifetime.Persistent)
+                        .WaitFor(elasticsearch);
+
+                    var ingestionService = builder.AddProject<IngestionServiceHost>(ServiceNames.Ingestion)
                         .WithExternalHttpEndpoints()
                         .WithReference(storageQueue)
                         .WithReference(storageTable)
@@ -110,13 +109,15 @@ namespace AppHost
                     // Configuration
                     if (builder.ExecutionContext.IsRunMode)
                     {
-                        builder.AddConfigurationEmulator(ServiceConfiguration.ServiceGroupName, [ingestionService, queryService!],
+                        builder.AddConfigurationEmulator(ServiceConfiguration.ServiceGroupName,
+                            [ingestionService, queryService!],
                             [fileShareEmulator], @"../../../configuration/configuration.json",
                             @"../../../configuration/external-services.json");
                     }
                     else
                     {
-                        var appConfig = builder.AddConfiguration(ServiceNames.Configuration, addsEnvironment!, [ingestionService, queryService]);
+                        var appConfig = builder.AddConfiguration(ServiceNames.Configuration, addsEnvironment!,
+                            [ingestionService, queryService]);
                     }
 
                     break;
@@ -145,8 +146,8 @@ namespace AppHost
                     // 2) run a one-shot init container from the data image which copies the seed files into that volume.
                     //
                     // Subsequent runs are fast because the named volume is already populated and the init container becomes a no-op.
-                    var fileShareEmulatorDataSeeder = builder
-                        .AddContainer($"{ServiceNames.FileShareEmulator}-data-seeder", loaderDataImage)
+                    var fileShareLoaderDataSeeder = builder
+                        .AddContainer($"{ServiceNames.FileShareLoader}-data-seeder", loaderDataImage)
                         .WithVolume(loaderDataVolumeName, "/seed")
                         .WithEntrypoint("/bin/sh")
                         .WithArgs(

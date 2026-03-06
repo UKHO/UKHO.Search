@@ -14,7 +14,9 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             ConfigurationSetting setting,
             CancellationToken cancellationToken = default)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Add)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity(
+                    $"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Add)}");
 
             await inner.Add(setting, cancellationToken);
 
@@ -34,7 +36,9 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             DateTimeOffset? moment = default,
             CancellationToken cancellationToken = default)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Get)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity(
+                    $"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Get)}");
 
             return inner.Get(key, label, moment, cancellationToken);
         }
@@ -43,7 +47,9 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             ConfigurationSetting setting,
             CancellationToken cancellationToken = default)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Remove)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity(
+                    $"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Remove)}");
 
             await inner.Remove(setting, cancellationToken);
 
@@ -61,7 +67,9 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             ConfigurationSetting setting,
             CancellationToken cancellationToken = default)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Update)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity(
+                    $"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Update)}");
 
             await inner.Update(setting, cancellationToken);
 

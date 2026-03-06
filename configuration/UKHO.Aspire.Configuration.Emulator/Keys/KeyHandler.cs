@@ -22,18 +22,12 @@ namespace UKHO.Aspire.Configuration.Emulator.Keys
 
             if (name != KeyFilter.Any)
             {
-                if (new Regex(@"(?=.*(?<!\\),)(?=.*\*)").IsMatch(name))
-                {
-                    return new InvalidCharacterResult(nameof(name));
-                }
+                if (new Regex(@"(?=.*(?<!\\),)(?=.*\*)").IsMatch(name)) return new InvalidCharacterResult(nameof(name));
 
-                if (new Regex(@"(?:.*(?<!\\),){5,}").IsMatch(name))
-                {
-                    return new TooManyValuesResult(nameof(name));
-                }
+                if (new Regex(@"(?:.*(?<!\\),){5,}").IsMatch(name)) return new TooManyValuesResult(nameof(name));
             }
 
-            var keys = await repository.Get(key: name, moment: acceptDatetime, cancellationToken: cancellationToken)
+            var keys = await repository.Get(name, moment: acceptDatetime, cancellationToken: cancellationToken)
                 .Select(setting => setting.Key)
                 .Distinct()
                 .ToListAsync(cancellationToken);

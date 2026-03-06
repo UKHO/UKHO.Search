@@ -2,7 +2,7 @@
 {
     public static class ServiceNames
     {
-        public const string KeyCloak= "keycloak";
+        public const string KeyCloak = "keycloak";
 
         public const string Storage = "storage";
 

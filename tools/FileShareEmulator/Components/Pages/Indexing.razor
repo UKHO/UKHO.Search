@@ -1,5 +1,4 @@
 @page "/indexing"
-
 @using FileShareEmulator.Services
 @inject StatisticsService StatisticsService
 @inject IndexService IndexService
@@ -22,16 +21,16 @@
     }
 
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" Gap="1rem" Style="margin-top: 1rem; flex-wrap: wrap;">
-        <RadzenButton Text="Index All" ButtonStyle="ButtonStyle.Primary" Disabled="@_isIndexing" Click="@IndexAllAsync" />
+        <RadzenButton Text="Index All" ButtonStyle="ButtonStyle.Primary" Disabled="@_isIndexing" Click="@IndexAllAsync"/>
 
         <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem">
-            <RadzenLabel Text="Count" Component="indexCount" />
-            <RadzenNumeric id="indexCount" TValue="int" Style="width: 8rem" Min="1" Value="@(_count ?? 0)" Change="@(args => SetCount(args))" />
+            <RadzenLabel Text="Count" Component="indexCount"/>
+            <RadzenNumeric id="indexCount" TValue="int" Style="width: 8rem" Min="1" Value="@(_count ?? 0)" Change="@(args => SetCount(args))"/>
         </RadzenStack>
 
-        <RadzenButton Text="Index" ButtonStyle="ButtonStyle.Secondary" Disabled="@(!_canIndex || _isIndexing)" Click="@IndexNextAsync" />
+        <RadzenButton Text="Index" ButtonStyle="ButtonStyle.Secondary" Disabled="@(!_canIndex || _isIndexing)" Click="@IndexNextAsync"/>
 
-        <RadzenButton Text="Reset All" ButtonStyle="ButtonStyle.Light" Disabled="@_isIndexing" Click="@ResetAllAsync" />
+        <RadzenButton Text="Reset All" ButtonStyle="ButtonStyle.Light" Disabled="@_isIndexing" Click="@ResetAllAsync"/>
     </RadzenStack>
 </RadzenCard>
 

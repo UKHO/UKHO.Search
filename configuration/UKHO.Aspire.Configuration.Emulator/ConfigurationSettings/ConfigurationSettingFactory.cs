@@ -42,7 +42,8 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             string? value = null,
             IDictionary<string, string>? tags = null)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationSettingFactory)}.{nameof(Create)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity($"{nameof(ConfigurationSettingFactory)}.{nameof(Create)}");
             activity?.SetTag(Telemetry.ConfigurationSettingEtag, etag);
             activity?.SetTag(Telemetry.ConfigurationSettingKey, key);
             activity?.SetTag(Telemetry.ConfigurationSettingLabel, label);
@@ -52,11 +53,9 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             activity?.SetTag(Telemetry.ConfigurationSettingLocked, locked);
 
             if (!string.IsNullOrEmpty(contentType) && !string.IsNullOrEmpty(value))
-            {
                 try
                 {
                     if (new ContentType(contentType).MediaType is MediaType.FeatureFlag)
-                    {
                         return new FeatureFlagConfigurationSetting(
                             etag,
                             key,
@@ -66,13 +65,11 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
                             label,
                             contentType,
                             tags);
-                    }
                 }
                 catch (Exception e)
                 {
                     activity?.RecordException(e);
                 }
-            }
 
             return new ConfigurationSetting(
                 etag,

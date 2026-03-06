@@ -5,18 +5,15 @@ namespace UKHO.Search.Ingestion.Requests.Serialization
 {
     public sealed class IngestionPropertyTypeJsonConverter : JsonConverter<IngestionPropertyType>
     {
-        public override IngestionPropertyType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override IngestionPropertyType Read(ref Utf8JsonReader reader, Type typeToConvert,
+            JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.String)
-            {
                 throw new JsonException("IngestionPropertyType must be a JSON string.");
-            }
 
             var token = reader.GetString();
             if (string.IsNullOrWhiteSpace(token))
-            {
                 throw new JsonException("IngestionPropertyType cannot be null/empty.");
-            }
 
             return token switch
             {
@@ -31,7 +28,7 @@ namespace UKHO.Search.Ingestion.Requests.Serialization
                 "guid" => IngestionPropertyType.Guid,
                 "uri" => IngestionPropertyType.Uri,
                 "string-array" => IngestionPropertyType.StringArray,
-                _ => throw new JsonException($"Unsupported IngestionPropertyType '{token}'."),
+                _ => throw new JsonException($"Unsupported IngestionPropertyType '{token}'.")
             };
         }
 
@@ -50,7 +47,7 @@ namespace UKHO.Search.Ingestion.Requests.Serialization
                 IngestionPropertyType.Guid => "guid",
                 IngestionPropertyType.Uri => "uri",
                 IngestionPropertyType.StringArray => "string-array",
-                _ => throw new JsonException($"Unsupported IngestionPropertyType '{value}'."),
+                _ => throw new JsonException($"Unsupported IngestionPropertyType '{value}'.")
             });
         }
     }

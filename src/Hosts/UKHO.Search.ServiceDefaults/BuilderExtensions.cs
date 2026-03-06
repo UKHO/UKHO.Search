@@ -20,6 +20,25 @@ namespace UKHO.Search.ServiceDefaults
         private const string HealthEndpointPath = "/health";
         private const string AlivenessEndpointPath = "/alive";
 
+        public static WebApplication MapDefaultEndpoints(this WebApplication app)
+        {
+            // Adding health checks endpoints to applications in non-development environments has security implications.
+            // See https://aka.ms/dotnet/aspire/healthchecks for details before enabling these endpoints in non-development environments.
+            if (app.Environment.IsDevelopment())
+            {
+                // All health checks must pass for app to be considered ready to accept traffic after starting
+                app.MapHealthChecks(HealthEndpointPath);
+
+                // Only health checks tagged with the "live" tag must pass for app to be considered alive
+                app.MapHealthChecks(AlivenessEndpointPath, new HealthCheckOptions
+                {
+                    Predicate = r => r.Tags.Contains("live")
+                });
+            }
+
+            return app;
+        }
+
         extension<TBuilder>(TBuilder builder) where TBuilder : IHostApplicationBuilder
         {
             public TBuilder AddServiceDefaults()
@@ -86,10 +105,7 @@ namespace UKHO.Search.ServiceDefaults
             {
                 var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
 
-                if (useOtlpExporter)
-                {
-                    builder.Services.AddOpenTelemetry().UseOtlpExporter();
-                }
+                if (useOtlpExporter) builder.Services.AddOpenTelemetry().UseOtlpExporter();
 
                 // Uncomment the following lines to enable the Azure Monitor exporter (requires the Azure.Monitor.OpenTelemetry.AspNetCore package)
                 //if (!string.IsNullOrEmpty(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
@@ -109,25 +125,6 @@ namespace UKHO.Search.ServiceDefaults
 
                 return builder;
             }
-        }
-
-        public static WebApplication MapDefaultEndpoints(this WebApplication app)
-        {
-            // Adding health checks endpoints to applications in non-development environments has security implications.
-            // See https://aka.ms/dotnet/aspire/healthchecks for details before enabling these endpoints in non-development environments.
-            if (app.Environment.IsDevelopment())
-            {
-                // All health checks must pass for app to be considered ready to accept traffic after starting
-                app.MapHealthChecks(HealthEndpointPath);
-
-                // Only health checks tagged with the "live" tag must pass for app to be considered alive
-                app.MapHealthChecks(AlivenessEndpointPath, new HealthCheckOptions
-                {
-                    Predicate = r => r.Tags.Contains("live")
-                });
-            }
-
-            return app;
         }
     }
 }

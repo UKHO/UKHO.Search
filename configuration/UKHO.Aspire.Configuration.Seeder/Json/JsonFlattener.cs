@@ -10,29 +10,27 @@ namespace UKHO.Aspire.Configuration.Seeder.Json
         [GeneratedRegex(@"^{""uri"":""https:\/\/.+.vault.azure.net\/secrets\/.+""}$")]
         private static partial Regex KeyVaultRegex();
 
-        public static IDictionary<string, ConfigurationSetting> Flatten(AddsEnvironment environment, string json, string label)
+        public static IDictionary<string, ConfigurationSetting> Flatten(AddsEnvironment environment, string json,
+            string label)
         {
             using var document = JsonDocument.Parse(json);
 
             if (!document.RootElement.TryGetProperty(environment.ToString(), out var envElement))
-            {
                 throw new ArgumentException($"Environment '{environment}' not found in the JSON.");
-            }
 
             var result = new Dictionary<string, ConfigurationSetting>();
             FlattenElement(envElement, string.Empty, result, label);
 
             foreach (var item in result)
-            {
                 item.Value.ContentType = KeyVaultRegex().IsMatch(item.Value.Value)
                     ? "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
                     : MediaTypeNames.Text.Plain;
-            }
 
             return result;
         }
 
-        private static void FlattenElement(JsonElement element, string prefix, IDictionary<string, ConfigurationSetting> result, string label)
+        private static void FlattenElement(JsonElement element, string prefix,
+            IDictionary<string, ConfigurationSetting> result, string label)
         {
             switch (element.ValueKind)
             {

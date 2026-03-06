@@ -1,8 +1,8 @@
-@inject IDialogService DialogService
 @using System.Security.Cryptography
 @using System.Text
 @using UKHO.Aspire.Configuration.Emulator.Common
 @using UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
+@inject IDialogService DialogService
 
 <AzureDialog>
     <HeaderContent>
@@ -43,7 +43,7 @@
 </AzureDialog>
 
 @code {
-    [EditorRequired, Parameter] public ConfigurationSetting ConfigurationSetting { get; set; } = null!;
+    [EditorRequired] [Parameter] public ConfigurationSetting ConfigurationSetting { get; set; } = null!;
 
     [CascadingParameter] public IDialogReference DialogReference { get; set; } = null!;
 

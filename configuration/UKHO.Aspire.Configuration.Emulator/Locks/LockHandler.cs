@@ -30,29 +30,22 @@ namespace UKHO.Aspire.Configuration.Emulator.Locks
 
             var setting = await repository.Get(key, label).SingleOrDefaultAsync(cancellationToken);
 
-            if (setting == null)
-            {
-                return TypedResults.NotFound();
-            }
+            if (setting == null) return TypedResults.NotFound();
 
-            if (ifMatch != null && (ifMatch != setting.Etag && ifMatch != "*"))
-            {
-                return new PreconditionFailedResult();
-            }
+            if (ifMatch != null && ifMatch != setting.Etag && ifMatch != "*") return new PreconditionFailedResult();
 
             if (ifNoneMatch != null && (ifNoneMatch == setting.Etag || ifNoneMatch == "*"))
-            {
                 return new PreconditionFailedResult();
-            }
 
-            setting.Etag = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))));
+            setting.Etag =
+                Convert.ToBase64String(
+                    SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))));
             setting.LastModified = date;
             setting.Locked = true;
 
             await repository.Update(setting, cancellationToken);
 
             return new ConfigurationSettingResult(setting);
-
         }
 
         public static async Task<Results<ConfigurationSettingResult, NotFound, PreconditionFailedResult>> Unlock(
@@ -76,22 +69,16 @@ namespace UKHO.Aspire.Configuration.Emulator.Locks
 
             var setting = await repository.Get(key, label).SingleOrDefaultAsync(cancellationToken);
 
-            if (setting == null)
-            {
-                return TypedResults.NotFound();
-            }
+            if (setting == null) return TypedResults.NotFound();
 
-            if (ifMatch != null && (ifMatch != setting.Etag && ifMatch != "*"))
-            {
-                return new PreconditionFailedResult();
-            }
+            if (ifMatch != null && ifMatch != setting.Etag && ifMatch != "*") return new PreconditionFailedResult();
 
             if (ifNoneMatch != null && (ifNoneMatch == setting.Etag || ifNoneMatch == "*"))
-            {
                 return new PreconditionFailedResult();
-            }
 
-            setting.Etag = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))));
+            setting.Etag =
+                Convert.ToBase64String(
+                    SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))));
             setting.LastModified = date;
             setting.Locked = false;
 

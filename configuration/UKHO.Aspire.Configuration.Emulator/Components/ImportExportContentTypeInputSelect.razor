@@ -1,6 +1,5 @@
 @using System.Linq.Expressions
 @using UKHO.Aspire.Configuration.Emulator.Common
-
 <AzureInputSelect AdditionalAttributes="@AdditionalAttributes" TValue="@string" Value="@Value" ValueChanged="@HandleValueChanged" ValueExpression="@ValueExpression">
     <option checked="@(Value is null)" value="">(No content type)</option>
     <option checked="@(Value is MediaType.SecretReference)" value="@MediaType.SecretReference">Key Vault Reference (@MediaType.SecretReference)</option>
@@ -8,7 +7,9 @@
 </AzureInputSelect>
 
 @code {
-    [Parameter(CaptureUnmatchedValues = true)] public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
     [Parameter] public string? Value { get; set; }
 

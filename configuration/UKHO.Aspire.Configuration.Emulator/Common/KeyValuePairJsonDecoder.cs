@@ -18,19 +18,20 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
             string? prefix = null,
             string? separator = null)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(KeyValuePairJsonDecoder)}.{nameof(Decode)}");
+            using var activity =
+                Telemetry.ActivitySource.StartActivity($"{nameof(KeyValuePairJsonDecoder)}.{nameof(Decode)}");
 
             switch (element.ValueKind)
             {
                 case JsonValueKind.Object:
                     foreach (var innerProperty in element.EnumerateObject())
                     {
-                        var innerPrefix = !string.IsNullOrEmpty(prefix) ? $"{prefix}{separator}{innerProperty.Name}" : innerProperty.Name;
+                        var innerPrefix = !string.IsNullOrEmpty(prefix)
+                            ? $"{prefix}{separator}{innerProperty.Name}"
+                            : innerProperty.Name;
 
                         foreach (var setting in Decode(innerProperty.Value, innerPrefix, separator))
-                        {
                             yield return setting;
-                        }
                     }
 
                     break;
@@ -39,12 +40,11 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
 
                     foreach (var innerElement in element.EnumerateArray())
                     {
-                        var innerPrefix = !string.IsNullOrEmpty(prefix) ? $"{prefix}{separator}{index}" : index.ToString();
+                        var innerPrefix = !string.IsNullOrEmpty(prefix)
+                            ? $"{prefix}{separator}{index}"
+                            : index.ToString();
 
-                        foreach (var setting in Decode(innerElement, innerPrefix, separator))
-                        {
-                            yield return setting;
-                        }
+                        foreach (var setting in Decode(innerElement, innerPrefix, separator)) yield return setting;
 
                         index += 1;
                     }

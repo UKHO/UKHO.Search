@@ -7,6 +7,8 @@ Be concise but complete. Prefer current research (Microsoft Learn) for Microsoft
 - Verify each command succeeds before proceeding; run commands sequentially.
 - Prefer latest C#/.NET features; async/await; nullable reference types.
 - Always use block-scoped namespaces (e.g., `namespace X.Y { ... }`) rather than file-scoped namespaces when creating or updating C# files in this workspace.
+- Use Allman braces style for C# code.
+- Add `//` comments on their own line for non-obvious logic.
 - Do not interact with git (no branch creation, no git commands) unless explicitly requested.
 
 ## Coding Standards

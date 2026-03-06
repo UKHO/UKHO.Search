@@ -8,12 +8,9 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
         {
             var builder = new StringBuilder();
 
-            for (int i = 0; i < s.Length; i++)
+            for (var i = 0; i < s.Length; i++)
             {
-                if (s[i] is '\\' && i < s.Length - 1)
-                {
-                    i++;
-                }
+                if (s[i] is '\\' && i < s.Length - 1) i++;
 
                 builder.Append(s[i]);
             }

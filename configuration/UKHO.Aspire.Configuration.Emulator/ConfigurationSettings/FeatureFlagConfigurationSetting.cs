@@ -4,7 +4,7 @@ using System.Text.Json;
 namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
 {
     /// <summary>
-    /// https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/appconfiguration/Azure.Data.AppConfiguration/src/Models/FeatureFlagConfigurationSetting.cs
+    ///     https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/appconfiguration/Azure.Data.AppConfiguration/src/Models/FeatureFlagConfigurationSetting.cs
     /// </summary>
     public class FeatureFlagConfigurationSetting : ConfigurationSetting
     {
@@ -25,8 +25,8 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             key,
             lastModified,
             locked,
-            label: label,
-            contentType: contentType,
+            label,
+            contentType,
             tags: tags)
         {
             Id = id;
@@ -49,8 +49,8 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             key,
             lastModified,
             locked,
-            label: label,
-            contentType: contentType,
+            label,
+            contentType,
             tags: tags)
         {
             using var document = JsonDocument.Parse(value);
@@ -93,23 +93,14 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
                 writer.WriteStartObject("conditions");
                 writer.WriteStartArray("client_filters");
 
-                foreach (var clientFilter in ClientFilters)
-                {
-                    clientFilter.WriteTo(writer);
-                }
+                foreach (var clientFilter in ClientFilters) clientFilter.WriteTo(writer);
 
                 writer.WriteEndArray();
                 writer.WriteEndObject();
 
-                if (Description is not null)
-                {
-                    writer.WriteString("description", Description);
-                }
+                if (Description is not null) writer.WriteString("description", Description);
 
-                if (DisplayName is not null)
-                {
-                    writer.WriteString("display_name", DisplayName);
-                }
+                if (DisplayName is not null) writer.WriteString("display_name", DisplayName);
 
                 writer.WriteEndObject();
                 writer.Flush();
@@ -118,7 +109,7 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             }
             set
             {
-                ArgumentNullException.ThrowIfNull(value, nameof(value));
+                ArgumentNullException.ThrowIfNull(value);
 
                 using var document = JsonDocument.Parse(value);
 
@@ -157,7 +148,7 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
     }
 
     /// <summary>
-    /// https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/appconfiguration/Azure.Data.AppConfiguration/src/Models/FeatureFlagFilter.cs
+    ///     https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/appconfiguration/Azure.Data.AppConfiguration/src/Models/FeatureFlagFilter.cs
     /// </summary>
     public class FeatureFlagFilter
     {
@@ -256,10 +247,7 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
                 case IEnumerable<object> enumerable:
                     writer.WriteStartArray();
 
-                    foreach (var item in enumerable)
-                    {
-                        WriteParametersValue(writer, item);
-                    }
+                    foreach (var item in enumerable) WriteParametersValue(writer, item);
 
                     writer.WriteEndArray();
 

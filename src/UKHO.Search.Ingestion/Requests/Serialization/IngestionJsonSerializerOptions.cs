@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace UKHO.Search.Ingestion.Requests.Serialization
 {
@@ -8,7 +9,7 @@ namespace UKHO.Search.Ingestion.Requests.Serialization
         {
             var options = new JsonSerializerOptions(JsonSerializerDefaults.Web)
             {
-                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
 
             options.Converters.Add(new IngestionPropertyTypeJsonConverter());

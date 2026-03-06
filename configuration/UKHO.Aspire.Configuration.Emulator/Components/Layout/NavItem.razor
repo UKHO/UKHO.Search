@@ -7,9 +7,9 @@
 </li>
 
 @code {
-    [EditorRequired, Parameter] public string Href { get; set; } = null!;
+    [EditorRequired] [Parameter] public string Href { get; set; } = null!;
 
-    [EditorRequired, Parameter] public string Label { get; set; } = null!;
+    [EditorRequired] [Parameter] public string Label { get; set; } = null!;
 
     [Parameter] public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
 }

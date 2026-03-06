@@ -13,22 +13,15 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
             using var connection = connectionFactory.Create();
 
             if (!Directory.Exists(Path.GetDirectoryName(connection.DataSource)!))
-            {
                 Directory.CreateDirectory(Path.GetDirectoryName(connection.DataSource)!);
-            }
 
             // TODO Make optional
-            if (File.Exists(connection.DataSource))
-            {
-                File.Delete(connection.DataSource);
-            }
+            if (File.Exists(connection.DataSource)) File.Delete(connection.DataSource);
 
             if (!File.Exists(connection.DataSource))
-            {
                 using (var _ = File.Create(connection.DataSource))
                 {
                 }
-            }
 
             connection.Open();
 

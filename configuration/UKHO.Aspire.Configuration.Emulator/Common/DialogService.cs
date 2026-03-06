@@ -4,6 +4,9 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
 {
     public class DialogReference(Type type, IDictionary<string, object?>? parameters = null) : IDialogReference
     {
+        private TaskCompletionSource<ElementReference> ElementTaskCompletionSource { get; } = new();
+
+        private TaskCompletionSource<IDialogResult?> ResultTaskCompletionSource { get; } = new();
         public Task<ElementReference> Element => ElementTaskCompletionSource.Task;
 
         public IDictionary<string, object?>? Parameters { get; } = parameters;
@@ -11,10 +14,6 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
         public Task<IDialogResult?> Result => ResultTaskCompletionSource.Task;
 
         public Type Type { get; } = type;
-
-        private TaskCompletionSource<ElementReference> ElementTaskCompletionSource { get; } = new();
-
-        private TaskCompletionSource<IDialogResult?> ResultTaskCompletionSource { get; } = new();
 
         public bool TrySetElement(ElementReference element)
         {
@@ -40,11 +39,8 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
 
         public async Task Close(IDialogReference reference, IDialogResult? result = null)
         {
-            if (OnDialogClosed is not null)
-            {
-                await OnDialogClosed.Invoke(reference, result);
-            }
-        
+            if (OnDialogClosed is not null) await OnDialogClosed.Invoke(reference, result);
+
             reference.TrySetResult(result);
         }
 
@@ -52,10 +48,7 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
         {
             var reference = new DialogReference(typeof(TComponent), parameters);
 
-            if (OnDialogShown is not null)
-            {
-                await OnDialogShown.Invoke(reference);
-            }
+            if (OnDialogShown is not null) await OnDialogShown.Invoke(reference);
 
             return reference;
         }

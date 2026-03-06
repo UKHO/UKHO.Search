@@ -21,11 +21,17 @@
             [Live.Value] = Live
         };
 
-        private AddsEnvironment(string value) => Value = value;
+        private AddsEnvironment(string value)
+        {
+            Value = value;
+        }
 
         public string Value { get; }
 
-        public bool Equals(AddsEnvironment? other) => other is not null && StringComparer.OrdinalIgnoreCase.Equals(Value, other.Value);
+        public bool Equals(AddsEnvironment? other)
+        {
+            return other is not null && StringComparer.OrdinalIgnoreCase.Equals(Value, other.Value);
+        }
 
         public static bool TryParse(string? input, out AddsEnvironment? result)
         {
@@ -42,9 +48,7 @@
         public static AddsEnvironment Parse(string input)
         {
             if (TryParse(input, out var env))
-            {
                 return env ?? throw new InvalidOperationException($"Parsed AddsEnvironment cannot be null: '{input}'");
-            }
 
             throw new ArgumentException($"Invalid AddsEnvironment: '{input}'", nameof(input));
         }
@@ -54,9 +58,8 @@
             var env = Environment.GetEnvironmentVariable(WellKnownConfigurationName.AddsEnvironmentName);
 
             if (string.IsNullOrEmpty(env) || !TryParse(env, out _))
-            {
-                throw new InvalidOperationException($"Environment variable '{WellKnownConfigurationName.AddsEnvironmentName}' is not set or invalid. Make sure the caller is registered using UKHO.ADDS.Aspire.Configuration.Hosting");
-            }
+                throw new InvalidOperationException(
+                    $"Environment variable '{WellKnownConfigurationName.AddsEnvironmentName}' is not set or invalid. Make sure the caller is registered using UKHO.ADDS.Aspire.Configuration.Hosting");
 
             return Parse(env);
         }
@@ -65,22 +68,43 @@
         ///     The local environment.
         /// </summary>
         /// <returns></returns>
-        public bool IsLocal() => this == Local;
+        public bool IsLocal()
+        {
+            return this == Local;
+        }
 
         /// <summary>
         ///     The ADDS Azure Dev environment.
         /// </summary>
         /// <returns></returns>
-        public bool IsDev() => this == Development;
+        public bool IsDev()
+        {
+            return this == Development;
+        }
 
-        public override string ToString() => Value;
+        public override string ToString()
+        {
+            return Value;
+        }
 
-        public override bool Equals(object? obj) => Equals(obj as AddsEnvironment);
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as AddsEnvironment);
+        }
 
-        public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+        public override int GetHashCode()
+        {
+            return StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+        }
 
-        public static bool operator ==(AddsEnvironment? left, AddsEnvironment? right) => EqualityComparer<AddsEnvironment>.Default.Equals(left, right);
+        public static bool operator ==(AddsEnvironment? left, AddsEnvironment? right)
+        {
+            return EqualityComparer<AddsEnvironment>.Default.Equals(left, right);
+        }
 
-        public static bool operator !=(AddsEnvironment? left, AddsEnvironment? right) => !(left == right);
+        public static bool operator !=(AddsEnvironment? left, AddsEnvironment? right)
+        {
+            return !(left == right);
+        }
     }
 }

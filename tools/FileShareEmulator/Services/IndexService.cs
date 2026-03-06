@@ -9,10 +9,10 @@ namespace FileShareEmulator.Services
     public sealed class IndexService
     {
         private const string QueueName = "file-share-queue";
+        private readonly JsonSerializerOptions _jsonOptions;
+        private readonly QueueServiceClient _queueServiceClient;
 
         private readonly SqlConnection _sqlConnection;
-        private readonly QueueServiceClient _queueServiceClient;
-        private readonly JsonSerializerOptions _jsonOptions;
 
         public IndexService(SqlConnection sqlConnection, QueueServiceClient queueServiceClient)
         {
@@ -22,8 +22,10 @@ namespace FileShareEmulator.Services
             _jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
         }
 
-        public Task<int> IndexAllPendingAsync(CancellationToken cancellationToken = default) =>
-            IndexNextPendingAsync(count: null, cancellationToken);
+        public Task<int> IndexAllPendingAsync(CancellationToken cancellationToken = default)
+        {
+            return IndexNextPendingAsync(null, cancellationToken);
+        }
 
         public async Task<int> IndexNextPendingAsync(int n, CancellationToken cancellationToken = default)
         {
@@ -113,28 +115,24 @@ namespace FileShareEmulator.Services
                 ? @"SELECT [Id] FROM [Batch] WHERE [IndexStatus] = 0 ORDER BY [CreatedOn] ASC, [Id] ASC;"
                 : @"SELECT TOP (@n) [Id] FROM [Batch] WHERE [IndexStatus] = 0 ORDER BY [CreatedOn] ASC, [Id] ASC;";
 
-            if (count is not null)
-            {
-                cmd.Parameters.Add(new SqlParameter("@n", SqlDbType.Int) { Value = count.Value });
-            }
+            if (count is not null) cmd.Parameters.Add(new SqlParameter("@n", SqlDbType.Int) { Value = count.Value });
 
             var results = new List<Guid>(count ?? 128);
 
             await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
-            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-            {
-                results.Add(reader.GetGuid(0));
-            }
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) results.Add(reader.GetGuid(0));
 
             return results;
         }
 
-        private async Task<List<(string AttributeKey, string AttributeValue)>> GetBatchAttributesAsync(Guid batchId, CancellationToken cancellationToken)
+        private async Task<List<(string AttributeKey, string AttributeValue)>> GetBatchAttributesAsync(Guid batchId,
+            CancellationToken cancellationToken)
         {
             await using var cmd = _sqlConnection.CreateCommand();
             cmd.CommandType = CommandType.Text;
             cmd.CommandTimeout = 30;
-            cmd.CommandText = @"SELECT [AttributeKey], [AttributeValue] FROM [BatchAttribute] WHERE [BatchId] = @batchId;";
+            cmd.CommandText =
+                @"SELECT [AttributeKey], [AttributeValue] FROM [BatchAttribute] WHERE [BatchId] = @batchId;";
             cmd.Parameters.Add(new SqlParameter("@batchId", SqlDbType.UniqueIdentifier) { Value = batchId });
 
             var results = new List<(string, string)>();

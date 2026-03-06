@@ -1,5 +1,4 @@
 @page "/statistics"
-
 @using UKHO.Search.Infrastructure.Ingestion.Statistics
 @using UKHO.Search.Infrastructure.Ingestion.Statistics.Models
 
@@ -12,16 +11,16 @@
 <RadzenStack Gap="1rem">
     <RadzenRow AlignItems="AlignItems.Center">
         <RadzenColumn Size="8">
-            <RadzenText TextStyle="TextStyle.H4" Text="Index statistics" />
+            <RadzenText TextStyle="TextStyle.H4" Text="Index statistics"/>
         </RadzenColumn>
         <RadzenColumn Size="4" Style="text-align: right;">
-            <RadzenButton Text="Refresh" Icon="refresh" Click="ReloadAsync" IsBusy="@_loading" />
+            <RadzenButton Text="Refresh" Icon="refresh" Click="ReloadAsync" IsBusy="@_loading"/>
         </RadzenColumn>
     </RadzenRow>
 
     @if (_loading)
     {
-        <RadzenProgressBar Mode="ProgressBarMode.Indeterminate" />
+        <RadzenProgressBar Mode="ProgressBarMode.Indeterminate"/>
     }
 
     @if (_error is not null)
@@ -33,18 +32,24 @@
     {
         <RadzenCard>
             <RadzenStack Gap="0.5rem">
-                <RadzenText TextStyle="TextStyle.H6" Text="Summary" />
+                <RadzenText TextStyle="TextStyle.H6" Text="Summary"/>
                 <RadzenTable>
                     <RadzenTableRow>
-                        <RadzenTableCell><strong>Index</strong></RadzenTableCell>
+                        <RadzenTableCell>
+                            <strong>Index</strong>
+                        </RadzenTableCell>
                         <RadzenTableCell>@_stats.IndexName</RadzenTableCell>
                     </RadzenTableRow>
                     <RadzenTableRow>
-                        <RadzenTableCell><strong>Exists</strong></RadzenTableCell>
+                        <RadzenTableCell>
+                            <strong>Exists</strong>
+                        </RadzenTableCell>
                         <RadzenTableCell>@_stats.Exists</RadzenTableCell>
                     </RadzenTableRow>
                     <RadzenTableRow>
-                        <RadzenTableCell><strong>Documents</strong></RadzenTableCell>
+                        <RadzenTableCell>
+                            <strong>Documents</strong>
+                        </RadzenTableCell>
                         <RadzenTableCell>@(_stats.Documents?.Count?.ToString() ?? "-")</RadzenTableCell>
                     </RadzenTableRow>
                 </RadzenTable>
@@ -56,20 +61,56 @@
                 <RadzenCard>
                     @if (_stats.Health is null)
                     {
-                        <RadzenText Text="No health information." />
+                        <RadzenText Text="No health information."/>
                     }
                     else
                     {
                         <RadzenTable>
-                            <RadzenTableRow><RadzenTableCell><strong>Status</strong></RadzenTableCell><RadzenTableCell>@_stats.Health.Status</RadzenTableCell></RadzenTableRow>
-                            <RadzenTableRow><RadzenTableCell><strong>Nodes</strong></RadzenTableCell><RadzenTableCell>@_stats.Health.NumberOfNodes</RadzenTableCell></RadzenTableRow>
-                            <RadzenTableRow><RadzenTableCell><strong>Data nodes</strong></RadzenTableCell><RadzenTableCell>@_stats.Health.NumberOfDataNodes</RadzenTableCell></RadzenTableRow>
-                            <RadzenTableRow><RadzenTableCell><strong>Active primary shards</strong></RadzenTableCell><RadzenTableCell>@_stats.Health.ActivePrimaryShards</RadzenTableCell></RadzenTableRow>
-                            <RadzenTableRow><RadzenTableCell><strong>Active shards</strong></RadzenTableCell><RadzenTableCell>@_stats.Health.ActiveShards</RadzenTableCell></RadzenTableRow>
-                            <RadzenTableRow><RadzenTableCell><strong>Relocating shards</strong></RadzenTableCell><RadzenTableCell>@_stats.Health.RelocatingShards</RadzenTableCell></RadzenTableRow>
-                            <RadzenTableRow><RadzenTableCell><strong>Initializing shards</strong></RadzenTableCell><RadzenTableCell>@_stats.Health.InitializingShards</RadzenTableCell></RadzenTableRow>
-                            <RadzenTableRow><RadzenTableCell><strong>Unassigned shards</strong></RadzenTableCell><RadzenTableCell>@_stats.Health.UnassignedShards</RadzenTableCell></RadzenTableRow>
-                            <RadzenTableRow><RadzenTableCell><strong>Active shards %</strong></RadzenTableCell><RadzenTableCell>@_stats.Health.ActiveShardsPercentAsNumber</RadzenTableCell></RadzenTableRow>
+                            <RadzenTableRow>
+                                <RadzenTableCell>
+                                    <strong>Status</strong>
+                                </RadzenTableCell><RadzenTableCell>@_stats.Health.Status</RadzenTableCell>
+                            </RadzenTableRow>
+                            <RadzenTableRow>
+                                <RadzenTableCell>
+                                    <strong>Nodes</strong>
+                                </RadzenTableCell><RadzenTableCell>@_stats.Health.NumberOfNodes</RadzenTableCell>
+                            </RadzenTableRow>
+                            <RadzenTableRow>
+                                <RadzenTableCell>
+                                    <strong>Data nodes</strong>
+                                </RadzenTableCell><RadzenTableCell>@_stats.Health.NumberOfDataNodes</RadzenTableCell>
+                            </RadzenTableRow>
+                            <RadzenTableRow>
+                                <RadzenTableCell>
+                                    <strong>Active primary shards</strong>
+                                </RadzenTableCell><RadzenTableCell>@_stats.Health.ActivePrimaryShards</RadzenTableCell>
+                            </RadzenTableRow>
+                            <RadzenTableRow>
+                                <RadzenTableCell>
+                                    <strong>Active shards</strong>
+                                </RadzenTableCell><RadzenTableCell>@_stats.Health.ActiveShards</RadzenTableCell>
+                            </RadzenTableRow>
+                            <RadzenTableRow>
+                                <RadzenTableCell>
+                                    <strong>Relocating shards</strong>
+                                </RadzenTableCell><RadzenTableCell>@_stats.Health.RelocatingShards</RadzenTableCell>
+                            </RadzenTableRow>
+                            <RadzenTableRow>
+                                <RadzenTableCell>
+                                    <strong>Initializing shards</strong>
+                                </RadzenTableCell><RadzenTableCell>@_stats.Health.InitializingShards</RadzenTableCell>
+                            </RadzenTableRow>
+                            <RadzenTableRow>
+                                <RadzenTableCell>
+                                    <strong>Unassigned shards</strong>
+                                </RadzenTableCell><RadzenTableCell>@_stats.Health.UnassignedShards</RadzenTableCell>
+                            </RadzenTableRow>
+                            <RadzenTableRow>
+                                <RadzenTableCell>
+                                    <strong>Active shards %</strong>
+                                </RadzenTableCell><RadzenTableCell>@_stats.Health.ActiveShardsPercentAsNumber</RadzenTableCell>
+                            </RadzenTableRow>
                         </RadzenTable>
                     }
                 </RadzenCard>
@@ -79,7 +120,7 @@
                 <RadzenCard>
                     <RadzenDataGrid Data="@_fieldCaps" TItem="KeyValuePair<string, IndexFieldCapabilities>" AllowPaging="true" PageSize="20" AllowSorting="true" ColumnWidth="200px">
                         <Columns>
-                            <RadzenDataGridColumn TItem="KeyValuePair<string, IndexFieldCapabilities>" Property="Key" Title="Field" />
+                            <RadzenDataGridColumn TItem="KeyValuePair<string, IndexFieldCapabilities>" Property="Key" Title="Field"/>
                             <RadzenDataGridColumn TItem="KeyValuePair<string, IndexFieldCapabilities>" Title="Types">
                                 <Template Context="item">
                                     @string.Join(", ", item.Value.Types)
@@ -87,12 +128,12 @@
                             </RadzenDataGridColumn>
                             <RadzenDataGridColumn TItem="KeyValuePair<string, IndexFieldCapabilities>" Title="Searchable">
                                 <Template Context="item">
-                                    <RadzenBadge Text="@(item.Value.IsSearchable ? "Yes" : "No")" Style="@(item.Value.IsSearchable ? "" : "background: var(--rz-danger)")" />
+                                    <RadzenBadge Text="@(item.Value.IsSearchable ? "Yes" : "No")" Style="@(item.Value.IsSearchable ? "" : "background: var(--rz-danger)")"/>
                                 </Template>
                             </RadzenDataGridColumn>
                             <RadzenDataGridColumn TItem="KeyValuePair<string, IndexFieldCapabilities>" Title="Aggregatable">
                                 <Template Context="item">
-                                    <RadzenBadge Text="@(item.Value.IsAggregatable ? "Yes" : "No")" Style="@(item.Value.IsAggregatable ? "" : "background: var(--rz-danger)")" />
+                                    <RadzenBadge Text="@(item.Value.IsAggregatable ? "Yes" : "No")" Style="@(item.Value.IsAggregatable ? "" : "background: var(--rz-danger)")"/>
                                 </Template>
                             </RadzenDataGridColumn>
                         </Columns>
@@ -103,28 +144,28 @@
             <RadzenTabsItem Text="Raw (client)">
                 <RadzenCard>
                     <RadzenStack Gap="0.5rem">
-                        <RadzenText TextStyle="TextStyle.H6" Text="Client responses" />
+                        <RadzenText TextStyle="TextStyle.H6" Text="Client responses"/>
 
-                        <RadzenText Text="Exists" />
-                        <RadzenTextArea Value="@SafeToString(_stats.Client?.Exists)" ReadOnly="true" Style="width: 100%; min-height: 90px;" />
+                        <RadzenText Text="Exists"/>
+                        <RadzenTextArea Value="@SafeToString(_stats.Client?.Exists)" ReadOnly="true" Style="width: 100%; min-height: 90px;"/>
 
-                        <RadzenText Text="Mapping" />
-                        <RadzenTextArea Value="@SafeToString(_stats.Client?.Mapping)" ReadOnly="true" Style="width: 100%; min-height: 90px;" />
+                        <RadzenText Text="Mapping"/>
+                        <RadzenTextArea Value="@SafeToString(_stats.Client?.Mapping)" ReadOnly="true" Style="width: 100%; min-height: 90px;"/>
 
-                        <RadzenText Text="Settings" />
-                        <RadzenTextArea Value="@SafeToString(_stats.Client?.Settings)" ReadOnly="true" Style="width: 100%; min-height: 90px;" />
+                        <RadzenText Text="Settings"/>
+                        <RadzenTextArea Value="@SafeToString(_stats.Client?.Settings)" ReadOnly="true" Style="width: 100%; min-height: 90px;"/>
 
-                        <RadzenText Text="Health" />
-                        <RadzenTextArea Value="@SafeToString(_stats.Client?.Health)" ReadOnly="true" Style="width: 100%; min-height: 90px;" />
+                        <RadzenText Text="Health"/>
+                        <RadzenTextArea Value="@SafeToString(_stats.Client?.Health)" ReadOnly="true" Style="width: 100%; min-height: 90px;"/>
 
-                        <RadzenText Text="Count" />
-                        <RadzenTextArea Value="@SafeToString(_stats.Client?.Count)" ReadOnly="true" Style="width: 100%; min-height: 90px;" />
+                        <RadzenText Text="Count"/>
+                        <RadzenTextArea Value="@SafeToString(_stats.Client?.Count)" ReadOnly="true" Style="width: 100%; min-height: 90px;"/>
 
-                        <RadzenText Text="Stats" />
-                        <RadzenTextArea Value="@SafeToString(_stats.Client?.Stats)" ReadOnly="true" Style="width: 100%; min-height: 90px;" />
+                        <RadzenText Text="Stats"/>
+                        <RadzenTextArea Value="@SafeToString(_stats.Client?.Stats)" ReadOnly="true" Style="width: 100%; min-height: 90px;"/>
 
-                        <RadzenText Text="FieldCaps" />
-                        <RadzenTextArea Value="@SafeToString(_stats.Client?.FieldCaps)" ReadOnly="true" Style="width: 100%; min-height: 90px;" />
+                        <RadzenText Text="FieldCaps"/>
+                        <RadzenTextArea Value="@SafeToString(_stats.Client?.FieldCaps)" ReadOnly="true" Style="width: 100%; min-height: 90px;"/>
                     </RadzenStack>
                 </RadzenCard>
             </RadzenTabsItem>
@@ -140,7 +181,10 @@
     private IEnumerable<KeyValuePair<string, IndexFieldCapabilities>> _fieldCaps =>
         _stats?.FieldCapabilities?.OrderBy(kvp => kvp.Key) ?? Enumerable.Empty<KeyValuePair<string, IndexFieldCapabilities>>();
 
-    protected override Task OnInitializedAsync() => ReloadAsync();
+    protected override Task OnInitializedAsync()
+    {
+        return ReloadAsync();
+    }
 
     private async Task ReloadAsync()
     {
@@ -164,5 +208,8 @@
     }
 
     private static string SafeToString(object? value)
-        => value is null ? "" : value.ToString() ?? "";
+    {
+        return value is null ? "" : value.ToString() ?? "";
+    }
+
 }

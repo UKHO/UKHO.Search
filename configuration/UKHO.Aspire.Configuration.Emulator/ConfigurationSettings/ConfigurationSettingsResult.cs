@@ -13,17 +13,14 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
         IStatusCodeHttpResult,
         IValueHttpResult
     {
+        public string? ContentType => MediaType.ConfigurationSettings;
+
         public async Task ExecuteAsync(HttpContext httpContext)
         {
             if (mementoDatetime.HasValue)
-            {
                 httpContext.Response.Headers["Memento-Datetime"] = mementoDatetime.Value.ToString("R");
-            }
 
-            if (StatusCode.HasValue)
-            {
-                httpContext.Response.StatusCode = StatusCode.Value;
-            }
+            if (StatusCode.HasValue) httpContext.Response.StatusCode = StatusCode.Value;
 
             await httpContext.Response.WriteAsJsonAsync(
                 Value,
@@ -39,8 +36,6 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
                 },
                 ContentType);
         }
-
-        public string? ContentType => MediaType.ConfigurationSettings;
 
         public int? StatusCode => StatusCodes.Status200OK;
 

@@ -1,7 +1,7 @@
 namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
 {
     /// <summary>
-    /// https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/appconfiguration/Azure.Data.AppConfiguration/src/Models/ConfigurationSetting.cs
+    ///     https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/appconfiguration/Azure.Data.AppConfiguration/src/Models/ConfigurationSetting.cs
     /// </summary>
     public class ConfigurationSetting(
         string etag,

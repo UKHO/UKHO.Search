@@ -32,10 +32,7 @@ namespace FileShareImageBuilder
             foreach (var batchId in invalidIds)
             {
                 var result = await DeleteBatchAsync(sqlConnection, batchId, cancellationToken).ConfigureAwait(false);
-                if (result.BatchDeleted)
-                {
-                    deletedInvalidBatchIds++;
-                }
+                if (result.BatchDeleted) deletedInvalidBatchIds++;
 
                 deletedInvalidRows += result.RowsAffected;
             }
@@ -44,7 +41,6 @@ namespace FileShareImageBuilder
             Console.WriteLine($"[DataCleaner] Deleted invalid rows: {deletedInvalidRows}");
 
             if (invalidIds.Count > 0)
-            {
                 try
                 {
                     File.Delete(invalidFilePath);
@@ -52,9 +48,9 @@ namespace FileShareImageBuilder
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[DataCleaner] Failed to delete invalid file '{invalidFilePath}': {ex.GetType().Name}: {ex.Message}");
+                    Console.WriteLine(
+                        $"[DataCleaner] Failed to delete invalid file '{invalidFilePath}': {ex.GetType().Name}: {ex.Message}");
                 }
-            }
 
             var deletedNotDownloaded =
                 await DeleteCommittedBatchesNotDownloadedAsync(sqlConnection, downloadedBatchIds, cancellationToken)
@@ -69,10 +65,7 @@ namespace FileShareImageBuilder
         private static async Task<HashSet<Guid>> ReadInvalidIdsAsync(string invalidFilePath,
             CancellationToken cancellationToken)
         {
-            if (!File.Exists(invalidFilePath))
-            {
-                return new HashSet<Guid>();
-            }
+            if (!File.Exists(invalidFilePath)) return new HashSet<Guid>();
 
             await using var stream = File.OpenRead(invalidFilePath);
             var ids = await JsonSerializer.DeserializeAsync<List<Guid>>(stream, cancellationToken: cancellationToken)
@@ -85,19 +78,13 @@ namespace FileShareImageBuilder
         private static HashSet<Guid> GetDownloadedBatchIds(string dataImagePath)
         {
             var contentDir = Path.Combine(dataImagePath, "bin", "content");
-            if (!Directory.Exists(contentDir))
-            {
-                return new HashSet<Guid>();
-            }
+            if (!Directory.Exists(contentDir)) return new HashSet<Guid>();
 
             var ids = new HashSet<Guid>();
             foreach (var file in Directory.EnumerateFiles(contentDir, "*.zip", SearchOption.AllDirectories))
             {
                 var name = Path.GetFileNameWithoutExtension(file);
-                if (Guid.TryParseExact(name, "D", out var id))
-                {
-                    ids.Add(id);
-                }
+                if (Guid.TryParseExact(name, "D", out var id)) ids.Add(id);
             }
 
             return ids;
@@ -188,7 +175,8 @@ WHERE [Status] = 3;";
 
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
 
-            await BulkInsertDownloadedIdsAsync(sqlConnection, downloadedBatchIds, cancellationToken).ConfigureAwait(false);
+            await BulkInsertDownloadedIdsAsync(sqlConnection, downloadedBatchIds, cancellationToken)
+                .ConfigureAwait(false);
 
             await using var deleteCmd = sqlConnection.CreateCommand();
             deleteCmd.CommandType = CommandType.Text;
@@ -241,15 +229,12 @@ DROP TABLE #DownloadedBatchIds;";
         {
             var table = new DataTable();
             table.Columns.Add("Id", typeof(Guid));
-            foreach (var id in downloadedBatchIds)
-            {
-                table.Rows.Add(id);
-            }
+            foreach (var id in downloadedBatchIds) table.Rows.Add(id);
 
             using var bulkCopy = new SqlBulkCopy(sqlConnection)
             {
                 DestinationTableName = "#DownloadedBatchIds",
-                BulkCopyTimeout = 0,
+                BulkCopyTimeout = 0
             };
 
             await bulkCopy.WriteToServerAsync(table, cancellationToken).ConfigureAwait(false);

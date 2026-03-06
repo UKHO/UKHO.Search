@@ -43,18 +43,41 @@ namespace UKHO.Search.Ingestion.Tests
                 [
                     new IngestionProperty { Name = "String", Type = IngestionPropertyType.String, Value = "hello" },
                     new IngestionProperty { Name = "Id", Type = IngestionPropertyType.Id, Value = "123456ID" },
-                    new IngestionProperty { Name = "Int64Min", Type = IngestionPropertyType.Integer, Value = long.MinValue },
-                    new IngestionProperty { Name = "Int64Max", Type = IngestionPropertyType.Integer, Value = long.MaxValue },
+                    new IngestionProperty
+                        { Name = "Int64Min", Type = IngestionPropertyType.Integer, Value = long.MinValue },
+                    new IngestionProperty
+                        { Name = "Int64Max", Type = IngestionPropertyType.Integer, Value = long.MaxValue },
                     new IngestionProperty { Name = "Double", Type = IngestionPropertyType.Double, Value = 1234.5d },
-                    new IngestionProperty { Name = "Decimal", Type = IngestionPropertyType.Decimal, Value = 79228162514264337593543950335m },
+                    new IngestionProperty
+                    {
+                        Name = "Decimal", Type = IngestionPropertyType.Decimal, Value = 79228162514264337593543950335m
+                    },
                     new IngestionProperty { Name = "Boolean", Type = IngestionPropertyType.Boolean, Value = true },
-                    new IngestionProperty { Name = "DateTime", Type = IngestionPropertyType.DateTime, Value = new DateTimeOffset(2026, 3, 5, 10, 15, 30, TimeSpan.Zero) },
-                    new IngestionProperty { Name = "TimeSpan", Type = IngestionPropertyType.TimeSpan, Value = TimeSpan.FromMinutes(15) },
-                    new IngestionProperty { Name = "Guid", Type = IngestionPropertyType.Guid, Value = Guid.Parse("bfb8feca-5f5f-4f55-aa0c-7d7b00b19b46") },
-                    new IngestionProperty { Name = "Uri", Type = IngestionPropertyType.Uri, Value = new Uri("https://example.test/resource/123") },
-                    new IngestionProperty { Name = "StringArrayEmpty", Type = IngestionPropertyType.StringArray, Value = Array.Empty<string>() },
-                    new IngestionProperty { Name = "StringArray", Type = IngestionPropertyType.StringArray, Value = new[] { "a", "b" } },
-                ],
+                    new IngestionProperty
+                    {
+                        Name = "DateTime", Type = IngestionPropertyType.DateTime,
+                        Value = new DateTimeOffset(2026, 3, 5, 10, 15, 30, TimeSpan.Zero)
+                    },
+                    new IngestionProperty
+                        { Name = "TimeSpan", Type = IngestionPropertyType.TimeSpan, Value = TimeSpan.FromMinutes(15) },
+                    new IngestionProperty
+                    {
+                        Name = "Guid", Type = IngestionPropertyType.Guid,
+                        Value = Guid.Parse("bfb8feca-5f5f-4f55-aa0c-7d7b00b19b46")
+                    },
+                    new IngestionProperty
+                    {
+                        Name = "Uri", Type = IngestionPropertyType.Uri,
+                        Value = new Uri("https://example.test/resource/123")
+                    },
+                    new IngestionProperty
+                    {
+                        Name = "StringArrayEmpty", Type = IngestionPropertyType.StringArray,
+                        Value = Array.Empty<string>()
+                    },
+                    new IngestionProperty
+                        { Name = "StringArray", Type = IngestionPropertyType.StringArray, Value = new[] { "a", "b" } }
+                ]
             };
 
             var json = JsonSerializer.Serialize(request, Options);

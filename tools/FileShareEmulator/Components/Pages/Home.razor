@@ -1,7 +1,6 @@
 ﻿@page "/"
-@attribute [StreamRendering]
-
 @using FileShareEmulator.Services
+@attribute [StreamRendering]
 @inject StatisticsService StatisticsService
 
 <PageTitle>Home</PageTitle>
@@ -23,7 +22,7 @@
                         <span style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">@row.Name</span>
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="DisplayRow" Property="Value" Title="Value" />
+                <RadzenDataGridColumn TItem="DisplayRow" Property="Value" Title="Value"/>
             </Columns>
         </RadzenDataGrid>
     }

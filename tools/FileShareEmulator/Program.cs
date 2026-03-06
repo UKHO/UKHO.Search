@@ -2,7 +2,6 @@ using FileShareEmulator.Api;
 using FileShareEmulator.Components;
 using FileShareEmulator.Services;
 using Radzen;
-using Radzen.Blazor;
 using Scalar.AspNetCore;
 using UKHO.Search.Configuration;
 using UKHO.Search.ServiceDefaults;
@@ -21,8 +20,8 @@ namespace FileShareEmulator
                 .AddInteractiveServerComponents();
 
             builder.AddSqlServerClient(StorageNames.FileShareEmulatorDatabase);
-            builder.AddAzureBlobServiceClient(connectionName: ServiceNames.Blobs);
-            builder.AddAzureQueueServiceClient(connectionName: ServiceNames.Queues);
+            builder.AddAzureBlobServiceClient(ServiceNames.Blobs);
+            builder.AddAzureQueueServiceClient(ServiceNames.Queues);
 
             builder.Services.AddScoped<StatisticsService>();
             builder.Services.AddScoped<IndexService>();
@@ -47,7 +46,8 @@ namespace FileShareEmulator
             }
 
             app.MapOpenApi();
-            app.MapScalarApiReference(_ => _.Servers = []); // Stop OpenAPI specifying the wrong port in the generated OpenAPI doc
+            app.MapScalarApiReference(_ => _.Servers =
+                []); // Stop OpenAPI specifying the wrong port in the generated OpenAPI doc
 
             app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
             app.UseHttpsRedirection();

@@ -21,15 +21,9 @@ namespace UKHO.Aspire.Configuration.Emulator.Labels
 
             if (name != LabelFilter.Any)
             {
-                if (new Regex(@"(?=.*(?<!\\),)(?=.*\*)").IsMatch(name))
-                {
-                    return new InvalidCharacterResult(nameof(name));
-                }
+                if (new Regex(@"(?=.*(?<!\\),)(?=.*\*)").IsMatch(name)) return new InvalidCharacterResult(nameof(name));
 
-                if (new Regex(@"(?:.*(?<!\\),){5,}").IsMatch(name))
-                {
-                    return new TooManyValuesResult(nameof(name));
-                }
+                if (new Regex(@"(?:.*(?<!\\),){5,}").IsMatch(name)) return new TooManyValuesResult(nameof(name));
             }
 
             var labels = await repository.Get(label: name, moment: acceptDatetime, cancellationToken: cancellationToken)

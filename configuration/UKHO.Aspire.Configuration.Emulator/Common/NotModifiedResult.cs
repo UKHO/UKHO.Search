@@ -8,22 +8,19 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
         IEndpointMetadataProvider,
         IStatusCodeHttpResult
     {
-        public Task ExecuteAsync(HttpContext httpContext)
-        {
-            if (StatusCode.HasValue)
-            {
-                httpContext.Response.StatusCode = StatusCode.Value;
-            }
-
-            return Task.CompletedTask;
-        }
-
         public static void PopulateMetadata(MethodInfo method, EndpointBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(method);
             ArgumentNullException.ThrowIfNull(builder);
 
             builder.Metadata.Add(new ProducesResponseTypeMetadata(StatusCodes.Status304NotModified, typeof(void)));
+        }
+
+        public Task ExecuteAsync(HttpContext httpContext)
+        {
+            if (StatusCode.HasValue) httpContext.Response.StatusCode = StatusCode.Value;
+
+            return Task.CompletedTask;
         }
 
         public int? StatusCode => StatusCodes.Status304NotModified;

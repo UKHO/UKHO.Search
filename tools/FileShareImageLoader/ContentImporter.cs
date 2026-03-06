@@ -19,7 +19,8 @@ namespace FileShareImageLoader
 
             if (!Directory.Exists(contentRoot))
             {
-                Console.WriteLine($"[ContentImporter] No seeded content directory found at '{contentRoot}'. Skipping copy.");
+                Console.WriteLine(
+                    $"[ContentImporter] No seeded content directory found at '{contentRoot}'. Skipping copy.");
                 return;
             }
 
@@ -32,7 +33,8 @@ namespace FileShareImageLoader
             try
             {
                 Console.WriteLine("[ContentImporter] Ensuring container exists...");
-                await containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+                await containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken)
+                    .ConfigureAwait(false);
             }
             catch (RequestFailedException ex)
             {
@@ -58,16 +60,13 @@ namespace FileShareImageLoader
                 var blobName = $"{name}/{name}.zip";
                 var blobClient = containerClient.GetBlobClient(blobName);
 
-                if (await blobClient.ExistsAsync(cancellationToken).ConfigureAwait(false))
-                {
-                    continue;
-                }
+                if (await blobClient.ExistsAsync(cancellationToken).ConfigureAwait(false)) continue;
 
                 var fileInfo = new FileInfo(zipPath);
                 try
                 {
                     await using var fileStream = File.OpenRead(zipPath);
-                    await blobClient.UploadAsync(fileStream, overwrite: true, cancellationToken: cancellationToken)
+                    await blobClient.UploadAsync(fileStream, true, cancellationToken)
                         .ConfigureAwait(false);
                 }
                 catch (RequestFailedException ex)
@@ -85,7 +84,6 @@ namespace FileShareImageLoader
                     Console.WriteLine(
                         $"[ContentImporter] Uploaded {uploadedFiles} files ({uploadedBytes:N0} bytes) in {elapsed.TotalMinutes:N1} min");
                 }
-
             }
 
             var totalElapsed = DateTimeOffset.UtcNow - started;
@@ -99,22 +97,14 @@ namespace FileShareImageLoader
             Console.Error.WriteLine($"[ContentImporter] Status={ex.Status} ErrorCode='{ex.ErrorCode}'");
 
             if (!string.IsNullOrWhiteSpace(ex.Message))
-            {
                 Console.Error.WriteLine($"[ContentImporter] Message: {ex.Message}");
-            }
 
-            if (!string.IsNullOrWhiteSpace(ex.StackTrace))
-            {
-                Console.Error.WriteLine(ex.StackTrace);
-            }
+            if (!string.IsNullOrWhiteSpace(ex.StackTrace)) Console.Error.WriteLine(ex.StackTrace);
 
             if (!string.IsNullOrWhiteSpace(ex.ErrorCode))
-            {
                 Console.Error.WriteLine($"[ContentImporter] ErrorCode: {ex.ErrorCode}");
-            }
 
             // Note: Response headers/body are not consistently exposed on all Azure.Core versions.
         }
-
     }
 }

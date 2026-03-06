@@ -43,12 +43,15 @@ namespace FileShareImageBuilder
         {
             if (File.Exists(bacpacPath)) File.Delete(bacpacPath);
 
-            var sourceDbName = await GetDatabaseNameAsync(sourceConnectionString, cancellationToken).ConfigureAwait(false);
+            var sourceDbName =
+                await GetDatabaseNameAsync(sourceConnectionString, cancellationToken).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(sourceDbName))
                 throw new InvalidOperationException("Could not determine source database name.");
 
-            var targetDbName = await GetDatabaseNameAsync(targetConnectionString, cancellationToken).ConfigureAwait(false);
-            if (!string.Equals(targetDbName, StorageNames.FileShareEmulatorDatabase, StringComparison.OrdinalIgnoreCase))
+            var targetDbName =
+                await GetDatabaseNameAsync(targetConnectionString, cancellationToken).ConfigureAwait(false);
+            if (!string.Equals(targetDbName, StorageNames.FileShareEmulatorDatabase,
+                    StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException(
                     $"Refusing to import: connected to unexpected target database '{targetDbName}'. Expected '{StorageNames.FileShareEmulatorDatabase}'.");
 

@@ -19,7 +19,8 @@ namespace FileShareImageBuilder
             // Create a small Linux image that contains the exported files plus a shell.
             // This allows Aspire to run a one-shot init container to copy the image contents into a named volume.
             // The emulator then mounts that named volume and can read the files.
-            await File.WriteAllTextAsync(dockerfilePath, "FROM alpine:3.21\n" + "WORKDIR /data\n" + "COPY . /data\n", cancellationToken);
+            await File.WriteAllTextAsync(dockerfilePath, "FROM alpine:3.21\n" + "WORKDIR /data\n" + "COPY . /data\n",
+                cancellationToken);
 
             Console.WriteLine($"[ImageExporter] Building docker image '{imageName}' from '{binDirectory}'...");
             await RunDockerAsync($"build -f \"{dockerfilePath}\" -t {imageName} \"{binDirectory}\"", cancellationToken)
@@ -96,7 +97,8 @@ namespace FileShareImageBuilder
             {
             }
 
-            if (p.ExitCode != 0) throw new InvalidOperationException($"docker {args} failed with exit code {p.ExitCode}.");
+            if (p.ExitCode != 0)
+                throw new InvalidOperationException($"docker {args} failed with exit code {p.ExitCode}.");
         }
     }
 }

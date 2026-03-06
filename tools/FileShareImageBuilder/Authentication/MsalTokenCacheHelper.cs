@@ -13,11 +13,13 @@ namespace FileShareImageBuilder.Authentication
         {
             try
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "fss-msalcache.bin");
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "fss-msalcache.bin");
             }
             catch (PlatformNotSupportedException)
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "fss-msalcache.bin");
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    "fss-msalcache.bin");
             }
         }
 
@@ -43,7 +45,8 @@ namespace FileShareImageBuilder.Authentication
 
             lock (FileLock)
             {
-                File.WriteAllBytes(CacheFilePath, ProtectedData.Protect(args.TokenCache.SerializeMsalV3(), null, DataProtectionScope.CurrentUser));
+                File.WriteAllBytes(CacheFilePath,
+                    ProtectedData.Protect(args.TokenCache.SerializeMsalV3(), null, DataProtectionScope.CurrentUser));
             }
         }
     }

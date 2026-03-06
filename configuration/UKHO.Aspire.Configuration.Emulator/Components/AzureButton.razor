@@ -3,7 +3,9 @@
 </button>
 
 @code {
-    [Parameter(CaptureUnmatchedValues = true)] public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
     [Parameter] public AzureAppearance Appearance { get; set; } = AzureAppearance.Default;
 

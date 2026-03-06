@@ -2,7 +2,7 @@
 @implements IDisposable
 @inject IJSRuntime JS
 
-<CascadingValue Value="@this">
+<CascadingValue Value="@(this)">
     @if (Open)
     {
         @if (Anchored)
@@ -190,22 +190,22 @@
     }
 
     /// <summary>
-    /// Describes the mouse button trigger of an <see cref="AzureMenu"/>.
+    ///     Describes the mouse button trigger of an <see cref="AzureMenu" />.
     /// </summary>
     public enum MouseButton
     {
         /// <summary>
-        /// The menu cannot be opened by clicking on the <see cref="AzureMenu.Anchor"/>.
+        ///     The menu cannot be opened by clicking on the <see cref="AzureMenu.Anchor" />.
         /// </summary>
         None,
 
         /// <summary>
-        /// The menu can be opened by left clicking on the <see cref="AzureMenu.Anchor"/>.
+        ///     The menu can be opened by left clicking on the <see cref="AzureMenu.Anchor" />.
         /// </summary>
         Left,
 
         /// <summary>
-        /// The menu can be opened by right clicking on the <see cref="AzureMenu.Anchor"/>.
+        ///     The menu can be opened by right clicking on the <see cref="AzureMenu.Anchor" />.
         /// </summary>
         Right
     }

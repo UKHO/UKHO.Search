@@ -9,20 +9,14 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
         IValueHttpResult,
         IValueHttpResult<ProblemDetails>
     {
+        public string? ContentType => "application/problem+json";
+
         public async Task ExecuteAsync(HttpContext httpContext)
         {
-            if (StatusCode.HasValue)
-            {
-                httpContext.Response.StatusCode = StatusCode.Value;
-            }
+            if (StatusCode.HasValue) httpContext.Response.StatusCode = StatusCode.Value;
 
-            if (Value is not null)
-            {
-                await httpContext.Response.WriteAsJsonAsync(Value, options: default, ContentType);
-            }
+            if (Value is not null) await httpContext.Response.WriteAsJsonAsync(Value, options: default, ContentType);
         }
-
-        public string? ContentType => "application/problem+json";
 
         public int? StatusCode => StatusCodes.Status400BadRequest;
 

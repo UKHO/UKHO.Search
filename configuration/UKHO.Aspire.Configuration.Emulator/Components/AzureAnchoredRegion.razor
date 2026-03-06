@@ -7,7 +7,7 @@
 
 @code {
 
-    [EditorRequired, Parameter] public string Anchor { get; set; } = null!;
+    [EditorRequired] [Parameter] public string Anchor { get; set; } = null!;
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
@@ -50,74 +50,74 @@
     }
 
     /// <summary>
-    /// Describes the positioning behavior of an <see cref="AzureAnchoredRegion"/> on a particular axis.
+    ///     Describes the positioning behavior of an <see cref="AzureAnchoredRegion" /> on a particular axis.
     /// </summary>
     public enum AxisPositioningMode
     {
         /// <summary>
-        /// The axis positioning is not controlled.
+        ///     The axis positioning is not controlled.
         /// </summary>
         Uncontrolled,
 
         /// <summary>
-        /// The axis positioning is locked to the default.
+        ///     The axis positioning is locked to the default.
         /// </summary>
         LockToDefault,
 
         /// <summary>
-        /// The axis positioning is based on the available space.
+        ///     The axis positioning is based on the available space.
         /// </summary>
         Dynamic
     }
 
     /// <summary>
-    /// Describes the horizontal positioning of an <see cref="AzureAnchoredRegion"/>.
+    ///     Describes the horizontal positioning of an <see cref="AzureAnchoredRegion" />.
     /// </summary>
     public enum HorizontalPosition
     {
         /// <summary>
-        /// No position set.
+        ///     No position set.
         /// </summary>
         Unset,
 
         /// <summary>
-        /// Position on the left of the <see cref="AzureAnchoredRegion.Anchor"/>.
+        ///     Position on the left of the <see cref="AzureAnchoredRegion.Anchor" />.
         /// </summary>
         Left,
 
         /// <summary>
-        /// Position on the right of the <see cref="AzureAnchoredRegion.Anchor"/>.
+        ///     Position on the right of the <see cref="AzureAnchoredRegion.Anchor" />.
         /// </summary>
         Right,
 
         /// <summary>
-        /// Position at the center of the <see cref="AzureAnchoredRegion.Anchor"/>.
+        ///     Position at the center of the <see cref="AzureAnchoredRegion.Anchor" />.
         /// </summary>
         Center
     }
 
     /// <summary>
-    /// Describes the vertical positioning of an <see cref="AzureAnchoredRegion"/>.
+    ///     Describes the vertical positioning of an <see cref="AzureAnchoredRegion" />.
     /// </summary>
     public enum VerticalPosition
     {
         /// <summary>
-        /// No position set.
+        ///     No position set.
         /// </summary>
         Unset,
 
         /// <summary>
-        /// Position on the top of the <see cref="AzureAnchoredRegion.Anchor"/>.
+        ///     Position on the top of the <see cref="AzureAnchoredRegion.Anchor" />.
         /// </summary>
         Top,
 
         /// <summary>
-        /// Position on the bottom of the <see cref="AzureAnchoredRegion.Anchor"/>.
+        ///     Position on the bottom of the <see cref="AzureAnchoredRegion.Anchor" />.
         /// </summary>
         Bottom,
 
         /// <summary>
-        /// Position at the center of the <see cref="AzureAnchoredRegion.Anchor"/>.
+        ///     Position at the center of the <see cref="AzureAnchoredRegion.Anchor" />.
         /// </summary>
         Center
     }

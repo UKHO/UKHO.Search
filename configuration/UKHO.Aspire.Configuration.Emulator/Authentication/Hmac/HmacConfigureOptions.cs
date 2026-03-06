@@ -3,7 +3,8 @@ using Microsoft.Extensions.Options;
 
 namespace UKHO.Aspire.Configuration.Emulator.Authentication.Hmac
 {
-    public class HmacConfigureOptions(IAuthenticationConfigurationProvider configurationProvider) : IConfigureNamedOptions<HmacOptions>
+    public class HmacConfigureOptions(IAuthenticationConfigurationProvider configurationProvider)
+        : IConfigureNamedOptions<HmacOptions>
     {
         public void Configure(HmacOptions options)
         {
@@ -12,17 +13,11 @@ namespace UKHO.Aspire.Configuration.Emulator.Authentication.Hmac
 
         public void Configure(string? name, HmacOptions options)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                return;
-            }
+            if (string.IsNullOrEmpty(name)) return;
 
             var section = configurationProvider.GetSchemeConfiguration(name);
 
-            if (section == null || section.GetChildren().Count() == 0)
-            {
-                return;
-            }
+            if (section == null || section.GetChildren().Count() == 0) return;
 
             options.Credential = section.GetValue<string>(nameof(options.Credential)) ?? options.Credential;
             options.Secret = section.GetValue<string>(nameof(options.Secret)) ?? options.Secret;

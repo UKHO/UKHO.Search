@@ -29,7 +29,8 @@ namespace FileShareImageBuilder
             RecreateEmptyDirectory(contentDirectory);
 
             var invalidFilePath = Path.Combine(dataImagePath, "invalid.json");
-            var invalidBatchIds = await ReadInvalidBatchIdsAsync(invalidFilePath, cancellationToken).ConfigureAwait(false);
+            var invalidBatchIds =
+                await ReadInvalidBatchIdsAsync(invalidFilePath, cancellationToken).ConfigureAwait(false);
 
             await using var cancellationRegistration = cancellationToken.Register(() =>
             {
@@ -64,7 +65,8 @@ namespace FileShareImageBuilder
             {
                 if (totalBatchesDownloaded >= maxBatchCount)
                 {
-                    Console.WriteLine($"[ContentImporter] Reached batch count limit. Downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed}, {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
+                    Console.WriteLine(
+                        $"[ContentImporter] Reached batch count limit. Downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed}, {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
                     break;
                 }
 
@@ -80,7 +82,8 @@ namespace FileShareImageBuilder
 
                 if (batchIds.Count == 0)
                 {
-                    Console.WriteLine($"[ContentImporter] No more batches found. Downloaded {totalBatchesDownloaded} batches, {totalBatchesFailed} failed, {totalBytesDownloaded:N0} bytes.");
+                    Console.WriteLine(
+                        $"[ContentImporter] No more batches found. Downloaded {totalBatchesDownloaded} batches, {totalBatchesFailed} failed, {totalBytesDownloaded:N0} bytes.");
                     break;
                 }
 
@@ -88,7 +91,8 @@ namespace FileShareImageBuilder
                 {
                     if (totalBatchesDownloaded >= maxBatchCount)
                     {
-                        Console.WriteLine($"[ContentImporter] Reached batch count limit. Downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed}, {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
+                        Console.WriteLine(
+                            $"[ContentImporter] Reached batch count limit. Downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed}, {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
                         break;
                     }
 
@@ -129,7 +133,7 @@ namespace FileShareImageBuilder
 
                             totalBatchesProcessed++;
                             lastCreatedOn = batch.CreatedOn;
-                        
+
                             lastId = batch.Id;
                             continue;
                         }
@@ -144,18 +148,19 @@ namespace FileShareImageBuilder
                     catch (Exception ex)
                     {
                         totalBatchesFailed++;
-                        Console.WriteLine($"[ContentImporter] Failed batch '{batchIdString}': {ex.GetType().Name}: {ex.Message}");
+                        Console.WriteLine(
+                            $"[ContentImporter] Failed batch '{batchIdString}': {ex.GetType().Name}: {ex.Message}");
 
                         failedBatchIds.Add(batchId);
                         invalidBatchIds.Add(batchId);
-                    
+
                         await WriteInvalidBatchIdsAsync(invalidFilePath, invalidBatchIds, cancellationToken)
                             .ConfigureAwait(false);
-                    
+
                         totalBatchesProcessed++;
                         lastCreatedOn = batch.CreatedOn;
                         lastId = batch.Id;
-                    
+
                         continue;
                     }
 
@@ -168,14 +173,13 @@ namespace FileShareImageBuilder
                     lastId = batch.Id;
 
                     if (totalBatchesProcessed % 100 == 0)
-                    {
                         Console.WriteLine(
                             $"[ContentImporter] Progress: downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed} (processed {totalBatchesProcessed}), {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
-                    }
 
                     if (totalBytesDownloaded >= maxBytes)
                     {
-                        Console.WriteLine($"[ContentImporter] Reached download limit. Downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed}, {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
+                        Console.WriteLine(
+                            $"[ContentImporter] Reached download limit. Downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed}, {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
                         break;
                     }
                 }
@@ -194,7 +198,8 @@ namespace FileShareImageBuilder
 
             var options = new JsonSerializerOptions { WriteIndented = true };
 
-            File.WriteAllText(invalidFilePath, JsonSerializer.Serialize(invalidBatchIds.OrderBy(x => x).ToList(), options));
+            File.WriteAllText(invalidFilePath,
+                JsonSerializer.Serialize(invalidBatchIds.OrderBy(x => x).ToList(), options));
         }
 
         private static async Task<HashSet<Guid>> ReadInvalidBatchIdsAsync(string invalidFilePath,
@@ -259,7 +264,8 @@ WHERE [Status] = 3
   AND (([CreatedOn] < @lastCreatedOn) OR ([CreatedOn] = @lastCreatedOn AND [Id] < @lastId))
 ORDER BY [CreatedOn] DESC, [Id] DESC;";
 
-                cmd.Parameters.Add(new SqlParameter("@lastCreatedOn", SqlDbType.DateTime2) { Value = lastCreatedOn.Value });
+                cmd.Parameters.Add(new SqlParameter("@lastCreatedOn", SqlDbType.DateTime2)
+                    { Value = lastCreatedOn.Value });
                 cmd.Parameters.Add(new SqlParameter("@lastId", SqlDbType.UniqueIdentifier) { Value = lastId.Value });
             }
 

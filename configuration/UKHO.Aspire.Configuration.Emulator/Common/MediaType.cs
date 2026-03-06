@@ -1,7 +1,7 @@
 namespace UKHO.Aspire.Configuration.Emulator.Common
 {
     /// <summary>
-    /// Defines well known media types that are used within Azure App Configuration.
+    ///     Defines well known media types that are used within Azure App Configuration.
     /// </summary>
     public static class MediaType
     {

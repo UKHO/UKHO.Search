@@ -1,5 +1,4 @@
 @using System.Linq.Expressions
-
 <AzureInputSelect AdditionalAttributes="@AdditionalAttributes" TValue="@string" Value="@Value" ValueChanged="@HandleValueChanged" ValueExpression="@ValueExpression">
     <option checked="@(Value is null)" hidden value="">Please select a file type</option>
     <option checked="@(Value is FileFormat.Json)" value="@FileFormat.Json">Json</option>
@@ -8,7 +7,9 @@
 </AzureInputSelect>
 
 @code {
-    [Parameter(CaptureUnmatchedValues = true)] public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
     [Parameter] public string? Value { get; set; }
 

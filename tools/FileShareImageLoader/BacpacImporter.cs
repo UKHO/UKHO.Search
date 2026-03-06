@@ -6,7 +6,8 @@ namespace FileShareImageLoader
 {
     public sealed class BacpacImporter
     {
-        public async Task EnsureDatabaseSeededAsync(string connectionString, string databaseName, string bacpacPath, CancellationToken cancellationToken)
+        public async Task EnsureDatabaseSeededAsync(string connectionString, string databaseName, string bacpacPath,
+            CancellationToken cancellationToken)
         {
             Console.WriteLine("[BacpacImporter] Checking for Batch table...");
 
@@ -18,11 +19,10 @@ namespace FileShareImageLoader
             }
 
             if (!File.Exists(bacpacPath))
-            {
                 throw new FileNotFoundException($"Bacpac not found at expected path '{bacpacPath}'.", bacpacPath);
-            }
 
-            Console.WriteLine($"[BacpacImporter] Batch table not found. Importing bacpac '{bacpacPath}' into '{databaseName}'...");
+            Console.WriteLine(
+                $"[BacpacImporter] Batch table not found. Importing bacpac '{bacpacPath}' into '{databaseName}'...");
 
             await EnsureDatabaseExistsAsync(connectionString, databaseName, cancellationToken).ConfigureAwait(false);
 
@@ -37,7 +37,8 @@ namespace FileShareImageLoader
             BacpacImportState.MarkCompleted();
         }
 
-        private static async Task<bool> BatchTableExistsAsync(string connectionString, CancellationToken cancellationToken)
+        private static async Task<bool> BatchTableExistsAsync(string connectionString,
+            CancellationToken cancellationToken)
         {
             await using var connection = new SqlConnection(connectionString);
             await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -50,7 +51,8 @@ namespace FileShareImageLoader
             return result is not null && result is not DBNull;
         }
 
-        private static async Task EnsureDatabaseExistsAsync(string connectionString, string databaseName, CancellationToken cancellationToken)
+        private static async Task EnsureDatabaseExistsAsync(string connectionString, string databaseName,
+            CancellationToken cancellationToken)
         {
             var builder = new SqlConnectionStringBuilder(connectionString)
             {
@@ -65,7 +67,7 @@ namespace FileShareImageLoader
             cmd.CommandTimeout = 30;
             cmd.CommandText = $@"IF DB_ID(N'{databaseName.Replace("'", "''")}') IS NULL
 BEGIN
-    CREATE DATABASE [{databaseName.Replace("]", "]]" )}];
+    CREATE DATABASE [{databaseName.Replace("]", "]]")}];
 END";
 
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);

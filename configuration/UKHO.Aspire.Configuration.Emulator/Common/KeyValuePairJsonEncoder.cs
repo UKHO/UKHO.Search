@@ -19,19 +19,13 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
                 if (!string.IsNullOrEmpty(prefix))
                 {
                     if (keys[0] == prefix)
-                    {
                         keys.RemoveAt(0);
-                    }
-                    else if (keys[0].StartsWith(prefix))
-                    {
-                        keys[0] = keys[0][prefix.Length..];
-                    }
+                    else if (keys[0].StartsWith(prefix)) keys[0] = keys[0][prefix.Length..];
                 }
 
                 var current = root;
 
                 for (var i = 0; i < keys.Count; i++)
-                {
                     if (int.TryParse(keys[i], out var index))
                     {
                         if (i == keys.Count - 1)
@@ -44,13 +38,9 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
                         if (current.AsArray().ElementAtOrDefault(index) is not { } next)
                         {
                             if (int.TryParse(keys[i + 1], out _))
-                            {
                                 next = new JsonArray();
-                            }
                             else
-                            {
                                 next = new JsonObject();
-                            }
 
                             current.AsArray().Insert(index, next);
                         }
@@ -62,27 +52,22 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
                         if (i == keys.Count - 1)
                         {
                             current[keys[i]] = value;
-                        
+
                             break;
                         }
 
                         if (current[keys[i]] is not { } next)
                         {
                             if (int.TryParse(keys[i + 1], out _))
-                            {
                                 next = new JsonArray();
-                            }
                             else
-                            {
                                 next = new JsonObject();
-                            }
 
                             current[keys[i]] = next;
                         }
 
                         current = next;
                     }
-                }
             }
 
             return root.Deserialize<JsonDocument>()!;

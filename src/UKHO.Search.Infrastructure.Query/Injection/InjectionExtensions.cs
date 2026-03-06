@@ -6,8 +6,6 @@ namespace UKHO.Search.Infrastructure.Query.Injection
     {
         public static IServiceCollection AddQueryServices(this IServiceCollection collection)
         {
-            
-
             return collection;
         }
     }

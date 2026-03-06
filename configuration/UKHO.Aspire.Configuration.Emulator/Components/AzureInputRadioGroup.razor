@@ -1,5 +1,5 @@
-@typeparam TValue
 @using System.Linq.Expressions
+@typeparam TValue
 
 <InputRadioGroup @attributes="@AdditionalAttributes" Value="@Value" ValueChanged="@ValueChanged" ValueExpression="@ValueExpression">
     <div class="flex flex-row gap-0.5 self-start p-0.5 rounded-full border border-storm-dust dark:border-star-dust" role="radiogroup">
@@ -8,8 +8,10 @@
 </InputRadioGroup>
 
 @code {
-    [Parameter(CaptureUnmatchedValues = true)] public IDictionary<string, object>? AdditionalAttributes { get; set; }
-    
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     [Parameter] public TValue? Value { get; set; }

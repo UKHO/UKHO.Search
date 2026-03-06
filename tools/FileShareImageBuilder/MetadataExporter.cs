@@ -17,9 +17,11 @@ namespace FileShareImageBuilder
 
             var targetConnectionString =
                 ConfigurationReader.GetTargetDatabaseConnectionString(StorageNames.FileShareEmulatorDatabase);
-            var targetDbName = await GetDatabaseNameAsync(targetConnectionString, cancellationToken).ConfigureAwait(false);
+            var targetDbName =
+                await GetDatabaseNameAsync(targetConnectionString, cancellationToken).ConfigureAwait(false);
 
-            if (!string.Equals(targetDbName, StorageNames.FileShareEmulatorDatabase, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(targetDbName, StorageNames.FileShareEmulatorDatabase,
+                    StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException(
                     $"Refusing to export: connected to unexpected target database '{targetDbName}'. Expected '{StorageNames.FileShareEmulatorDatabase}'.");
 

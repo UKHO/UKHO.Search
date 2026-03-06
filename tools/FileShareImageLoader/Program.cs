@@ -1,6 +1,5 @@
 ﻿using FileShareImageLoader.Configuration;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FileShareImageLoader
 {
@@ -15,14 +14,12 @@ namespace FileShareImageLoader
                 var environmentName = Environment.GetEnvironmentVariable("environment");
 
                 if (string.IsNullOrWhiteSpace(environmentName))
-                {
                     throw new ArgumentException("Cannot read 'environment' value");
-                }
 
                 builder.Configuration["environment"] = environmentName;
 
                 builder.AddSqlServerClient(StorageNames.FileShareEmulatorDatabase);
-                builder.AddAzureBlobServiceClient(connectionName: "blobs");
+                builder.AddAzureBlobServiceClient("blobs");
 
                 builder.Services.AddSingleton<BacpacImporter>();
                 builder.Services.AddSingleton<SchemaMigration>();
@@ -37,7 +34,8 @@ namespace FileShareImageLoader
 
                 var importer = app.Services.GetRequiredService<BacpacImporter>();
                 await importer
-                    .EnsureDatabaseSeededAsync(sqlConnectionString, StorageNames.FileShareEmulatorDatabase, bacpacPath, CancellationToken.None)
+                    .EnsureDatabaseSeededAsync(sqlConnectionString, StorageNames.FileShareEmulatorDatabase, bacpacPath,
+                        CancellationToken.None)
                     .ConfigureAwait(false);
 
                 var schemaMigration = app.Services.GetRequiredService<SchemaMigration>();
@@ -47,11 +45,11 @@ namespace FileShareImageLoader
                     ?? "unknown";
 
                 var imageInfo = new LocalMetadataImageInfo(
-                    Version: Environment.GetEnvironmentVariable("dataimage_version"),
-                    Tags: Environment.GetEnvironmentVariable("dataimage_tags"),
-                    Digest: Environment.GetEnvironmentVariable("dataimage_digest"),
-                    SizeBytes: Environment.GetEnvironmentVariable("dataimage_size_bytes"),
-                    CreatedUtc: Environment.GetEnvironmentVariable("dataimage_created_utc"));
+                    Environment.GetEnvironmentVariable("dataimage_version"),
+                    Environment.GetEnvironmentVariable("dataimage_tags"),
+                    Environment.GetEnvironmentVariable("dataimage_digest"),
+                    Environment.GetEnvironmentVariable("dataimage_size_bytes"),
+                    Environment.GetEnvironmentVariable("dataimage_created_utc"));
 
                 await schemaMigration
                     .ApplyAsync(sqlConnectionString, dataImageName, imageInfo, CancellationToken.None)

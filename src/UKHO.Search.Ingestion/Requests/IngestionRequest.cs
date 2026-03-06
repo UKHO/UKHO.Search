@@ -5,9 +5,6 @@ namespace UKHO.Search.Ingestion.Requests
 {
     public sealed record IngestionRequest
     {
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public IReadOnlyList<IngestionProperty> Properties { get; init; } = Array.Empty<IngestionProperty>();
-
         [JsonConstructor]
         public IngestionRequest(IReadOnlyList<IngestionProperty> properties)
         {
@@ -19,13 +16,15 @@ namespace UKHO.Search.Ingestion.Requests
                 .FirstOrDefault(g => g.Count() > 1);
 
             if (duplicates is not null)
-            {
-                throw new JsonException($"IngestionRequest.Properties contains duplicate Name '{duplicates.Key}'. Names are case-insensitive.");
-            }
+                throw new JsonException(
+                    $"IngestionRequest.Properties contains duplicate Name '{duplicates.Key}'. Names are case-insensitive.");
         }
 
         public IngestionRequest()
         {
         }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public IReadOnlyList<IngestionProperty> Properties { get; init; } = Array.Empty<IngestionProperty>();
     }
 }
