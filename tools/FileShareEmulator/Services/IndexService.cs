@@ -92,16 +92,17 @@ namespace FileShareEmulator.Services
                 });
             }
 
-            properties.Add(new IngestionProperty
+            var addItem = new AddItemRequest
             {
-                Name = "ID",
-                Type = IngestionPropertyType.Id,
-                Value = batchId.ToString("D")
-            });
+                Id = batchId.ToString("D"),
+                Properties = properties,
+                SecurityTokens = ["fileshare-emulator"]
+            };
 
             return new IngestionRequest
             {
-                Properties = properties
+                RequestType = IngestionRequestType.AddItem,
+                AddItem = addItem
             };
         }
 

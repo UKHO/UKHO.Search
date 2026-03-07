@@ -10,15 +10,137 @@ namespace UKHO.Search.Ingestion.Tests
     {
         private static readonly JsonSerializerOptions Options = IngestionJsonSerializerOptions.Create();
 
+        [Fact]
+        public void IngestionRequestEnvelope_RoundTrips_DeleteItem()
+        {
+            var envelope = new IngestionRequest
+            {
+                RequestType = IngestionRequestType.DeleteItem,
+                DeleteItem = new DeleteItemRequest { Id = "ABC123" }
+            };
+
+            var json = JsonSerializer.Serialize(envelope, Options);
+            var hydrated = JsonSerializer.Deserialize<IngestionRequest>(json, Options);
+            hydrated.ShouldNotBeNull();
+            hydrated.RequestType.ShouldBe(IngestionRequestType.DeleteItem);
+            hydrated.DeleteItem.ShouldNotBeNull();
+            hydrated.DeleteItem!.Id.ShouldBe("ABC123");
+        }
+
+        [Fact]
+        public void IngestionRequestEnvelope_RoundTrips_UpdateItem()
+        {
+            var envelope = new IngestionRequest
+            {
+                RequestType = IngestionRequestType.UpdateItem,
+                UpdateItem = new UpdateItemRequest
+                {
+                    Id = "ABC123",
+                    SecurityTokens = ["token-a"],
+                    Properties = [new IngestionProperty { Name = "Title", Type = IngestionPropertyType.String, Value = "Updated" }]
+                }
+            };
+
+            var json = JsonSerializer.Serialize(envelope, Options);
+            var hydrated = JsonSerializer.Deserialize<IngestionRequest>(json, Options);
+            hydrated.ShouldNotBeNull();
+            hydrated.RequestType.ShouldBe(IngestionRequestType.UpdateItem);
+            hydrated.UpdateItem.ShouldNotBeNull();
+            hydrated.UpdateItem!.Id.ShouldBe("ABC123");
+            hydrated.UpdateItem.SecurityTokens.ShouldBe(["token-a"]);
+        }
+
+        [Fact]
+        public void IngestionRequestEnvelope_RoundTrips_UpdateAcl()
+        {
+            var envelope = new IngestionRequest
+            {
+                RequestType = IngestionRequestType.UpdateAcl,
+                UpdateAcl = new UpdateAclRequest
+                {
+                    Id = "ABC123",
+                    SecurityTokens = ["token-a", "token-b"]
+                }
+            };
+
+            var json = JsonSerializer.Serialize(envelope, Options);
+            var hydrated = JsonSerializer.Deserialize<IngestionRequest>(json, Options);
+            hydrated.ShouldNotBeNull();
+            hydrated.RequestType.ShouldBe(IngestionRequestType.UpdateAcl);
+            hydrated.UpdateAcl.ShouldNotBeNull();
+            hydrated.UpdateAcl!.Id.ShouldBe("ABC123");
+            hydrated.UpdateAcl.SecurityTokens.ShouldBe(["token-a", "token-b"]);
+        }
+
+        [Fact]
+        public void AddItemRequest_Rejects_EmptySecurityTokens()
+        {
+            var json = "{" +
+                       "\"Id\":\"ABC123\"," +
+                       "\"Properties\":[]," +
+                       "\"SecurityTokens\":[]" +
+                       "}";
+            Should.Throw<JsonException>(() => JsonSerializer.Deserialize<AddItemRequest>(json, Options));
+        }
+
+        [Fact]
+        public void UpdateItemRequest_Rejects_EmptySecurityTokens()
+        {
+            var json = "{" +
+                       "\"Id\":\"ABC123\"," +
+                       "\"Properties\":[]," +
+                       "\"SecurityTokens\":[]" +
+                       "}";
+            Should.Throw<JsonException>(() => JsonSerializer.Deserialize<UpdateItemRequest>(json, Options));
+        }
+
+        [Fact]
+        public void UpdateAclRequest_Rejects_EmptySecurityTokens()
+        {
+            var json = "{" +
+                       "\"Id\":\"ABC123\"," +
+                       "\"SecurityTokens\":[]" +
+                       "}";
+            Should.Throw<JsonException>(() => JsonSerializer.Deserialize<UpdateAclRequest>(json, Options));
+        }
+
+        [Fact]
+        public void IngestionRequestEnvelope_Rejects_MissingPayload()
+        {
+            var json = "{\"RequestType\":\"AddItem\"}";
+            Should.Throw<JsonException>(() => JsonSerializer.Deserialize<IngestionRequest>(json, Options));
+        }
+
+        [Fact]
+        public void IngestionRequestEnvelope_Rejects_MultiplePayloads()
+        {
+            var json = "{" +
+                       "\"RequestType\":\"DeleteItem\"," +
+                       "\"DeleteItem\":{\"Id\":\"ABC123\"}," +
+                       "\"UpdateAcl\":{\"Id\":\"ABC123\",\"SecurityTokens\":[\"t\"]}" +
+                       "}";
+            Should.Throw<JsonException>(() => JsonSerializer.Deserialize<IngestionRequest>(json, Options));
+        }
+
+        [Fact]
+        public void IngestionRequestEnvelope_Rejects_MismatchedRequestTypeAndPayload()
+        {
+            var json = "{" +
+                       "\"RequestType\":\"AddItem\"," +
+                       "\"DeleteItem\":{\"Id\":\"ABC123\"}" +
+                       "}";
+            Should.Throw<JsonException>(() => JsonSerializer.Deserialize<IngestionRequest>(json, Options));
+        }
+
         [Theory]
         [InlineData(IngestionPropertyType.String, "string")]
+        [InlineData(IngestionPropertyType.Text, "text")]
         [InlineData(IngestionPropertyType.Integer, "integer")]
         [InlineData(IngestionPropertyType.Double, "double")]
         [InlineData(IngestionPropertyType.Decimal, "decimal")]
         [InlineData(IngestionPropertyType.Boolean, "boolean")]
         [InlineData(IngestionPropertyType.DateTime, "datetime")]
         [InlineData(IngestionPropertyType.TimeSpan, "timespan")]
-        [InlineData(IngestionPropertyType.Id, "id")]
         [InlineData(IngestionPropertyType.Guid, "guid")]
         [InlineData(IngestionPropertyType.Uri, "uri")]
         [InlineData(IngestionPropertyType.StringArray, "string-array")]
@@ -35,14 +157,22 @@ namespace UKHO.Search.Ingestion.Tests
         }
 
         [Fact]
+        public void IngestionPropertyType_Deserialize_Id_IsNotSupported()
+        {
+            Should.Throw<JsonException>(() => JsonSerializer.Deserialize<IngestionPropertyType>("\"id\"", Options));
+        }
+
+        [Fact]
         public void RoundTrip_AllSupportedTypes_Succeeds()
         {
-            var request = new IngestionRequest
+            var addItem = new AddItemRequest
             {
+                Id = "123456ID",
+                SecurityTokens = ["token-a"],
                 Properties =
                 [
                     new IngestionProperty { Name = "String", Type = IngestionPropertyType.String, Value = "hello" },
-                    new IngestionProperty { Name = "Id", Type = IngestionPropertyType.Id, Value = "123456ID" },
+                    new IngestionProperty { Name = "Text", Type = IngestionPropertyType.Text, Value = "Human readable text" },
                     new IngestionProperty
                         { Name = "Int64Min", Type = IngestionPropertyType.Integer, Value = long.MinValue },
                     new IngestionProperty
@@ -80,19 +210,33 @@ namespace UKHO.Search.Ingestion.Tests
                 ]
             };
 
-            var json = JsonSerializer.Serialize(request, Options);
+            var envelope = new IngestionRequest
+            {
+                RequestType = IngestionRequestType.AddItem,
+                AddItem = addItem
+            };
+
+            var json = JsonSerializer.Serialize(envelope, Options);
             json.ShouldNotContain("null");
 
-            var hydrated = JsonSerializer.Deserialize<IngestionRequest>(json, Options);
-            hydrated.ShouldNotBeNull();
+            var hydratedEnvelope = JsonSerializer.Deserialize<IngestionRequest>(json, Options);
+            hydratedEnvelope.ShouldNotBeNull();
 
-            hydrated.Properties.Count.ShouldBe(request.Properties.Count);
+            hydratedEnvelope.RequestType.ShouldBe(IngestionRequestType.AddItem);
+            hydratedEnvelope.AddItem.ShouldNotBeNull();
+
+            var hydrated = hydratedEnvelope.AddItem!;
+
+            hydrated.Properties.Count.ShouldBe(addItem.Properties.Count);
 
             hydrated.TryGetString("string", out var s).ShouldBeTrue();
             s.ShouldBe("hello");
 
-            hydrated.TryGetId("id", out var id).ShouldBeTrue();
-            id.ShouldBe("123456ID");
+            var text = hydrated.Properties.Single(p => p.Name.Equals("Text", StringComparison.OrdinalIgnoreCase));
+            text.Type.ShouldBe(IngestionPropertyType.Text);
+            text.Value.ShouldBe("Human readable text");
+
+            hydrated.Id.ShouldBe("123456ID");
 
             hydrated.TryGetInt64("int64min", out var iMin).ShouldBeTrue();
             iMin.ShouldBe(long.MinValue);
@@ -192,13 +336,6 @@ namespace UKHO.Search.Ingestion.Tests
         {
             var json = "{\"Name\":\"A\",\"Type\":\"string-array\",\"Value\":[\"a\",null]}";
             Should.Throw<JsonException>(() => JsonSerializer.Deserialize<IngestionProperty>(json, Options));
-        }
-
-        [Fact]
-        public void DataCallback_MustBeAbsoluteUri()
-        {
-            var json = "{\"Properties\":[],\"DataCallback\":\"/relative\"}";
-            Should.Throw<JsonException>(() => JsonSerializer.Deserialize<IngestionRequest>(json, Options));
         }
     }
 }

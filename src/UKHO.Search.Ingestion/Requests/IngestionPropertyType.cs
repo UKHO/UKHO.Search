@@ -7,13 +7,13 @@ namespace UKHO.Search.Ingestion.Requests
     public enum IngestionPropertyType
     {
         String,
+        Text,
         Integer,
         Double,
         Decimal,
         Boolean,
         DateTime,
         TimeSpan,
-        Id,
         Guid,
         Uri,
         StringArray

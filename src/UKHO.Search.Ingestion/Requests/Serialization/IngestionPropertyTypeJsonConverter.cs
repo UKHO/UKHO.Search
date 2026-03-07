@@ -18,13 +18,13 @@ namespace UKHO.Search.Ingestion.Requests.Serialization
             return token switch
             {
                 "string" => IngestionPropertyType.String,
+                "text" => IngestionPropertyType.Text,
                 "integer" => IngestionPropertyType.Integer,
                 "double" => IngestionPropertyType.Double,
                 "decimal" => IngestionPropertyType.Decimal,
                 "boolean" => IngestionPropertyType.Boolean,
                 "datetime" => IngestionPropertyType.DateTime,
                 "timespan" => IngestionPropertyType.TimeSpan,
-                "id" => IngestionPropertyType.Id,
                 "guid" => IngestionPropertyType.Guid,
                 "uri" => IngestionPropertyType.Uri,
                 "string-array" => IngestionPropertyType.StringArray,
@@ -37,13 +37,13 @@ namespace UKHO.Search.Ingestion.Requests.Serialization
             writer.WriteStringValue(value switch
             {
                 IngestionPropertyType.String => "string",
+                IngestionPropertyType.Text => "text",
                 IngestionPropertyType.Integer => "integer",
                 IngestionPropertyType.Double => "double",
                 IngestionPropertyType.Decimal => "decimal",
                 IngestionPropertyType.Boolean => "boolean",
                 IngestionPropertyType.DateTime => "datetime",
                 IngestionPropertyType.TimeSpan => "timespan",
-                IngestionPropertyType.Id => "id",
                 IngestionPropertyType.Guid => "guid",
                 IngestionPropertyType.Uri => "uri",
                 IngestionPropertyType.StringArray => "string-array",

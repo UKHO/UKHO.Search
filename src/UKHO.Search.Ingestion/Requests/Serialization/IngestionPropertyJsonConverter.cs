@@ -107,7 +107,7 @@ namespace UKHO.Search.Ingestion.Requests.Serialization
             switch (type)
             {
                 case IngestionPropertyType.String:
-                case IngestionPropertyType.Id:
+                case IngestionPropertyType.Text:
                     if (value is not string s) throw new JsonException($"Value must be a string for Type '{type}'.");
 
                     writer.WriteStringValue(s);
@@ -186,9 +186,9 @@ namespace UKHO.Search.Ingestion.Requests.Serialization
                 IngestionPropertyType.String => element.ValueKind == JsonValueKind.String
                     ? element.GetString()!
                     : throw new JsonException("Value must be a JSON string for Type 'string'."),
-                IngestionPropertyType.Id => element.ValueKind == JsonValueKind.String
+                IngestionPropertyType.Text => element.ValueKind == JsonValueKind.String
                     ? element.GetString()!
-                    : throw new JsonException("Value must be a JSON string for Type 'id'."),
+                    : throw new JsonException("Value must be a JSON string for Type 'text'."),
                 IngestionPropertyType.Integer => element.ValueKind == JsonValueKind.Number &&
                                                  element.TryGetInt64(out var l)
                     ? l

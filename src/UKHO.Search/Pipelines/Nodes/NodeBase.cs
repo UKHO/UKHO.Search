@@ -88,6 +88,13 @@ namespace UKHO.Search.Pipelines.Nodes
 			}
 			catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
 			{
+				// If cancellation races with a faulted upstream completion, prefer propagating the
+				// upstream exception so downstream reliably faults rather than completing cleanly.
+				if (input.Completion.IsCompleted)
+				{
+					await input.Completion.ConfigureAwait(false);
+				}
+
 				CompleteOutputs();
 			}
 			catch (Exception ex)

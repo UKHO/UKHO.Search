@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using Shouldly;
 using UKHO.Search.Pipelines.Batching;
@@ -16,6 +17,8 @@ namespace UKHO.Search.Tests.Pipelines
 		public async Task Microbatch_reports_queue_depth_while_buffering()
 		{
 			using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+			var nodeName = $"microbatch-{Guid.NewGuid():N}";
 
 			var seen = new ConcurrentDictionary<string, long>();
 			using var listener = new MeterListener();
@@ -48,7 +51,7 @@ namespace UKHO.Search.Tests.Pipelines
 			var output = BoundedChannelFactory.Create<BatchEnvelope<int>>(capacity: 10, singleReader: true, singleWriter: true);
 
 			var node = new MicroBatchNode<int>(
-				"microbatch",
+				nodeName,
 				partitionId: 0,
 				input.Reader,
 				output.Writer,
@@ -58,12 +61,21 @@ namespace UKHO.Search.Tests.Pipelines
 			await node.StartAsync(cts.Token);
 
 			await input.Writer.WriteAsync(new Envelope<int>("key-0", 1), cts.Token);
-			await Task.Delay(TimeSpan.FromMilliseconds(50), cts.Token);
+			var expectedKey = $"ukho.pipeline.node.queue_depth|{nodeName}";
+			var sw = Stopwatch.StartNew();
+			while (sw.Elapsed < TimeSpan.FromSeconds(2))
+			{
+				await Task.Delay(TimeSpan.FromMilliseconds(25), cts.Token);
+				listener.RecordObservableInstruments();
 
-			listener.RecordObservableInstruments();
+				if (seen.TryGetValue(expectedKey, out var depth) && depth > 0)
+				{
+					break;
+				}
+			}
 
-			seen.TryGetValue("ukho.pipeline.node.queue_depth|microbatch", out var depth).ShouldBeTrue();
-			depth.ShouldBeGreaterThan(0);
+			seen.TryGetValue(expectedKey, out var finalDepth).ShouldBeTrue();
+			finalDepth.ShouldBeGreaterThan(0);
 
 			input.Writer.TryComplete();
 			await node.Completion.WaitAsync(cts.Token);
