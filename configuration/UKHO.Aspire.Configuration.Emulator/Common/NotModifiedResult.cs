@@ -3,10 +3,7 @@ using Microsoft.AspNetCore.Http.Metadata;
 
 namespace UKHO.Aspire.Configuration.Emulator.Common
 {
-    public class NotModifiedResult :
-        IResult,
-        IEndpointMetadataProvider,
-        IStatusCodeHttpResult
+    public class NotModifiedResult : IResult, IEndpointMetadataProvider, IStatusCodeHttpResult
     {
         public static void PopulateMetadata(MethodInfo method, EndpointBuilder builder)
         {
@@ -18,7 +15,10 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
 
         public Task ExecuteAsync(HttpContext httpContext)
         {
-            if (StatusCode.HasValue) httpContext.Response.StatusCode = StatusCode.Value;
+            if (StatusCode.HasValue)
+            {
+                httpContext.Response.StatusCode = StatusCode.Value;
+            }
 
             return Task.CompletedTask;
         }

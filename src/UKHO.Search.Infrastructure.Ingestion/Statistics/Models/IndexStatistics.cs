@@ -18,7 +18,6 @@ namespace UKHO.Search.Infrastructure.Ingestion.Statistics.Models
 
         public IndexDocumentStatistics? Documents { get; init; }
 
-        public IReadOnlyDictionary<string, IndexFieldCapabilities> FieldCapabilities { get; init; } =
-            new ReadOnlyDictionary<string, IndexFieldCapabilities>(new Dictionary<string, IndexFieldCapabilities>());
+        public IReadOnlyDictionary<string, IndexFieldCapabilities> FieldCapabilities { get; init; } = new ReadOnlyDictionary<string, IndexFieldCapabilities>(new Dictionary<string, IndexFieldCapabilities>());
     }
 }

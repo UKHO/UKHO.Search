@@ -39,7 +39,10 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
 
         public async Task Close(IDialogReference reference, IDialogResult? result = null)
         {
-            if (OnDialogClosed is not null) await OnDialogClosed.Invoke(reference, result);
+            if (OnDialogClosed is not null)
+            {
+                await OnDialogClosed.Invoke(reference, result);
+            }
 
             reference.TrySetResult(result);
         }
@@ -48,7 +51,10 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
         {
             var reference = new DialogReference(typeof(TComponent), parameters);
 
-            if (OnDialogShown is not null) await OnDialogShown.Invoke(reference);
+            if (OnDialogShown is not null)
+            {
+                await OnDialogShown.Invoke(reference);
+            }
 
             return reference;
         }

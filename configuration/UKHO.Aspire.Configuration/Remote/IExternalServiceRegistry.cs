@@ -2,7 +2,6 @@
 {
     public interface IExternalServiceRegistry
     {
-        IExternalEndpoint GetServiceEndpoint(string serviceName, string tag = "",
-            EndpointHostSubstitution host = EndpointHostSubstitution.None);
+        IExternalEndpoint GetServiceEndpoint(string serviceName, string tag = "", EndpointHostSubstitution host = EndpointHostSubstitution.None);
     }
 }

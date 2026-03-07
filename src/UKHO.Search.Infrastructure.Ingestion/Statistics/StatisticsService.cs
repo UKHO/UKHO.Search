@@ -19,31 +19,34 @@ namespace UKHO.Search.Infrastructure.Ingestion.Statistics
         {
             var indexName = _configuration["ingestion:indexname"];
             if (string.IsNullOrWhiteSpace(indexName))
+            {
                 throw new InvalidOperationException("Missing required configuration value 'ingestion:indexname'.");
+            }
 
-            var existsResponse =
-                await _elasticClient.Indices.ExistsAsync(indexName, cancellationToken).ConfigureAwait(false);
-            if (!existsResponse.Exists) return new IndexStatistics { IndexName = indexName, Exists = false };
+            var existsResponse = await _elasticClient.Indices.ExistsAsync(indexName, cancellationToken)
+                                                     .ConfigureAwait(false);
+            if (!existsResponse.Exists)
+            {
+                return new IndexStatistics { IndexName = indexName, Exists = false };
+            }
 
-            var mappingResponse = await _elasticClient.Indices
-                .GetMappingAsync(g => g.Indices(indexName), cancellationToken)
-                .ConfigureAwait(false);
+            var mappingResponse = await _elasticClient.Indices.GetMappingAsync(g => g.Indices(indexName), cancellationToken)
+                                                      .ConfigureAwait(false);
 
-            var settingsResponse = await _elasticClient.Indices
-                .GetSettingsAsync(g => g.Indices(indexName), cancellationToken)
-                .ConfigureAwait(false);
+            var settingsResponse = await _elasticClient.Indices.GetSettingsAsync(g => g.Indices(indexName), cancellationToken)
+                                                       .ConfigureAwait(false);
 
             var healthResponse = await _elasticClient.Cluster.HealthAsync(h => h.Indices(indexName), cancellationToken)
-                .ConfigureAwait(false);
+                                                     .ConfigureAwait(false);
 
             var countResponse = await _elasticClient.CountAsync<object>(c => c.Indices(indexName), cancellationToken)
-                .ConfigureAwait(false);
+                                                    .ConfigureAwait(false);
 
             var statsResponse = await _elasticClient.Indices.StatsAsync(s => s.Indices(indexName), cancellationToken)
-                .ConfigureAwait(false);
+                                                    .ConfigureAwait(false);
 
             var fieldCapsResponse = await _elasticClient.FieldCapsAsync(f => f.Indices(indexName), cancellationToken)
-                .ConfigureAwait(false);
+                                                        .ConfigureAwait(false);
 
             return new IndexStatistics
             {
@@ -81,16 +84,21 @@ namespace UKHO.Search.Infrastructure.Ingestion.Statistics
             };
         }
 
-        private static IReadOnlyDictionary<string, IndexFieldCapabilities> ParseFieldCapabilities(
-            FieldCapsResponse fieldCapsResponse)
+        private static IReadOnlyDictionary<string, IndexFieldCapabilities> ParseFieldCapabilities(FieldCapsResponse fieldCapsResponse)
         {
-            if (fieldCapsResponse.Fields is null) return new Dictionary<string, IndexFieldCapabilities>();
+            if (fieldCapsResponse.Fields is null)
+            {
+                return new Dictionary<string, IndexFieldCapabilities>();
+            }
 
             var result = new Dictionary<string, IndexFieldCapabilities>(StringComparer.Ordinal);
 
             foreach (var (fieldName, perType) in fieldCapsResponse.Fields)
             {
-                if (perType is null) continue;
+                if (perType is null)
+                {
+                    continue;
+                }
 
                 var isSearchable = perType.Values.Any(v => v.Searchable);
                 var isAggregatable = perType.Values.Any(v => v.Aggregatable);

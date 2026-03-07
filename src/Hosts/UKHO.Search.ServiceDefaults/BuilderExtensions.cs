@@ -76,25 +76,22 @@ namespace UKHO.Search.ServiceDefaults
                 });
 
                 builder.Services.AddOpenTelemetry()
-                    .WithMetrics(metrics =>
-                    {
-                        metrics.AddAspNetCoreInstrumentation()
-                            .AddHttpClientInstrumentation()
-                            .AddRuntimeInstrumentation();
-                    })
-                    .WithTracing(tracing =>
-                    {
-                        tracing.AddSource(builder.Environment.ApplicationName)
-                            .AddAspNetCoreInstrumentation(tracing =>
-                                // Exclude health check requests from tracing
-                                tracing.Filter = context =>
-                                    !context.Request.Path.StartsWithSegments(HealthEndpointPath)
-                                    && !context.Request.Path.StartsWithSegments(AlivenessEndpointPath)
-                            )
-                            // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
-                            //.AddGrpcClientInstrumentation()
-                            .AddHttpClientInstrumentation();
-                    });
+                       .WithMetrics(metrics =>
+                       {
+                           metrics.AddAspNetCoreInstrumentation()
+                                  .AddHttpClientInstrumentation()
+                                  .AddRuntimeInstrumentation();
+                       })
+                       .WithTracing(tracing =>
+                       {
+                           tracing.AddSource(builder.Environment.ApplicationName)
+                                  .AddAspNetCoreInstrumentation(tracing =>
+                                      // Exclude health check requests from tracing
+                                      tracing.Filter = context => !context.Request.Path.StartsWithSegments(HealthEndpointPath) && !context.Request.Path.StartsWithSegments(AlivenessEndpointPath))
+                                  // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
+                                  //.AddGrpcClientInstrumentation()
+                                  .AddHttpClientInstrumentation();
+                       });
 
                 builder.AddOpenTelemetryExporters();
 
@@ -105,7 +102,11 @@ namespace UKHO.Search.ServiceDefaults
             {
                 var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
 
-                if (useOtlpExporter) builder.Services.AddOpenTelemetry().UseOtlpExporter();
+                if (useOtlpExporter)
+                {
+                    builder.Services.AddOpenTelemetry()
+                           .UseOtlpExporter();
+                }
 
                 // Uncomment the following lines to enable the Azure Monitor exporter (requires the Azure.Monitor.OpenTelemetry.AspNetCore package)
                 //if (!string.IsNullOrEmpty(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
@@ -120,8 +121,8 @@ namespace UKHO.Search.ServiceDefaults
             public TBuilder AddDefaultHealthChecks()
             {
                 builder.Services.AddHealthChecks()
-                    // Add a default liveness check to ensure app is responsive
-                    .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
+                       // Add a default liveness check to ensure app is responsive
+                       .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
 
                 return builder;
             }

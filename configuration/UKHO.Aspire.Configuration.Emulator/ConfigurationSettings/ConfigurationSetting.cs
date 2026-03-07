@@ -3,15 +3,7 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
     /// <summary>
     ///     https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/appconfiguration/Azure.Data.AppConfiguration/src/Models/ConfigurationSetting.cs
     /// </summary>
-    public class ConfigurationSetting(
-        string etag,
-        string key,
-        DateTimeOffset lastModified,
-        bool locked,
-        string? label = null,
-        string? contentType = null,
-        string? value = null,
-        IDictionary<string, string>? tags = null)
+    public class ConfigurationSetting(string etag, string key, DateTimeOffset lastModified, bool locked, string? label = null, string? contentType = null, string? value = null, IDictionary<string, string>? tags = null)
     {
         public string Etag { get; set; } = etag;
 

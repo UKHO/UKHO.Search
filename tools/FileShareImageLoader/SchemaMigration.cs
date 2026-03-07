@@ -5,13 +5,14 @@ namespace FileShareImageLoader
 {
     public sealed class SchemaMigration
     {
-        public async Task ApplyAsync(string connectionString, string dataImageName, LocalMetadataImageInfo? imageInfo,
-            CancellationToken cancellationToken)
+        public async Task ApplyAsync(string connectionString, string dataImageName, LocalMetadataImageInfo? imageInfo, CancellationToken cancellationToken)
         {
             try
             {
-                await EnsureIndexStatusColumnAsync(connectionString, cancellationToken).ConfigureAwait(false);
-                await EnsureLocalMetadataTableAsync(connectionString, cancellationToken).ConfigureAwait(false);
+                await EnsureIndexStatusColumnAsync(connectionString, cancellationToken)
+                    .ConfigureAwait(false);
+                await EnsureLocalMetadataTableAsync(connectionString, cancellationToken)
+                    .ConfigureAwait(false);
                 await UpsertLocalMetadataAsync(connectionString, dataImageName, imageInfo, cancellationToken)
                     .ConfigureAwait(false);
             }
@@ -22,22 +23,20 @@ namespace FileShareImageLoader
             }
         }
 
-        private static async Task EnsureIndexStatusColumnAsync(string connectionString,
-            CancellationToken cancellationToken)
+        private static async Task EnsureIndexStatusColumnAsync(string connectionString, CancellationToken cancellationToken)
         {
             await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await connection.OpenAsync(cancellationToken)
+                            .ConfigureAwait(false);
 
-            Console.WriteLine(
-                $"[SchemaMigration] Connected. Database='{connection.Database}' DataSource='{connection.DataSource}'");
+            Console.WriteLine($"[SchemaMigration] Connected. Database='{connection.Database}' DataSource='{connection.DataSource}'");
 
             var batchExists = await ObjectExistsAsync(connection, "dbo", "Batch", "U", cancellationToken)
                 .ConfigureAwait(false);
             Console.WriteLine($"[SchemaMigration] dbo.Batch exists: {batchExists}");
 
-            var indexStatusExistsBefore =
-                await ColumnExistsAsync(connection, "dbo", "Batch", "IndexStatus", cancellationToken)
-                    .ConfigureAwait(false);
+            var indexStatusExistsBefore = await ColumnExistsAsync(connection, "dbo", "Batch", "IndexStatus", cancellationToken)
+                .ConfigureAwait(false);
             Console.WriteLine($"[SchemaMigration] dbo.Batch.IndexStatus exists (before): {indexStatusExistsBefore}");
 
             await using var cmd = connection.CreateCommand();
@@ -58,19 +57,19 @@ BEGIN
 END
 ";
 
-            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+            await cmd.ExecuteNonQueryAsync(cancellationToken)
+                     .ConfigureAwait(false);
 
-            var indexStatusExistsAfter =
-                await ColumnExistsAsync(connection, "dbo", "Batch", "IndexStatus", cancellationToken)
-                    .ConfigureAwait(false);
+            var indexStatusExistsAfter = await ColumnExistsAsync(connection, "dbo", "Batch", "IndexStatus", cancellationToken)
+                .ConfigureAwait(false);
             Console.WriteLine($"[SchemaMigration] dbo.Batch.IndexStatus exists (after): {indexStatusExistsAfter}");
         }
 
-        private static async Task EnsureLocalMetadataTableAsync(string connectionString,
-            CancellationToken cancellationToken)
+        private static async Task EnsureLocalMetadataTableAsync(string connectionString, CancellationToken cancellationToken)
         {
             await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await connection.OpenAsync(cancellationToken)
+                            .ConfigureAwait(false);
 
             await using var cmd = connection.CreateCommand();
             cmd.CommandType = CommandType.Text;
@@ -89,46 +88,56 @@ BEGIN
 END
 ";
 
-            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+            await cmd.ExecuteNonQueryAsync(cancellationToken)
+                     .ConfigureAwait(false);
         }
 
-        private static async Task UpsertLocalMetadataAsync(string connectionString, string dataImageName,
-            LocalMetadataImageInfo? imageInfo,
-            CancellationToken cancellationToken)
+        private static async Task UpsertLocalMetadataAsync(string connectionString, string dataImageName, LocalMetadataImageInfo? imageInfo, CancellationToken cancellationToken)
         {
             await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await connection.OpenAsync(cancellationToken)
+                            .ConfigureAwait(false);
 
             await UpsertAsync(connection, "DataLoadTimeUtc", DateTimeOffset.UtcNow.ToString("O"), cancellationToken)
                 .ConfigureAwait(false);
-            await UpsertAsync(connection, "DataImageName", dataImageName, cancellationToken).ConfigureAwait(false);
+            await UpsertAsync(connection, "DataImageName", dataImageName, cancellationToken)
+                .ConfigureAwait(false);
 
             if (imageInfo is not null)
             {
                 if (!string.IsNullOrWhiteSpace(imageInfo.Version))
+                {
                     await UpsertAsync(connection, "DataImageVersion", imageInfo.Version, cancellationToken)
                         .ConfigureAwait(false);
+                }
 
                 if (!string.IsNullOrWhiteSpace(imageInfo.Tags))
+                {
                     await UpsertAsync(connection, "DataImageTags", imageInfo.Tags, cancellationToken)
                         .ConfigureAwait(false);
+                }
 
                 if (!string.IsNullOrWhiteSpace(imageInfo.Digest))
+                {
                     await UpsertAsync(connection, "DataImageDigest", imageInfo.Digest, cancellationToken)
                         .ConfigureAwait(false);
+                }
 
                 if (!string.IsNullOrWhiteSpace(imageInfo.SizeBytes))
+                {
                     await UpsertAsync(connection, "DataImageSizeBytes", imageInfo.SizeBytes, cancellationToken)
                         .ConfigureAwait(false);
+                }
 
                 if (!string.IsNullOrWhiteSpace(imageInfo.CreatedUtc))
+                {
                     await UpsertAsync(connection, "DataImageCreatedUtc", imageInfo.CreatedUtc, cancellationToken)
                         .ConfigureAwait(false);
+                }
             }
         }
 
-        private static async Task UpsertAsync(SqlConnection connection, string name, string value,
-            CancellationToken cancellationToken)
+        private static async Task UpsertAsync(SqlConnection connection, string name, string value, CancellationToken cancellationToken)
         {
             await using var cmd = connection.CreateCommand();
             cmd.CommandType = CommandType.Text;
@@ -144,12 +153,11 @@ WHEN NOT MATCHED THEN
             cmd.Parameters.Add(new SqlParameter("@name", SqlDbType.NVarChar, 200) { Value = name });
             cmd.Parameters.Add(new SqlParameter("@value", SqlDbType.NVarChar) { Value = value });
 
-            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+            await cmd.ExecuteNonQueryAsync(cancellationToken)
+                     .ConfigureAwait(false);
         }
 
-        private static async Task<bool> ObjectExistsAsync(SqlConnection connection, string schema, string name,
-            string type,
-            CancellationToken cancellationToken)
+        private static async Task<bool> ObjectExistsAsync(SqlConnection connection, string schema, string name, string type, CancellationToken cancellationToken)
         {
             await using var cmd = connection.CreateCommand();
             cmd.CommandType = CommandType.Text;
@@ -163,13 +171,12 @@ WHERE s.name = @schema AND o.name = @name AND o.type = @type;";
             cmd.Parameters.Add(new SqlParameter("@name", SqlDbType.NVarChar, 128) { Value = name });
             cmd.Parameters.Add(new SqlParameter("@type", SqlDbType.NChar, 2) { Value = type });
 
-            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            var result = await cmd.ExecuteScalarAsync(cancellationToken)
+                                  .ConfigureAwait(false);
             return result is not null && result is not DBNull;
         }
 
-        private static async Task<bool> ColumnExistsAsync(SqlConnection connection, string schema, string table,
-            string column,
-            CancellationToken cancellationToken)
+        private static async Task<bool> ColumnExistsAsync(SqlConnection connection, string schema, string table, string column, CancellationToken cancellationToken)
         {
             await using var cmd = connection.CreateCommand();
             cmd.CommandType = CommandType.Text;
@@ -184,7 +191,8 @@ WHERE s.name = @schema AND o.name = @table AND c.name = @column;";
             cmd.Parameters.Add(new SqlParameter("@table", SqlDbType.NVarChar, 128) { Value = table });
             cmd.Parameters.Add(new SqlParameter("@column", SqlDbType.NVarChar, 128) { Value = column });
 
-            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            var result = await cmd.ExecuteScalarAsync(cancellationToken)
+                                  .ConfigureAwait(false);
             return result is not null && result is not DBNull;
         }
     }

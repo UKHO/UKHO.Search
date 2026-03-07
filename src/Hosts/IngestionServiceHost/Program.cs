@@ -24,7 +24,7 @@ namespace IngestionServiceHost
 
             // Add services to the container.
             builder.Services.AddRazorComponents()
-                .AddInteractiveServerComponents();
+                   .AddInteractiveServerComponents();
 
             builder.Services.AddRadzenComponents();
             builder.Services.AddRadzenQueryStringThemeService();
@@ -35,7 +35,9 @@ namespace IngestionServiceHost
             using (var scope = app.Services.CreateScope())
             {
                 var bootstrapService = scope.ServiceProvider.GetRequiredService<IBootstrapService>();
-                bootstrapService.BootstrapAsync().GetAwaiter().GetResult();
+                bootstrapService.BootstrapAsync()
+                                .GetAwaiter()
+                                .GetResult();
             }
 
             app.MapDefaultEndpoints();
@@ -55,7 +57,7 @@ namespace IngestionServiceHost
 
             app.MapStaticAssets();
             app.MapRazorComponents<App>()
-                .AddInteractiveServerRenderMode();
+               .AddInteractiveServerRenderMode();
 
             app.Run();
         }

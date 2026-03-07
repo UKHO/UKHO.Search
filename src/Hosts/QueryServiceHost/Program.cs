@@ -22,7 +22,7 @@ namespace QueryServiceHost
 
             // Add services to the container.
             builder.Services.AddRazorComponents()
-                .AddInteractiveServerComponents();
+                   .AddInteractiveServerComponents();
 
             builder.Services.AddRadzenComponents();
             builder.Services.AddRadzenQueryStringThemeService();
@@ -47,7 +47,7 @@ namespace QueryServiceHost
 
             app.MapStaticAssets();
             app.MapRazorComponents<App>()
-                .AddInteractiveServerRenderMode();
+               .AddInteractiveServerRenderMode();
 
             app.Run();
         }

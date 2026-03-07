@@ -17,7 +17,10 @@ namespace FileShareImageBuilder
             var builder = Host.CreateApplicationBuilder(args);
 
             builder.Logging.ClearProviders();
-            builder.Logging.AddSimpleConsole(o => { o.TimestampFormat = "HH:mm:ss "; });
+            builder.Logging.AddSimpleConsole(o =>
+            {
+                o.TimestampFormat = "HH:mm:ss ";
+            });
             builder.Logging.SetMinimumLevel(LogLevel.Warning);
 
             builder.AddSqlServerClient(StorageNames.FileShareEmulatorDatabase);
@@ -32,18 +35,21 @@ namespace FileShareImageBuilder
                 var clientId = ConfigurationReader.GetClientId();
 
                 if (string.IsNullOrWhiteSpace(tenantId))
+                {
                     throw new InvalidOperationException("Missing 'tenantId' in configuration.override.json.");
+                }
 
                 if (string.IsNullOrWhiteSpace(clientId))
+                {
                     throw new InvalidOperationException("Missing 'clientId' in configuration.override.json.");
+                }
 
                 var scopes = new[] { $"{clientId}/.default" };
 
-                var app = PublicClientApplicationBuilder
-                    .Create(clientId)
-                    .WithAuthority(AzureCloudInstance.AzurePublic, tenantId)
-                    .WithDefaultRedirectUri()
-                    .Build();
+                var app = PublicClientApplicationBuilder.Create(clientId)
+                                                        .WithAuthority(AzureCloudInstance.AzurePublic, tenantId)
+                                                        .WithDefaultRedirectUri()
+                                                        .Build();
 
                 // Optional persistent cache (best-effort). If it fails, interactive auth still works.
                 try
@@ -62,7 +68,8 @@ namespace FileShareImageBuilder
             {
                 var baseAddress = ConfigurationReader.GetRemoteServiceBaseAddress();
                 var tokenProvider = sp.GetRequiredService<IAuthenticationTokenProvider>();
-                return sp.GetRequiredService<FileShareReadOnlyClientFactory>().CreateClient(baseAddress, tokenProvider);
+                return sp.GetRequiredService<FileShareReadOnlyClientFactory>()
+                         .CreateClient(baseAddress, tokenProvider);
             });
 
             builder.Services.AddSingleton<MetadataImporter>();
@@ -77,8 +84,8 @@ namespace FileShareImageBuilder
             using var host = builder.Build();
 
             await host.Services.GetRequiredService<ImageBuilder>()
-                .RunAsync()
-                .ConfigureAwait(false);
+                      .RunAsync()
+                      .ConfigureAwait(false);
         }
     }
 }

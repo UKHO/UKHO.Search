@@ -17,7 +17,9 @@ namespace UKHO.Aspire.Configuration.Emulator.Authentication.Hmac
         /// <returns>A reference to <paramref name="builder" /> after the operation has completed.</returns>
         public static AuthenticationBuilder AddHmac(this AuthenticationBuilder builder)
         {
-            return builder.AddHmac(HmacDefaults.AuthenticationScheme, _ => { });
+            return builder.AddHmac(HmacDefaults.AuthenticationScheme, _ =>
+            {
+            });
         }
 
         /// <summary>
@@ -32,7 +34,9 @@ namespace UKHO.Aspire.Configuration.Emulator.Authentication.Hmac
         /// <returns>A reference to <paramref name="builder" /> after the operation has completed.</returns>
         public static AuthenticationBuilder AddHmac(this AuthenticationBuilder builder, string authenticationScheme)
         {
-            return builder.AddHmac(authenticationScheme, _ => { });
+            return builder.AddHmac(authenticationScheme, _ =>
+            {
+            });
         }
 
         /// <summary>
@@ -45,8 +49,7 @@ namespace UKHO.Aspire.Configuration.Emulator.Authentication.Hmac
         /// <param name="builder">The <see cref="AuthenticationBuilder" />.</param>
         /// <param name="configureOptions">A delegate that allows configuring <see cref="HmacOptions" />.</param>
         /// <returns>A reference to <paramref name="builder" /> after the operation has completed.</returns>
-        public static AuthenticationBuilder AddHmac(this AuthenticationBuilder builder,
-            Action<HmacOptions> configureOptions)
+        public static AuthenticationBuilder AddHmac(this AuthenticationBuilder builder, Action<HmacOptions> configureOptions)
         {
             return builder.AddHmac(HmacDefaults.AuthenticationScheme, configureOptions);
         }
@@ -62,8 +65,7 @@ namespace UKHO.Aspire.Configuration.Emulator.Authentication.Hmac
         /// <param name="authenticationScheme">The authentication scheme.</param>
         /// <param name="configureOptions">A delegate that allows configuring <see cref="HmacOptions" />.</param>
         /// <returns>A reference to <paramref name="builder" /> after the operation has completed.</returns>
-        public static AuthenticationBuilder AddHmac(this AuthenticationBuilder builder, string authenticationScheme,
-            Action<HmacOptions> configureOptions)
+        public static AuthenticationBuilder AddHmac(this AuthenticationBuilder builder, string authenticationScheme, Action<HmacOptions> configureOptions)
         {
             return builder.AddHmac(authenticationScheme, null, configureOptions);
         }
@@ -80,8 +82,7 @@ namespace UKHO.Aspire.Configuration.Emulator.Authentication.Hmac
         /// <param name="displayName">The display name for the authentication handler.</param>
         /// <param name="configureOptions">A delegate that allows configuring <see cref="HmacOptions" />.</param>
         /// <returns>A reference to <paramref name="builder" /> after the operation has completed.</returns>
-        public static AuthenticationBuilder AddHmac(this AuthenticationBuilder builder, string authenticationScheme,
-            string? displayName, Action<HmacOptions> configureOptions)
+        public static AuthenticationBuilder AddHmac(this AuthenticationBuilder builder, string authenticationScheme, string? displayName, Action<HmacOptions> configureOptions)
         {
             builder.Services.TryAddSingleton<IConfigureOptions<HmacOptions>, HmacConfigureOptions>();
 

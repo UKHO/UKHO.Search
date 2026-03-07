@@ -46,7 +46,8 @@
     protected override async Task OnInitializedAsync()
     {
         ValidateCount();
-        _status = await StatisticsService.GetIndexingStatusAsync().ConfigureAwait(false);
+        _status = await StatisticsService.GetIndexingStatusAsync()
+                                         .ConfigureAwait(false);
 
         _timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
         _ = PollAsync();
@@ -58,9 +59,11 @@
 
         try
         {
-            while (await _timer.WaitForNextTickAsync().ConfigureAwait(false))
+            while (await _timer.WaitForNextTickAsync()
+                               .ConfigureAwait(false))
             {
-                _status = await StatisticsService.GetIndexingStatusAsync().ConfigureAwait(false);
+                _status = await StatisticsService.GetIndexingStatusAsync()
+                                                 .ConfigureAwait(false);
                 await InvokeAsync(StateHasChanged);
             }
         }
@@ -93,7 +96,8 @@
         _isIndexing = true;
         try
         {
-            _ = await IndexService.IndexAllPendingAsync().ConfigureAwait(false);
+            _ = await IndexService.IndexAllPendingAsync()
+                                  .ConfigureAwait(false);
         }
         finally
         {
@@ -108,7 +112,8 @@
         _isIndexing = true;
         try
         {
-            _ = await IndexService.IndexNextPendingAsync(_count.Value).ConfigureAwait(false);
+            _ = await IndexService.IndexNextPendingAsync(_count.Value)
+                                  .ConfigureAwait(false);
         }
         finally
         {
@@ -123,7 +128,8 @@
         _isIndexing = true;
         try
         {
-            _ = await IndexService.ResetAllToPendingAsync().ConfigureAwait(false);
+            _ = await IndexService.ResetAllToPendingAsync()
+                                  .ConfigureAwait(false);
         }
         finally
         {

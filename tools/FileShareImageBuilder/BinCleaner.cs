@@ -9,7 +9,10 @@ namespace FileShareImageBuilder
             var dataImagePath = ConfigurationReader.GetDataImagePath();
             var binDirectory = Path.Combine(dataImagePath, "bin");
 
-            if (!Directory.Exists(binDirectory)) return Task.CompletedTask;
+            if (!Directory.Exists(binDirectory))
+            {
+                return Task.CompletedTask;
+            }
 
             Console.WriteLine($"[BinCleaner] Deleting bin directory: {binDirectory}");
             Directory.Delete(binDirectory, true);

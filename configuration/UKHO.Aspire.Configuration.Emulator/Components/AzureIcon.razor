@@ -7,7 +7,9 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    [EditorRequired] [Parameter] public Icon Value { get; set; } = null!;
+    [EditorRequired]
+    [Parameter]
+    public Icon Value { get; set; } = null!;
 
     public class Icon(string name, string content, IconVariant variant, IconSize size)
     {

@@ -36,39 +36,34 @@ Tests live under:
 
 These node types are explicitly described but do not currently exist as implementations.
 
-- **`BroadcastNode<TIn>`** (spec §7.5)
-  - Modes: `AllMustReceive` (strict) and `BestEffort` (optional outputs)
-  - Backpressure rule: if any required output is backpressured, broadcast slows
-  - Test needs:
-    - strict mode blocks when any output is slow
-    - best-effort mode drops to optional outputs and continues
-    - completion propagation to all outputs
+- **`BroadcastNode<TIn>`** (spec §7.5) - **Implemented**
+  - Implementation: `src/UKHO.Search/Pipelines/Nodes/BroadcastNode.cs`, `src/UKHO.Search/Pipelines/Nodes/BroadcastMode.cs`
+  - Tests: `test/UKHO.Search.Tests/Pipelines/BroadcastNodeTests.cs`
 
 - **`MergeNode<TIn>`** (spec §7.6)
-  - Fairness policy: round-robin or `Task.WhenAny` style
-  - Ordering note: no global ordering; safe only if lanes aren’t mixed (or downstream re-partitions)
-  - Test needs:
-    - merges two inputs without starvation
-    - completion propagation with one upstream completing early
-    - fault propagation from either upstream
+  - **Implemented**
+  - Implementation: `src/UKHO.Search/Pipelines/Nodes/MultiInputNodeBase.cs`, `src/UKHO.Search/Pipelines/Nodes/MergeNode.cs`
+  - Tests: `test/UKHO.Search.Tests/Pipelines/MergeNodeTests.cs`
 
 - **`RouteNode<TIn>`** (spec §7.7)
-  - Dictionary-based routing
-  - Ordering note: routing after partitioning must preserve lane membership
-  - Test needs:
-    - correct routing
-    - routing table missing a key (expected behavior must be defined: drop? fail message? fatal?)
+  - **Implemented**
+  - Missing route key behavior: mark message as `Failed` (`ROUTE_NOT_FOUND`) and emit to `errorOutput` when configured; otherwise fault the node/pipeline.
+  - Implementation: `src/UKHO.Search/Pipelines/Nodes/RouteNode.cs`
+  - Tests: `test/UKHO.Search.Tests/Pipelines/RouteNodeTests.cs`
 
 - **`BulkIndexNode<TDocument>`** (spec §7.10)
-  - Requires batch input (`BatchEnvelope<TDocument>`) and per-item response classification
-  - Requires transient/non-transient classification based on response (e.g., 429/503)
-  - Requires integration test strategy and probably an emulator or test double
+  - **Implemented (spike)**
+  - Contract: `IBulkIndexClient<TDocument>` + request/response DTOs with per-item status codes.
+  - Transient classification: configurable status code set (defaults include 429/503).
+  - Test strategy: in-memory test double (no external dependency).
+  - Implementation: `src/UKHO.Search/Pipelines/Nodes/BulkIndexNode.cs`, `src/UKHO.Search/Pipelines/Nodes/IBulkIndexClient.cs`
+  - Tests: `test/UKHO.Search.Tests/Pipelines/BulkIndexNodeTests.cs`
 
 ### 2.2 Base types described by the spec but missing in code
 
 - **`MultiInputNodeBase<T1, T2, TOut>`** (spec §3.2)
-  - Needed for merge-like nodes and consistent error/fault semantics
-  - Should include fairness policy hooks and consistent completion semantics
+  - **Implemented** (used by `MergeNode<TIn>`)
+  - Implementation: `src/UKHO.Search/Pipelines/Nodes/MultiInputNodeBase.cs`
 
 ## 3. Spec alignment gaps (implemented, but not fully matching the spec)
 
@@ -80,15 +75,16 @@ Spec requirements (spec §3.1):
 
 Current state:
 
-- Nodes are cancellation-responsive and won’t deadlock when idle.
-- There is no explicit “drain mode” vs “stop now” policy surfaced.
+- `CancellationMode` is implemented and applied consistently in `NodeBase`, `MultiInputNodeBase`, and buffering nodes.
+- `MicroBatchNode` supports drain semantics (flushes buffered items on cancellation).
 
-Remaining work:
+Implementation:
 
-- Define a cancellation policy model (e.g., `CancellationMode.Immediate`/`Drain`) and integrate into node loops.
-- Add tests proving:
-  - drain mode completes after draining buffered items
-  - immediate mode stops quickly and completes outputs deterministically
+- `src/UKHO.Search/Pipelines/Nodes/CancellationMode.cs`
+- `src/UKHO.Search/Pipelines/Nodes/NodeBase.cs`
+- `src/UKHO.Search/Pipelines/Nodes/MultiInputNodeBase.cs`
+- `src/UKHO.Search/Pipelines/Nodes/MicroBatchNode.cs`
+- Tests: `test/UKHO.Search.Tests/Pipelines/CancellationModeTests.cs`
 
 ### 3.2 Retry policy interface mismatch vs spec
 
@@ -98,13 +94,17 @@ Spec (spec §4.3) describes a policy shaped like:
 - `GetDelay(attempt) -> TimeSpan`
 - `MaxAttempts`
 
-Current implementation is exception-driven (via `isTransientException`) rather than `envelope + error` classification.
+Current state:
 
-Remaining work:
+- `IRetryPolicy` matches the spec shape.
+- `RetryingTransformNode` now supports an `envelope + error` contract via a `createError(envelope, exception)` factory.
+- The previous exception-based transient classification is retained as a shim constructor for backward compatibility.
 
-- Decide whether to:
-  - adapt `IRetryPolicy` to match the spec signature, or
-  - document the deviation and keep exception-based classification for the playground.
+Implementation:
+
+- `src/UKHO.Search/Pipelines/Retry/IRetryPolicy.cs`
+- `src/UKHO.Search/Pipelines/Nodes/RetryingTransformNode.cs`
+- Tests: `test/UKHO.Search.Tests/Pipelines/RetryErrorFactoryTests.cs`
 
 ### 3.3 Key hashing implementation detail
 
@@ -112,12 +112,12 @@ Spec (spec §7.8) recommends hashing UTF-8 bytes rather than `string.GetHashCode
 
 Current state:
 
-- Deterministic hashing exists, but currently operates over `char` values.
+- Deterministic hashing exists and now operates over UTF-8 bytes (spec-aligned).
 
-Remaining work:
+Implementation:
 
-- Update partition hashing to use UTF-8 bytes if strict adherence is required.
-- Add tests verifying stable partition assignment across known inputs (including non-ASCII keys).
+- `src/UKHO.Search/Pipelines/Nodes/KeyPartitionNode.cs`
+- Tests: `test/UKHO.Search.Tests/Pipelines/KeyPartitionHashVectorsTests.cs`
 
 ### 3.4 Micro-batching: missing `MaxBytes` and aggregate context
 
@@ -134,13 +134,14 @@ And `BatchEnvelope` should carry:
 Current state:
 
 - `MaxItems` and `MaxDelay` supported.
-- No `MaxBytes` trigger.
-- `BatchEnvelope<T>` contains minimal fields (id, partition id, timestamps, items) and no aggregated context.
+- `MaxBytes` supported (optional) via a caller-provided size estimator.
+- `BatchEnvelope<T>` carries aggregate context (item count, total estimated bytes, min/max item timestamps).
 
-Remaining work:
+Implementation:
 
-- Add optional `MaxBytes` support (requires a size estimator).
-- Decide what “aggregate context” means (e.g., union of breadcrumbs, min/max timestamps, counts by status).
+- `src/UKHO.Search/Pipelines/Nodes/MicroBatchNode.cs`
+- `src/UKHO.Search/Pipelines/Batching/BatchEnvelope.cs`
+- `test/UKHO.Search.Tests/Pipelines/MicroBatchMaxBytesTests.cs`
 
 ### 3.5 Dead-letter record content
 
@@ -155,23 +156,25 @@ Spec (spec §4.4) suggests dead-letter should record:
 Current state:
 
 - JSONL contains envelope + error + node name + timestamp.
-- No raw input snapshot or environment metadata.
+- JSONL now also contains:
+  - optional raw input snapshot (configurable via a snapshotter callback)
+  - environment/build metadata (app version, commit id, host name)
 
-Remaining work:
+Implementation:
 
-- Extend dead-letter schema to include optional environment/build metadata.
-- Consider adding a raw input snapshot mechanism (requires defining what “raw” means per stage).
+- `src/UKHO.Search/Pipelines/DeadLetter/DeadLetterRecord.cs`
+- `src/UKHO.Search/Pipelines/DeadLetter/DeadLetterMetadata.cs`
+- `src/UKHO.Search/Pipelines/DeadLetter/IDeadLetterMetadataProvider.cs`
+- `src/UKHO.Search/Pipelines/DeadLetter/DefaultDeadLetterMetadataProvider.cs`
+- `src/UKHO.Search/Pipelines/Nodes/DeadLetterSinkNode.cs`
+- Tests: `test/UKHO.Search.Tests/Pipelines/DeadLetterSchemaTests.cs`
 
 ### 3.6 Dead-letter concurrency beyond a single process
 
 Current state:
 
 - In-process concurrent appends are serialized.
-
-Remaining work:
-
-- If multiple processes may write to the same file, a per-process lock is insufficient.
-  - Decide: either document “single writer process” as an invariant, or implement a robust cross-process strategy.
+- Cross-process safety is enforced by acquiring exclusive writer access to the file (writer opens the file with `FileShare.Read` + retry loop).
 
 ### 3.7 Metrics: queue depth across nodes
 
@@ -179,30 +182,31 @@ Spec intent (spec §1.5 and §7.0+ instrumentation concepts): queue depth per no
 
 Current state:
 
-- `queue_depth` is meaningful only for `MicroBatchNode` (buffer count).
-- Most nodes report `0` (no queue depth provider).
+- `queue_depth` is now meaningful for channel-driven nodes created via `BoundedChannelFactory`.
+- Channels are wrapped with a counting decorator that tracks `Write - Read` and exposes `IQueueDepthProvider` on the reader.
+- Base node types (`NodeBase`, `SinkNodeBase`, `MultiInputNodeBase`) automatically register queue depth providers with `NodeMetrics`.
 
-Remaining work:
+Implementation:
 
-- Define queue depth signal per node type:
-  - for channel-driven nodes, queue depth is typically “reader backlog”; `Channel` does not expose it directly
-  - options:
-    - wrap channels with a counting decorator
-    - track in-flight + in/out deltas with sampling
-    - emit only in-flight (and document queue depth limitations)
+- `src/UKHO.Search/Pipelines/Channels/IQueueDepthProvider.cs`
+- `src/UKHO.Search/Pipelines/Channels/CountingChannel.cs`
+- `src/UKHO.Search/Pipelines/Channels/CountingChannelReader.cs`
+- `src/UKHO.Search/Pipelines/Channels/CountingChannelWriter.cs`
+- `src/UKHO.Search/Pipelines/Channels/BoundedChannelFactory.cs`
+- `src/UKHO.Search/Pipelines/Nodes/NodeBase.cs`
+- `src/UKHO.Search/Pipelines/Nodes/SinkNodeBase.cs`
+- `src/UKHO.Search/Pipelines/Nodes/MultiInputNodeBase.cs`
+- Tests: `test/UKHO.Search.Tests/Pipelines/Metrics/CountingChannelQueueDepthTests.cs`
 
 ## 4. Additional hardening / design decisions still open
 
 These items are not strictly mandated by the spec, but are likely required for productionizing the playground.
 
-- **Node naming collisions**: metrics providers are keyed by node name.
-  - Decide if node names must be unique (and enforce), or key providers by unique id.
+- **Node naming collisions**: node names are enforced as unique by `PipelineSupervisor.AddNode`.
 
-- **`StopAsync` contract**: currently mostly a no-op.
-  - Decide whether nodes must implement explicit shutdown hooks.
+- **`StopAsync` contract**: `PipelineSupervisor.StopAsync` is defined to cancel the pipeline and forward `StopAsync` to all nodes (nodes may override to perform cleanup).
 
-- **Structured logging**: spec implies logging + diagnostics sinks; current logging is callback-based.
-  - Decide whether to integrate `ILogger` (would stay in Domain if used as an abstraction only).
+- **Structured logging**: decision is to use the `ILogger` abstractions (via `Microsoft.Extensions.Logging.Abstractions`) in Domain and replace `Action<string>` callbacks across pipeline nodes.
 
 ## 5. Suggested next work items (proposed)
 

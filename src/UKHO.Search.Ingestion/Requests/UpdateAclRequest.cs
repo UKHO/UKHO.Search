@@ -8,13 +8,20 @@ namespace UKHO.Search.Ingestion.Requests
         [JsonConstructor]
         public UpdateAclRequest(string id, string[] securityTokens)
         {
-            if (string.IsNullOrWhiteSpace(id)) throw new JsonException("UpdateAclRequest.Id is required.");
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new JsonException("UpdateAclRequest.Id is required.");
+            }
 
             if (securityTokens is null || securityTokens.Length == 0)
+            {
                 throw new JsonException("UpdateAclRequest.SecurityTokens is required and must be non-empty.");
+            }
 
             if (securityTokens.Any(string.IsNullOrWhiteSpace))
+            {
                 throw new JsonException("UpdateAclRequest.SecurityTokens cannot contain null/empty tokens.");
+            }
 
             Id = id;
             SecurityTokens = securityTokens;

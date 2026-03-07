@@ -43,9 +43,13 @@
 </AzureDialog>
 
 @code {
-    [EditorRequired] [Parameter] public ConfigurationSetting ConfigurationSetting { get; set; } = null!;
 
-    [CascadingParameter] public IDialogReference DialogReference { get; set; } = null!;
+    [EditorRequired]
+    [Parameter]
+    public ConfigurationSetting ConfigurationSetting { get; set; } = null!;
+
+    [CascadingParameter]
+    public IDialogReference DialogReference { get; set; } = null!;
 
     private InputModel Input { get; } = new();
 

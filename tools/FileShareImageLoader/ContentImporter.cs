@@ -19,8 +19,7 @@ namespace FileShareImageLoader
 
             if (!Directory.Exists(contentRoot))
             {
-                Console.WriteLine(
-                    $"[ContentImporter] No seeded content directory found at '{contentRoot}'. Skipping copy.");
+                Console.WriteLine($"[ContentImporter] No seeded content directory found at '{contentRoot}'. Skipping copy.");
                 return;
             }
 
@@ -34,7 +33,7 @@ namespace FileShareImageLoader
             {
                 Console.WriteLine("[ContentImporter] Ensuring container exists...");
                 await containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken)
-                    .ConfigureAwait(false);
+                                     .ConfigureAwait(false);
             }
             catch (RequestFailedException ex)
             {
@@ -42,7 +41,8 @@ namespace FileShareImageLoader
                 throw;
             }
 
-            var zipFiles = Directory.EnumerateFiles(contentRoot, "*.zip", SearchOption.AllDirectories).ToList();
+            var zipFiles = Directory.EnumerateFiles(contentRoot, "*.zip", SearchOption.AllDirectories)
+                                    .ToList();
 
             Console.WriteLine($"[ContentImporter] Found {zipFiles.Count:N0} zip files.");
 
@@ -55,19 +55,26 @@ namespace FileShareImageLoader
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var name = Path.GetFileNameWithoutExtension(zipPath);
-                if (!Guid.TryParse(name, out _)) continue;
+                if (!Guid.TryParse(name, out var _))
+                {
+                    continue;
+                }
 
                 var blobName = $"{name}/{name}.zip";
                 var blobClient = containerClient.GetBlobClient(blobName);
 
-                if (await blobClient.ExistsAsync(cancellationToken).ConfigureAwait(false)) continue;
+                if (await blobClient.ExistsAsync(cancellationToken)
+                                    .ConfigureAwait(false))
+                {
+                    continue;
+                }
 
                 var fileInfo = new FileInfo(zipPath);
                 try
                 {
                     await using var fileStream = File.OpenRead(zipPath);
                     await blobClient.UploadAsync(fileStream, true, cancellationToken)
-                        .ConfigureAwait(false);
+                                    .ConfigureAwait(false);
                 }
                 catch (RequestFailedException ex)
                 {
@@ -81,14 +88,12 @@ namespace FileShareImageLoader
                 if (uploadedFiles % 100 == 0)
                 {
                     var elapsed = DateTimeOffset.UtcNow - started;
-                    Console.WriteLine(
-                        $"[ContentImporter] Uploaded {uploadedFiles} files ({uploadedBytes:N0} bytes) in {elapsed.TotalMinutes:N1} min");
+                    Console.WriteLine($"[ContentImporter] Uploaded {uploadedFiles} files ({uploadedBytes:N0} bytes) in {elapsed.TotalMinutes:N1} min");
                 }
             }
 
             var totalElapsed = DateTimeOffset.UtcNow - started;
-            Console.WriteLine(
-                $"[ContentImporter] Completed. Uploaded {uploadedFiles} files ({uploadedBytes:N0} bytes) in {totalElapsed.TotalMinutes:N1} min");
+            Console.WriteLine($"[ContentImporter] Completed. Uploaded {uploadedFiles} files ({uploadedBytes:N0} bytes) in {totalElapsed.TotalMinutes:N1} min");
         }
 
         private static void LogRequestFailedException(string operation, RequestFailedException ex)
@@ -97,12 +102,19 @@ namespace FileShareImageLoader
             Console.Error.WriteLine($"[ContentImporter] Status={ex.Status} ErrorCode='{ex.ErrorCode}'");
 
             if (!string.IsNullOrWhiteSpace(ex.Message))
+            {
                 Console.Error.WriteLine($"[ContentImporter] Message: {ex.Message}");
+            }
 
-            if (!string.IsNullOrWhiteSpace(ex.StackTrace)) Console.Error.WriteLine(ex.StackTrace);
+            if (!string.IsNullOrWhiteSpace(ex.StackTrace))
+            {
+                Console.Error.WriteLine(ex.StackTrace);
+            }
 
             if (!string.IsNullOrWhiteSpace(ex.ErrorCode))
+            {
                 Console.Error.WriteLine($"[ContentImporter] ErrorCode: {ex.ErrorCode}");
+            }
 
             // Note: Response headers/body are not consistently exposed on all Azure.Core versions.
         }

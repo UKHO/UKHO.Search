@@ -8,7 +8,10 @@ namespace UKHO.Search.Ingestion.Requests
         [JsonConstructor]
         public DeleteItemRequest(string id)
         {
-            if (string.IsNullOrWhiteSpace(id)) throw new JsonException("DeleteItemRequest.Id is required.");
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new JsonException("DeleteItemRequest.Id is required.");
+            }
 
             Id = id;
         }

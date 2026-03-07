@@ -2,103 +2,124 @@ using UKHO.Search.Pipelines.Nodes;
 
 namespace UKHO.Search.Pipelines.Supervision
 {
-	public sealed class PipelineSupervisor : IPipelineFatalErrorReporter
-	{
-		private readonly List<INode> nodes = new();
-		private readonly CancellationTokenSource cancellationTokenSource;
-		private Task? completion;
-		private int started;
-		private int fatalReported;
-		private Exception? fatalException;
-		private string? fatalNodeName;
+    public sealed class PipelineSupervisor : IPipelineFatalErrorReporter
+    {
+        private readonly CancellationTokenSource cancellationTokenSource;
+        private readonly List<INode> nodes = new();
+        private Task? completion;
+        private Exception? fatalException;
+        private string? fatalNodeName;
+        private int fatalReported;
+        private int started;
 
-		public PipelineSupervisor(CancellationToken cancellationToken)
-		{
-			cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-		}
+        public PipelineSupervisor(CancellationToken cancellationToken)
+        {
+            cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        }
 
-		public PipelineSupervisor(IReadOnlyList<INode> nodes, CancellationToken cancellationToken)
-			: this(cancellationToken)
-		{
-			foreach (var node in nodes)
-			{
-				AddNode(node);
-			}
-		}
+        public PipelineSupervisor(IReadOnlyList<INode> nodes, CancellationToken cancellationToken) : this(cancellationToken)
+        {
+            foreach (var node in nodes)
+            {
+                AddNode(node);
+            }
+        }
 
-		public IReadOnlyList<INode> Nodes => nodes;
+        public IReadOnlyList<INode> Nodes => nodes;
 
-		public CancellationToken CancellationToken => cancellationTokenSource.Token;
+        public CancellationToken CancellationToken => cancellationTokenSource.Token;
 
-		public Exception? FatalException => fatalException;
+        public Exception? FatalException => fatalException;
 
-		public string? FatalNodeName => fatalNodeName;
+        public string? FatalNodeName => fatalNodeName;
 
-		public Task Completion => completion ?? Task.CompletedTask;
+        public Task Completion => completion ?? Task.CompletedTask;
 
-		public Task StartAsync()
-		{
-			Interlocked.Exchange(ref started, 1);
-			completion ??= RunAsync();
-			return Task.CompletedTask;
-		}
+        public void ReportFatal(string nodeName, Exception exception)
+        {
+            if (Interlocked.CompareExchange(ref fatalReported, 1, 0) != 0)
+            {
+                return;
+            }
 
-		public void Cancel()
-		{
-			cancellationTokenSource.Cancel();
-		}
+            fatalException = exception;
+            fatalNodeName = nodeName;
+            Cancel();
+        }
 
-		public void AddNode(INode node)
-		{
-			if (Volatile.Read(ref started) != 0)
-			{
-				throw new InvalidOperationException("Cannot add nodes after the supervisor has started.");
-			}
+        public Task StartAsync()
+        {
+            Interlocked.Exchange(ref started, 1);
+            completion ??= RunAsync();
+            return Task.CompletedTask;
+        }
 
-			nodes.Add(node);
-		}
+        public void Cancel()
+        {
+            cancellationTokenSource.Cancel();
+        }
 
-		public void ReportFatal(string nodeName, Exception exception)
-		{
-			if (Interlocked.CompareExchange(ref fatalReported, 1, 0) != 0)
-			{
-				return;
-			}
+        public void AddNode(INode node)
+        {
+            if (Volatile.Read(ref started) != 0)
+            {
+                throw new InvalidOperationException("Cannot add nodes after the supervisor has started.");
+            }
 
-			fatalException = exception;
-			fatalNodeName = nodeName;
-			Cancel();
-		}
+            if (nodes.Any(n => string.Equals(n.Name, node.Name, StringComparison.Ordinal)))
+            {
+                throw new InvalidOperationException($"A node with name '{node.Name}' has already been added. Node names must be unique.");
+            }
 
-		private async Task RunAsync()
-		{
-			var nodesSnapshot = nodes.ToArray();
-			foreach (var node in nodesSnapshot)
-			{
-				await node.StartAsync(CancellationToken).ConfigureAwait(false);
-			}
+            nodes.Add(node);
+        }
 
-			var completionTasks = nodesSnapshot.Select(n => n.Completion).ToArray();
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            Cancel();
 
-			try
-			{
-				while (completionTasks.Length > 0)
-				{
-					var finished = await Task.WhenAny(completionTasks).ConfigureAwait(false);
+            var nodesSnapshot = nodes.ToArray();
+            foreach (var node in nodesSnapshot)
+            {
+                await node.StopAsync(cancellationToken)
+                          .ConfigureAwait(false);
+            }
+        }
 
-					if (finished.IsFaulted)
-					{
-						Cancel();
-						break;
-					}
+        private async Task RunAsync()
+        {
+            var nodesSnapshot = nodes.ToArray();
+            foreach (var node in nodesSnapshot)
+            {
+                await node.StartAsync(CancellationToken)
+                          .ConfigureAwait(false);
+            }
 
-					completionTasks = completionTasks.Where(t => t != finished).ToArray();
-				}
-			}
-			finally
-			{
-				await Task.WhenAll(nodesSnapshot.Select(n => n.Completion)).ConfigureAwait(false);
-			}
-		}
-	}
+            var completionTasks = nodesSnapshot.Select(n => n.Completion)
+                                               .ToArray();
+
+            try
+            {
+                while (completionTasks.Length > 0)
+                {
+                    var finished = await Task.WhenAny(completionTasks)
+                                             .ConfigureAwait(false);
+
+                    if (finished.IsFaulted)
+                    {
+                        Cancel();
+                        break;
+                    }
+
+                    completionTasks = completionTasks.Where(t => t != finished)
+                                                     .ToArray();
+                }
+            }
+            finally
+            {
+                await Task.WhenAll(nodesSnapshot.Select(n => n.Completion))
+                          .ConfigureAwait(false);
+            }
+        }
+    }
 }

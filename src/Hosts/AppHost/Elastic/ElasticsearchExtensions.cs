@@ -8,41 +8,30 @@ namespace AppHost.Elastic
 {
     public static class ElasticsearchExtensions
     {
-        public static IResourceBuilder<ElasticsearchResource> AddElasticsearchWithKibana(
-            this IDistributedApplicationBuilder builder,
-            string name,
-            IResourceBuilder<ParameterResource> password,
-            Action<IResourceBuilder<ElasticsearchResource>>? configureElasticsearch = null,
-            Action<IResourceBuilder<ContainerResource>>? configureKibana = null)
+        public static IResourceBuilder<ElasticsearchResource> AddElasticsearchWithKibana(this IDistributedApplicationBuilder builder, string name, IResourceBuilder<ParameterResource> password, Action<IResourceBuilder<ElasticsearchResource>>? configureElasticsearch = null, Action<IResourceBuilder<ContainerResource>>? configureKibana = null)
         {
-            var elasticsearch = builder
-                .AddElasticsearch(name, password)
-                .WithEnvironment("xpack.security.enrollment.enabled", "true")
-                .WithLifetime(ContainerLifetime.Persistent)
-                .WithVolume($"{name}-data", "/usr/share/elasticsearch/data");
+            var elasticsearch = builder.AddElasticsearch(name, password)
+                                       .WithEnvironment("xpack.security.enrollment.enabled", "true")
+                                       .WithLifetime(ContainerLifetime.Persistent)
+                                       .WithVolume($"{name}-data", "/usr/share/elasticsearch/data");
 
             configureElasticsearch?.Invoke(elasticsearch);
 
-            var kibana = builder
-                .AddContainer($"{name}-kibana", "docker.elastic.co/kibana/kibana", "8.17.3")
-                .WithEnvironment("ELASTICSEARCH_HOSTS", elasticsearch.GetEndpoint("http"))
-                .WithEnvironment("ELASTICSEARCH_USERNAME", "kibana_system")
-                .WithEnvironment("ELASTICSEARCH_PASSWORD", password)
-                .WithHttpEndpoint(targetPort: 5601)
-                .WithLifetime(ContainerLifetime.Persistent)
-                .WaitFor(elasticsearch)
-                .WithParentRelationship(elasticsearch);
+            var kibana = builder.AddContainer($"{name}-kibana", "docker.elastic.co/kibana/kibana", "8.17.3")
+                                .WithEnvironment("ELASTICSEARCH_HOSTS", elasticsearch.GetEndpoint("http"))
+                                .WithEnvironment("ELASTICSEARCH_USERNAME", "kibana_system")
+                                .WithEnvironment("ELASTICSEARCH_PASSWORD", password)
+                                .WithHttpEndpoint(targetPort: 5601)
+                                .WithLifetime(ContainerLifetime.Persistent)
+                                .WaitFor(elasticsearch)
+                                .WithParentRelationship(elasticsearch);
 
             configureKibana?.Invoke(kibana);
 
             return elasticsearch;
         }
 
-        public static IResourceBuilder<ElasticsearchResource> WithElasticsearchSetup(
-            this IResourceBuilder<ElasticsearchResource> builder,
-            string kibanaAdminUsername = "kibana_admin",
-            string[]? kibanaAdminRoles = null,
-            string kibanaAdminFullName = "Kibana Administrator")
+        public static IResourceBuilder<ElasticsearchResource> WithElasticsearchSetup(this IResourceBuilder<ElasticsearchResource> builder, string kibanaAdminUsername = "kibana_admin", string[]? kibanaAdminRoles = null, string kibanaAdminFullName = "Kibana Administrator")
         {
             kibanaAdminRoles ??= ["kibana_admin", "superuser"];
 
@@ -60,18 +49,21 @@ namespace AppHost.Elastic
             {
                 // Only handle events for this specific Elasticsearch resource
                 if (evt.Resource.Name != builder.Resource.Name)
+                {
                     return;
+                }
 
                 if (evt.Resource is not ElasticsearchResource elasticsearchResource)
+                {
                     return;
+                }
 
                 var logger = evt.Services.GetRequiredService<ILogger<ElasticsearchResource>>();
 
                 var password = await elasticsearchResource.PasswordParameter.GetValueAsync(ct);
                 if (password == null)
                 {
-                    logger.LogWarning("Password for Elasticsearch resource {ResourceName} is null, skipping user setup",
-                        elasticsearchResource.Name);
+                    logger.LogWarning("Password for Elasticsearch resource {ResourceName} is null, skipping user setup", elasticsearchResource.Name);
                     return;
                 }
 
@@ -81,12 +73,7 @@ namespace AppHost.Elastic
             return builder;
         }
 
-        private static async Task SetupElasticsearchUsersAsync(
-            ElasticsearchResource resource,
-            ElasticsearchSetupAnnotation setupAnnotation,
-            string password,
-            ILogger logger,
-            CancellationToken cancellationToken)
+        private static async Task SetupElasticsearchUsersAsync(ElasticsearchResource resource, ElasticsearchSetupAnnotation setupAnnotation, string password, ILogger logger, CancellationToken cancellationToken)
         {
             try
             {
@@ -101,10 +88,7 @@ namespace AppHost.Elastic
 
                 // Set kibana_system password
                 logger.LogInformation("Setting kibana_system password for {ResourceName}", resource.Name);
-                var kibanaSystemResponse = await httpClient.PostAsJsonAsync(
-                    $"{baseUrl}/_security/user/kibana_system/_password",
-                    new { password },
-                    cancellationToken);
+                var kibanaSystemResponse = await httpClient.PostAsJsonAsync($"{baseUrl}/_security/user/kibana_system/_password", new { password }, cancellationToken);
 
                 if (!kibanaSystemResponse.IsSuccessStatusCode)
                 {
@@ -116,20 +100,14 @@ namespace AppHost.Elastic
                 logger.LogInformation("Successfully set kibana_system password");
 
                 // Create admin user
-                logger.LogInformation(
-                    "Creating admin user '{Username}' for {ResourceName}",
-                    setupAnnotation.KibanaAdminUsername,
-                    resource.Name);
+                logger.LogInformation("Creating admin user '{Username}' for {ResourceName}", setupAnnotation.KibanaAdminUsername, resource.Name);
 
-                var adminUserResponse = await httpClient.PostAsJsonAsync(
-                    $"{baseUrl}/_security/user/{setupAnnotation.KibanaAdminUsername}",
-                    new
-                    {
-                        password,
-                        roles = setupAnnotation.KibanaAdminRoles,
-                        full_name = setupAnnotation.KibanaAdminFullName
-                    },
-                    cancellationToken);
+                var adminUserResponse = await httpClient.PostAsJsonAsync($"{baseUrl}/_security/user/{setupAnnotation.KibanaAdminUsername}", new
+                {
+                    password,
+                    roles = setupAnnotation.KibanaAdminRoles,
+                    full_name = setupAnnotation.KibanaAdminFullName
+                }, cancellationToken);
 
                 if (!adminUserResponse.IsSuccessStatusCode)
                 {
@@ -138,9 +116,7 @@ namespace AppHost.Elastic
                     return;
                 }
 
-                logger.LogInformation(
-                    "Successfully created admin user '{Username}'",
-                    setupAnnotation.KibanaAdminUsername);
+                logger.LogInformation("Successfully created admin user '{Username}'", setupAnnotation.KibanaAdminUsername);
             }
             catch (Exception ex)
             {

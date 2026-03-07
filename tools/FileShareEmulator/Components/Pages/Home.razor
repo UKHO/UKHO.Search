@@ -32,9 +32,7 @@
 {
     private StatisticsSnapshot? _snapshot;
 
-    private IEnumerable<DisplayRow> Rows => _snapshot is null
-        ? Array.Empty<DisplayRow>()
-        : GetRows(_snapshot);
+    private IEnumerable<DisplayRow> Rows => _snapshot is null ? Array.Empty<DisplayRow>() : GetRows(_snapshot);
 
     private static IEnumerable<DisplayRow> GetRows(StatisticsSnapshot snapshot)
     {
@@ -55,6 +53,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _snapshot = await StatisticsService.GetAsync().ConfigureAwait(false);
+        _snapshot = await StatisticsService.GetAsync()
+                                           .ConfigureAwait(false);
     }
 }

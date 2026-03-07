@@ -23,7 +23,9 @@ namespace UKHO.Search.Services.Ingestion.Providers
             ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
             if (!_providers.TryGetValue(name, out var provider))
+            {
                 throw new KeyNotFoundException($"No ingestion provider registered with name '{name}'.");
+            }
 
             return provider;
         }

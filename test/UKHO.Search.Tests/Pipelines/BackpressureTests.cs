@@ -4,36 +4,29 @@ using Xunit;
 
 namespace UKHO.Search.Tests.Pipelines
 {
-	public sealed class BackpressureTests
-	{
-		[Fact]
-		public async Task Bounded_channels_apply_backpressure_upstream_when_sink_is_slow()
-		{
-			using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+    public sealed class BackpressureTests
+    {
+        [Fact]
+        public async Task Bounded_channels_apply_backpressure_upstream_when_sink_is_slow()
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
-			var messageCount = 20;
-			var sinkDelay = TimeSpan.FromMilliseconds(100);
+            var messageCount = 20;
+            var sinkDelay = TimeSpan.FromMilliseconds(100);
 
-			var graph = HelloPipelineGraph.Create(
-				messageCount,
-				keyCardinality: 2,
-				partitions: 1,
-				capacity: 1,
-				sinkDelay: sinkDelay,
-				transform: (p, _) => ValueTask.FromResult(p),
-				cts.Token);
+            var graph = HelloPipelineGraph.Create(messageCount, 2, 1, 1, sinkDelay, (p, _) => ValueTask.FromResult(p), cts.Token);
 
-			var stopwatch = Stopwatch.StartNew();
+            var stopwatch = Stopwatch.StartNew();
 
-			await graph.Supervisor.StartAsync();
-			await graph.Source.Completion.WaitAsync(cts.Token);
+            await graph.Supervisor.StartAsync();
+            await graph.Source.Completion.WaitAsync(cts.Token);
 
-			var sourceCompletedAt = stopwatch.Elapsed;
+            var sourceCompletedAt = stopwatch.Elapsed;
 
-			await graph.Supervisor.Completion.WaitAsync(cts.Token);
+            await graph.Supervisor.Completion.WaitAsync(cts.Token);
 
-			var expectedMinimum = TimeSpan.FromMilliseconds(messageCount * sinkDelay.TotalMilliseconds * 0.5);
-			sourceCompletedAt.ShouldBeGreaterThan(expectedMinimum);
-		}
-	}
+            var expectedMinimum = TimeSpan.FromMilliseconds(messageCount * sinkDelay.TotalMilliseconds * 0.5);
+            sourceCompletedAt.ShouldBeGreaterThan(expectedMinimum);
+        }
+    }
 }

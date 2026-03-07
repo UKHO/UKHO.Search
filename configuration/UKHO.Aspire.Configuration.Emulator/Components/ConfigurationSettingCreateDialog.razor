@@ -42,7 +42,9 @@
 </AzureDialog>
 
 @code {
-    [CascadingParameter] public IDialogReference DialogReference { get; set; } = null!;
+
+    [CascadingParameter]
+    public IDialogReference DialogReference { get; set; } = null!;
 
     private InputModel Input { get; } = new();
 

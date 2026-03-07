@@ -8,47 +8,46 @@ namespace UKHO.Aspire.Configuration
 {
     public static class ConfigurationExtensions
     {
-        public static TBuilder AddConfiguration<TBuilder>(this TBuilder builder, string serviceName,
-            string componentName, string? serviceIdentityId = null, int refreshIntervalSeconds = 30)
-            where TBuilder : IHostApplicationBuilder
+        public static TBuilder AddConfiguration<TBuilder>(this TBuilder builder, string serviceName, string componentName, string? serviceIdentityId = null, int refreshIntervalSeconds = 30) where TBuilder : IHostApplicationBuilder
         {
             var environment = AddsEnvironment.GetEnvironment();
 
             if (environment == AddsEnvironment.Local)
+            {
                 builder.Configuration.AddAzureAppConfiguration(o =>
                 {
-                    const string serviceEnvironmentKey =
-                        $"services__{WellKnownConfigurationName.ConfigurationServiceName}__http__0";
+                    const string serviceEnvironmentKey = $"services__{WellKnownConfigurationName.ConfigurationServiceName}__http__0";
 
                     var url = Environment.GetEnvironmentVariable(serviceEnvironmentKey)!;
 
                     var connectionString = $"Endpoint={url};Id=aac-credential;Secret=c2VjcmV0;";
 
                     o.Connect(connectionString)
-                        .Select("*", serviceName.ToLowerInvariant())
-                        .ConfigureRefresh(refresh =>
-                        {
-                            refresh.Register(WellKnownConfigurationName.ReloadSentinelKey, refreshAll: true,
-                                    label: serviceName.ToLowerInvariant())
+                     .Select("*", serviceName.ToLowerInvariant())
+                     .ConfigureRefresh(refresh =>
+                     {
+                         refresh.Register(WellKnownConfigurationName.ReloadSentinelKey, refreshAll: true, label: serviceName.ToLowerInvariant())
                                 .SetRefreshInterval(TimeSpan.FromSeconds(refreshIntervalSeconds));
-                        });
+                     });
                 });
+            }
             else
+            {
                 builder.AddAzureAppConfiguration(componentName.ToLowerInvariant(), null, o =>
                 {
                     o.Select("*", serviceName.ToLowerInvariant())
-                        .ConfigureRefresh(refresh =>
-                        {
-                            refresh.Register(WellKnownConfigurationName.ReloadSentinelKey, refreshAll: true,
-                                    label: serviceName.ToLowerInvariant())
+                     .ConfigureRefresh(refresh =>
+                     {
+                         refresh.Register(WellKnownConfigurationName.ReloadSentinelKey, refreshAll: true, label: serviceName.ToLowerInvariant())
                                 .SetRefreshInterval(TimeSpan.FromSeconds(refreshIntervalSeconds));
-                        });
+                     });
 
                     o.ConfigureKeyVault(keyVaultOptions =>
                     {
                         keyVaultOptions.SetCredential(new ManagedIdentityCredential(serviceIdentityId));
                     });
                 });
+            }
 
             builder.Services.AddSingleton<IExternalServiceRegistry, ExternalServiceRegistry>();
 

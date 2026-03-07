@@ -19,14 +19,13 @@ namespace FileShareImageBuilder
         {
             try
             {
-                var targetConnectionString =
-                    ConfigurationReader.GetTargetDatabaseConnectionString(StorageNames.FileShareEmulatorDatabase);
+                var targetConnectionString = ConfigurationReader.GetTargetDatabaseConnectionString(StorageNames.FileShareEmulatorDatabase);
 
                 var bacpacDirectory = ConfigurationReader.GetDataImagePath();
                 Directory.CreateDirectory(bacpacDirectory);
                 var bacpacPath = Path.Combine(bacpacDirectory, "metadata.bacpac");
-                await ExportAndImportBacpacAsync(_sourceConnectionString, targetConnectionString, bacpacPath,
-                    cancellationToken).ConfigureAwait(false);
+                await ExportAndImportBacpacAsync(_sourceConnectionString, targetConnectionString, bacpacPath, cancellationToken)
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -35,33 +34,37 @@ namespace FileShareImageBuilder
             }
         }
 
-        private static async Task ExportAndImportBacpacAsync(
-            string sourceConnectionString,
-            string targetConnectionString,
-            string bacpacPath,
-            CancellationToken cancellationToken)
+        private static async Task ExportAndImportBacpacAsync(string sourceConnectionString, string targetConnectionString, string bacpacPath, CancellationToken cancellationToken)
         {
-            if (File.Exists(bacpacPath)) File.Delete(bacpacPath);
+            if (File.Exists(bacpacPath))
+            {
+                File.Delete(bacpacPath);
+            }
 
-            var sourceDbName =
-                await GetDatabaseNameAsync(sourceConnectionString, cancellationToken).ConfigureAwait(false);
+            var sourceDbName = await GetDatabaseNameAsync(sourceConnectionString, cancellationToken)
+                .ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(sourceDbName))
+            {
                 throw new InvalidOperationException("Could not determine source database name.");
+            }
 
-            var targetDbName =
-                await GetDatabaseNameAsync(targetConnectionString, cancellationToken).ConfigureAwait(false);
-            if (!string.Equals(targetDbName, StorageNames.FileShareEmulatorDatabase,
-                    StringComparison.OrdinalIgnoreCase))
-                throw new InvalidOperationException(
-                    $"Refusing to import: connected to unexpected target database '{targetDbName}'. Expected '{StorageNames.FileShareEmulatorDatabase}'.");
+            var targetDbName = await GetDatabaseNameAsync(targetConnectionString, cancellationToken)
+                .ConfigureAwait(false);
+            if (!string.Equals(targetDbName, StorageNames.FileShareEmulatorDatabase, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException($"Refusing to import: connected to unexpected target database '{targetDbName}'. Expected '{StorageNames.FileShareEmulatorDatabase}'.");
+            }
 
             var exportService = new DacServices(sourceConnectionString);
             exportService.ProgressChanged += (_, args) =>
             {
-                if (!string.IsNullOrWhiteSpace(args.Message)) Console.WriteLine($"{args.Message}");
+                if (!string.IsNullOrWhiteSpace(args.Message))
+                {
+                    Console.WriteLine($"{args.Message}");
+                }
             };
             await Task.Run(() => exportService.ExportBacpac(bacpacPath, sourceDbName), cancellationToken)
-                .ConfigureAwait(false);
+                      .ConfigureAwait(false);
             Console.WriteLine($"Export complete: {bacpacPath}");
 
             Console.WriteLine($"Dropping and recreating target database {targetDbName}...");
@@ -73,14 +76,17 @@ namespace FileShareImageBuilder
             var importService = new DacServices(targetConnectionString);
             importService.ProgressChanged += (_, args) =>
             {
-                if (!string.IsNullOrWhiteSpace(args.Message)) Console.WriteLine($"{args.Message}");
+                if (!string.IsNullOrWhiteSpace(args.Message))
+                {
+                    Console.WriteLine($"{args.Message}");
+                }
             };
 
             await using (var bacpacStream = File.OpenRead(bacpacPath))
             {
                 using var bacpac = BacPackage.Load(bacpacStream);
                 await Task.Run(() => importService.ImportBacpac(bacpac, targetDbName!), cancellationToken)
-                    .ConfigureAwait(false);
+                          .ConfigureAwait(false);
             }
 
             Console.WriteLine("Import complete");
@@ -89,6 +95,7 @@ namespace FileShareImageBuilder
             try
             {
                 for (var attempt = 1; attempt <= 5; attempt++)
+                {
                     try
                     {
                         File.Delete(bacpacPath);
@@ -97,38 +104,38 @@ namespace FileShareImageBuilder
                     }
                     catch when (attempt < 5)
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(attempt), cancellationToken).ConfigureAwait(false);
+                        await Task.Delay(TimeSpan.FromSeconds(attempt), cancellationToken)
+                                  .ConfigureAwait(false);
                     }
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(
-                    $"[MetadataImporter] Failed to delete source bacpac '{bacpacPath}': {ex.GetType().Name}: {ex.Message}");
+                Console.WriteLine($"[MetadataImporter] Failed to delete source bacpac '{bacpacPath}': {ex.GetType().Name}: {ex.Message}");
             }
         }
 
-        private static async Task<string?> GetDatabaseNameAsync(string sqlConnectionString,
-            CancellationToken cancellationToken)
+        private static async Task<string?> GetDatabaseNameAsync(string sqlConnectionString, CancellationToken cancellationToken)
         {
             await using var sqlConnection = new SqlConnection(sqlConnectionString);
-            await sqlConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await sqlConnection.OpenAsync(cancellationToken)
+                               .ConfigureAwait(false);
             await using var dbNameCmd = sqlConnection.CreateCommand();
             dbNameCmd.CommandType = CommandType.Text;
             dbNameCmd.CommandTimeout = 30;
             dbNameCmd.CommandText = "SELECT DB_NAME();";
-            return (await dbNameCmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false))?.ToString();
+            return (await dbNameCmd.ExecuteScalarAsync(cancellationToken)
+                                   .ConfigureAwait(false))?.ToString();
         }
 
-        private static async Task DropAndRecreateDatabaseAsync(
-            string targetConnectionString,
-            string targetDatabaseName,
-            CancellationToken cancellationToken)
+        private static async Task DropAndRecreateDatabaseAsync(string targetConnectionString, string targetDatabaseName, CancellationToken cancellationToken)
         {
             var builder = new SqlConnectionStringBuilder(targetConnectionString);
             builder.InitialCatalog = "master";
 
             await using var masterConnection = new SqlConnection(builder.ConnectionString);
-            await masterConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await masterConnection.OpenAsync(cancellationToken)
+                                  .ConfigureAwait(false);
 
             var escapedDbName = EscapeSqlIdentifier(targetDatabaseName);
             var dropAndCreateSql = $@"
@@ -144,7 +151,8 @@ CREATE DATABASE {escapedDbName};";
             dropAndCreateCmd.CommandType = CommandType.Text;
             dropAndCreateCmd.CommandTimeout = 0;
             dropAndCreateCmd.CommandText = dropAndCreateSql;
-            await dropAndCreateCmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+            await dropAndCreateCmd.ExecuteNonQueryAsync(cancellationToken)
+                                  .ConfigureAwait(false);
         }
 
         private static string EscapeSqlIdentifier(string identifier)

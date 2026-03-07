@@ -1,92 +1,92 @@
 using System.Diagnostics;
 using System.Threading.Channels;
+using Microsoft.Extensions.Logging;
 using UKHO.Search.Pipelines.Metrics;
 using UKHO.Search.Pipelines.Supervision;
 
 namespace UKHO.Search.Pipelines.Nodes
 {
-	public abstract class SourceNodeBase<TOut> : INode
-	{
-		private readonly ChannelWriter<TOut> output;
-		private readonly Action<string>? log;
-		private readonly IPipelineFatalErrorReporter? fatalErrorReporter;
-		private readonly NodeMetrics metrics;
-		private Task? completion;
+    public abstract class SourceNodeBase<TOut> : INode
+    {
+        private readonly IPipelineFatalErrorReporter? fatalErrorReporter;
+        private readonly ILogger? logger;
+        private readonly NodeMetrics metrics;
+        private readonly ChannelWriter<TOut> output;
+        private Task? completion;
 
-		protected SourceNodeBase(
-			string name,
-			ChannelWriter<TOut> output,
-			Action<string>? log = null,
-			IPipelineFatalErrorReporter? fatalErrorReporter = null)
-		{
-			Name = name;
-			this.output = output;
-			this.log = log;
-			this.fatalErrorReporter = fatalErrorReporter;
-			metrics = new NodeMetrics(name);
-		}
+        protected SourceNodeBase(string name, ChannelWriter<TOut> output, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null)
+        {
+            Name = name;
+            this.output = output;
+            this.logger = logger;
+            this.fatalErrorReporter = fatalErrorReporter;
+            metrics = new NodeMetrics(name);
+        }
 
-		protected ValueTask WriteAsync(ChannelWriter<TOut> output, TOut item, CancellationToken cancellationToken)
-		{
-			return WriteCoreAsync(output, item, cancellationToken);
-		}
+        public string Name { get; }
 
-		private async ValueTask WriteCoreAsync(ChannelWriter<TOut> output, TOut item, CancellationToken cancellationToken)
-		{
-			await output.WriteAsync(item, cancellationToken).ConfigureAwait(false);
-			metrics.RecordOut(item);
-		}
+        public Task Completion => completion ?? Task.CompletedTask;
 
-		public string Name { get; }
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            completion ??= Task.Run(() => RunAsync(cancellationToken), CancellationToken.None);
+            return Task.CompletedTask;
+        }
 
-		public Task Completion => completion ?? Task.CompletedTask;
+        public virtual ValueTask StopAsync(CancellationToken cancellationToken)
+        {
+            return ValueTask.CompletedTask;
+        }
 
-		public Task StartAsync(CancellationToken cancellationToken)
-		{
-			completion ??= Task.Run(() => RunAsync(cancellationToken), CancellationToken.None);
-			return Task.CompletedTask;
-		}
+        protected ValueTask WriteAsync(ChannelWriter<TOut> output, TOut item, CancellationToken cancellationToken)
+        {
+            return WriteCoreAsync(output, item, cancellationToken);
+        }
 
-		public virtual ValueTask StopAsync(CancellationToken cancellationToken)
-		{
-			return ValueTask.CompletedTask;
-		}
+        private async ValueTask WriteCoreAsync(ChannelWriter<TOut> output, TOut item, CancellationToken cancellationToken)
+        {
+            await output.WriteAsync(item, cancellationToken)
+                        .ConfigureAwait(false);
+            metrics.RecordOut(item);
+        }
 
-		protected abstract ValueTask ProduceAsync(ChannelWriter<TOut> output, CancellationToken cancellationToken);
+        protected abstract ValueTask ProduceAsync(ChannelWriter<TOut> output, CancellationToken cancellationToken);
 
-		private async Task RunAsync(CancellationToken cancellationToken)
-		{
-			try
-			{
-				metrics.IncrementInFlight();
-				var started = Stopwatch.GetTimestamp();
-				try
-				{
-					await ProduceAsync(output, cancellationToken).ConfigureAwait(false);
-				}
-				finally
-				{
-					var elapsed = Stopwatch.GetElapsedTime(started);
-					metrics.RecordDuration(elapsed);
-					metrics.DecrementInFlight();
-				}
-				output.TryComplete();
-			}
-			catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-			{
-				output.TryComplete();
-			}
-			catch (Exception ex)
-			{
-				log?.Invoke($"Node '{Name}' failed: {ex.GetType().Name}: {ex.Message}");
-				output.TryComplete(ex);
-				fatalErrorReporter?.ReportFatal(Name, ex);
-				throw;
-			}
-			finally
-			{
-				metrics.Dispose();
-			}
-		}
-	}
+        private async Task RunAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                metrics.IncrementInFlight();
+                var started = Stopwatch.GetTimestamp();
+                try
+                {
+                    await ProduceAsync(output, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                finally
+                {
+                    var elapsed = Stopwatch.GetElapsedTime(started);
+                    metrics.RecordDuration(elapsed);
+                    metrics.DecrementInFlight();
+                }
+
+                output.TryComplete();
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                output.TryComplete();
+            }
+            catch (Exception ex)
+            {
+                logger?.LogError(ex, "Node '{NodeName}' failed.", Name);
+                output.TryComplete(ex);
+                fatalErrorReporter?.ReportFatal(Name, ex);
+                throw;
+            }
+            finally
+            {
+                metrics.Dispose();
+            }
+        }
+    }
 }

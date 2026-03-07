@@ -7,8 +7,7 @@ namespace UKHO.Aspire.Configuration.Emulator.Messaging.EventGrid
     {
         public EventGridEvent Create(string eventType, string dataVersion, BinaryData data)
         {
-            var subject = httpContextAccessor.HttpContext?.Request.GetDisplayUrl() ??
-                          throw new InvalidOperationException();
+            var subject = httpContextAccessor.HttpContext?.Request.GetDisplayUrl() ?? throw new InvalidOperationException();
 
             return new EventGridEvent(subject, eventType, dataVersion, data);
         }

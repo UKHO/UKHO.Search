@@ -11,6 +11,9 @@ Be concise but complete. Prefer current research (Microsoft Learn) for Microsoft
 - Add `//` comments on their own line for non-obvious logic.
 - Do not interact with git (no branch creation, no git commands) unless explicitly requested.
 
+## Logging Standards
+- Prefer using `ILogger` abstractions (Microsoft.Extensions.Logging.Abstractions) over `Action<string>` logging callbacks in this codebase, including Domain pipeline nodes.
+
 ## Coding Standards
 - Never declare multiple classes/interfaces/enums in the same C# file; split each type into its own file.
 

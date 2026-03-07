@@ -19,7 +19,9 @@ namespace FileShareImageBuilder
         {
             var environmentName = Environment.GetEnvironmentVariable("environment");
             if (string.IsNullOrWhiteSpace(environmentName))
+            {
                 throw new InvalidOperationException("Missing required environment variable 'environment'.");
+            }
 
             var dataImagePath = ConfigurationReader.GetDataImagePath();
             var binDirectory = Path.Combine(dataImagePath, "bin");
@@ -29,8 +31,8 @@ namespace FileShareImageBuilder
             RecreateEmptyDirectory(contentDirectory);
 
             var invalidFilePath = Path.Combine(dataImagePath, "invalid.json");
-            var invalidBatchIds =
-                await ReadInvalidBatchIdsAsync(invalidFilePath, cancellationToken).ConfigureAwait(false);
+            var invalidBatchIds = await ReadInvalidBatchIdsAsync(invalidFilePath, cancellationToken)
+                .ConfigureAwait(false);
 
             await using var cancellationRegistration = cancellationToken.Register(() =>
             {
@@ -48,8 +50,7 @@ namespace FileShareImageBuilder
 
             var maxBatchCount = ConfigurationReader.GetDataImageCount();
 
-            var targetConnectionString =
-                ConfigurationReader.GetTargetDatabaseConnectionString(StorageNames.FileShareEmulatorDatabase);
+            var targetConnectionString = ConfigurationReader.GetTargetDatabaseConnectionString(StorageNames.FileShareEmulatorDatabase);
 
             var failedBatchIds = new HashSet<Guid>();
 
@@ -65,25 +66,18 @@ namespace FileShareImageBuilder
             {
                 if (totalBatchesDownloaded >= maxBatchCount)
                 {
-                    Console.WriteLine(
-                        $"[ContentImporter] Reached batch count limit. Downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed}, {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
+                    Console.WriteLine($"[ContentImporter] Reached batch count limit. Downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed}, {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
                     break;
                 }
 
                 pageNumber++;
 
-                var batchIds = await GetBatchIdsPageAsync(
-                    targetConnectionString,
-                    pageSize,
-                    lastCreatedOn,
-                    lastId,
-                    invalidBatchIds,
-                    cancellationToken).ConfigureAwait(false);
+                var batchIds = await GetBatchIdsPageAsync(targetConnectionString, pageSize, lastCreatedOn, lastId, invalidBatchIds, cancellationToken)
+                    .ConfigureAwait(false);
 
                 if (batchIds.Count == 0)
                 {
-                    Console.WriteLine(
-                        $"[ContentImporter] No more batches found. Downloaded {totalBatchesDownloaded} batches, {totalBatchesFailed} failed, {totalBytesDownloaded:N0} bytes.");
+                    Console.WriteLine($"[ContentImporter] No more batches found. Downloaded {totalBatchesDownloaded} batches, {totalBatchesFailed} failed, {totalBytesDownloaded:N0} bytes.");
                     break;
                 }
 
@@ -91,8 +85,7 @@ namespace FileShareImageBuilder
                 {
                     if (totalBatchesDownloaded >= maxBatchCount)
                     {
-                        Console.WriteLine(
-                            $"[ContentImporter] Reached batch count limit. Downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed}, {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
+                        Console.WriteLine($"[ContentImporter] Reached batch count limit. Downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed}, {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
                         break;
                     }
 
@@ -119,7 +112,7 @@ namespace FileShareImageBuilder
                     try
                     {
                         var result = await _fileShareClient.DownloadZipFileAsync(batchIdString, cancellationToken)
-                            .ConfigureAwait(false);
+                                                           .ConfigureAwait(false);
                         if (!result.IsSuccess(out var stream, out var error) || stream is null)
                         {
                             totalBatchesFailed++;
@@ -139,17 +132,16 @@ namespace FileShareImageBuilder
                         }
 
                         await using (stream.ConfigureAwait(false))
-                        await using (var fileStream = new FileStream(zipPath, FileMode.Create, FileAccess.Write,
-                                         FileShare.None, 128 * 1024, true))
+                        await using (var fileStream = new FileStream(zipPath, FileMode.Create, FileAccess.Write, FileShare.None, 128 * 1024, true))
                         {
-                            await stream.CopyToAsync(fileStream, cancellationToken).ConfigureAwait(false);
+                            await stream.CopyToAsync(fileStream, cancellationToken)
+                                        .ConfigureAwait(false);
                         }
                     }
                     catch (Exception ex)
                     {
                         totalBatchesFailed++;
-                        Console.WriteLine(
-                            $"[ContentImporter] Failed batch '{batchIdString}': {ex.GetType().Name}: {ex.Message}");
+                        Console.WriteLine($"[ContentImporter] Failed batch '{batchIdString}': {ex.GetType().Name}: {ex.Message}");
 
                         failedBatchIds.Add(batchId);
                         invalidBatchIds.Add(batchId);
@@ -173,23 +165,27 @@ namespace FileShareImageBuilder
                     lastId = batch.Id;
 
                     if (totalBatchesProcessed % 100 == 0)
-                        Console.WriteLine(
-                            $"[ContentImporter] Progress: downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed} (processed {totalBatchesProcessed}), {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
+                    {
+                        Console.WriteLine($"[ContentImporter] Progress: downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed} (processed {totalBatchesProcessed}), {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
+                    }
 
                     if (totalBytesDownloaded >= maxBytes)
                     {
-                        Console.WriteLine(
-                            $"[ContentImporter] Reached download limit. Downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed}, {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
+                        Console.WriteLine($"[ContentImporter] Reached download limit. Downloaded {totalBatchesDownloaded}, failed {totalBatchesFailed}, {totalBytesDownloaded:N0}/{maxBytes:N0} bytes.");
                         break;
                     }
                 }
 
-                if (totalBatchesDownloaded >= maxBatchCount || totalBytesDownloaded >= maxBytes) break;
+                if (totalBatchesDownloaded >= maxBatchCount || totalBytesDownloaded >= maxBytes)
+                {
+                    break;
+                }
 
                 // lastCreatedOn/lastId are now updated per-batch to avoid retrying failed ones.
             }
 
-            await WriteInvalidBatchIdsAsync(invalidFilePath, invalidBatchIds, cancellationToken).ConfigureAwait(false);
+            await WriteInvalidBatchIdsAsync(invalidFilePath, invalidBatchIds, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         private static void WriteInvalidBatchIds(string invalidFilePath, HashSet<Guid> invalidBatchIds)
@@ -198,27 +194,26 @@ namespace FileShareImageBuilder
 
             var options = new JsonSerializerOptions { WriteIndented = true };
 
-            File.WriteAllText(invalidFilePath,
-                JsonSerializer.Serialize(invalidBatchIds.OrderBy(x => x).ToList(), options));
+            File.WriteAllText(invalidFilePath, JsonSerializer.Serialize(invalidBatchIds.OrderBy(x => x)
+                                                                                       .ToList(), options));
         }
 
-        private static async Task<HashSet<Guid>> ReadInvalidBatchIdsAsync(string invalidFilePath,
-            CancellationToken cancellationToken)
+        private static async Task<HashSet<Guid>> ReadInvalidBatchIdsAsync(string invalidFilePath, CancellationToken cancellationToken)
         {
-            if (!File.Exists(invalidFilePath)) return new HashSet<Guid>();
+            if (!File.Exists(invalidFilePath))
+            {
+                return new HashSet<Guid>();
+            }
 
             await using var stream = File.OpenRead(invalidFilePath);
 
             var ids = await JsonSerializer.DeserializeAsync<List<Guid>>(stream, cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
+                                          .ConfigureAwait(false);
 
-            return ids is { Count: > 0 }
-                ? new HashSet<Guid>(ids)
-                : new HashSet<Guid>();
+            return ids is { Count: > 0 } ? new HashSet<Guid>(ids) : new HashSet<Guid>();
         }
 
-        private static async Task WriteInvalidBatchIdsAsync(string invalidFilePath, HashSet<Guid> invalidBatchIds,
-            CancellationToken cancellationToken)
+        private static async Task WriteInvalidBatchIdsAsync(string invalidFilePath, HashSet<Guid> invalidBatchIds, CancellationToken cancellationToken)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(invalidFilePath)!);
 
@@ -229,21 +224,16 @@ namespace FileShareImageBuilder
 
             await using var stream = File.Create(invalidFilePath);
 
-            await JsonSerializer
-                .SerializeAsync(stream, invalidBatchIds.OrderBy(x => x).ToList(), options, cancellationToken)
-                .ConfigureAwait(false);
+            await JsonSerializer.SerializeAsync(stream, invalidBatchIds.OrderBy(x => x)
+                                                                       .ToList(), options, cancellationToken)
+                                .ConfigureAwait(false);
         }
 
-        private static async Task<List<(Guid Id, DateTime CreatedOn)>> GetBatchIdsPageAsync(
-            string targetConnectionString,
-            int pageSize,
-            DateTime? lastCreatedOn,
-            Guid? lastId,
-            HashSet<Guid> invalidBatchIds,
-            CancellationToken cancellationToken)
+        private static async Task<List<(Guid Id, DateTime CreatedOn)>> GetBatchIdsPageAsync(string targetConnectionString, int pageSize, DateTime? lastCreatedOn, Guid? lastId, HashSet<Guid> invalidBatchIds, CancellationToken cancellationToken)
         {
             await using var sqlConnection = new SqlConnection(targetConnectionString);
-            await sqlConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await sqlConnection.OpenAsync(cancellationToken)
+                               .ConfigureAwait(false);
 
             await using var cmd = sqlConnection.CreateCommand();
             cmd.CommandType = CommandType.Text;
@@ -264,8 +254,7 @@ WHERE [Status] = 3
   AND (([CreatedOn] < @lastCreatedOn) OR ([CreatedOn] = @lastCreatedOn AND [Id] < @lastId))
 ORDER BY [CreatedOn] DESC, [Id] DESC;";
 
-                cmd.Parameters.Add(new SqlParameter("@lastCreatedOn", SqlDbType.DateTime2)
-                    { Value = lastCreatedOn.Value });
+                cmd.Parameters.Add(new SqlParameter("@lastCreatedOn", SqlDbType.DateTime2) { Value = lastCreatedOn.Value });
                 cmd.Parameters.Add(new SqlParameter("@lastId", SqlDbType.UniqueIdentifier) { Value = lastId.Value });
             }
 
@@ -273,13 +262,18 @@ ORDER BY [CreatedOn] DESC, [Id] DESC;";
 
             var results = new List<(Guid Id, DateTime CreatedOn)>(pageSize);
 
-            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken)
+                                              .ConfigureAwait(false);
 
-            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            while (await reader.ReadAsync(cancellationToken)
+                               .ConfigureAwait(false))
             {
                 var id = reader.GetGuid(0);
                 var createdOn = reader.GetDateTime(1);
-                if (!invalidBatchIds.Contains(id)) results.Add((id, createdOn));
+                if (!invalidBatchIds.Contains(id))
+                {
+                    results.Add((id, createdOn));
+                }
             }
 
             return results;
@@ -287,7 +281,10 @@ ORDER BY [CreatedOn] DESC, [Id] DESC;";
 
         private static void RecreateEmptyDirectory(string directoryPath)
         {
-            if (Directory.Exists(directoryPath)) Directory.Delete(directoryPath, true);
+            if (Directory.Exists(directoryPath))
+            {
+                Directory.Delete(directoryPath, true);
+            }
 
             Directory.CreateDirectory(directoryPath);
         }
@@ -295,9 +292,13 @@ ORDER BY [CreatedOn] DESC, [Id] DESC;";
         private static string GetMostSignificantByteHex(Guid guid)
         {
             Span<byte> bytes = stackalloc byte[16];
-            if (!guid.TryWriteBytes(bytes)) bytes = guid.ToByteArray();
+            if (!guid.TryWriteBytes(bytes))
+            {
+                bytes = guid.ToByteArray();
+            }
 
-            return bytes[0].ToString("X2");
+            return bytes[0]
+                .ToString("X2");
         }
     }
 }

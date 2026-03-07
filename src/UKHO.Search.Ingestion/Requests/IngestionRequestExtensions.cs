@@ -120,8 +120,7 @@ namespace UKHO.Search.Ingestion.Requests
             ArgumentNullException.ThrowIfNull(request);
             ArgumentNullException.ThrowIfNull(name);
 
-            var properties = request.Properties ??
-                             throw new InvalidOperationException("AddItemRequest.Properties cannot be null.");
+            var properties = request.Properties ?? throw new InvalidOperationException("AddItemRequest.Properties cannot be null.");
 
             var match = properties.FirstOrDefault(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase));
             if (match is null || match.Type != type)
@@ -145,8 +144,7 @@ namespace UKHO.Search.Ingestion.Requests
             ArgumentNullException.ThrowIfNull(request);
             ArgumentNullException.ThrowIfNull(name);
 
-            var properties = request.Properties ??
-                             throw new InvalidOperationException("AddItemRequest.Properties cannot be null.");
+            var properties = request.Properties ?? throw new InvalidOperationException("AddItemRequest.Properties cannot be null.");
 
             var match = properties.FirstOrDefault(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase));
             if (match is null || match.Type != type)

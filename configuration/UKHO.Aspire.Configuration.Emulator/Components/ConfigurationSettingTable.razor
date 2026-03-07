@@ -16,7 +16,8 @@
         <AzureTableDataCell>@context.LastModified.ToString("G")</AzureTableDataCell>
         <AzureTableDataCell>@context.ContentType</AzureTableDataCell>
         <AzureTableDataCell>
-            @{ var id = Guid.NewGuid().ToString(); }
+            @{ var id = Guid.NewGuid()
+                            .ToString(); }
 
             <AzureIcon id="@id" Value="@(new AzureIcon.Icons.Regular.Size16.EllipsisHorizontal())"/>
 
@@ -30,17 +31,23 @@
 
 @code {
 
-    [Parameter] public IEnumerable<ConfigurationSetting> ConfigurationSettings { get; set; } = [];
+    [Parameter]
+    public IEnumerable<ConfigurationSetting> ConfigurationSettings { get; set; } = [];
 
-    [Parameter] public bool IsValuesHidden { get; set; }
+    [Parameter]
+    public bool IsValuesHidden { get; set; }
 
-    [Parameter] public EventCallback<ConfigurationSetting> OnDeleteClick { get; set; }
+    [Parameter]
+    public EventCallback<ConfigurationSetting> OnDeleteClick { get; set; }
 
-    [Parameter] public EventCallback<ConfigurationSetting> OnEditClick { get; set; }
+    [Parameter]
+    public EventCallback<ConfigurationSetting> OnEditClick { get; set; }
 
-    [Parameter] public ICollection<ConfigurationSetting> SelectedConfigurationSettings { get; set; } = [];
+    [Parameter]
+    public ICollection<ConfigurationSetting> SelectedConfigurationSettings { get; set; } = [];
 
-    [Parameter] public EventCallback<ICollection<ConfigurationSetting>> SelectedConfigurationSettingsChanged { get; set; }
+    [Parameter]
+    public EventCallback<ICollection<ConfigurationSetting>> SelectedConfigurationSettingsChanged { get; set; }
 
     private async Task HandleDeleteClick(ConfigurationSetting setting)
     {

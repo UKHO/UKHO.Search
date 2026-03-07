@@ -9,8 +9,7 @@ namespace UKHO.Aspire.Configuration.Emulator.Locks
 {
     public class LockHandler
     {
-        public static async Task<Results<ConfigurationSettingResult, NotFound, PreconditionFailedResult>> Lock(
-            [FromServices] IConfigurationSettingRepository repository,
+        public static async Task<Results<ConfigurationSettingResult, NotFound, PreconditionFailedResult>> Lock([FromServices] IConfigurationSettingRepository repository,
             [FromRoute] string key,
             [FromQuery] string label = LabelFilter.Null,
             [FromHeader(Name = "If-Match")] string? ifMatch = default,
@@ -21,25 +20,34 @@ namespace UKHO.Aspire.Configuration.Emulator.Locks
             activity?.SetTag(Telemetry.RouteKey, key);
             activity?.SetTag(Telemetry.QueryLabel, label);
 
-            ifMatch = ifMatch?.TrimStart('"').TrimEnd('"');
+            ifMatch = ifMatch?.TrimStart('"')
+                             .TrimEnd('"');
             activity?.SetTag(Telemetry.HeaderIfMatch, ifMatch);
-            ifNoneMatch = ifNoneMatch?.TrimStart('"').TrimEnd('"');
+            ifNoneMatch = ifNoneMatch?.TrimStart('"')
+                                     .TrimEnd('"');
             activity?.SetTag(Telemetry.HeaderIfNoneMatch, ifNoneMatch);
 
             var date = DateTimeOffset.UtcNow;
 
-            var setting = await repository.Get(key, label).SingleOrDefaultAsync(cancellationToken);
+            var setting = await repository.Get(key, label)
+                                          .SingleOrDefaultAsync(cancellationToken);
 
-            if (setting == null) return TypedResults.NotFound();
+            if (setting == null)
+            {
+                return TypedResults.NotFound();
+            }
 
-            if (ifMatch != null && ifMatch != setting.Etag && ifMatch != "*") return new PreconditionFailedResult();
+            if (ifMatch != null && ifMatch != setting.Etag && ifMatch != "*")
+            {
+                return new PreconditionFailedResult();
+            }
 
             if (ifNoneMatch != null && (ifNoneMatch == setting.Etag || ifNoneMatch == "*"))
+            {
                 return new PreconditionFailedResult();
+            }
 
-            setting.Etag =
-                Convert.ToBase64String(
-                    SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))));
+            setting.Etag = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))));
             setting.LastModified = date;
             setting.Locked = true;
 
@@ -48,8 +56,7 @@ namespace UKHO.Aspire.Configuration.Emulator.Locks
             return new ConfigurationSettingResult(setting);
         }
 
-        public static async Task<Results<ConfigurationSettingResult, NotFound, PreconditionFailedResult>> Unlock(
-            [FromServices] IConfigurationSettingRepository repository,
+        public static async Task<Results<ConfigurationSettingResult, NotFound, PreconditionFailedResult>> Unlock([FromServices] IConfigurationSettingRepository repository,
             [FromRoute] string key,
             [FromQuery] string label = LabelFilter.Null,
             [FromHeader(Name = "If-Match")] string? ifMatch = default,
@@ -60,25 +67,34 @@ namespace UKHO.Aspire.Configuration.Emulator.Locks
             activity?.SetTag(Telemetry.RouteKey, key);
             activity?.SetTag(Telemetry.QueryLabel, label);
 
-            ifMatch = ifMatch?.TrimStart('"').TrimEnd('"');
+            ifMatch = ifMatch?.TrimStart('"')
+                             .TrimEnd('"');
             activity?.SetTag(Telemetry.HeaderIfMatch, ifMatch);
-            ifNoneMatch = ifNoneMatch?.TrimStart('"').TrimEnd('"');
+            ifNoneMatch = ifNoneMatch?.TrimStart('"')
+                                     .TrimEnd('"');
             activity?.SetTag(Telemetry.HeaderIfNoneMatch, ifNoneMatch);
 
             var date = DateTimeOffset.UtcNow;
 
-            var setting = await repository.Get(key, label).SingleOrDefaultAsync(cancellationToken);
+            var setting = await repository.Get(key, label)
+                                          .SingleOrDefaultAsync(cancellationToken);
 
-            if (setting == null) return TypedResults.NotFound();
+            if (setting == null)
+            {
+                return TypedResults.NotFound();
+            }
 
-            if (ifMatch != null && ifMatch != setting.Etag && ifMatch != "*") return new PreconditionFailedResult();
+            if (ifMatch != null && ifMatch != setting.Etag && ifMatch != "*")
+            {
+                return new PreconditionFailedResult();
+            }
 
             if (ifNoneMatch != null && (ifNoneMatch == setting.Etag || ifNoneMatch == "*"))
+            {
                 return new PreconditionFailedResult();
+            }
 
-            setting.Etag =
-                Convert.ToBase64String(
-                    SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))));
+            setting.Etag = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))));
             setting.LastModified = date;
             setting.Locked = false;
 

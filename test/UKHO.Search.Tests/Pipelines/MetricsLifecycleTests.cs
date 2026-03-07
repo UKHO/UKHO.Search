@@ -9,63 +9,65 @@ using Xunit;
 
 namespace UKHO.Search.Tests.Pipelines
 {
-	public sealed class MetricsLifecycleTests
-	{
-		[Fact]
-		public async Task Node_metrics_providers_are_removed_after_node_completion()
-		{
-			using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+    public sealed class MetricsLifecycleTests
+    {
+        [Fact]
+        public async Task Node_metrics_providers_are_removed_after_node_completion()
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 
-			var seenNodes = new ConcurrentDictionary<string, long>();
-			using var listener = new MeterListener();
-			listener.InstrumentPublished = (instrument, meterListener) =>
-			{
-				if (instrument.Meter.Name == NodeMetrics.MeterName)
-				{
-					meterListener.EnableMeasurementEvents(instrument);
-				}
-			};
+            var seenNodes = new ConcurrentDictionary<string, long>();
+            using var listener = new MeterListener();
+            listener.InstrumentPublished = (instrument, meterListener) =>
+            {
+                if (instrument.Meter.Name == NodeMetrics.MeterName)
+                {
+                    meterListener.EnableMeasurementEvents(instrument);
+                }
+            };
 
-			listener.SetMeasurementEventCallback<long>((instrument, measurement, tags, _) =>
-			{
-				if (instrument.Name != "ukho.pipeline.node.inflight")
-				{
-					return;
-				}
+            listener.SetMeasurementEventCallback<long>((instrument, measurement, tags, _) =>
+            {
+                if (instrument.Name != "ukho.pipeline.node.inflight")
+                {
+                    return;
+                }
 
-				string node = string.Empty;
-				for (var i = 0; i < tags.Length; i++)
-				{
-					if (tags[i].Key == "node")
-					{
-						node = tags[i].Value?.ToString() ?? string.Empty;
-						break;
-					}
-				}
+                var node = string.Empty;
+                for (var i = 0; i < tags.Length; i++)
+                {
+                    if (tags[i].Key == "node")
+                    {
+                        node = tags[i]
+                               .Value?.ToString() ?? string.Empty;
+                        break;
+                    }
+                }
 
-				seenNodes[node] = measurement;
-			});
+                seenNodes[node] = measurement;
+            });
 
-			listener.Start();
+            listener.Start();
 
-			var supervisor = new PipelineSupervisor(cts.Token);
-			var input = BoundedChannelFactory.Create<Envelope<int>>(capacity: 4, singleReader: true, singleWriter: true);
-			var output = BoundedChannelFactory.Create<Envelope<int>>(capacity: 4, singleReader: true, singleWriter: true);
-			var nodeName = $"drop-{Guid.NewGuid():N}";
+            var supervisor = new PipelineSupervisor(cts.Token);
+            var input = BoundedChannelFactory.Create<Envelope<int>>(4, true, true);
+            var output = BoundedChannelFactory.Create<Envelope<int>>(4, true, true);
+            var nodeName = $"drop-{Guid.NewGuid():N}";
 
-			var drop = new DropNode<int>(nodeName, input.Reader, output.Writer, fatalErrorReporter: supervisor);
+            var drop = new DropNode<int>(nodeName, input.Reader, output.Writer, fatalErrorReporter: supervisor);
 
-			supervisor.AddNode(drop);
-			await supervisor.StartAsync();
+            supervisor.AddNode(drop);
+            await supervisor.StartAsync();
 
-			await input.Writer.WriteAsync(new Envelope<int>("key-0", 1), cts.Token);
-			input.Writer.TryComplete();
+            await input.Writer.WriteAsync(new Envelope<int>("key-0", 1), cts.Token);
+            input.Writer.TryComplete();
 
-			await supervisor.Completion.WaitAsync(cts.Token);
+            await supervisor.Completion.WaitAsync(cts.Token);
 
-			listener.RecordObservableInstruments();
+            listener.RecordObservableInstruments();
 
-			seenNodes.ContainsKey(nodeName).ShouldBeFalse();
-		}
-	}
+            seenNodes.ContainsKey(nodeName)
+                     .ShouldBeFalse();
+        }
+    }
 }

@@ -75,32 +75,21 @@ namespace UKHO.Search.Ingestion.Tests
         [Fact]
         public void AddItemRequest_Rejects_EmptySecurityTokens()
         {
-            var json = "{" +
-                       "\"Id\":\"ABC123\"," +
-                       "\"Properties\":[]," +
-                       "\"SecurityTokens\":[]" +
-                       "}";
+            var json = "{" + "\"Id\":\"ABC123\"," + "\"Properties\":[]," + "\"SecurityTokens\":[]" + "}";
             Should.Throw<JsonException>(() => JsonSerializer.Deserialize<AddItemRequest>(json, Options));
         }
 
         [Fact]
         public void UpdateItemRequest_Rejects_EmptySecurityTokens()
         {
-            var json = "{" +
-                       "\"Id\":\"ABC123\"," +
-                       "\"Properties\":[]," +
-                       "\"SecurityTokens\":[]" +
-                       "}";
+            var json = "{" + "\"Id\":\"ABC123\"," + "\"Properties\":[]," + "\"SecurityTokens\":[]" + "}";
             Should.Throw<JsonException>(() => JsonSerializer.Deserialize<UpdateItemRequest>(json, Options));
         }
 
         [Fact]
         public void UpdateAclRequest_Rejects_EmptySecurityTokens()
         {
-            var json = "{" +
-                       "\"Id\":\"ABC123\"," +
-                       "\"SecurityTokens\":[]" +
-                       "}";
+            var json = "{" + "\"Id\":\"ABC123\"," + "\"SecurityTokens\":[]" + "}";
             Should.Throw<JsonException>(() => JsonSerializer.Deserialize<UpdateAclRequest>(json, Options));
         }
 
@@ -114,21 +103,14 @@ namespace UKHO.Search.Ingestion.Tests
         [Fact]
         public void IngestionRequestEnvelope_Rejects_MultiplePayloads()
         {
-            var json = "{" +
-                       "\"RequestType\":\"DeleteItem\"," +
-                       "\"DeleteItem\":{\"Id\":\"ABC123\"}," +
-                       "\"UpdateAcl\":{\"Id\":\"ABC123\",\"SecurityTokens\":[\"t\"]}" +
-                       "}";
+            var json = "{" + "\"RequestType\":\"DeleteItem\"," + "\"DeleteItem\":{\"Id\":\"ABC123\"}," + "\"UpdateAcl\":{\"Id\":\"ABC123\",\"SecurityTokens\":[\"t\"]}" + "}";
             Should.Throw<JsonException>(() => JsonSerializer.Deserialize<IngestionRequest>(json, Options));
         }
 
         [Fact]
         public void IngestionRequestEnvelope_Rejects_MismatchedRequestTypeAndPayload()
         {
-            var json = "{" +
-                       "\"RequestType\":\"AddItem\"," +
-                       "\"DeleteItem\":{\"Id\":\"ABC123\"}" +
-                       "}";
+            var json = "{" + "\"RequestType\":\"AddItem\"," + "\"DeleteItem\":{\"Id\":\"ABC123\"}" + "}";
             Should.Throw<JsonException>(() => JsonSerializer.Deserialize<IngestionRequest>(json, Options));
         }
 
@@ -173,10 +155,8 @@ namespace UKHO.Search.Ingestion.Tests
                 [
                     new IngestionProperty { Name = "String", Type = IngestionPropertyType.String, Value = "hello" },
                     new IngestionProperty { Name = "Text", Type = IngestionPropertyType.Text, Value = "Human readable text" },
-                    new IngestionProperty
-                        { Name = "Int64Min", Type = IngestionPropertyType.Integer, Value = long.MinValue },
-                    new IngestionProperty
-                        { Name = "Int64Max", Type = IngestionPropertyType.Integer, Value = long.MaxValue },
+                    new IngestionProperty { Name = "Int64Min", Type = IngestionPropertyType.Integer, Value = long.MinValue },
+                    new IngestionProperty { Name = "Int64Max", Type = IngestionPropertyType.Integer, Value = long.MaxValue },
                     new IngestionProperty { Name = "Double", Type = IngestionPropertyType.Double, Value = 1234.5d },
                     new IngestionProperty
                     {
@@ -188,8 +168,7 @@ namespace UKHO.Search.Ingestion.Tests
                         Name = "DateTime", Type = IngestionPropertyType.DateTime,
                         Value = new DateTimeOffset(2026, 3, 5, 10, 15, 30, TimeSpan.Zero)
                     },
-                    new IngestionProperty
-                        { Name = "TimeSpan", Type = IngestionPropertyType.TimeSpan, Value = TimeSpan.FromMinutes(15) },
+                    new IngestionProperty { Name = "TimeSpan", Type = IngestionPropertyType.TimeSpan, Value = TimeSpan.FromMinutes(15) },
                     new IngestionProperty
                     {
                         Name = "Guid", Type = IngestionPropertyType.Guid,
@@ -205,8 +184,7 @@ namespace UKHO.Search.Ingestion.Tests
                         Name = "StringArrayEmpty", Type = IngestionPropertyType.StringArray,
                         Value = Array.Empty<string>()
                     },
-                    new IngestionProperty
-                        { Name = "StringArray", Type = IngestionPropertyType.StringArray, Value = new[] { "a", "b" } }
+                    new IngestionProperty { Name = "StringArray", Type = IngestionPropertyType.StringArray, Value = new[] { "a", "b" } }
                 ]
             };
 
@@ -229,7 +207,8 @@ namespace UKHO.Search.Ingestion.Tests
 
             hydrated.Properties.Count.ShouldBe(addItem.Properties.Count);
 
-            hydrated.TryGetString("string", out var s).ShouldBeTrue();
+            hydrated.TryGetString("string", out var s)
+                    .ShouldBeTrue();
             s.ShouldBe("hello");
 
             var text = hydrated.Properties.Single(p => p.Name.Equals("Text", StringComparison.OrdinalIgnoreCase));
@@ -238,38 +217,49 @@ namespace UKHO.Search.Ingestion.Tests
 
             hydrated.Id.ShouldBe("123456ID");
 
-            hydrated.TryGetInt64("int64min", out var iMin).ShouldBeTrue();
+            hydrated.TryGetInt64("int64min", out var iMin)
+                    .ShouldBeTrue();
             iMin.ShouldBe(long.MinValue);
 
-            hydrated.TryGetInt64("INT64MAX", out var iMax).ShouldBeTrue();
+            hydrated.TryGetInt64("INT64MAX", out var iMax)
+                    .ShouldBeTrue();
             iMax.ShouldBe(long.MaxValue);
 
-            hydrated.TryGetDouble("double", out var dbl).ShouldBeTrue();
+            hydrated.TryGetDouble("double", out var dbl)
+                    .ShouldBeTrue();
             dbl.ShouldBe(1234.5d);
 
-            hydrated.TryGetDecimal("decimal", out var dec).ShouldBeTrue();
+            hydrated.TryGetDecimal("decimal", out var dec)
+                    .ShouldBeTrue();
             dec.ShouldBe(79228162514264337593543950335m);
 
-            hydrated.TryGetBoolean("boolean", out var b).ShouldBeTrue();
+            hydrated.TryGetBoolean("boolean", out var b)
+                    .ShouldBeTrue();
             b.ShouldBeTrue();
 
-            hydrated.TryGetDateTimeOffset("datetime", out var dto).ShouldBeTrue();
+            hydrated.TryGetDateTimeOffset("datetime", out var dto)
+                    .ShouldBeTrue();
             dto.ShouldBe(new DateTimeOffset(2026, 3, 5, 10, 15, 30, TimeSpan.Zero));
 
-            hydrated.TryGetTimeSpan("timespan", out var ts).ShouldBeTrue();
+            hydrated.TryGetTimeSpan("timespan", out var ts)
+                    .ShouldBeTrue();
             ts.ShouldBe(TimeSpan.FromMinutes(15));
 
-            hydrated.TryGetGuid("guid", out var g).ShouldBeTrue();
+            hydrated.TryGetGuid("guid", out var g)
+                    .ShouldBeTrue();
             g.ShouldBe(Guid.Parse("bfb8feca-5f5f-4f55-aa0c-7d7b00b19b46"));
 
-            hydrated.TryGetUri("uri", out var uri).ShouldBeTrue();
+            hydrated.TryGetUri("uri", out var uri)
+                    .ShouldBeTrue();
             uri.ShouldBe(new Uri("https://example.test/resource/123"));
 
-            hydrated.TryGetStringArray("stringarrayempty", out var empty).ShouldBeTrue();
+            hydrated.TryGetStringArray("stringarrayempty", out var empty)
+                    .ShouldBeTrue();
             empty.ShouldNotBeNull();
             empty!.Length.ShouldBe(0);
 
-            hydrated.TryGetStringArray("stringarray", out var arr).ShouldBeTrue();
+            hydrated.TryGetStringArray("stringarray", out var arr)
+                    .ShouldBeTrue();
             arr.ShouldBe(new[] { "a", "b" });
         }
 

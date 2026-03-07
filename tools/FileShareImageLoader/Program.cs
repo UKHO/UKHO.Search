@@ -14,7 +14,9 @@ namespace FileShareImageLoader
                 var environmentName = Environment.GetEnvironmentVariable("environment");
 
                 if (string.IsNullOrWhiteSpace(environmentName))
+                {
                     throw new ArgumentException("Cannot read 'environment' value");
+                }
 
                 builder.Configuration["environment"] = environmentName;
 
@@ -33,30 +35,21 @@ namespace FileShareImageLoader
                 var sqlConnectionString = sqlConnection.ConnectionString;
 
                 var importer = app.Services.GetRequiredService<BacpacImporter>();
-                await importer
-                    .EnsureDatabaseSeededAsync(sqlConnectionString, StorageNames.FileShareEmulatorDatabase, bacpacPath,
-                        CancellationToken.None)
-                    .ConfigureAwait(false);
+                await importer.EnsureDatabaseSeededAsync(sqlConnectionString, StorageNames.FileShareEmulatorDatabase, bacpacPath, CancellationToken.None)
+                              .ConfigureAwait(false);
 
                 var schemaMigration = app.Services.GetRequiredService<SchemaMigration>();
 
-                var dataImageName =
-                    Environment.GetEnvironmentVariable("dataimage")
-                    ?? "unknown";
+                var dataImageName = Environment.GetEnvironmentVariable("dataimage") ?? "unknown";
 
-                var imageInfo = new LocalMetadataImageInfo(
-                    Environment.GetEnvironmentVariable("dataimage_version"),
-                    Environment.GetEnvironmentVariable("dataimage_tags"),
-                    Environment.GetEnvironmentVariable("dataimage_digest"),
-                    Environment.GetEnvironmentVariable("dataimage_size_bytes"),
-                    Environment.GetEnvironmentVariable("dataimage_created_utc"));
+                var imageInfo = new LocalMetadataImageInfo(Environment.GetEnvironmentVariable("dataimage_version"), Environment.GetEnvironmentVariable("dataimage_tags"), Environment.GetEnvironmentVariable("dataimage_digest"), Environment.GetEnvironmentVariable("dataimage_size_bytes"), Environment.GetEnvironmentVariable("dataimage_created_utc"));
 
-                await schemaMigration
-                    .ApplyAsync(sqlConnectionString, dataImageName, imageInfo, CancellationToken.None)
-                    .ConfigureAwait(false);
+                await schemaMigration.ApplyAsync(sqlConnectionString, dataImageName, imageInfo, CancellationToken.None)
+                                     .ConfigureAwait(false);
 
                 var contentImporter = app.Services.GetRequiredService<ContentImporter>();
-                await contentImporter.ImportAsync(environmentName, CancellationToken.None).ConfigureAwait(false);
+                await contentImporter.ImportAsync(environmentName, CancellationToken.None)
+                                     .ConfigureAwait(false);
 
                 Console.WriteLine("[Loader] Completed.");
                 return 0;

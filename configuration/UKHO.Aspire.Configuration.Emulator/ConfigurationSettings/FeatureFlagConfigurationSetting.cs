@@ -8,25 +8,7 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
     /// </summary>
     public class FeatureFlagConfigurationSetting : ConfigurationSetting
     {
-        public FeatureFlagConfigurationSetting(
-            string id,
-            bool enabled,
-            ICollection<FeatureFlagFilter> clientFilters,
-            string etag,
-            string key,
-            DateTimeOffset lastModified,
-            bool locked,
-            string? description = null,
-            string? displayName = null,
-            string? label = null,
-            string? contentType = null,
-            IDictionary<string, string>? tags = null) : base(
-            etag,
-            key,
-            lastModified,
-            locked,
-            label,
-            contentType,
+        public FeatureFlagConfigurationSetting(string id, bool enabled, ICollection<FeatureFlagFilter> clientFilters, string etag, string key, DateTimeOffset lastModified, bool locked, string? description = null, string? displayName = null, string? label = null, string? contentType = null, IDictionary<string, string>? tags = null) : base(etag, key, lastModified, locked, label, contentType,
             tags: tags)
         {
             Id = id;
@@ -36,45 +18,25 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             DisplayName = displayName;
         }
 
-        public FeatureFlagConfigurationSetting(
-            string etag,
-            string key,
-            string value,
-            DateTimeOffset lastModified,
-            bool locked,
-            string? label = null,
-            string? contentType = null,
-            IDictionary<string, string>? tags = null) : base(
-            etag,
-            key,
-            lastModified,
-            locked,
-            label,
-            contentType,
-            tags: tags)
+        public FeatureFlagConfigurationSetting(string etag, string key, string value, DateTimeOffset lastModified, bool locked, string? label = null, string? contentType = null, IDictionary<string, string>? tags = null) : base(etag, key, lastModified, locked, label, contentType, tags: tags)
         {
             using var document = JsonDocument.Parse(value);
 
-            Id = document.RootElement.GetProperty("id").GetString()!;
+            Id = document.RootElement.GetProperty("id")
+                         .GetString()!;
 
-            Enabled = document.RootElement.GetProperty("enabled").GetBoolean();
+            Enabled = document.RootElement.GetProperty("enabled")
+                              .GetBoolean();
 
-            ClientFilters = document.RootElement.TryGetProperty("conditions", out var conditions) &&
-                            conditions.TryGetProperty("client_filters", out var clientFilters) &&
-                            clientFilters.ValueKind is JsonValueKind.Array
-                ? clientFilters
-                    .EnumerateArray()
-                    .Select(clientFilter => new FeatureFlagFilter(clientFilter))
-                    .ToList()
+            ClientFilters = document.RootElement.TryGetProperty("conditions", out var conditions) && conditions.TryGetProperty("client_filters", out var clientFilters) && clientFilters.ValueKind is JsonValueKind.Array
+                ? clientFilters.EnumerateArray()
+                               .Select(clientFilter => new FeatureFlagFilter(clientFilter))
+                               .ToList()
                 : [];
 
-            Description = document.RootElement.TryGetProperty("description", out var description)
-                ? description.GetString()
-                : null;
+            Description = document.RootElement.TryGetProperty("description", out var description) ? description.GetString() : null;
 
-            DisplayName = document.RootElement.TryGetProperty("display_name", out var displayName)
-                ? displayName.GetString()
-                : null;
+            DisplayName = document.RootElement.TryGetProperty("display_name", out var displayName) ? displayName.GetString() : null;
         }
 
         public override string? Value
@@ -93,14 +55,23 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
                 writer.WriteStartObject("conditions");
                 writer.WriteStartArray("client_filters");
 
-                foreach (var clientFilter in ClientFilters) clientFilter.WriteTo(writer);
+                foreach (var clientFilter in ClientFilters)
+                {
+                    clientFilter.WriteTo(writer);
+                }
 
                 writer.WriteEndArray();
                 writer.WriteEndObject();
 
-                if (Description is not null) writer.WriteString("description", Description);
+                if (Description is not null)
+                {
+                    writer.WriteString("description", Description);
+                }
 
-                if (DisplayName is not null) writer.WriteString("display_name", DisplayName);
+                if (DisplayName is not null)
+                {
+                    writer.WriteString("display_name", DisplayName);
+                }
 
                 writer.WriteEndObject();
                 writer.Flush();
@@ -113,26 +84,21 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
 
                 using var document = JsonDocument.Parse(value);
 
-                Id = document.RootElement.GetProperty("id").GetString()!;
+                Id = document.RootElement.GetProperty("id")
+                             .GetString()!;
 
-                Enabled = document.RootElement.GetProperty("enabled").GetBoolean();
+                Enabled = document.RootElement.GetProperty("enabled")
+                                  .GetBoolean();
 
-                ClientFilters = document.RootElement.TryGetProperty("conditions", out var conditions) &&
-                                conditions.TryGetProperty("client_filters", out var clientFilters) &&
-                                clientFilters.ValueKind is JsonValueKind.Array
-                    ? clientFilters
-                        .EnumerateArray()
-                        .Select(clientFilter => new FeatureFlagFilter(clientFilter))
-                        .ToList()
+                ClientFilters = document.RootElement.TryGetProperty("conditions", out var conditions) && conditions.TryGetProperty("client_filters", out var clientFilters) && clientFilters.ValueKind is JsonValueKind.Array
+                    ? clientFilters.EnumerateArray()
+                                   .Select(clientFilter => new FeatureFlagFilter(clientFilter))
+                                   .ToList()
                     : [];
 
-                Description = document.RootElement.TryGetProperty("description", out var description)
-                    ? description.GetString()
-                    : null;
+                Description = document.RootElement.TryGetProperty("description", out var description) ? description.GetString() : null;
 
-                DisplayName = document.RootElement.TryGetProperty("display_name", out var displayName)
-                    ? displayName.GetString()
-                    : null;
+                DisplayName = document.RootElement.TryGetProperty("display_name", out var displayName) ? displayName.GetString() : null;
             }
         }
 
@@ -160,12 +126,10 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
 
         internal FeatureFlagFilter(JsonElement element)
         {
-            Name = element.GetProperty("name").GetString()!;
+            Name = element.GetProperty("name")
+                          .GetString()!;
 
-            Parameters = element.TryGetProperty("parameters", out var parameters) &&
-                         DeserializeParameters(parameters) is IDictionary<string, object> dictionary
-                ? dictionary
-                : new Dictionary<string, object>();
+            Parameters = element.TryGetProperty("parameters", out var parameters) && DeserializeParameters(parameters) is IDictionary<string, object> dictionary ? dictionary : new Dictionary<string, object>();
         }
 
         public string Name { get; set; }
@@ -188,22 +152,18 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
         {
             return element.ValueKind switch
             {
-                JsonValueKind.Object => element
-                    .EnumerateObject()
-                    .ToDictionary(
-                        property => property.Name,
-                        property => DeserializeParameters(property.Value)),
-                JsonValueKind.Array => element
-                    .EnumerateArray()
-                    .Select(DeserializeParameters)
-                    .ToList(),
+                JsonValueKind.Object => element.EnumerateObject()
+                                               .ToDictionary(property => property.Name, property => DeserializeParameters(property.Value)),
+                JsonValueKind.Array => element.EnumerateArray()
+                                              .Select(DeserializeParameters)
+                                              .ToList(),
                 JsonValueKind.String => element.GetString(),
                 JsonValueKind.Number when element.TryGetInt32(out var value) => value,
                 JsonValueKind.Number when element.TryGetInt64(out var value) => value,
                 JsonValueKind.Number when element.TryGetDouble(out var value) => value,
                 JsonValueKind.True or JsonValueKind.False => element.GetBoolean(),
                 JsonValueKind.Undefined or JsonValueKind.Null => null,
-                _ => throw new ArgumentOutOfRangeException(nameof(element), element.ValueKind, null)
+                var _ => throw new ArgumentOutOfRangeException(nameof(element), element.ValueKind, null)
             };
         }
 
@@ -247,7 +207,10 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
                 case IEnumerable<object> enumerable:
                     writer.WriteStartArray();
 
-                    foreach (var item in enumerable) WriteParametersValue(writer, item);
+                    foreach (var item in enumerable)
+                    {
+                        WriteParametersValue(writer, item);
+                    }
 
                     writer.WriteEndArray();
 

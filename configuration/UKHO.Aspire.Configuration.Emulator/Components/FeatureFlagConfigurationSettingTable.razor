@@ -26,13 +26,18 @@
 </AzureTable>
 
 @code {
-    [Parameter] public IEnumerable<FeatureFlagConfigurationSetting> ConfigurationSettings { get; set; } = [];
 
-    [Parameter] public EventCallback<FeatureFlagConfigurationSetting> OnConfigurationSettingChange { get; set; }
+    [Parameter]
+    public IEnumerable<FeatureFlagConfigurationSetting> ConfigurationSettings { get; set; } = [];
 
-    [Parameter] public ICollection<FeatureFlagConfigurationSetting> SelectedConfigurationSettings { get; set; } = [];
+    [Parameter]
+    public EventCallback<FeatureFlagConfigurationSetting> OnConfigurationSettingChange { get; set; }
 
-    [Parameter] public EventCallback<ICollection<FeatureFlagConfigurationSetting>> SelectedConfigurationSettingsChanged { get; set; }
+    [Parameter]
+    public ICollection<FeatureFlagConfigurationSetting> SelectedConfigurationSettings { get; set; } = [];
+
+    [Parameter]
+    public EventCallback<ICollection<FeatureFlagConfigurationSetting>> SelectedConfigurationSettingsChanged { get; set; }
 
     private async Task HandleEnabledChanged(FeatureFlagConfigurationSetting setting, bool enabled)
     {

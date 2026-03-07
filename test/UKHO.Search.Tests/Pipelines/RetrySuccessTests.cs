@@ -1,4 +1,3 @@
-using System.Threading.Channels;
 using Shouldly;
 using UKHO.Search.Pipelines.Channels;
 using UKHO.Search.Pipelines.Messaging;
@@ -9,71 +8,61 @@ using Xunit;
 
 namespace UKHO.Search.Tests.Pipelines
 {
-	public sealed class RetrySuccessTests
-	{
-		[Fact]
-		public async Task Retries_eventually_succeed_and_attempt_is_preserved()
-		{
-			using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+    public sealed class RetrySuccessTests
+    {
+        [Fact]
+        public async Task Retries_eventually_succeed_and_attempt_is_preserved()
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 
-			var supervisor = new PipelineSupervisor(cts.Token);
+            var supervisor = new PipelineSupervisor(cts.Token);
 
-			var input = BoundedChannelFactory.Create<Envelope<int>>(capacity: 32, singleReader: true, singleWriter: true);
-			var output = BoundedChannelFactory.Create<Envelope<int>>(capacity: 32, singleReader: true, singleWriter: true);
+            var input = BoundedChannelFactory.Create<Envelope<int>>(32, true, true);
+            var output = BoundedChannelFactory.Create<Envelope<int>>(32, true, true);
 
-			var retryPolicy = new ExponentialBackoffRetryPolicy(
-				maxAttempts: 5,
-				baseDelay: TimeSpan.FromMilliseconds(1),
-				maxDelay: TimeSpan.FromMilliseconds(1),
-				jitterFactor: 0);
+            var retryPolicy = new ExponentialBackoffRetryPolicy(5, TimeSpan.FromMilliseconds(1), TimeSpan.FromMilliseconds(1), 0);
 
-			var failures = 0;
-			ValueTask<int> Transform(int payload, CancellationToken cancellationToken)
-			{
-				if (payload == 2)
-				{
-					failures++;
-					if (failures < 3)
-					{
-						throw new TimeoutException("transient");
-					}
-				}
+            var failures = 0;
 
-				return ValueTask.FromResult(payload);
-			}
+            ValueTask<int> Transform(int payload, CancellationToken cancellationToken)
+            {
+                if (payload == 2)
+                {
+                    failures++;
+                    if (failures < 3)
+                    {
+                        throw new TimeoutException("transient");
+                    }
+                }
 
-			var retryNode = new RetryingTransformNode<int, int>(
-				"retrying-transform",
-				input.Reader,
-				output.Writer,
-				Transform,
-				retryPolicy,
-				isTransientException: ex => ex is TimeoutException,
-				forwardFailedToMainOutput: true,
-				fatalErrorReporter: supervisor);
+                return ValueTask.FromResult(payload);
+            }
 
-			var sink = new CollectingSinkNode<int>("sink", output.Reader, fatalErrorReporter: supervisor);
+            var retryNode = new RetryingTransformNode<int, int>("retrying-transform", input.Reader, output.Writer, Transform, retryPolicy, ex => ex is TimeoutException, forwardFailedToMainOutput: true, fatalErrorReporter: supervisor);
 
-			supervisor.AddNode(retryNode);
-			supervisor.AddNode(sink);
+            var sink = new CollectingSinkNode<int>("sink", output.Reader, fatalErrorReporter: supervisor);
 
-			await supervisor.StartAsync();
+            supervisor.AddNode(retryNode);
+            supervisor.AddNode(sink);
 
-			for (var i = 0; i < 4; i++)
-			{
-				await input.Writer.WriteAsync(new Envelope<int>("key-0", i), cts.Token);
-			}
+            await supervisor.StartAsync();
 
-			input.Writer.TryComplete();
-			await supervisor.Completion.WaitAsync(cts.Token);
+            for (var i = 0; i < 4; i++)
+            {
+                await input.Writer.WriteAsync(new Envelope<int>("key-0", i), cts.Token);
+            }
 
-			var payloads = sink.Items.Select(i => i.Payload).ToArray();
-			payloads.ShouldBe(new[] { 0, 1, 2, 3 });
+            input.Writer.TryComplete();
+            await supervisor.Completion.WaitAsync(cts.Token);
 
-			var env2 = sink.Items.Single(i => i.Payload == 2);
-			env2.Attempt.ShouldBe(3);
-			env2.Status.ShouldBe(MessageStatus.Ok);
-			env2.Error.ShouldBeNull();
-		}
-	}
+            var payloads = sink.Items.Select(i => i.Payload)
+                               .ToArray();
+            payloads.ShouldBe(new[] { 0, 1, 2, 3 });
+
+            var env2 = sink.Items.Single(i => i.Payload == 2);
+            env2.Attempt.ShouldBe(3);
+            env2.Status.ShouldBe(MessageStatus.Ok);
+            env2.Error.ShouldBeNull();
+        }
+    }
 }

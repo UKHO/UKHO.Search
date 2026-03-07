@@ -4,37 +4,32 @@ using UKHO.Aspire.Configuration.Emulator.Common;
 
 namespace UKHO.Aspire.Configuration.Emulator.Labels
 {
-    public class LabelsResult(
-        IEnumerable<string?> labels,
-        DateTimeOffset? mementoDatetime = default,
-        string? select = default) :
-        IResult,
-        IContentTypeHttpResult,
-        IStatusCodeHttpResult,
-        IValueHttpResult
+    public class LabelsResult(IEnumerable<string?> labels, DateTimeOffset? mementoDatetime = default, string? select = default) : IResult, IContentTypeHttpResult, IStatusCodeHttpResult, IValueHttpResult
     {
         public string? ContentType => MediaType.Labels;
 
         public async Task ExecuteAsync(HttpContext httpContext)
         {
             if (mementoDatetime.HasValue)
+            {
                 httpContext.Response.Headers["Memento-Datetime"] = mementoDatetime.Value.ToString("R");
+            }
 
-            if (StatusCode.HasValue) httpContext.Response.StatusCode = StatusCode.Value;
+            if (StatusCode.HasValue)
+            {
+                httpContext.Response.StatusCode = StatusCode.Value;
+            }
 
-            await httpContext.Response.WriteAsJsonAsync(
-                Value,
-                new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            await httpContext.Response.WriteAsJsonAsync(Value, new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            {
+                TypeInfoResolver = new DefaultJsonTypeInfoResolver
                 {
-                    TypeInfoResolver = new DefaultJsonTypeInfoResolver
+                    Modifiers =
                     {
-                        Modifiers =
-                        {
-                            new SelectJsonTypeInfoModifier(select?.Split(',')).Modify
-                        }
+                        new SelectJsonTypeInfoModifier(select?.Split(',')).Modify
                     }
-                },
-                ContentType);
+                }
+            }, ContentType);
         }
 
         public int? StatusCode => StatusCodes.Status200OK;

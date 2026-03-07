@@ -10,14 +10,7 @@ namespace FileShareImageBuilder
         private readonly MetadataExporter _metadataExporter;
         private readonly MetadataImporter _metadataImporter;
 
-        public ImageBuilder(
-            MetadataImporter metadataImporter,
-            ContentImporter contentImporter,
-            DataCleaner dataCleaner,
-            MetadataExporter metadataExporter,
-            ImageExporter imageExporter,
-            ImageLoader imageLoader,
-            BinCleaner binCleaner)
+        public ImageBuilder(MetadataImporter metadataImporter, ContentImporter contentImporter, DataCleaner dataCleaner, MetadataExporter metadataExporter, ImageExporter imageExporter, ImageLoader imageLoader, BinCleaner binCleaner)
         {
             _metadataImporter = metadataImporter;
             _contentImporter = contentImporter;
@@ -36,25 +29,32 @@ namespace FileShareImageBuilder
         private async Task RunInternalAsync(CancellationToken cancellationToken)
         {
             Console.WriteLine("[ImageBuilder] Importing metadata...");
-            await _metadataImporter.ImportAsync(cancellationToken).ConfigureAwait(false);
+            await _metadataImporter.ImportAsync(cancellationToken)
+                                   .ConfigureAwait(false);
 
             Console.WriteLine("[ImageBuilder] Importing content...");
-            await _contentImporter.ImportAsync(cancellationToken).ConfigureAwait(false);
+            await _contentImporter.ImportAsync(cancellationToken)
+                                  .ConfigureAwait(false);
 
             Console.WriteLine("[ImageBuilder] Cleaning local database...");
-            await _dataCleaner.CleanAsync(cancellationToken).ConfigureAwait(false);
+            await _dataCleaner.CleanAsync(cancellationToken)
+                              .ConfigureAwait(false);
 
             Console.WriteLine("[ImageBuilder] Exporting metadata (bacpac)...");
-            await _metadataExporter.ExportAsync(cancellationToken).ConfigureAwait(false);
+            await _metadataExporter.ExportAsync(cancellationToken)
+                                   .ConfigureAwait(false);
 
             Console.WriteLine("[ImageBuilder] Exporting data image (docker)...");
-            await _imageExporter.ExportAsync(cancellationToken).ConfigureAwait(false);
+            await _imageExporter.ExportAsync(cancellationToken)
+                                .ConfigureAwait(false);
 
             Console.WriteLine("[ImageBuilder] Loading data image into local docker...");
-            await _imageLoader.LoadAsync(cancellationToken).ConfigureAwait(false);
+            await _imageLoader.LoadAsync(cancellationToken)
+                              .ConfigureAwait(false);
 
             Console.WriteLine("[ImageBuilder] Cleaning bin directory...");
-            await _binCleaner.CleanAsync(cancellationToken).ConfigureAwait(false);
+            await _binCleaner.CleanAsync(cancellationToken)
+                             .ConfigureAwait(false);
 
             Console.WriteLine("[ImageBuilder] Done.");
         }

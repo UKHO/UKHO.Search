@@ -9,7 +9,7 @@ namespace UKHO.Search.Ingestion.Tests
         [Fact]
         public void BuildTokens_AlwaysIncludesBatchCreate()
         {
-            var tokens = BatchSecurityTokenBuilder.BuildTokens([], [], businessUnitName: null);
+            var tokens = BatchSecurityTokenBuilder.BuildTokens([], [], null);
 
             tokens.ShouldBe(["batchcreate"]);
         }
@@ -17,7 +17,7 @@ namespace UKHO.Search.Ingestion.Tests
         [Fact]
         public void BuildTokens_WhenBusinessUnitIsProvided_AddsBuToken()
         {
-            var tokens = BatchSecurityTokenBuilder.BuildTokens([], [], businessUnitName: "Sales");
+            var tokens = BatchSecurityTokenBuilder.BuildTokens([], [], "Sales");
 
             tokens.ShouldBe(["batchcreate", "batchcreate_sales"]);
         }
@@ -25,10 +25,7 @@ namespace UKHO.Search.Ingestion.Tests
         [Fact]
         public void BuildTokens_NormalisesToLowerCase_Trims_AndFiltersBlanks()
         {
-            var tokens = BatchSecurityTokenBuilder.BuildTokens(
-                groupIdentifiers: [" GroupA ", "  ", "GROUPB"],
-                userIdentifiers: [" User1 ", "USER2"],
-                businessUnitName: "  FiShErIeS  ");
+            var tokens = BatchSecurityTokenBuilder.BuildTokens([" GroupA ", "  ", "GROUPB"], [" User1 ", "USER2"], "  FiShErIeS  ");
 
             tokens.ShouldBe(["batchcreate", "batchcreate_fisheries", "groupa", "groupb", "user1", "user2"]);
         }
@@ -36,10 +33,7 @@ namespace UKHO.Search.Ingestion.Tests
         [Fact]
         public void BuildTokens_DeduplicatesAcrossStandardGroupAndUserTokens()
         {
-            var tokens = BatchSecurityTokenBuilder.BuildTokens(
-                groupIdentifiers: ["BatchCreate", "GroupA", "groupa"],
-                userIdentifiers: ["GROUPA", "User1"],
-                businessUnitName: "Sales");
+            var tokens = BatchSecurityTokenBuilder.BuildTokens(["BatchCreate", "GroupA", "groupa"], ["GROUPA", "User1"], "Sales");
 
             tokens.ShouldBe(["batchcreate", "batchcreate_sales", "groupa", "user1"]);
         }
@@ -47,10 +41,7 @@ namespace UKHO.Search.Ingestion.Tests
         [Fact]
         public void BuildTokens_SortsGroupsAndUsersIndependently()
         {
-            var tokens = BatchSecurityTokenBuilder.BuildTokens(
-                groupIdentifiers: ["z", "a", "m"],
-                userIdentifiers: ["u2", "u1"],
-                businessUnitName: null);
+            var tokens = BatchSecurityTokenBuilder.BuildTokens(["z", "a", "m"], ["u2", "u1"], null);
 
             tokens.ShouldBe(["batchcreate", "a", "m", "z", "u1", "u2"]);
         }
@@ -58,7 +49,7 @@ namespace UKHO.Search.Ingestion.Tests
         [Fact]
         public void BuildTokens_WhenBusinessUnitIsBlank_DoesNotAddBuToken()
         {
-            var tokens = BatchSecurityTokenBuilder.BuildTokens([], [], businessUnitName: "  ");
+            var tokens = BatchSecurityTokenBuilder.BuildTokens([], [], "  ");
 
             tokens.ShouldBe(["batchcreate"]);
         }

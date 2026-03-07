@@ -4,14 +4,7 @@ using UKHO.Aspire.Configuration.Emulator.Common;
 
 namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
 {
-    public class ConfigurationSettingResult(
-        ConfigurationSetting setting,
-        DateTimeOffset? mementoDatetime = default,
-        string? select = default) :
-        IResult,
-        IContentTypeHttpResult,
-        IStatusCodeHttpResult,
-        IValueHttpResult
+    public class ConfigurationSettingResult(ConfigurationSetting setting, DateTimeOffset? mementoDatetime = default, string? select = default) : IResult, IContentTypeHttpResult, IStatusCodeHttpResult, IValueHttpResult
     {
         public string? ContentType => MediaType.ConfigurationSetting;
 
@@ -21,23 +14,25 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             httpContext.Response.Headers.LastModified = setting.LastModified.ToString("R");
 
             if (mementoDatetime.HasValue)
+            {
                 httpContext.Response.Headers["Memento-Datetime"] = mementoDatetime.Value.ToString("R");
+            }
 
-            if (StatusCode.HasValue) httpContext.Response.StatusCode = StatusCode.Value;
+            if (StatusCode.HasValue)
+            {
+                httpContext.Response.StatusCode = StatusCode.Value;
+            }
 
-            await httpContext.Response.WriteAsJsonAsync(
-                Value,
-                new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            await httpContext.Response.WriteAsJsonAsync(Value, new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            {
+                TypeInfoResolver = new DefaultJsonTypeInfoResolver
                 {
-                    TypeInfoResolver = new DefaultJsonTypeInfoResolver
+                    Modifiers =
                     {
-                        Modifiers =
-                        {
-                            new SelectJsonTypeInfoModifier(select?.Split(',')).Modify
-                        }
+                        new SelectJsonTypeInfoModifier(select?.Split(',')).Modify
                     }
-                },
-                ContentType);
+                }
+            }, ContentType);
         }
 
         public int? StatusCode => StatusCodes.Status200OK;

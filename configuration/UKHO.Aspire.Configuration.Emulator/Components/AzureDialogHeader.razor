@@ -15,11 +15,16 @@
 </div>
 
 @code {
-    [CascadingParameter] public IDialogReference DialogReference { get; set; } = null!;
 
-    [Parameter] public string? Subtitle { get; set; }
+    [CascadingParameter]
+    public IDialogReference DialogReference { get; set; } = null!;
 
-    [EditorRequired] [Parameter] public string Title { get; set; } = null!;
+    [Parameter]
+    public string? Subtitle { get; set; }
+
+    [EditorRequired]
+    [Parameter]
+    public string Title { get; set; } = null!;
 
     private async Task HandleCloseClick(MouseEventArgs args)
     {
