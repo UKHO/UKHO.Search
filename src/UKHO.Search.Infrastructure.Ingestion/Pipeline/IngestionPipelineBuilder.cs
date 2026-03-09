@@ -1,11 +1,14 @@
 using System.Threading.Channels;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using UKHO.Search.Infrastructure.Ingestion.Pipeline.Channels;
 using UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes;
 using UKHO.Search.Infrastructure.Ingestion.Pipeline.Terminal;
 using UKHO.Search.Infrastructure.Ingestion.Queue;
+using UKHO.Search.Ingestion.Pipeline;
+using UKHO.Search.Ingestion.Pipeline.Nodes;
 using UKHO.Search.Ingestion.Pipeline.Operations;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Documents;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes;
@@ -52,16 +55,25 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
             var microbatchMaxDelayMs = _configuration.GetValue<int>("ingestion:microbatchMaxDelayMilliseconds");
             var documentTypePlaceholder = _configuration.GetValue<string>("ingestion:documentTypePlaceholder");
 
+            var enrichmentRetryMaxAttempts = _configuration.GetValue("ingestion:enrichmentRetryMaxAttempts", 5);
+            var enrichmentRetryBaseDelayMs = _configuration.GetValue("ingestion:enrichmentRetryBaseDelayMilliseconds", 200);
+            var enrichmentRetryMaxDelayMs = _configuration.GetValue("ingestion:enrichmentRetryMaxDelayMilliseconds", 5000);
+            var enrichmentRetryJitterMs = _configuration.GetValue("ingestion:enrichmentRetryJitterMilliseconds", 250);
+
             if (laneCount <= 0)
             {
                 throw new InvalidOperationException("ingestion:laneCount must be > 0.");
             }
+
+            var emptyEnricherProvider = new ServiceCollection().BuildServiceProvider();
+            var scopeFactory = emptyEnricherProvider.GetRequiredService<IServiceScopeFactory>();
 
             var supervisor = new PipelineSupervisor(cancellationToken);
 
             var prePartition = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(channelCapacityPrePartition, true, true);
             var validated = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(channelCapacityPrePartition, true, true);
             var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(channelCapacityPrePartition, true);
+            var indexDeadLetter = BoundedChannelFactory.Create<Envelope<IndexOperation>>(channelCapacityPrePartition, true);
 
             var deadLetterWriterCompletion = new RefCountedCompletion(1 + laneCount);
             var validateDeadLetterWriter = new RefCountedChannelWriter<Envelope<IngestionRequest>>(deadLetter.Writer, deadLetterWriterCompletion);
@@ -71,6 +83,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
             var validate = new IngestionRequestValidateNode("ingestion-validate", prePartition.Reader, validated.Writer, validateDeadLetterWriter, _loggerFactory.CreateLogger("ingestion-validate"), supervisor);
 
             var deadLetterSink = new DeadLetterPersistAndAckSinkNode<IngestionRequest>("ingestion-deadletter-request", deadLetter.Reader, Path.Combine(AppContext.BaseDirectory, "deadletter", "ingestion-request.jsonl"), logger: _loggerFactory.CreateLogger("ingestion-deadletter-request"), fatalErrorReporter: supervisor);
+
+            var indexDeadLetterSink = new DeadLetterPersistAndAckSinkNode<IndexOperation>("ingestion-deadletter-index", indexDeadLetter.Reader, Path.Combine(AppContext.BaseDirectory, "deadletter", "ingestion-index.jsonl"), logger: _loggerFactory.CreateLogger("ingestion-deadletter-index"), fatalErrorReporter: supervisor);
 
             var laneDispatchChannels = new List<CountingChannel<Envelope<IngestionRequest>>>(laneCount);
             var laneDispatchWriters = new List<ChannelWriter<Envelope<IngestionRequest>>>(laneCount);
@@ -89,16 +103,24 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
             for (var lane = 0; lane < laneCount; lane++)
             {
                 var laneDeadLetterWriter = new RefCountedChannelWriter<Envelope<IngestionRequest>>(deadLetter.Writer, deadLetterWriterCompletion);
+                var laneDispatchOut = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(channelCapacityPerLane, true, true);
                 var laneOps = BoundedChannelFactory.Create<Envelope<IndexOperation>>(channelCapacityPerLane, true, true);
                 var laneBatches = BoundedChannelFactory.Create<BatchEnvelope<IndexOperation>>(channelCapacityMicrobatchOut, true, true);
 
-                var dispatch = new IngestionRequestDispatchNode($"ingestion-dispatch-{lane}", laneDispatchChannels[lane].Reader, laneOps.Writer, laneDeadLetterWriter, canonicalBuilder, _loggerFactory.CreateLogger($"ingestion-dispatch-{lane}"), supervisor);
+                var dispatch = new IngestionRequestDispatchNode($"ingestion-dispatch-{lane}", laneDispatchChannels[lane].Reader, laneDispatchOut.Writer, laneDeadLetterWriter, canonicalBuilder, _loggerFactory.CreateLogger($"ingestion-dispatch-{lane}"), supervisor);
+
+                var enrich = new ApplyEnrichmentNode($"ingestion-enrich-{lane}", laneDispatchOut.Reader, laneOps.Writer, indexDeadLetter.Writer, scopeFactory, _loggerFactory.CreateLogger($"ingestion-enrich-{lane}"), supervisor,
+                    retryMaxAttempts: enrichmentRetryMaxAttempts,
+                    retryBaseDelay: TimeSpan.FromMilliseconds(enrichmentRetryBaseDelayMs),
+                    retryMaxDelay: TimeSpan.FromMilliseconds(enrichmentRetryMaxDelayMs),
+                    retryJitter: TimeSpan.FromMilliseconds(enrichmentRetryJitterMs));
 
                 var microBatch = new MicroBatchNode<IndexOperation>($"ingestion-microbatch-{lane}", lane, laneOps.Reader, laneBatches.Writer, microbatchMaxItems, TimeSpan.FromMilliseconds(microbatchMaxDelayMs), logger: _loggerFactory.CreateLogger($"ingestion-microbatch-{lane}"), fatalErrorReporter: supervisor, cancellationMode: CancellationMode.Drain);
 
                 var stubSink = new CollectingBatchSinkNode<IndexOperation>($"ingestion-stub-index-{lane}", laneBatches.Reader, _loggerFactory.CreateLogger($"ingestion-stub-index-{lane}"), supervisor);
 
                 supervisor.AddNode(dispatch);
+                supervisor.AddNode(enrich);
                 supervisor.AddNode(microBatch);
                 supervisor.AddNode(stubSink);
                 laneSinks.Add(stubSink);
@@ -108,6 +130,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
             supervisor.AddNode(validate);
             supervisor.AddNode(partition);
             supervisor.AddNode(deadLetterSink);
+            supervisor.AddNode(indexDeadLetterSink);
 
             return new IngestionPipelineGraph
             {

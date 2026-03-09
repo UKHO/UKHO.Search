@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shouldly;
 using UKHO.Search.Ingestion.Pipeline.Operations;
@@ -48,11 +49,14 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
                 CreateAckNode = (name, lane, input, supervisor) => ackSink = new BlockingEnvelopeSinkNode<IndexOperation>(name, input, 0)
             };
 
+            using var provider = new ServiceCollection().BuildServiceProvider();
+
             var graph = FileShareIngestionGraph.BuildAzureQueueBacked(new FileShareIngestionGraphDependencies
             {
                 Configuration = configuration,
                 LoggerFactory = loggerFactory,
-                Factories = factories
+                Factories = factories,
+                ScopeFactory = provider.GetRequiredService<IServiceScopeFactory>()
             }, cts.Token);
 
             await graph.Supervisor.StartAsync();

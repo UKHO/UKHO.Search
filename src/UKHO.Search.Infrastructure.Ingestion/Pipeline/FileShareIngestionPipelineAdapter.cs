@@ -1,5 +1,6 @@
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using UKHO.Search.Infrastructure.Ingestion.DeadLetter;
 using UKHO.Search.Infrastructure.Ingestion.Diagnostics;
@@ -22,8 +23,9 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
         private readonly ILoggerFactory _loggerFactory;
         private readonly IIngestionProviderService _providerService;
         private readonly IQueueClientFactory _queueClientFactory;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        public FileShareIngestionPipelineAdapter(IConfiguration configuration, ILoggerFactory loggerFactory, IIngestionProviderService providerService, IQueueClientFactory queueClientFactory, IBulkIndexClient<IndexOperation> bulkIndexClient, BlobServiceClient blobServiceClient)
+        public FileShareIngestionPipelineAdapter(IConfiguration configuration, ILoggerFactory loggerFactory, IIngestionProviderService providerService, IQueueClientFactory queueClientFactory, IBulkIndexClient<IndexOperation> bulkIndexClient, BlobServiceClient blobServiceClient, IServiceScopeFactory scopeFactory)
         {
             _configuration = configuration;
             _loggerFactory = loggerFactory;
@@ -31,6 +33,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
             _queueClientFactory = queueClientFactory;
             _bulkIndexClient = bulkIndexClient;
             _blobServiceClient = blobServiceClient;
+            _scopeFactory = scopeFactory;
         }
 
         public FileShareIngestionGraphHandle BuildAzureQueueBacked(CancellationToken cancellationToken)
@@ -60,7 +63,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
             {
                 Configuration = _configuration,
                 LoggerFactory = _loggerFactory,
-                Factories = factories
+                Factories = factories,
+                ScopeFactory = _scopeFactory
             }, cancellationToken);
         }
     }

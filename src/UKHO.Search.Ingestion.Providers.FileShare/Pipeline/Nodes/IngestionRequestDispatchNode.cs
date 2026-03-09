@@ -1,5 +1,6 @@
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
+using UKHO.Search.Ingestion.Pipeline;
 using UKHO.Search.Ingestion.Pipeline.Operations;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Documents;
 using UKHO.Search.Ingestion.Requests;
@@ -10,13 +11,13 @@ using UKHO.Search.Pipelines.Supervision;
 
 namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes
 {
-    public sealed class IngestionRequestDispatchNode : NodeBase<Envelope<IngestionRequest>, Envelope<IndexOperation>>
+    public sealed class IngestionRequestDispatchNode : NodeBase<Envelope<IngestionRequest>, Envelope<IngestionPipelineContext>>
     {
         private readonly CanonicalDocumentBuilder _canonicalBuilder;
         private readonly ChannelWriter<Envelope<IngestionRequest>> _deadLetterOutput;
         private readonly ILogger? _logger;
 
-        public IngestionRequestDispatchNode(string name, ChannelReader<Envelope<IngestionRequest>> input, ChannelWriter<Envelope<IndexOperation>> output, ChannelWriter<Envelope<IngestionRequest>> deadLetterOutput, CanonicalDocumentBuilder canonicalBuilder, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, output, logger, fatalErrorReporter)
+        public IngestionRequestDispatchNode(string name, ChannelReader<Envelope<IngestionRequest>> input, ChannelWriter<Envelope<IngestionPipelineContext>> output, ChannelWriter<Envelope<IngestionRequest>> deadLetterOutput, CanonicalDocumentBuilder canonicalBuilder, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, output, logger, fatalErrorReporter)
         {
             _deadLetterOutput = deadLetterOutput;
             _canonicalBuilder = canonicalBuilder;
@@ -66,7 +67,11 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes
                 return;
             }
 
-            var outEnvelope = item.MapPayload(operation);
+            var outEnvelope = item.MapPayload(new IngestionPipelineContext
+            {
+                Request = item.Payload,
+                Operation = operation
+            });
 
             await WriteAsync(outEnvelope, cancellationToken)
                 .ConfigureAwait(false);

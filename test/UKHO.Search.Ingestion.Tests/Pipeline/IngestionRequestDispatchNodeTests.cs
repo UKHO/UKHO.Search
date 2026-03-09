@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Shouldly;
+using UKHO.Search.Ingestion.Pipeline;
 using UKHO.Search.Ingestion.Pipeline.Operations;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Documents;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes;
@@ -17,7 +18,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
         public async Task AddItem_is_dispatched_to_upsert_with_canonical_document()
         {
             var input = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
-            var output = BoundedChannelFactory.Create<Envelope<IndexOperation>>(1, true, true);
+            var output = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
             var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
 
             var canonicalBuilder = new CanonicalDocumentBuilder("unknown");
@@ -37,7 +38,9 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             output.Reader.TryRead(out var envelope)
                   .ShouldBeTrue();
 
-            var upsert = envelope.Payload.ShouldBeOfType<UpsertOperation>();
+            envelope.Payload.Request.RequestType.ShouldBe(IngestionRequestType.AddItem);
+
+            var upsert = envelope.Payload.Operation.ShouldBeOfType<UpsertOperation>();
             upsert.DocumentId.ShouldBe("doc-1");
             upsert.Document.DocumentId.ShouldBe("doc-1");
             upsert.Document.DocumentType.ShouldBe("unknown");
@@ -55,7 +58,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
         public async Task DeleteItem_is_dispatched_to_delete_operation()
         {
             var input = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
-            var output = BoundedChannelFactory.Create<Envelope<IndexOperation>>(1, true, true);
+            var output = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
             var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
 
             var canonicalBuilder = new CanonicalDocumentBuilder("unknown");
@@ -74,7 +77,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
 
             output.Reader.TryRead(out var envelope)
                   .ShouldBeTrue();
-            envelope.Payload.ShouldBeOfType<DeleteOperation>()
+            envelope.Payload.Operation.ShouldBeOfType<DeleteOperation>()
                     .DocumentId.ShouldBe("doc-1");
         }
 
@@ -82,7 +85,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
         public async Task Unsupported_dispatch_is_failed_and_routed_to_deadletter()
         {
             var input = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
-            var output = BoundedChannelFactory.Create<Envelope<IndexOperation>>(1, true, true);
+            var output = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
             var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
 
             var canonicalBuilder = new CanonicalDocumentBuilder("unknown");
@@ -113,6 +116,54 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             failed.Status.ShouldBe(MessageStatus.Failed);
             failed.Error.ShouldNotBeNull();
             failed.Error!.Category.ShouldBe(PipelineErrorCategory.Transform);
+        }
+
+        [Fact]
+        public async Task Envelope_metadata_is_preserved_when_mapping_to_ingestion_pipeline_context()
+        {
+            var input = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
+            var output = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
+            var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
+
+            var canonicalBuilder = new CanonicalDocumentBuilder("unknown");
+
+            var node = new IngestionRequestDispatchNode("dispatch", input.Reader, output.Writer, deadLetter.Writer, canonicalBuilder);
+
+            await node.StartAsync(CancellationToken.None);
+
+            var messageId = Guid.NewGuid();
+            var headers = new Dictionary<string, string>(StringComparer.Ordinal) { ["h"] = "v" };
+            var context = new MessageContext();
+            context.AddBreadcrumb("upstream");
+
+            var delete = new DeleteItemRequest("doc-1");
+            var request = new IngestionRequest(IngestionRequestType.DeleteItem, null, null, delete, null);
+
+            var envelope = new Envelope<IngestionRequest>("doc-1", request)
+            {
+                MessageId = messageId,
+                CorrelationId = "corr",
+                Attempt = 7,
+                Headers = headers,
+                Context = context
+            };
+
+            await input.Writer.WriteAsync(envelope);
+            input.Writer.TryComplete();
+
+            await node.Completion.WaitAsync(TimeSpan.FromSeconds(2));
+
+            output.Reader.TryRead(out var outEnvelope)
+                  .ShouldBeTrue();
+
+            outEnvelope.MessageId.ShouldBe(messageId);
+            outEnvelope.CorrelationId.ShouldBe("corr");
+            outEnvelope.Attempt.ShouldBe(7);
+            outEnvelope.Headers.ShouldBeSameAs(headers);
+            outEnvelope.Context.ShouldBeSameAs(context);
+
+            outEnvelope.Context.Breadcrumbs.ShouldContain("upstream");
+            outEnvelope.Context.Breadcrumbs.ShouldContain("dispatch");
         }
     }
 }

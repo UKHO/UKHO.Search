@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Shouldly;
+using UKHO.Search.Ingestion.Pipeline;
 using UKHO.Search.Ingestion.Pipeline.Operations;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Documents;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes;
@@ -16,7 +17,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
         public async Task AddItem_produces_canonical_document_via_provider_dispatch_and_build_path()
         {
             var input = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
-            var output = BoundedChannelFactory.Create<Envelope<IndexOperation>>(1, true, true);
+            var output = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
             var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
 
             var canonicalBuilder = new CanonicalDocumentBuilder("unknown");
@@ -38,7 +39,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             deadLetter.Reader.TryRead(out var _)
                       .ShouldBeFalse();
 
-            var upsert = envelope.Payload.ShouldBeOfType<UpsertOperation>();
+            var upsert = envelope.Payload.Operation.ShouldBeOfType<UpsertOperation>();
             upsert.DocumentId.ShouldBe("doc-1");
             upsert.Document.DocumentId.ShouldBe("doc-1");
             upsert.Document.DocumentType.ShouldBe("unknown");

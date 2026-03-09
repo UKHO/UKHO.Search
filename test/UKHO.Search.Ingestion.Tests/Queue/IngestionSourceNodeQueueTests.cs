@@ -78,8 +78,8 @@ namespace UKHO.Search.Ingestion.Tests.Queue
                                                           .Build();
 
             var queueFactory = new FakeQueueClientFactory();
-            _ = queueFactory.GetOrAdd("q");
-            _ = queueFactory.GetOrAdd("q-dead");
+            var queue = queueFactory.GetOrAdd("q");
+            var poison = queueFactory.GetOrAdd("q-dead");
 
             var providerFactory = new FileShareIngestionDataProviderFactory("q");
             var providerService = new SingleProviderService(providerFactory);
@@ -91,6 +91,9 @@ namespace UKHO.Search.Ingestion.Tests.Queue
             var node = new IngestionSourceNode("source", output.Writer, configuration, providerService, queueFactory, NullLogger.Instance);
 
             await node.StartAsync(cts.Token);
+
+            await queue.CreateCalled.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            await poison.CreateCalled.Task.WaitAsync(TimeSpan.FromSeconds(2));
 
             queueFactory.RequestedQueueNames.ShouldContain("q");
             queueFactory.RequestedQueueNames.ShouldContain("q-dead");
