@@ -26,11 +26,11 @@ namespace UKHO.Search.Pipelines.Nodes
             ILogger? logger = null,
             IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, output, logger, fatalErrorReporter)
         {
-            this._transform = transform;
-            this._retryPolicy = retryPolicy;
-            this._createError = createError;
-            this._errorOutput = errorOutput;
-            this._forwardFailedToMainOutput = forwardFailedToMainOutput;
+            _transform = transform;
+            _retryPolicy = retryPolicy;
+            _createError = createError;
+            _errorOutput = errorOutput;
+            _forwardFailedToMainOutput = forwardFailedToMainOutput;
         }
 
         public RetryingTransformNode(string name,
@@ -105,7 +105,7 @@ namespace UKHO.Search.Pipelines.Nodes
                     if (_errorOutput is not null)
                     {
                         await _errorOutput.WriteAsync(item, cancellationToken)
-                                         .ConfigureAwait(false);
+                                          .ConfigureAwait(false);
                         Metrics.RecordOut(item);
                     }
 

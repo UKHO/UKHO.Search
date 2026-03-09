@@ -22,10 +22,10 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Terminal
 
         public DeadLetterPersistAndAckSinkNode(string name, ChannelReader<Envelope<TPayload>> input, string filePath, bool fatalIfCannotPersist = false, IDeadLetterMetadataProvider? metadataProvider = null, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, logger, fatalErrorReporter)
         {
-            this._filePath = filePath;
-            this._fatalIfCannotPersist = fatalIfCannotPersist;
-            this._metadataProvider = metadataProvider ?? new DefaultDeadLetterMetadataProvider();
-            this._logger = logger;
+            _filePath = filePath;
+            _fatalIfCannotPersist = fatalIfCannotPersist;
+            _metadataProvider = metadataProvider ?? new DefaultDeadLetterMetadataProvider();
+            _logger = logger;
         }
 
         protected override async ValueTask HandleItemAsync(Envelope<TPayload> item, CancellationToken cancellationToken)

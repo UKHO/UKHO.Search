@@ -21,10 +21,10 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes
         public BatchFlattenNode(string name, ChannelReader<BatchEnvelope<TPayload>> input, ChannelWriter<Envelope<TPayload>> output, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null)
         {
             Name = name;
-            this._input = input;
-            this._output = output;
-            this._logger = logger;
-            this._fatalErrorReporter = fatalErrorReporter;
+            _input = input;
+            _output = output;
+            _logger = logger;
+            _fatalErrorReporter = fatalErrorReporter;
             _metrics = new NodeMetrics(name);
         }
 
@@ -48,7 +48,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes
             try
             {
                 while (await _input.WaitToReadAsync(cancellationToken)
-                                  .ConfigureAwait(false))
+                                   .ConfigureAwait(false))
                 {
                     while (_input.TryRead(out var batch))
                     {
@@ -64,7 +64,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes
                                 _logger?.LogInformation("Stub indexed message. NodeName={NodeName} PartitionId={PartitionId} Key={Key} MessageId={MessageId} Attempt={Attempt}", Name, batch.PartitionId, item.Key, item.MessageId, item.Attempt);
 
                                 await _output.WriteAsync(item, cancellationToken)
-                                            .ConfigureAwait(false);
+                                             .ConfigureAwait(false);
                                 _metrics.RecordOut(item);
                             }
                         }

@@ -16,8 +16,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
 
         public ElasticsearchBulkIndexClient(ElasticsearchClient client, IConfiguration configuration, ILogger<ElasticsearchBulkIndexClient> logger)
         {
-            this._client = client;
-            this._logger = logger;
+            _client = client;
+            _logger = logger;
 
             _indexName = configuration["ingestion:indexname"] ?? throw new InvalidOperationException("Missing required configuration value 'ingestion:indexname'.");
         }
@@ -54,7 +54,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
             }
 
             var response = await _client.BulkAsync(bulkRequest, cancellationToken)
-                                       .ConfigureAwait(false);
+                                        .ConfigureAwait(false);
 
             if (!response.IsValidResponse)
             {

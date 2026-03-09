@@ -13,7 +13,7 @@ namespace UKHO.Search.Pipelines.Nodes
 
         public CollectingSinkNode(string name, ChannelReader<Envelope<TPayload>> input, TimeSpan? perMessageDelay = null, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, logger, fatalErrorReporter)
         {
-            this._perMessageDelay = perMessageDelay ?? TimeSpan.Zero;
+            _perMessageDelay = perMessageDelay ?? TimeSpan.Zero;
         }
 
         public IReadOnlyList<Envelope<TPayload>> Items

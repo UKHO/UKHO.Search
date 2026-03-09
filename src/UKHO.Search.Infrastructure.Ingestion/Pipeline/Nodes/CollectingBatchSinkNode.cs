@@ -15,7 +15,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes
 
         public CollectingBatchSinkNode(string name, ChannelReader<BatchEnvelope<TPayload>> input, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, logger, fatalErrorReporter)
         {
-            this._logger = logger;
+            _logger = logger;
         }
 
         public IReadOnlyList<Envelope<TPayload>> Items

@@ -23,6 +23,8 @@ namespace FileShareEmulator
             builder.AddAzureBlobServiceClient(ServiceNames.Blobs);
             builder.AddAzureQueueServiceClient(ServiceNames.Queues);
 
+            builder.AddElasticsearchClient(ServiceNames.ElasticSearch);
+
             builder.Services.AddScoped<StatisticsService>();
             builder.Services.AddScoped<BatchSecurityTokenService>();
             builder.Services.AddScoped<IndexService>();

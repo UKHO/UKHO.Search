@@ -14,7 +14,7 @@ namespace UKHO.Search.Ingestion.Tests.TestNodes
 
         public BlockingEnvelopeSinkNode(string name, ChannelReader<Envelope<TPayload>> input, int blockAfterCount) : base(name, input)
         {
-            this._blockAfterCount = blockAfterCount;
+            _blockAfterCount = blockAfterCount;
         }
 
         public IReadOnlyList<Envelope<TPayload>> Items
@@ -48,7 +48,7 @@ namespace UKHO.Search.Ingestion.Tests.TestNodes
                 }
 
                 await _receivedSignal.WaitAsync(cts.Token)
-                                    .ConfigureAwait(false);
+                                     .ConfigureAwait(false);
             }
         }
 
@@ -72,7 +72,7 @@ namespace UKHO.Search.Ingestion.Tests.TestNodes
                 if (shouldBlock)
                 {
                     await _releaseGate.Task.WaitAsync(cancellationToken)
-                                     .ConfigureAwait(false);
+                                      .ConfigureAwait(false);
                 }
             }
         }

@@ -22,11 +22,11 @@ namespace UKHO.Search.Pipelines.Nodes
 
         public DeadLetterSinkNode(string name, ChannelReader<Envelope<TPayload>> input, string filePath, bool fatalIfCannotPersist = false, Func<Envelope<TPayload>, string?>? snapshotter = null, IDeadLetterMetadataProvider? metadataProvider = null, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, logger, fatalErrorReporter)
         {
-            this._filePath = filePath;
-            this._fatalIfCannotPersist = fatalIfCannotPersist;
-            this._snapshotter = snapshotter;
-            this._metadataProvider = metadataProvider ?? new DefaultDeadLetterMetadataProvider();
-            this._logger = logger;
+            _filePath = filePath;
+            _fatalIfCannotPersist = fatalIfCannotPersist;
+            _snapshotter = snapshotter;
+            _metadataProvider = metadataProvider ?? new DefaultDeadLetterMetadataProvider();
+            _logger = logger;
         }
 
         public int PersistedCount => _persistedCount;

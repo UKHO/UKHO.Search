@@ -10,9 +10,9 @@ namespace UKHO.Search.Pipelines.Channels
 
         public CountingChannelReader(ChannelReader<T> inner, Func<long> getDepth, Action decrement)
         {
-            this._inner = inner;
-            this._getDepth = getDepth;
-            this._decrement = decrement;
+            _inner = inner;
+            _getDepth = getDepth;
+            _decrement = decrement;
         }
 
         public override Task Completion => _inner.Completion;

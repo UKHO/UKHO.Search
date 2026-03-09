@@ -11,8 +11,8 @@ namespace UKHO.Search.Ingestion.Tests.DeadLetter
 
         public SimpleResponse(int status, string reasonPhrase = "")
         {
-            this._status = status;
-            this._reasonPhrase = reasonPhrase;
+            _status = status;
+            _reasonPhrase = reasonPhrase;
         }
 
         public override int Status => _status;

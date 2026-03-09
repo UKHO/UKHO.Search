@@ -15,12 +15,7 @@ namespace UKHO.Search.Ingestion.Tests.TestNodes
         private readonly ChannelWriter<Envelope<IndexOperation>> _successOutput;
         private Task? _completion;
 
-        public PassthroughBulkIndexNode(
-            string name,
-            ChannelReader<BatchEnvelope<IndexOperation>> input,
-            ChannelWriter<Envelope<IndexOperation>> successOutput,
-            ChannelWriter<Envelope<IndexOperation>> deadLetterOutput,
-            IPipelineFatalErrorReporter? fatalErrorReporter = null)
+        public PassthroughBulkIndexNode(string name, ChannelReader<BatchEnvelope<IndexOperation>> input, ChannelWriter<Envelope<IndexOperation>> successOutput, ChannelWriter<Envelope<IndexOperation>> deadLetterOutput, IPipelineFatalErrorReporter? fatalErrorReporter = null)
         {
             Name = name;
             _input = input;
@@ -49,14 +44,14 @@ namespace UKHO.Search.Ingestion.Tests.TestNodes
             try
             {
                 while (await _input.WaitToReadAsync(cancellationToken)
-                                  .ConfigureAwait(false))
+                                   .ConfigureAwait(false))
                 {
                     while (_input.TryRead(out var batch))
                     {
                         foreach (var envelope in batch.Items)
                         {
                             await _successOutput.WriteAsync(envelope, cancellationToken)
-                                               .ConfigureAwait(false);
+                                                .ConfigureAwait(false);
                         }
                     }
                 }

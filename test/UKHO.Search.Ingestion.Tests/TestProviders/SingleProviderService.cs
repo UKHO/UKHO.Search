@@ -9,7 +9,7 @@ namespace UKHO.Search.Ingestion.Tests.TestProviders
 
         public SingleProviderService(IIngestionDataProviderFactory factory)
         {
-            this._factory = factory;
+            _factory = factory;
         }
 
         public IEnumerable<IIngestionDataProviderFactory> GetAllProviders()

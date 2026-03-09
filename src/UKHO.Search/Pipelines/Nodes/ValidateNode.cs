@@ -13,8 +13,8 @@ namespace UKHO.Search.Pipelines.Nodes
 
         public ValidateNode(string name, ChannelReader<Envelope<TPayload>> input, ChannelWriter<Envelope<TPayload>> output, ChannelWriter<Envelope<TPayload>>? errorOutput = null, bool forwardFailedToMainOutput = true, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, output, logger, fatalErrorReporter)
         {
-            this._errorOutput = errorOutput;
-            this._forwardFailedToMainOutput = forwardFailedToMainOutput;
+            _errorOutput = errorOutput;
+            _forwardFailedToMainOutput = forwardFailedToMainOutput;
         }
 
         protected override async ValueTask HandleItemAsync(Envelope<TPayload> item, CancellationToken cancellationToken)
@@ -41,7 +41,7 @@ namespace UKHO.Search.Pipelines.Nodes
             if (item.Status == MessageStatus.Failed && _errorOutput is not null)
             {
                 await _errorOutput.WriteAsync(item, cancellationToken)
-                                 .ConfigureAwait(false);
+                                  .ConfigureAwait(false);
                 Metrics.RecordOut(item);
             }
 

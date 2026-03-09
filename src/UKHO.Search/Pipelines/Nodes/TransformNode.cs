@@ -13,8 +13,8 @@ namespace UKHO.Search.Pipelines.Nodes
 
         public TransformNode(string name, ChannelReader<Envelope<TIn>> input, ChannelWriter<Envelope<TOut>> output, Func<TIn, CancellationToken, ValueTask<TOut>> transform, bool faultPipelineOnException = false, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, output, logger, fatalErrorReporter)
         {
-            this._transform = transform;
-            this._faultPipelineOnException = faultPipelineOnException;
+            _transform = transform;
+            _faultPipelineOnException = faultPipelineOnException;
         }
 
         protected override async ValueTask HandleItemAsync(Envelope<TIn> item, CancellationToken cancellationToken)

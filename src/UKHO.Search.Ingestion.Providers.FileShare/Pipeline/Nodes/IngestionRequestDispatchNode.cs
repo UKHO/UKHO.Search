@@ -18,9 +18,9 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes
 
         public IngestionRequestDispatchNode(string name, ChannelReader<Envelope<IngestionRequest>> input, ChannelWriter<Envelope<IndexOperation>> output, ChannelWriter<Envelope<IngestionRequest>> deadLetterOutput, CanonicalDocumentBuilder canonicalBuilder, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, output, logger, fatalErrorReporter)
         {
-            this._deadLetterOutput = deadLetterOutput;
-            this._canonicalBuilder = canonicalBuilder;
-            this._logger = logger;
+            _deadLetterOutput = deadLetterOutput;
+            _canonicalBuilder = canonicalBuilder;
+            _logger = logger;
         }
 
         protected override async ValueTask HandleItemAsync(Envelope<IngestionRequest> item, CancellationToken cancellationToken)
@@ -30,7 +30,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes
             if (item.Status != MessageStatus.Ok)
             {
                 await _deadLetterOutput.WriteAsync(item, cancellationToken)
-                                      .ConfigureAwait(false);
+                                       .ConfigureAwait(false);
                 Metrics.RecordOut(item);
                 return;
             }
@@ -61,7 +61,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes
                 _logger?.LogWarning(ex, "Dispatch failed. NodeName={NodeName} Key={Key} MessageId={MessageId} Attempt={Attempt}", Name, item.Key, item.MessageId, item.Attempt);
 
                 await _deadLetterOutput.WriteAsync(item, cancellationToken)
-                                      .ConfigureAwait(false);
+                                       .ConfigureAwait(false);
                 Metrics.RecordOut(item);
                 return;
             }

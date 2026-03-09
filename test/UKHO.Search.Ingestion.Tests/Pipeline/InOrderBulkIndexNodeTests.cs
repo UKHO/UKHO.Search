@@ -191,7 +191,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
 
             public SequencedBulkClient(IEnumerable<BulkIndexResponse> responses)
             {
-                this._responses = new Queue<BulkIndexResponse>(responses);
+                _responses = new Queue<BulkIndexResponse>(responses);
             }
 
             public ValueTask<BulkIndexResponse> BulkIndexAsync(BulkIndexRequest<IndexOperation> request, CancellationToken cancellationToken)
@@ -206,7 +206,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
 
             public KeyedBulkClient(Dictionary<Guid, Queue<BulkIndexResponse>> responses)
             {
-                this._responses = responses;
+                _responses = responses;
             }
 
             public List<(string Key, Guid MessageId)> Calls { get; } = new();

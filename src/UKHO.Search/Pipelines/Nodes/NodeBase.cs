@@ -19,11 +19,11 @@ namespace UKHO.Search.Pipelines.Nodes
         protected NodeBase(string name, ChannelReader<TIn> input, ChannelWriter<TOut> output, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, CancellationMode cancellationMode = CancellationMode.Immediate)
         {
             Name = name;
-            this._input = input;
-            this._output = output;
-            this._logger = logger;
-            this._fatalErrorReporter = fatalErrorReporter;
-            this._cancellationMode = cancellationMode;
+            _input = input;
+            _output = output;
+            _logger = logger;
+            _fatalErrorReporter = fatalErrorReporter;
+            _cancellationMode = cancellationMode;
 
             Func<long>? queueDepthProvider = null;
             if (input is IQueueDepthProvider qdp)
@@ -56,7 +56,7 @@ namespace UKHO.Search.Pipelines.Nodes
         protected async ValueTask WriteAsync(TOut item, CancellationToken cancellationToken)
         {
             await _output.WriteAsync(item, cancellationToken)
-                        .ConfigureAwait(false);
+                         .ConfigureAwait(false);
             Metrics.RecordOut(item);
         }
 
@@ -70,7 +70,7 @@ namespace UKHO.Search.Pipelines.Nodes
             try
             {
                 while (await _input.WaitToReadAsync(cancellationToken)
-                                  .ConfigureAwait(false))
+                                   .ConfigureAwait(false))
                 {
                     while (_input.TryRead(out var item))
                     {

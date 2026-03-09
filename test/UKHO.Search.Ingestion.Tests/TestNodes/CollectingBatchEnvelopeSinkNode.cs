@@ -41,7 +41,7 @@ namespace UKHO.Search.Ingestion.Tests.TestNodes
                 }
 
                 await _receivedSignal.WaitAsync(cts.Token)
-                                    .ConfigureAwait(false);
+                                     .ConfigureAwait(false);
             }
         }
 

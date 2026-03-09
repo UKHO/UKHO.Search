@@ -13,9 +13,9 @@ namespace UKHO.Search.Tests.Pipelines
         public DelayedThrowNode(string name, TimeSpan delay, Exception exception, IPipelineFatalErrorReporter? fatalErrorReporter = null)
         {
             Name = name;
-            this._delay = delay;
-            this._exception = exception;
-            this._fatalErrorReporter = fatalErrorReporter;
+            _delay = delay;
+            _exception = exception;
+            _fatalErrorReporter = fatalErrorReporter;
         }
 
         public string Name { get; }

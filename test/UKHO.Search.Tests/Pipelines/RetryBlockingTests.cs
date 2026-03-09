@@ -58,7 +58,7 @@ namespace UKHO.Search.Tests.Pipelines
             var t3 = env3.Context.TimingsUtc[receivedKey];
 
             // Allow a small margin for timer granularity/scheduler jitter.
-            var expectedMin = (baseDelay + baseDelay) - TimeSpan.FromMilliseconds(50);
+            var expectedMin = baseDelay + baseDelay - TimeSpan.FromMilliseconds(50);
             (t3 - t1).ShouldBeGreaterThanOrEqualTo(expectedMin);
         }
     }

@@ -15,8 +15,8 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes
 
         public IngestionRequestValidateNode(string name, ChannelReader<Envelope<IngestionRequest>> input, ChannelWriter<Envelope<IngestionRequest>> output, ChannelWriter<Envelope<IngestionRequest>> deadLetterOutput, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, output, logger, fatalErrorReporter)
         {
-            this._deadLetterOutput = deadLetterOutput;
-            this._logger = logger;
+            _deadLetterOutput = deadLetterOutput;
+            _logger = logger;
         }
 
         protected override async ValueTask HandleItemAsync(Envelope<IngestionRequest> item, CancellationToken cancellationToken)
@@ -26,7 +26,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes
             if (item.Status != MessageStatus.Ok)
             {
                 await _deadLetterOutput.WriteAsync(item, cancellationToken)
-                                      .ConfigureAwait(false);
+                                       .ConfigureAwait(false);
                 Metrics.RecordOut(item);
                 return;
             }
@@ -38,7 +38,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes
                 _logger?.LogWarning("Validation failed. NodeName={NodeName} Key={Key} MessageId={MessageId} Attempt={Attempt} ErrorCode={ErrorCode}", Name, item.Key, item.MessageId, item.Attempt, item.Error?.Code);
 
                 await _deadLetterOutput.WriteAsync(item, cancellationToken)
-                                      .ConfigureAwait(false);
+                                       .ConfigureAwait(false);
                 Metrics.RecordOut(item);
                 return;
             }

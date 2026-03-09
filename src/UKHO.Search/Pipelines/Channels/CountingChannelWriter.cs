@@ -9,8 +9,8 @@ namespace UKHO.Search.Pipelines.Channels
 
         public CountingChannelWriter(ChannelWriter<T> inner, Action increment)
         {
-            this._inner = inner;
-            this._increment = increment;
+            _inner = inner;
+            _increment = increment;
         }
 
         public override bool TryComplete(Exception? error = null)

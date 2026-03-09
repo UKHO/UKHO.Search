@@ -12,7 +12,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Diagnostics
 
         public DiagnosticsSinkNode(string name, ChannelReader<Envelope<TPayload>> input, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, logger, fatalErrorReporter)
         {
-            this._logger = logger;
+            _logger = logger;
         }
 
         protected override ValueTask HandleItemAsync(Envelope<TPayload> item, CancellationToken cancellationToken)

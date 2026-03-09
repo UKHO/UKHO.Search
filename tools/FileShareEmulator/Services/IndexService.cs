@@ -98,10 +98,10 @@ namespace FileShareEmulator.Services
         {
             var attributes = await GetBatchAttributesAsync(batchId, cancellationToken)
                 .ConfigureAwait(false);
-            var securityTokens = await _batchSecurityTokenService.GetSecurityTokensAsync(batchId, cancellationToken)
-                                                                 .ConfigureAwait(false);
+            var securityTokenResult = await _batchSecurityTokenService.GetSecurityTokensAsync(batchId, cancellationToken)
+                                                                       .ConfigureAwait(false);
 
-            var properties = new List<IngestionProperty>(attributes.Count + 1);
+            var properties = new List<IngestionProperty>(attributes.Count + 2);
 
             foreach (var (key, value) in attributes)
             {
@@ -118,14 +118,21 @@ namespace FileShareEmulator.Services
                 });
             }
 
+            properties.Add(new IngestionProperty
+            {
+                Name = "BusinessUnitName",
+                Type = IngestionPropertyType.String,
+                Value = securityTokenResult.BusinessUnitName ?? string.Empty
+            });
+
             var addItem = new AddItemRequest
             {
                 Id = batchId.ToString("D"),
                 Properties = properties,
-                SecurityTokens = securityTokens
+                SecurityTokens = securityTokenResult.SecurityTokens
             };
 
-            _logger.LogDebug("Created ingestion request for batch {BatchId} with {SecurityTokenCount} security tokens.", batchId, securityTokens.Length);
+            _logger.LogDebug("Created ingestion request for batch {BatchId} with {SecurityTokenCount} security tokens.", batchId, securityTokenResult.SecurityTokens.Length);
 
             return new IngestionRequest
             {

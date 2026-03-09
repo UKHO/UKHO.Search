@@ -23,13 +23,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
         private readonly IIngestionProviderService _providerService;
         private readonly IQueueClientFactory _queueClientFactory;
 
-        public FileShareIngestionPipelineAdapter(
-            IConfiguration configuration,
-            ILoggerFactory loggerFactory,
-            IIngestionProviderService providerService,
-            IQueueClientFactory queueClientFactory,
-            IBulkIndexClient<IndexOperation> bulkIndexClient,
-            BlobServiceClient blobServiceClient)
+        public FileShareIngestionPipelineAdapter(IConfiguration configuration, ILoggerFactory loggerFactory, IIngestionProviderService providerService, IQueueClientFactory queueClientFactory, IBulkIndexClient<IndexOperation> bulkIndexClient, BlobServiceClient blobServiceClient)
         {
             _configuration = configuration;
             _loggerFactory = loggerFactory;
@@ -48,67 +42,26 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
 
             var factories = new FileShareIngestionGraphFactories
             {
-                CreateSourceNode = (name, output, supervisor) => new IngestionSourceNode(
-                    name,
-                    output,
-                    _configuration,
-                    _providerService,
-                    _queueClientFactory,
-                    _loggerFactory.CreateLogger(name),
-                    supervisor),
+                CreateSourceNode = (name, output, supervisor) => new IngestionSourceNode(name, output, _configuration, _providerService, _queueClientFactory, _loggerFactory.CreateLogger(name), supervisor),
 
-                CreateRequestDeadLetterSinkNode = (name, input, supervisor) => new BlobDeadLetterSinkNode<IngestionRequest>(
-                    name,
-                    input,
-                    _blobServiceClient,
-                    _configuration,
-                    _configuration.GetValue("ingestion:deadletterFatalIfCannotPersist", true),
-                    logger: _loggerFactory.CreateLogger(name),
-                    fatalErrorReporter: supervisor),
+                CreateRequestDeadLetterSinkNode = (name, input, supervisor) => new BlobDeadLetterSinkNode<IngestionRequest>(name, input, _blobServiceClient, _configuration, _configuration.GetValue("ingestion:deadletterFatalIfCannotPersist", true), logger: _loggerFactory.CreateLogger(name), fatalErrorReporter: supervisor),
 
-                CreateIndexDeadLetterSinkNode = (name, input, supervisor) => new BlobDeadLetterSinkNode<IndexOperation>(
-                    name,
-                    input,
-                    _blobServiceClient,
-                    _configuration,
-                    _configuration.GetValue("ingestion:deadletterFatalIfCannotPersist", true),
-                    logger: _loggerFactory.CreateLogger(name),
-                    fatalErrorReporter: supervisor),
+                CreateIndexDeadLetterSinkNode = (name, input, supervisor) => new BlobDeadLetterSinkNode<IndexOperation>(name, input, _blobServiceClient, _configuration, _configuration.GetValue("ingestion:deadletterFatalIfCannotPersist", true), logger: _loggerFactory.CreateLogger(name), fatalErrorReporter: supervisor),
 
-                CreateDiagnosticsSinkNode = (name, input, supervisor) => new DiagnosticsSinkNode<IndexOperation>(
-                    name,
-                    input,
-                    _loggerFactory.CreateLogger(name),
-                    supervisor),
+                CreateDiagnosticsSinkNode = (name, input, supervisor) => new DiagnosticsSinkNode<IndexOperation>(name, input, _loggerFactory.CreateLogger(name), supervisor),
 
-                CreateBulkIndexNode = (name, lane, input, successOutput, deadLetterOutput, supervisor) => new InOrderBulkIndexNode(
-                    name,
-                    input,
-                    _bulkIndexClient,
-                    successOutput,
-                    deadLetterOutput,
-                    indexRetryMaxAttempts,
-                    TimeSpan.FromMilliseconds(indexRetryBaseDelayMs),
-                    TimeSpan.FromMilliseconds(indexRetryMaxDelayMs),
-                    TimeSpan.FromMilliseconds(indexRetryJitterMs),
-                    logger: _loggerFactory.CreateLogger(name),
-                    fatalErrorReporter: supervisor),
+                CreateBulkIndexNode = (name, lane, input, successOutput, deadLetterOutput, supervisor) => new InOrderBulkIndexNode(name, input, _bulkIndexClient, successOutput, deadLetterOutput, indexRetryMaxAttempts, TimeSpan.FromMilliseconds(indexRetryBaseDelayMs), TimeSpan.FromMilliseconds(indexRetryMaxDelayMs), TimeSpan.FromMilliseconds(indexRetryJitterMs),
+                    logger: _loggerFactory.CreateLogger(name), fatalErrorReporter: supervisor),
 
-                CreateAckNode = (name, lane, input, supervisor) => new AckSinkNode<IndexOperation>(
-                    name,
-                    input,
-                    _loggerFactory.CreateLogger(name),
-                    supervisor)
+                CreateAckNode = (name, lane, input, supervisor) => new AckSinkNode<IndexOperation>(name, input, _loggerFactory.CreateLogger(name), supervisor)
             };
 
-            return FileShareIngestionGraph.BuildAzureQueueBacked(
-                new FileShareIngestionGraphDependencies
-                {
-                    Configuration = _configuration,
-                    LoggerFactory = _loggerFactory,
-                    Factories = factories
-                },
-                cancellationToken);
+            return FileShareIngestionGraph.BuildAzureQueueBacked(new FileShareIngestionGraphDependencies
+            {
+                Configuration = _configuration,
+                LoggerFactory = _loggerFactory,
+                Factories = factories
+            }, cancellationToken);
         }
     }
 }

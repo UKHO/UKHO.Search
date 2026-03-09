@@ -14,11 +14,11 @@ namespace UKHO.Search.Infrastructure.Ingestion.Queue
 
         public QueueMessageAcker(IQueueClient queue, string messageId, string popReceipt, string messageText, ILogger logger)
         {
-            this._queue = queue;
-            this._messageId = messageId;
-            this._popReceipt = popReceipt;
-            this._messageText = messageText;
-            this._logger = logger;
+            _queue = queue;
+            _messageId = messageId;
+            _popReceipt = popReceipt;
+            _messageText = messageText;
+            _logger = logger;
         }
 
         public Task? VisibilityRenewalTask { get; private set; }
@@ -44,13 +44,13 @@ namespace UKHO.Search.Infrastructure.Ingestion.Queue
             }
 
             await _queue.DeleteMessageAsync(_messageId, _popReceipt, cancellationToken)
-                       .ConfigureAwait(false);
+                        .ConfigureAwait(false);
         }
 
         public async ValueTask UpdateVisibilityAsync(TimeSpan visibilityTimeout, CancellationToken cancellationToken)
         {
             var receipt = await _queue.UpdateMessageAsync(_messageId, _popReceipt, _messageText, visibilityTimeout, cancellationToken)
-                                     .ConfigureAwait(false);
+                                      .ConfigureAwait(false);
 
             _popReceipt = receipt.PopReceipt;
         }

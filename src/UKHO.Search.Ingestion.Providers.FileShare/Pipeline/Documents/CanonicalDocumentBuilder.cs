@@ -11,7 +11,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Documents
 
         public CanonicalDocumentBuilder(string documentTypePlaceholder)
         {
-            this._documentTypePlaceholder = documentTypePlaceholder;
+            _documentTypePlaceholder = documentTypePlaceholder;
         }
 
         public CanonicalDocument BuildForUpsert(string documentId, IngestionRequest request)

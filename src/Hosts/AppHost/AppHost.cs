@@ -87,10 +87,12 @@ namespace AppHost
                                                    .WithReference(sqlServer)
                                                    .WithReference(storageQueue)
                                                    .WithReference(storageBlob)
+                                                   .WithReference(elasticsearch)
                                                    .WaitFor(sqlServer)
                                                    .WaitFor(storageQueue)
                                                    .WaitFor(storageBlob)
                                                    .WaitFor(ingestionService)
+                                                   .WaitFor(elasticsearch)
                                                    .WithScalar("Emulator API");
 
                     // Configuration

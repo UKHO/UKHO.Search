@@ -20,16 +20,16 @@ namespace UKHO.Search.Infrastructure.Ingestion.Queue
 
         public IngestionSourceNode(string name, ChannelWriter<Envelope<IngestionRequest>> output, IConfiguration configuration, IIngestionProviderService providerService, IQueueClientFactory queueClientFactory, ILogger logger, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, output, logger, fatalErrorReporter)
         {
-            this._configuration = configuration;
-            this._providerService = providerService;
-            this._queueClientFactory = queueClientFactory;
-            this._logger = logger;
+            _configuration = configuration;
+            _providerService = providerService;
+            _queueClientFactory = queueClientFactory;
+            _logger = logger;
         }
 
         protected override async ValueTask ProduceAsync(ChannelWriter<Envelope<IngestionRequest>> output, CancellationToken cancellationToken)
         {
             var providers = _providerService.GetAllProviders()
-                                           .ToArray();
+                                            .ToArray();
 
             if (providers.Length == 0)
             {

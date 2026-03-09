@@ -43,7 +43,7 @@ namespace UKHO.Search.Ingestion.Tests.DeadLetter
 
             var channel = BoundedChannelFactory.Create<Envelope<int>>(1, true, true);
 
-            var node = new BlobDeadLetterSinkNode<int>("deadletter", channel.Reader, blobServiceClient, config, true, logger: NullLogger.Instance);
+            var node = new BlobDeadLetterSinkNode<int>("deadletter", channel.Reader, blobServiceClient, config, logger: NullLogger.Instance);
 
             await node.StartAsync(cts.Token);
 

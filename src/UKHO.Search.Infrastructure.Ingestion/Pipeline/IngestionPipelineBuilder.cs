@@ -30,16 +30,16 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
 
         public IngestionPipelineBuilder(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
-            this._configuration = configuration;
-            this._loggerFactory = loggerFactory;
+            _configuration = configuration;
+            _loggerFactory = loggerFactory;
         }
 
         public IngestionPipelineBuilder(IConfiguration configuration, ILoggerFactory loggerFactory, IIngestionProviderService providerService, IQueueClientFactory queueClientFactory, IBulkIndexClient<IndexOperation> bulkIndexClient, BlobServiceClient blobServiceClient) : this(configuration, loggerFactory)
         {
-            this._providerService = providerService;
-            this._queueClientFactory = queueClientFactory;
-            this._bulkIndexClient = bulkIndexClient;
-            this._blobServiceClient = blobServiceClient;
+            _providerService = providerService;
+            _queueClientFactory = queueClientFactory;
+            _bulkIndexClient = bulkIndexClient;
+            _blobServiceClient = blobServiceClient;
         }
 
         public IngestionPipelineGraph BuildSynthetic(CancellationToken cancellationToken)
@@ -61,7 +61,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
 
             var prePartition = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(channelCapacityPrePartition, true, true);
             var validated = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(channelCapacityPrePartition, true, true);
-            var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(channelCapacityPrePartition, true, false);
+            var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(channelCapacityPrePartition, true);
 
             var deadLetterWriterCompletion = new RefCountedCompletion(1 + laneCount);
             var validateDeadLetterWriter = new RefCountedChannelWriter<Envelope<IngestionRequest>>(deadLetter.Writer, deadLetterWriterCompletion);
@@ -70,7 +70,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
 
             var validate = new IngestionRequestValidateNode("ingestion-validate", prePartition.Reader, validated.Writer, validateDeadLetterWriter, _loggerFactory.CreateLogger("ingestion-validate"), supervisor);
 
-            var deadLetterSink = new DeadLetterPersistAndAckSinkNode<IngestionRequest>("ingestion-deadletter-request", deadLetter.Reader, Path.Combine(AppContext.BaseDirectory, "deadletter", "ingestion-request.jsonl"), false, logger: _loggerFactory.CreateLogger("ingestion-deadletter-request"), fatalErrorReporter: supervisor);
+            var deadLetterSink = new DeadLetterPersistAndAckSinkNode<IngestionRequest>("ingestion-deadletter-request", deadLetter.Reader, Path.Combine(AppContext.BaseDirectory, "deadletter", "ingestion-request.jsonl"), logger: _loggerFactory.CreateLogger("ingestion-deadletter-request"), fatalErrorReporter: supervisor);
 
             var laneDispatchChannels = new List<CountingChannel<Envelope<IngestionRequest>>>(laneCount);
             var laneDispatchWriters = new List<ChannelWriter<Envelope<IngestionRequest>>>(laneCount);

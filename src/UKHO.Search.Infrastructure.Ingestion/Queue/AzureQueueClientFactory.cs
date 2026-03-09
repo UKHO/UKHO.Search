@@ -8,7 +8,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Queue
 
         public AzureQueueClientFactory(QueueServiceClient queueServiceClient)
         {
-            this._queueServiceClient = queueServiceClient;
+            _queueServiceClient = queueServiceClient;
         }
 
         public IQueueClient GetQueueClient(string queueName)

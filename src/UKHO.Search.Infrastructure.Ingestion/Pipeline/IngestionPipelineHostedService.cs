@@ -14,9 +14,9 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
 
         public IngestionPipelineHostedService(FileShareIngestionPipelineAdapter adapter, IHostApplicationLifetime hostApplicationLifetime, ILogger<IngestionPipelineHostedService> logger)
         {
-            this._adapter = adapter;
-            this._hostApplicationLifetime = hostApplicationLifetime;
-            this._logger = logger;
+            _adapter = adapter;
+            _hostApplicationLifetime = hostApplicationLifetime;
+            _logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -34,7 +34,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
             }
 
             await _graph.Supervisor.StopAsync(cancellationToken)
-                       .ConfigureAwait(false);
+                        .ConfigureAwait(false);
 
             if (_runTask is not null)
             {
@@ -55,7 +55,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
                 _logger.LogInformation("Ingestion pipeline starting.");
 
                 await _graph.Supervisor.StartAsync()
-                           .ConfigureAwait(false);
+                            .ConfigureAwait(false);
 
                 await _graph.Supervisor.Completion.ConfigureAwait(false);
 

@@ -17,9 +17,9 @@ namespace UKHO.Search.Pipelines.Nodes
         protected SourceNodeBase(string name, ChannelWriter<TOut> output, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null)
         {
             Name = name;
-            this._output = output;
-            this._logger = logger;
-            this._fatalErrorReporter = fatalErrorReporter;
+            _output = output;
+            _logger = logger;
+            _fatalErrorReporter = fatalErrorReporter;
             _metrics = new NodeMetrics(name);
         }
 

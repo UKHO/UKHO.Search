@@ -20,12 +20,12 @@ namespace UKHO.Search.Pipelines.Nodes
         protected MultiInputNodeBase(string name, ChannelReader<T1> input1, ChannelReader<T2> input2, ChannelWriter<TOut> output, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, CancellationMode cancellationMode = CancellationMode.Immediate)
         {
             Name = name;
-            this._input1 = input1;
-            this._input2 = input2;
-            this._output = output;
-            this._logger = logger;
-            this._fatalErrorReporter = fatalErrorReporter;
-            this._cancellationMode = cancellationMode;
+            _input1 = input1;
+            _input2 = input2;
+            _output = output;
+            _logger = logger;
+            _fatalErrorReporter = fatalErrorReporter;
+            _cancellationMode = cancellationMode;
 
             Func<long>? queueDepthProvider = null;
             if (input1 is IQueueDepthProvider || input2 is IQueueDepthProvider)
@@ -60,7 +60,7 @@ namespace UKHO.Search.Pipelines.Nodes
         protected async ValueTask WriteAsync(TOut item, CancellationToken cancellationToken)
         {
             await _output.WriteAsync(item, cancellationToken)
-                        .ConfigureAwait(false);
+                         .ConfigureAwait(false);
             Metrics.RecordOut(item);
         }
 
@@ -211,13 +211,13 @@ namespace UKHO.Search.Pipelines.Nodes
                 if (!input1Completed)
                 {
                     wait1 = _input1.WaitToReadAsync(cancellationToken)
-                                  .AsTask();
+                                   .AsTask();
                 }
 
                 if (!input2Completed)
                 {
                     wait2 = _input2.WaitToReadAsync(cancellationToken)
-                                  .AsTask();
+                                   .AsTask();
                 }
 
                 if (wait1 is null && wait2 is null)

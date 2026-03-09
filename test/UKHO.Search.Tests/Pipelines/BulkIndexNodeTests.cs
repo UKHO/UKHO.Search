@@ -94,7 +94,7 @@ namespace UKHO.Search.Tests.Pipelines
 
             public FakeBulkIndexClient(BulkIndexResponse response)
             {
-                this._response = response;
+                _response = response;
             }
 
             public ValueTask<BulkIndexResponse> BulkIndexAsync(BulkIndexRequest<T> request, CancellationToken cancellationToken)

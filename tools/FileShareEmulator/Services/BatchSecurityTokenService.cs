@@ -14,7 +14,7 @@ namespace FileShareEmulator.Services
             _logger = logger;
         }
 
-        public async Task<string[]> GetSecurityTokensAsync(Guid batchId, CancellationToken cancellationToken = default)
+        public async Task<(string[] SecurityTokens, string? BusinessUnitName)> GetSecurityTokensAsync(Guid batchId, CancellationToken cancellationToken = default)
         {
             await EnsureOpenAsync(cancellationToken)
                 .ConfigureAwait(false);
@@ -35,7 +35,7 @@ namespace FileShareEmulator.Services
 
             _logger.LogDebug("Calculated {SecurityTokenCount} security tokens for batch {BatchId} (groups={GroupCount}, users={UserCount}).", tokens.Length, batchId, groupIdentifiers.Count, userIdentifiers.Count);
 
-            return tokens;
+            return (tokens, businessUnitName);
         }
 
         private async Task<List<string>> GetGroupIdentifiersAsync(Guid batchId, CancellationToken cancellationToken)

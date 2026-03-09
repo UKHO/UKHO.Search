@@ -24,10 +24,10 @@ namespace UKHO.Search.Pipelines.Nodes
                 throw new ArgumentOutOfRangeException(nameof(keyCardinality));
             }
 
-            this._messageCount = messageCount;
-            this._keyCardinality = keyCardinality;
-            this._payloadFactory = payloadFactory;
-            this._keyFactory = keyFactory;
+            _messageCount = messageCount;
+            _keyCardinality = keyCardinality;
+            _payloadFactory = payloadFactory;
+            _keyFactory = keyFactory;
         }
 
         protected override async ValueTask ProduceAsync(ChannelWriter<Envelope<TPayload>> output, CancellationToken cancellationToken)

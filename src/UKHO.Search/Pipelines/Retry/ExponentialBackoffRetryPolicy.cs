@@ -33,10 +33,10 @@ namespace UKHO.Search.Pipelines.Retry
             }
 
             MaxAttempts = maxAttempts;
-            this._baseDelay = baseDelay;
-            this._maxDelay = maxDelay;
-            this._jitterFactor = jitterFactor;
-            this._random = random ?? Random.Shared;
+            _baseDelay = baseDelay;
+            _maxDelay = maxDelay;
+            _jitterFactor = jitterFactor;
+            _random = random ?? Random.Shared;
         }
 
         public int MaxAttempts { get; }

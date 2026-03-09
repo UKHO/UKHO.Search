@@ -22,14 +22,14 @@ namespace UKHO.Search.Pipelines.Nodes
         public RouteNode(string name, ChannelReader<Envelope<TIn>> input, IReadOnlyDictionary<string, ChannelWriter<Envelope<TIn>>> routes, Func<Envelope<TIn>, string> getRoute, ChannelWriter<Envelope<TIn>>? errorOutput = null, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null)
         {
             Name = name;
-            this._input = input;
-            this._routes = routes;
-            this._getRoute = getRoute;
-            this._errorOutput = errorOutput;
-            this._logger = logger;
-            this._fatalErrorReporter = fatalErrorReporter;
+            _input = input;
+            _routes = routes;
+            _getRoute = getRoute;
+            _errorOutput = errorOutput;
+            _logger = logger;
+            _fatalErrorReporter = fatalErrorReporter;
             _outputs = routes.Values.Distinct()
-                            .ToArray();
+                             .ToArray();
             Metrics = new NodeMetrics(name);
         }
 
@@ -55,7 +55,7 @@ namespace UKHO.Search.Pipelines.Nodes
             try
             {
                 while (await _input.WaitToReadAsync(cancellationToken)
-                                  .ConfigureAwait(false))
+                                   .ConfigureAwait(false))
                 {
                     while (_input.TryRead(out var item))
                     {
@@ -134,7 +134,7 @@ namespace UKHO.Search.Pipelines.Nodes
             if (_errorOutput is not null)
             {
                 await _errorOutput.WriteAsync(item, cancellationToken)
-                                 .ConfigureAwait(false);
+                                  .ConfigureAwait(false);
                 Metrics.RecordOut(item);
                 return;
             }

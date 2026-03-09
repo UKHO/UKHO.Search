@@ -11,7 +11,7 @@ namespace UKHO.Search.Pipelines.Channels
 
         public CountingChannel(Channel<T> inner)
         {
-            this._inner = inner;
+            _inner = inner;
             _reader = new CountingChannelReader<T>(inner.Reader, GetDepth, Decrement);
             _writer = new CountingChannelWriter<T>(inner.Writer, Increment);
         }

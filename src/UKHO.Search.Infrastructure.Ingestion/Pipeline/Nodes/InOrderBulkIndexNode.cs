@@ -67,19 +67,19 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes
             }
 
             Name = name;
-            this._input = input;
-            this._client = client;
-            this._successOutput = successOutput;
-            this._deadLetterOutput = deadLetterOutput;
-            this._maxAttempts = maxAttempts;
-            this._baseDelay = baseDelay;
-            this._maxDelay = maxDelay;
-            this._jitter = jitter;
-            this._delay = delay ?? ((d, ct) => Task.Delay(d, ct));
-            this._transientStatusCodes = transientStatusCodes ?? _defaultTransientStatusCodes;
-            this._random = random ?? Random.Shared;
-            this._logger = logger;
-            this._fatalErrorReporter = fatalErrorReporter;
+            _input = input;
+            _client = client;
+            _successOutput = successOutput;
+            _deadLetterOutput = deadLetterOutput;
+            _maxAttempts = maxAttempts;
+            _baseDelay = baseDelay;
+            _maxDelay = maxDelay;
+            _jitter = jitter;
+            _delay = delay ?? ((d, ct) => Task.Delay(d, ct));
+            _transientStatusCodes = transientStatusCodes ?? _defaultTransientStatusCodes;
+            _random = random ?? Random.Shared;
+            _logger = logger;
+            _fatalErrorReporter = fatalErrorReporter;
             _metrics = new NodeMetrics(name);
         }
 
@@ -103,7 +103,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes
             try
             {
                 while (await _input.WaitToReadAsync(cancellationToken)
-                                  .ConfigureAwait(false))
+                                   .ConfigureAwait(false))
                 {
                     while (_input.TryRead(out var batch))
                     {
@@ -165,12 +165,12 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes
                 try
                 {
                     response = await _client.BulkIndexAsync(new BulkIndexRequest<IndexOperation>
-                                           {
-                                               BatchId = batch.BatchId,
-                                               PartitionId = batch.PartitionId,
-                                               Items = pending
-                                           }, cancellationToken)
-                                           .ConfigureAwait(false);
+                                            {
+                                                BatchId = batch.BatchId,
+                                                PartitionId = batch.PartitionId,
+                                                Items = pending
+                                            }, cancellationToken)
+                                            .ConfigureAwait(false);
                 }
                 catch (Exception ex) when (IsTransientException(ex))
                 {
@@ -362,14 +362,14 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes
         private async ValueTask WriteSuccessAsync(Envelope<IndexOperation> envelope, CancellationToken cancellationToken)
         {
             await _successOutput.WriteAsync(envelope, cancellationToken)
-                               .ConfigureAwait(false);
+                                .ConfigureAwait(false);
             _metrics.RecordOut(envelope);
         }
 
         private async ValueTask WriteDeadLetterAsync(Envelope<IndexOperation> envelope, CancellationToken cancellationToken)
         {
             await _deadLetterOutput.WriteAsync(envelope, cancellationToken)
-                                  .ConfigureAwait(false);
+                                   .ConfigureAwait(false);
             _metrics.RecordOut(envelope);
         }
 

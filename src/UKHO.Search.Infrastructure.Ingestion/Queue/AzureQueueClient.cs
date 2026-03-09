@@ -9,19 +9,19 @@ namespace UKHO.Search.Infrastructure.Ingestion.Queue
 
         public AzureQueueClient(QueueClient inner)
         {
-            this._inner = inner;
+            _inner = inner;
         }
 
         public async ValueTask CreateIfNotExistsAsync(CancellationToken cancellationToken)
         {
             _ = await _inner.CreateIfNotExistsAsync(cancellationToken: cancellationToken)
-                           .ConfigureAwait(false);
+                            .ConfigureAwait(false);
         }
 
         public async ValueTask<IReadOnlyList<QueueReceivedMessage>> ReceiveMessagesAsync(int maxMessages, TimeSpan visibilityTimeout, CancellationToken cancellationToken)
         {
             var response = await _inner.ReceiveMessagesAsync(maxMessages, visibilityTimeout, cancellationToken)
-                                      .ConfigureAwait(false);
+                                       .ConfigureAwait(false);
 
             return response.Value.Select(Map)
                            .ToArray();
@@ -30,19 +30,19 @@ namespace UKHO.Search.Infrastructure.Ingestion.Queue
         public async ValueTask SendMessageAsync(string messageText, CancellationToken cancellationToken)
         {
             await _inner.SendMessageAsync(messageText, cancellationToken)
-                       .ConfigureAwait(false);
+                        .ConfigureAwait(false);
         }
 
         public async ValueTask DeleteMessageAsync(string messageId, string popReceipt, CancellationToken cancellationToken)
         {
             await _inner.DeleteMessageAsync(messageId, popReceipt, cancellationToken)
-                       .ConfigureAwait(false);
+                        .ConfigureAwait(false);
         }
 
         public async ValueTask<QueueUpdateReceipt> UpdateMessageAsync(string messageId, string popReceipt, string messageText, TimeSpan visibilityTimeout, CancellationToken cancellationToken)
         {
             var response = await _inner.UpdateMessageAsync(messageId, popReceipt, messageText, visibilityTimeout, cancellationToken)
-                                      .ConfigureAwait(false);
+                                       .ConfigureAwait(false);
 
             return new QueueUpdateReceipt
             {

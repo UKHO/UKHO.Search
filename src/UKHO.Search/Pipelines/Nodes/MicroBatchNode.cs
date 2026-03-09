@@ -49,16 +49,16 @@ namespace UKHO.Search.Pipelines.Nodes
             }
 
             Name = name;
-            this._partitionId = partitionId;
-            this._input = input;
-            this._output = output;
-            this._maxItems = maxItems;
-            this._maxDelay = maxDelay;
-            this._maxBytes = maxBytes;
-            this._estimateSizeBytes = estimateSizeBytes;
-            this._cancellationMode = cancellationMode;
-            this._logger = logger;
-            this._fatalErrorReporter = fatalErrorReporter;
+            _partitionId = partitionId;
+            _input = input;
+            _output = output;
+            _maxItems = maxItems;
+            _maxDelay = maxDelay;
+            _maxBytes = maxBytes;
+            _estimateSizeBytes = estimateSizeBytes;
+            _cancellationMode = cancellationMode;
+            _logger = logger;
+            _fatalErrorReporter = fatalErrorReporter;
             _metrics = new NodeMetrics(name, () => _buffer.Count);
         }
 
@@ -86,7 +86,7 @@ namespace UKHO.Search.Pipelines.Nodes
                     if (_buffer.Count == 0)
                     {
                         if (!await _input.WaitToReadAsync(cancellationToken)
-                                        .ConfigureAwait(false))
+                                         .ConfigureAwait(false))
                         {
                             await _input.Completion.ConfigureAwait(false);
                             break;
@@ -115,7 +115,7 @@ namespace UKHO.Search.Pipelines.Nodes
                     }
 
                     var waitForRead = _input.WaitToReadAsync(cancellationToken)
-                                           .AsTask();
+                                            .AsTask();
                     var waitForDelay = Task.Delay(remaining, cancellationToken);
                     var completed = await Task.WhenAny(waitForRead, waitForDelay)
                                               .ConfigureAwait(false);
@@ -265,7 +265,7 @@ namespace UKHO.Search.Pipelines.Nodes
             try
             {
                 await _output.WriteAsync(batch, cancellationToken)
-                            .ConfigureAwait(false);
+                             .ConfigureAwait(false);
                 _metrics.RecordOut(batch);
             }
             finally

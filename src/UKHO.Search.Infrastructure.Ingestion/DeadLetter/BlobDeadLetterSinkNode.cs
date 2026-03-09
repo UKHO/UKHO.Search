@@ -25,9 +25,9 @@ namespace UKHO.Search.Infrastructure.Ingestion.DeadLetter
         public BlobDeadLetterSinkNode(string name, ChannelReader<Envelope<TPayload>> input, BlobServiceClient blobServiceClient, IConfiguration configuration, bool fatalIfCannotPersist = true, string? containerName = null, string? blobPrefix = null, IDeadLetterMetadataProvider? metadataProvider = null, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name,
             input, logger, fatalErrorReporter)
         {
-            this._fatalIfCannotPersist = fatalIfCannotPersist;
-            this._metadataProvider = metadataProvider ?? new DefaultDeadLetterMetadataProvider();
-            this._logger = logger;
+            _fatalIfCannotPersist = fatalIfCannotPersist;
+            _metadataProvider = metadataProvider ?? new DefaultDeadLetterMetadataProvider();
+            _logger = logger;
 
             var resolvedContainerName = containerName ?? configuration["ingestion:deadletterContainer"];
             if (string.IsNullOrWhiteSpace(resolvedContainerName))
@@ -35,7 +35,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.DeadLetter
                 throw new InvalidOperationException("Missing required configuration value 'ingestion:deadletterContainer'.");
             }
 
-            this._blobPrefix = blobPrefix ?? configuration["ingestion:deadletterBlobPrefix"] ?? "deadletter";
+            _blobPrefix = blobPrefix ?? configuration["ingestion:deadletterBlobPrefix"] ?? "deadletter";
 
             _containerClient = blobServiceClient.GetBlobContainerClient(resolvedContainerName);
 
@@ -100,8 +100,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.DeadLetter
                 }
 
                 await _containerClient.GetBlobClient(blobName)
-                                     .UploadAsync(data, true, cancellationToken)
-                                     .ConfigureAwait(false);
+                                      .UploadAsync(data, true, cancellationToken)
+                                      .ConfigureAwait(false);
 
                 persisted = true;
             }
@@ -144,7 +144,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.DeadLetter
             }
 
             await _ensureContainerSemaphore.WaitAsync(cancellationToken)
-                                          .ConfigureAwait(false);
+                                           .ConfigureAwait(false);
             try
             {
                 if (_containerEnsured)
@@ -153,7 +153,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.DeadLetter
                 }
 
                 await _containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken)
-                                     .ConfigureAwait(false);
+                                      .ConfigureAwait(false);
 
                 _containerEnsured = true;
             }

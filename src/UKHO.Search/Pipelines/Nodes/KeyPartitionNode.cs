@@ -26,10 +26,10 @@ namespace UKHO.Search.Pipelines.Nodes
             }
 
             Name = name;
-            this._input = input;
-            this._outputs = outputs;
-            this._logger = logger;
-            this._fatalErrorReporter = fatalErrorReporter;
+            _input = input;
+            _outputs = outputs;
+            _logger = logger;
+            _fatalErrorReporter = fatalErrorReporter;
             _metrics = new NodeMetrics(name);
         }
 
@@ -53,7 +53,7 @@ namespace UKHO.Search.Pipelines.Nodes
             try
             {
                 while (await _input.WaitToReadAsync(cancellationToken)
-                                  .ConfigureAwait(false))
+                                   .ConfigureAwait(false))
                 {
                     while (_input.TryRead(out var item))
                     {

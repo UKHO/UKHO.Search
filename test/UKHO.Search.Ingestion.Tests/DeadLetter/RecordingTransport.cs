@@ -9,7 +9,7 @@ namespace UKHO.Search.Ingestion.Tests.DeadLetter
 
         public RecordingTransport(int statusCode)
         {
-            this._statusCode = statusCode;
+            _statusCode = statusCode;
         }
 
         public List<RecordedRequest> Requests { get; } = new();

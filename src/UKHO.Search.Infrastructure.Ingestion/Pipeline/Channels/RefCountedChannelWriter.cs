@@ -9,8 +9,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Channels
 
         public RefCountedChannelWriter(ChannelWriter<T> inner, RefCountedCompletion completion)
         {
-            this._inner = inner;
-            this._completion = completion;
+            _inner = inner;
+            _completion = completion;
         }
 
         public override bool TryComplete(Exception? error = null)

@@ -20,12 +20,12 @@ namespace UKHO.Search.Pipelines.Nodes
         public BroadcastNode(string name, ChannelReader<Envelope<TIn>> input, IReadOnlyList<ChannelWriter<Envelope<TIn>>> requiredOutputs, IReadOnlyList<ChannelWriter<Envelope<TIn>>>? optionalOutputs = null, BroadcastMode mode = BroadcastMode.AllMustReceive, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null)
         {
             Name = name;
-            this._input = input;
-            this._requiredOutputs = requiredOutputs;
-            this._optionalOutputs = optionalOutputs ?? Array.Empty<ChannelWriter<Envelope<TIn>>>();
-            this._mode = mode;
-            this._logger = logger;
-            this._fatalErrorReporter = fatalErrorReporter;
+            _input = input;
+            _requiredOutputs = requiredOutputs;
+            _optionalOutputs = optionalOutputs ?? Array.Empty<ChannelWriter<Envelope<TIn>>>();
+            _mode = mode;
+            _logger = logger;
+            _fatalErrorReporter = fatalErrorReporter;
 
             Metrics = new NodeMetrics(name);
         }
@@ -52,7 +52,7 @@ namespace UKHO.Search.Pipelines.Nodes
             try
             {
                 while (await _input.WaitToReadAsync(cancellationToken)
-                                  .ConfigureAwait(false))
+                                   .ConfigureAwait(false))
                 {
                     while (_input.TryRead(out var item))
                     {
@@ -104,7 +104,7 @@ namespace UKHO.Search.Pipelines.Nodes
 
             var allStrictOutputs = _mode == BroadcastMode.AllMustReceive
                 ? _requiredOutputs.Concat(_optionalOutputs)
-                                 .ToArray()
+                                  .ToArray()
                 : null;
 
             if (allStrictOutputs is not null)

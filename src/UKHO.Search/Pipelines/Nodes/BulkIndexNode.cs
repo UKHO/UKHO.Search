@@ -35,14 +35,14 @@ namespace UKHO.Search.Pipelines.Nodes
             IPipelineFatalErrorReporter? fatalErrorReporter = null)
         {
             Name = name;
-            this._input = input;
-            this._client = client;
-            this._successOutput = successOutput;
-            this._retryOutput = retryOutput;
-            this._errorOutput = errorOutput;
-            this._transientStatusCodes = transientStatusCodes ?? _defaultTransientStatusCodes;
-            this._logger = logger;
-            this._fatalErrorReporter = fatalErrorReporter;
+            _input = input;
+            _client = client;
+            _successOutput = successOutput;
+            _retryOutput = retryOutput;
+            _errorOutput = errorOutput;
+            _transientStatusCodes = transientStatusCodes ?? _defaultTransientStatusCodes;
+            _logger = logger;
+            _fatalErrorReporter = fatalErrorReporter;
             _metrics = new NodeMetrics(name);
         }
 
@@ -66,7 +66,7 @@ namespace UKHO.Search.Pipelines.Nodes
             try
             {
                 while (await _input.WaitToReadAsync(cancellationToken)
-                                  .ConfigureAwait(false))
+                                   .ConfigureAwait(false))
                 {
                     while (_input.TryRead(out var batch))
                     {
@@ -122,7 +122,7 @@ namespace UKHO.Search.Pipelines.Nodes
             };
 
             var response = await _client.BulkIndexAsync(request, cancellationToken)
-                                       .ConfigureAwait(false);
+                                        .ConfigureAwait(false);
 
             var resultsByMessageId = new Dictionary<Guid, BulkIndexItemResult>();
             foreach (var result in response.Items)
@@ -182,7 +182,7 @@ namespace UKHO.Search.Pipelines.Nodes
         private async ValueTask WriteSuccessAsync(Envelope<TDocument> envelope, CancellationToken cancellationToken)
         {
             await _successOutput.WriteAsync(envelope, cancellationToken)
-                               .ConfigureAwait(false);
+                                .ConfigureAwait(false);
             _metrics.RecordOut(envelope);
         }
 
@@ -191,7 +191,7 @@ namespace UKHO.Search.Pipelines.Nodes
             if (_retryOutput is not null)
             {
                 await _retryOutput.WriteAsync(envelope, cancellationToken)
-                                 .ConfigureAwait(false);
+                                  .ConfigureAwait(false);
                 _metrics.RecordOut(envelope);
                 return;
             }
@@ -205,13 +205,13 @@ namespace UKHO.Search.Pipelines.Nodes
             if (_errorOutput is not null)
             {
                 await _errorOutput.WriteAsync(envelope, cancellationToken)
-                                 .ConfigureAwait(false);
+                                  .ConfigureAwait(false);
                 _metrics.RecordOut(envelope);
                 return;
             }
 
             await _successOutput.WriteAsync(envelope, cancellationToken)
-                               .ConfigureAwait(false);
+                                .ConfigureAwait(false);
             _metrics.RecordOut(envelope);
         }
 

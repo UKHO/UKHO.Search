@@ -13,7 +13,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Terminal
 
         public AckSinkNode(string name, ChannelReader<Envelope<TPayload>> input, ILogger logger, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, logger, fatalErrorReporter)
         {
-            this._logger = logger;
+            _logger = logger;
         }
 
         protected override async ValueTask HandleItemAsync(Envelope<TPayload> item, CancellationToken cancellationToken)

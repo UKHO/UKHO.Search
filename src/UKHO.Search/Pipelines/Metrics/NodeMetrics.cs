@@ -25,11 +25,11 @@ namespace UKHO.Search.Pipelines.Metrics
 
         public NodeMetrics(string nodeName, Func<long>? queueDepthProvider = null)
         {
-            this._nodeName = nodeName;
-            this._queueDepthProvider = queueDepthProvider ?? (() => 0);
+            _nodeName = nodeName;
+            _queueDepthProvider = queueDepthProvider ?? (() => 0);
 
             _inFlightProviders[nodeName] = () => Volatile.Read(ref _inFlight);
-            _queueDepthProviders[nodeName] = this._queueDepthProvider;
+            _queueDepthProviders[nodeName] = _queueDepthProvider;
         }
 
         public void Dispose()
