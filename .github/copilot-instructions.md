@@ -17,7 +17,7 @@ Be concise but complete. Prefer current research (Microsoft Learn) for Microsoft
 - Prefer using `ILogger` abstractions (Microsoft.Extensions.Logging.Abstractions) over `Action<string>` logging callbacks in this codebase, including Domain pipeline nodes.
 
 ## Coding Standards
-- Never declare multiple classes/interfaces/enums in the same C# file; split each type into its own file.
+- Never declare multiple classes/interfaces/enums in the same C# file; split each type into its own file. Enforce the standard of one public type per C# file.
 
 ## Architecture (Onion)
 This repository uses **Onion Architecture**.
@@ -48,6 +48,7 @@ Rules:
 - For each new Work Package/piece of work: create a new numbered folder under `./docs/` named `xxx-<descriptor>` (e.g. `001-Initial-Shell`).
 - Store ALL related documents (specs, plans, architecture notes, etc.) together inside that Work Package folder.
 - Do not overwrite prior work packages; create the next incremental folder (e.g. `002-...`).
+- When asked to create specification documents for a work package, create the markdown files in the repository under the requested `docs/xxx-.../` folder (not just provide the content in chat).
 - Use appropriate prompt family & phase from `.github/prompts/`.
 
 ## Emulator Constraints
