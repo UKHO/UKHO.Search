@@ -26,7 +26,7 @@ namespace UKHO.Search.Pipelines.Nodes
         private int _bufferedBytes;
         private Task? _completion;
 
-        public MicroBatchNode(string name, int partitionId, ChannelReader<Envelope<TPayload>> input, ChannelWriter<BatchEnvelope<TPayload>> output, int maxItems, TimeSpan maxDelay, int? maxBytes = null, Func<TPayload, int>? estimateSizeBytes = null, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, CancellationMode cancellationMode = CancellationMode.Immediate)
+        public MicroBatchNode(string name, int partitionId, ChannelReader<Envelope<TPayload>> input, ChannelWriter<BatchEnvelope<TPayload>> output, int maxItems, TimeSpan maxDelay, int? maxBytes = null, Func<TPayload, int>? estimateSizeBytes = null, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, CancellationMode cancellationMode = CancellationMode.Immediate, string? providerName = null)
         {
             if (maxItems <= 0)
             {
@@ -59,7 +59,7 @@ namespace UKHO.Search.Pipelines.Nodes
             _cancellationMode = cancellationMode;
             _logger = logger;
             _fatalErrorReporter = fatalErrorReporter;
-            _metrics = new NodeMetrics(name, () => _buffer.Count);
+            _metrics = new NodeMetrics(name, providerName, () => _buffer.Count);
         }
 
         public string Name { get; }

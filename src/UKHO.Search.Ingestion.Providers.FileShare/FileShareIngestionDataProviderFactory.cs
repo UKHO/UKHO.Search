@@ -6,6 +6,8 @@ namespace UKHO.Search.Ingestion.Providers.FileShare
 {
     public sealed class FileShareIngestionDataProviderFactory : IIngestionDataProviderFactory
     {
+        public const string ProviderName = "file-share";
+
         private readonly int _ingressCapacity;
         private readonly ILoggerFactory _loggerFactory;
         private readonly FileShareIngestionProcessingGraphDependencies? _processingGraphDependencies;
@@ -46,7 +48,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare
             QueueName = queueName;
         }
 
-        public string Name => "file-share";
+        public string Name => ProviderName;
 
         public string QueueName { get; }
 
@@ -54,7 +56,9 @@ namespace UKHO.Search.Ingestion.Providers.FileShare
         {
             var logger = _loggerFactory.CreateLogger<FileShareIngestionDataProvider>();
 
-            return _processingGraphDependencies is null ? new FileShareIngestionDataProvider(_ingressCapacity, logger) : new FileShareIngestionDataProvider(_processingGraphDependencies, _ingressCapacity, logger);
+            return _processingGraphDependencies is null
+                ? new FileShareIngestionDataProvider(Name, _ingressCapacity, logger)
+                : new FileShareIngestionDataProvider(Name, _processingGraphDependencies, _ingressCapacity, logger);
         }
     }
 }

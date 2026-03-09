@@ -7,7 +7,7 @@ namespace UKHO.Search.Pipelines.Nodes
 {
     public sealed class MergeNode<TIn> : MultiInputNodeBase<Envelope<TIn>, Envelope<TIn>, Envelope<TIn>>
     {
-        public MergeNode(string name, ChannelReader<Envelope<TIn>> input1, ChannelReader<Envelope<TIn>> input2, ChannelWriter<Envelope<TIn>> output, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input1, input2, output, logger, fatalErrorReporter)
+        public MergeNode(string name, ChannelReader<Envelope<TIn>> input1, ChannelReader<Envelope<TIn>> input2, ChannelWriter<Envelope<TIn>> output, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, string? providerName = null) : base(name, input1, input2, output, logger, fatalErrorReporter, providerName: providerName)
         {
         }
 

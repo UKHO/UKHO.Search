@@ -10,7 +10,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Diagnostics
     {
         private readonly ILogger? _logger;
 
-        public DiagnosticsSinkNode(string name, ChannelReader<Envelope<TPayload>> input, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, logger, fatalErrorReporter)
+        public DiagnosticsSinkNode(string name, ChannelReader<Envelope<TPayload>> input, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, string? providerName = null) : base(name, input, logger, fatalErrorReporter, providerName: providerName)
         {
             _logger = logger;
         }

@@ -22,8 +22,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.DeadLetter
         private readonly IDeadLetterMetadataProvider _metadataProvider;
         private bool _containerEnsured;
 
-        public BlobDeadLetterSinkNode(string name, ChannelReader<Envelope<TPayload>> input, BlobServiceClient blobServiceClient, IConfiguration configuration, bool fatalIfCannotPersist = true, string? containerName = null, string? blobPrefix = null, IDeadLetterMetadataProvider? metadataProvider = null, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name,
-            input, logger, fatalErrorReporter)
+        public BlobDeadLetterSinkNode(string name, ChannelReader<Envelope<TPayload>> input, BlobServiceClient blobServiceClient, IConfiguration configuration, bool fatalIfCannotPersist = true, string? containerName = null, string? blobPrefix = null, IDeadLetterMetadataProvider? metadataProvider = null, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, string? providerName = null) : base(name,
+            input, logger, fatalErrorReporter, providerName: providerName)
         {
             _fatalIfCannotPersist = fatalIfCannotPersist;
             _metadataProvider = metadataProvider ?? new DefaultDeadLetterMetadataProvider();

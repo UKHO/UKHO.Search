@@ -17,7 +17,7 @@ namespace UKHO.Search.Pipelines.Nodes
         private readonly ChannelWriter<TOut> _output;
         private Task? _completion;
 
-        protected MultiInputNodeBase(string name, ChannelReader<T1> input1, ChannelReader<T2> input2, ChannelWriter<TOut> output, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, CancellationMode cancellationMode = CancellationMode.Immediate)
+        protected MultiInputNodeBase(string name, ChannelReader<T1> input1, ChannelReader<T2> input2, ChannelWriter<TOut> output, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, CancellationMode cancellationMode = CancellationMode.Immediate, string? providerName = null)
         {
             Name = name;
             _input1 = input1;
@@ -33,7 +33,7 @@ namespace UKHO.Search.Pipelines.Nodes
                 queueDepthProvider = () => ((input1 as IQueueDepthProvider)?.QueueDepth ?? 0) + ((input2 as IQueueDepthProvider)?.QueueDepth ?? 0);
             }
 
-            Metrics = new NodeMetrics(name, queueDepthProvider);
+            Metrics = new NodeMetrics(name, providerName, queueDepthProvider);
         }
 
         protected NodeMetrics Metrics { get; }

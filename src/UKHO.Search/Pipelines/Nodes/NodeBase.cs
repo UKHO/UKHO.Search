@@ -16,7 +16,7 @@ namespace UKHO.Search.Pipelines.Nodes
         private readonly ChannelWriter<TOut> _output;
         private Task? _completion;
 
-        protected NodeBase(string name, ChannelReader<TIn> input, ChannelWriter<TOut> output, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, CancellationMode cancellationMode = CancellationMode.Immediate)
+        protected NodeBase(string name, ChannelReader<TIn> input, ChannelWriter<TOut> output, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, CancellationMode cancellationMode = CancellationMode.Immediate, string? providerName = null)
         {
             Name = name;
             _input = input;
@@ -31,7 +31,7 @@ namespace UKHO.Search.Pipelines.Nodes
                 queueDepthProvider = () => qdp.QueueDepth;
             }
 
-            Metrics = new NodeMetrics(name, queueDepthProvider);
+            Metrics = new NodeMetrics(name, providerName, queueDepthProvider);
         }
 
         protected NodeMetrics Metrics { get; }

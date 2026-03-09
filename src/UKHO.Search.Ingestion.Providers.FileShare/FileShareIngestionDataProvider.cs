@@ -17,6 +17,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare
 
         private readonly IngestionRequestIngressChannel _ingress;
         private readonly ILogger<FileShareIngestionDataProvider> _logger;
+        private readonly string _providerName;
         private readonly FileShareIngestionProcessingGraphDependencies? _processingGraphDependencies;
         private readonly CancellationTokenSource _shutdown = new();
         private readonly object _startGate = new();
@@ -29,12 +30,23 @@ namespace UKHO.Search.Ingestion.Providers.FileShare
         {
         }
 
-        public FileShareIngestionDataProvider(int ingressCapacity, ILogger<FileShareIngestionDataProvider> logger) : this(null, ingressCapacity, logger)
+        public FileShareIngestionDataProvider(int ingressCapacity, ILogger<FileShareIngestionDataProvider> logger) : this(FileShareIngestionDataProviderFactory.ProviderName, null, ingressCapacity, logger)
         {
         }
 
-        public FileShareIngestionDataProvider(FileShareIngestionProcessingGraphDependencies? processingGraphDependencies, int ingressCapacity, ILogger<FileShareIngestionDataProvider> logger)
+        public FileShareIngestionDataProvider(string providerName, int ingressCapacity, ILogger<FileShareIngestionDataProvider> logger) : this(providerName, null, ingressCapacity, logger)
         {
+        }
+
+        public FileShareIngestionDataProvider(FileShareIngestionProcessingGraphDependencies? processingGraphDependencies, int ingressCapacity, ILogger<FileShareIngestionDataProvider> logger) : this(FileShareIngestionDataProviderFactory.ProviderName, processingGraphDependencies, ingressCapacity, logger)
+        {
+        }
+
+        public FileShareIngestionDataProvider(string providerName, FileShareIngestionProcessingGraphDependencies? processingGraphDependencies, int ingressCapacity, ILogger<FileShareIngestionDataProvider> logger)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(providerName);
+
+            _providerName = providerName;
             _ingress = new IngestionRequestIngressChannel(ingressCapacity);
             _processingGraphDependencies = processingGraphDependencies;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -73,7 +85,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare
             _shutdown.Dispose();
         }
 
-        public string Name => "file-share";
+        public string Name => _providerName;
 
         public ValueTask<IngestionRequest> DeserializeIngestionRequestAsync(string messageText, CancellationToken cancellationToken = default)
         {
@@ -133,7 +145,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare
 
                 _logger.LogInformation("Starting provider processing graph. ProviderName={ProviderName}", Name);
 
-                _processingGraph = FileShareIngestionProcessingGraph.Build(IngressReader, _processingGraphDependencies, _shutdown.Token);
+                 _processingGraph = FileShareIngestionProcessingGraph.Build(IngressReader, _processingGraphDependencies, Name, _shutdown.Token);
                 _startTask = _processingGraph.Supervisor.StartAsync();
 
                 return _startTask;

@@ -11,7 +11,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Terminal
     {
         private readonly ILogger _logger;
 
-        public AckSinkNode(string name, ChannelReader<Envelope<TPayload>> input, ILogger logger, IPipelineFatalErrorReporter? fatalErrorReporter = null) : base(name, input, logger, fatalErrorReporter)
+        public AckSinkNode(string name, ChannelReader<Envelope<TPayload>> input, ILogger logger, IPipelineFatalErrorReporter? fatalErrorReporter = null, string? providerName = null) : base(name, input, logger, fatalErrorReporter, providerName: providerName)
         {
             _logger = logger;
         }

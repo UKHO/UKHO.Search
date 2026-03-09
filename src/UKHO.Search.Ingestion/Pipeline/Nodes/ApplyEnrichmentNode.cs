@@ -37,7 +37,8 @@ namespace UKHO.Search.Ingestion.Pipeline.Nodes
             TimeSpan? retryMaxDelay = null,
             TimeSpan? retryJitter = null,
             Func<TimeSpan, CancellationToken, Task>? delay = null,
-            Random? random = null) : base(name, input, output, logger, fatalErrorReporter)
+            Random? random = null,
+            string? providerName = null) : base(name, input, output, logger, fatalErrorReporter, providerName: providerName)
         {
             ArgumentNullException.ThrowIfNull(scopeFactory);
 

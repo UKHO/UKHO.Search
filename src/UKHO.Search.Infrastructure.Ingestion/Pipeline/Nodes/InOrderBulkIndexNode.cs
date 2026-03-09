@@ -44,7 +44,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes
             ISet<int>? transientStatusCodes = null,
             Random? random = null,
             ILogger? logger = null,
-            IPipelineFatalErrorReporter? fatalErrorReporter = null)
+            IPipelineFatalErrorReporter? fatalErrorReporter = null,
+            string? providerName = null)
         {
             if (maxAttempts < 1)
             {
@@ -80,7 +81,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes
             _random = random ?? Random.Shared;
             _logger = logger;
             _fatalErrorReporter = fatalErrorReporter;
-            _metrics = new NodeMetrics(name);
+            _metrics = new NodeMetrics(name, providerName);
         }
 
         public string Name { get; }

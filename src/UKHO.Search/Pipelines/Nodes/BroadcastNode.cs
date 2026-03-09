@@ -17,7 +17,7 @@ namespace UKHO.Search.Pipelines.Nodes
         private readonly IReadOnlyList<ChannelWriter<Envelope<TIn>>> _requiredOutputs;
         private Task? _completion;
 
-        public BroadcastNode(string name, ChannelReader<Envelope<TIn>> input, IReadOnlyList<ChannelWriter<Envelope<TIn>>> requiredOutputs, IReadOnlyList<ChannelWriter<Envelope<TIn>>>? optionalOutputs = null, BroadcastMode mode = BroadcastMode.AllMustReceive, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null)
+        public BroadcastNode(string name, ChannelReader<Envelope<TIn>> input, IReadOnlyList<ChannelWriter<Envelope<TIn>>> requiredOutputs, IReadOnlyList<ChannelWriter<Envelope<TIn>>>? optionalOutputs = null, BroadcastMode mode = BroadcastMode.AllMustReceive, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, string? providerName = null)
         {
             Name = name;
             _input = input;
@@ -27,7 +27,7 @@ namespace UKHO.Search.Pipelines.Nodes
             _logger = logger;
             _fatalErrorReporter = fatalErrorReporter;
 
-            Metrics = new NodeMetrics(name);
+            Metrics = new NodeMetrics(name, providerName);
         }
 
         protected NodeMetrics Metrics { get; }

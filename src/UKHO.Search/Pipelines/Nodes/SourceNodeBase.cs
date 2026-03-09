@@ -14,13 +14,13 @@ namespace UKHO.Search.Pipelines.Nodes
         private readonly ChannelWriter<TOut> _output;
         private Task? _completion;
 
-        protected SourceNodeBase(string name, ChannelWriter<TOut> output, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null)
+        protected SourceNodeBase(string name, ChannelWriter<TOut> output, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, string? providerName = null)
         {
             Name = name;
             _output = output;
             _logger = logger;
             _fatalErrorReporter = fatalErrorReporter;
-            _metrics = new NodeMetrics(name);
+            _metrics = new NodeMetrics(name, providerName);
         }
 
         public string Name { get; }

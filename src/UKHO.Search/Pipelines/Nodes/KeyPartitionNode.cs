@@ -18,7 +18,7 @@ namespace UKHO.Search.Pipelines.Nodes
         private readonly IReadOnlyList<ChannelWriter<Envelope<TPayload>>> _outputs;
         private Task? _completion;
 
-        public KeyPartitionNode(string name, ChannelReader<Envelope<TPayload>> input, IReadOnlyList<ChannelWriter<Envelope<TPayload>>> outputs, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null)
+        public KeyPartitionNode(string name, ChannelReader<Envelope<TPayload>> input, IReadOnlyList<ChannelWriter<Envelope<TPayload>>> outputs, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, string? providerName = null)
         {
             if (outputs.Count <= 0)
             {
@@ -30,7 +30,7 @@ namespace UKHO.Search.Pipelines.Nodes
             _outputs = outputs;
             _logger = logger;
             _fatalErrorReporter = fatalErrorReporter;
-            _metrics = new NodeMetrics(name);
+            _metrics = new NodeMetrics(name, providerName);
         }
 
         public string Name { get; }
