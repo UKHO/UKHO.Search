@@ -18,6 +18,9 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
         public string SearchText { get; private set; } = string.Empty;
 
         [JsonInclude]
+        public string Content { get; private set; } = string.Empty;
+
+        [JsonInclude]
         public SortedDictionary<string, SortedSet<string>> Facets { get; private set; } = new(StringComparer.Ordinal);
 
         public void AddKeyword(string? keyword)
@@ -72,6 +75,23 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
             }
 
             SearchText = string.Concat(SearchText, " ", normalized);
+        }
+
+        public void SetContent(string? text)
+        {
+            var normalized = NormalizeToken(text);
+            if (normalized is null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Content))
+            {
+                Content = normalized;
+                return;
+            }
+
+            Content = string.Concat(Content, " ", normalized);
         }
 
         public void AddFacetValue(string? name, string? value)

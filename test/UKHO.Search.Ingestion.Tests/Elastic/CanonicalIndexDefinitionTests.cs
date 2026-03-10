@@ -41,6 +41,10 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
             searchText.GetProperty("type").GetString().ShouldBe("text");
             searchText.GetProperty("analyzer").GetString().ShouldBe("english");
 
+            var content = properties.GetProperty("content");
+            content.GetProperty("type").GetString().ShouldBe("text");
+            content.GetProperty("analyzer").GetString().ShouldBe("english");
+
             properties.GetProperty("facets").GetProperty("type").GetString().ShouldBe("flattened");
         }
 

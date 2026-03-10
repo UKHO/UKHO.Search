@@ -10,6 +10,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
                 .Object("source", o => o.Enabled(false))
                 .Keyword("keywords")
                 .Text("searchText", t => t.Analyzer("english"))
+                .Text("content", t => t.Analyzer("english"))
                 .Flattened("facets")));
         }
     }

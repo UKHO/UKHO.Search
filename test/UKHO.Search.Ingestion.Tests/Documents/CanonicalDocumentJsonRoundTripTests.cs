@@ -17,6 +17,7 @@ namespace UKHO.Search.Ingestion.Tests.Documents
             doc.AddKeyword("Alpha");
             doc.AddKeyword("BETA");
             doc.SetSearchText("Hello WORLD");
+            doc.SetContent("Hello BODY");
             doc.AddFacetValue("Category", "A");
             doc.AddFacetValue("Category", "B");
 
@@ -25,6 +26,7 @@ namespace UKHO.Search.Ingestion.Tests.Documents
             using var parsed = JsonDocument.Parse(json);
             parsed.RootElement.GetProperty("Keywords").ValueKind.ShouldBe(JsonValueKind.Array);
             parsed.RootElement.GetProperty("SearchText").ValueKind.ShouldBe(JsonValueKind.String);
+            parsed.RootElement.GetProperty("Content").ValueKind.ShouldBe(JsonValueKind.String);
             parsed.RootElement.GetProperty("Facets").ValueKind.ShouldBe(JsonValueKind.Object);
             parsed.RootElement.GetProperty("Facets").GetProperty("category").ValueKind.ShouldBe(JsonValueKind.Array);
 
@@ -37,6 +39,7 @@ namespace UKHO.Search.Ingestion.Tests.Documents
 
             roundTripped.Keywords.ShouldBe(new[] { "alpha", "beta" });
             roundTripped.SearchText.ShouldBe("hello world");
+            roundTripped.Content.ShouldBe("hello body");
             roundTripped.Facets["category"].ShouldBe(new[] { "a", "b" });
         }
     }
