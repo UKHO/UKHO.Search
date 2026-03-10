@@ -87,7 +87,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var engine = provider.GetRequiredService<IIngestionRulesEngine>();
 
             var request = CreateRequest();
-            var document = CanonicalDocument.CreateMinimal("doc-1", request);
+            var document = CanonicalDocument.CreateMinimal("doc-1", request.AddItem!.Properties, request.AddItem.Timestamp);
 
             engine.Apply("file-share", request, document);
 

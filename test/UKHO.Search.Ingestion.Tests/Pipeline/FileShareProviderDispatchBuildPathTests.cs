@@ -25,7 +25,9 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
 
             await node.StartAsync(CancellationToken.None);
 
-            var add = new AddItemRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList());
+            var p1 = new IngestionProperty { Name = "Category", Type = IngestionPropertyType.String, Value = "A" };
+            var properties = new List<IngestionProperty> { p1 };
+            var add = new AddItemRequest("doc-1", properties, new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList());
             var request = new IngestionRequest(IngestionRequestType.AddItem, add, null, null, null);
 
             await input.Writer.WriteAsync(new Envelope<IngestionRequest>("doc-1", request));
@@ -42,8 +44,10 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             upsert.DocumentId.ShouldBe("doc-1");
             upsert.Document.DocumentId.ShouldBe("doc-1");
             upsert.Document.DocumentType.ShouldBeEmpty();
-            upsert.Document.Source.ShouldBeSameAs(request);
-            upsert.Document.Source.RequestType.ShouldBe(IngestionRequestType.AddItem);
+            upsert.Document.Source.ShouldNotBeSameAs(add.Properties);
+            upsert.Document.Source.Count.ShouldBe(1);
+            upsert.Document.Source[0].ShouldBeSameAs(p1);
+            upsert.Document.Timestamp.ShouldBe(add.Timestamp);
         }
     }
 }

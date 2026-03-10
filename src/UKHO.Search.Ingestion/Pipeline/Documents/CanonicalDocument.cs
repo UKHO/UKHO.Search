@@ -9,7 +9,9 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
 
         public string DocumentType { get; set; } = string.Empty;
 
-        public IngestionRequest Source { get; init; } = new();
+        public IReadOnlyList<IngestionProperty> Source { get; init; } = Array.Empty<IngestionProperty>();
+
+        public DateTimeOffset Timestamp { get; init; }
 
         [JsonInclude]
         public SortedSet<string> Keywords { get; private set; } = new(StringComparer.Ordinal);
@@ -137,7 +139,7 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
             }
         }
 
-        public static CanonicalDocument CreateMinimal(string documentId, IngestionRequest source)
+        public static CanonicalDocument CreateMinimal(string documentId, IReadOnlyList<IngestionProperty> source, DateTimeOffset timestamp)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
             ArgumentNullException.ThrowIfNull(source);
@@ -145,7 +147,8 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
             return new CanonicalDocument
             {
                 DocumentId = documentId,
-                Source = source
+                Source = source,
+                Timestamp = timestamp
             };
         }
 

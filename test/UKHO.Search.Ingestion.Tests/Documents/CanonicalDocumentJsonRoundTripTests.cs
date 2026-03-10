@@ -11,8 +11,13 @@ namespace UKHO.Search.Ingestion.Tests.Documents
         [Fact]
         public void CanonicalDocument_round_trips_via_system_text_json()
         {
-            var request = new IngestionRequest(IngestionRequestType.AddItem, new AddItemRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList()), null, null, null);
-            var doc = CanonicalDocument.CreateMinimal("doc-1", request);
+            var timestamp = new DateTimeOffset(2024, 01, 02, 03, 04, 05, TimeSpan.Zero);
+            var source = new[]
+            {
+                new IngestionProperty { Name = "Category", Type = IngestionPropertyType.String, Value = "A" }
+            };
+
+            var doc = CanonicalDocument.CreateMinimal("doc-1", source, timestamp);
             doc.DocumentType = "type-x";
             doc.AddKeyword("Alpha");
             doc.AddKeyword("BETA");
@@ -24,6 +29,8 @@ namespace UKHO.Search.Ingestion.Tests.Documents
             var json = JsonSerializer.Serialize(doc);
 
             using var parsed = JsonDocument.Parse(json);
+            parsed.RootElement.GetProperty("Source").ValueKind.ShouldBe(JsonValueKind.Array);
+            parsed.RootElement.GetProperty("Timestamp").ValueKind.ShouldBe(JsonValueKind.String);
             parsed.RootElement.GetProperty("Keywords").ValueKind.ShouldBe(JsonValueKind.Array);
             parsed.RootElement.GetProperty("SearchText").ValueKind.ShouldBe(JsonValueKind.String);
             parsed.RootElement.GetProperty("Content").ValueKind.ShouldBe(JsonValueKind.String);
@@ -35,7 +42,11 @@ namespace UKHO.Search.Ingestion.Tests.Documents
 
             roundTripped!.DocumentId.ShouldBe("doc-1");
             roundTripped.DocumentType.ShouldBe("type-x");
-            roundTripped.Source.RequestType.ShouldBe(IngestionRequestType.AddItem);
+            roundTripped.Source.Count.ShouldBe(1);
+            roundTripped.Source[0].Name.ShouldBe("Category");
+            roundTripped.Source[0].Type.ShouldBe(IngestionPropertyType.String);
+            roundTripped.Source[0].Value.ShouldBe("A");
+            roundTripped.Timestamp.ShouldBe(timestamp);
 
             roundTripped.Keywords.ShouldBe(new[] { "alpha", "beta" });
             roundTripped.SearchText.ShouldBe("hello world");

@@ -26,7 +26,10 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
 
             await node.StartAsync(CancellationToken.None);
 
-            var add = new AddItemRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList());
+            var p1 = new IngestionProperty { Name = "Category", Type = IngestionPropertyType.String, Value = "A" };
+            var properties = new List<IngestionProperty> { p1 };
+            var addTimestamp = new DateTimeOffset(2024, 01, 02, 03, 04, 05, TimeSpan.Zero);
+            var add = new AddItemRequest("doc-1", properties, new[] { "t1" }, addTimestamp, new IngestionFileList());
             var request = new IngestionRequest(IngestionRequestType.AddItem, add, null, null, null);
 
             await input.Writer.WriteAsync(new Envelope<IngestionRequest>("doc-1", request));
@@ -44,8 +47,50 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             upsert.Document.DocumentId.ShouldBe("doc-1");
             upsert.Document.DocumentType.ShouldBeEmpty();
 
-            upsert.Document.Source.ShouldBeSameAs(request);
-            upsert.Document.Source.RequestType.ShouldBe(IngestionRequestType.AddItem);
+            upsert.Document.Source.ShouldNotBeSameAs(add.Properties);
+            upsert.Document.Source.Count.ShouldBe(1);
+            upsert.Document.Source[0].ShouldBeSameAs(p1);
+            upsert.Document.Timestamp.ShouldBe(addTimestamp);
+        }
+
+        [Fact]
+        public async Task UpdateItem_is_dispatched_to_upsert_with_canonical_document()
+        {
+            var input = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
+            var output = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
+            var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
+
+            var canonicalBuilder = new CanonicalDocumentBuilder();
+
+            var node = new IngestionRequestDispatchNode("dispatch", input.Reader, output.Writer, deadLetter.Writer, canonicalBuilder);
+
+            await node.StartAsync(CancellationToken.None);
+
+            var p1 = new IngestionProperty { Name = "Department", Type = IngestionPropertyType.String, Value = "Hydro" };
+            var properties = new List<IngestionProperty> { p1 };
+            var updateTimestamp = new DateTimeOffset(2025, 02, 03, 04, 05, 06, TimeSpan.Zero);
+            var update = new UpdateItemRequest("doc-1", properties, new[] { "t1" }, updateTimestamp, new IngestionFileList());
+            var request = new IngestionRequest(IngestionRequestType.UpdateItem, null, update, null, null);
+
+            await input.Writer.WriteAsync(new Envelope<IngestionRequest>("doc-1", request));
+            input.Writer.TryComplete();
+
+            await node.Completion.WaitAsync(TimeSpan.FromSeconds(2));
+
+            output.Reader.TryRead(out var envelope)
+                  .ShouldBeTrue();
+
+            envelope.Payload.Request.RequestType.ShouldBe(IngestionRequestType.UpdateItem);
+
+            var upsert = envelope.Payload.Operation.ShouldBeOfType<UpsertOperation>();
+            upsert.DocumentId.ShouldBe("doc-1");
+            upsert.Document.DocumentId.ShouldBe("doc-1");
+            upsert.Document.DocumentType.ShouldBeEmpty();
+
+            upsert.Document.Source.ShouldNotBeSameAs(update.Properties);
+            upsert.Document.Source.Count.ShouldBe(1);
+            upsert.Document.Source[0].ShouldBeSameAs(p1);
+            upsert.Document.Timestamp.ShouldBe(updateTimestamp);
         }
 
         [Fact]

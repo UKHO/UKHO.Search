@@ -30,7 +30,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                     new IngestionFile("f1", 1, DateTimeOffset.UtcNow, "app/s63")
                 });
 
-            var document = CanonicalDocument.CreateMinimal("doc-1", request);
+            var document = CanonicalDocument.CreateMinimal("doc-1", request.AddItem!.Properties, request.AddItem.Timestamp);
             engine.Apply("file-share", request, document);
 
             document.Keywords.ShouldContain("exchange-set");
@@ -54,7 +54,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                 ],
                 files: new IngestionFileList());
 
-            var document = CanonicalDocument.CreateMinimal("doc-2", request);
+            var document = CanonicalDocument.CreateMinimal("doc-2", request.AddItem!.Properties, request.AddItem.Timestamp);
             engine.Apply("file-share", request, document);
 
             document.Keywords.ShouldContain("key1");
@@ -78,7 +78,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                 ],
                 files: new IngestionFileList());
 
-            var document = CanonicalDocument.CreateMinimal("doc-3", request);
+            var document = CanonicalDocument.CreateMinimal("doc-3", request.AddItem!.Properties, request.AddItem.Timestamp);
             engine.Apply("file-share", request, document);
 
             document.Facets.ShouldContainKey("facet 1");

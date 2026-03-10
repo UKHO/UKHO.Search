@@ -68,7 +68,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                     new AddItemRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList()),
                     null, null, null);
 
-                var doc = CanonicalDocument.CreateMinimal("doc-1", request);
+                var doc = CanonicalDocument.CreateMinimal("doc-1", request.AddItem!.Properties, request.AddItem.Timestamp);
 
                 await rulesEnricher.TryBuildEnrichmentAsync(request, doc, CancellationToken.None);
 

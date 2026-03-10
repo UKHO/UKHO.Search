@@ -42,6 +42,7 @@ Rules:
 
 ## FileShare Enrichment
 - For FileShare ZIP extraction enrichment, use `CanonicalDocument.SetContent()` to append content naturally. Additionally, call `CanonicalDocument.SetKeyword()` for each extracted file name (without extension).
+- When creating the defensive copy for `CanonicalDocument.Source`, perform a shallow copy of the properties list (new list/array, reuse existing immutable `IngestionProperty` instances).
 
 ## MCP Tool Selection
 - Azure DevOps intent: use Azure DevOps tools.
