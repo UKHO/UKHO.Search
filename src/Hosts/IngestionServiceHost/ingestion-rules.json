@@ -3,20 +3,45 @@
 	"rules": {
 		"file-share": [
 			{
-				"id": "slice1-add-keyword",
-				"description": "Slice 1 minimal rule to prove rules engine integration.",
+				"id": "businessunit-adds-exchangeset-keywords",
+				"description": "When businessUnit is 'adds', enrich with S63/ENC exchange set keywords and search text.",
 				"if": {
-					"any": [
-						{
-							"path": "id",
-							"exists": true
-						}
-					]
+					"properties[\"businessUnitName\"]": "adds"
 				},
 				"then": {
 					"keywords": {
 						"add": [
-							"slice1-keyword"
+							"S63",
+							"S-63",
+							"ExchangeSet",
+							"ENC"
+						]
+					},
+					"searchText": {
+						"add": [
+							"S63 S-63 Exchange Sets"
+						]
+					}
+				}
+			},
+			{
+				"id": "businessunit-adds-s57-exchangeset-keywords",
+				"description": "When businessUnit is 'adds-s57', enrich with S57/ENC exchange set keywords and search text.",
+				"if": {
+					"properties[\"businessUnitName\"]": "adds-s57"
+				},
+				"then": {
+					"keywords": {
+						"add": [
+							"S57",
+							"S-57",
+							"ExchangeSet",
+							"ENC"
+						]
+					},
+					"searchText": {
+						"add": [
+							"S57 S-57 Exchange Sets"
 						]
 					}
 				}
