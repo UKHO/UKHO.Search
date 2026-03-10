@@ -1,0 +1,47 @@
+ADDS – private ENC S63 data to make S63 exchange set
+
+ADDS-S57 – private ENC S57 data to make unencrypted exchange sets used for BESS
+
+AVCSCustomExchangeSets – Exchange sets made by customers using the ESS API and ESS UI (S57, S63 and S100). Customers only have access to their own exchange sets, retrieved using batch id or url
+
+AVCSData – Weekly data sets uploaded by TPMs and collected by distributers
+
+MaritimeSafetyInformation – Notice to mariners displayed on MSI website and also available via FSS UI/API
+
+BritishLegalDepositLibraryPublications – nothing searchable
+
+PrintToOrder – nothing searchable, BU is for print to order team
+
+ADDSSupport – random test stuff
+
+ADP - Weekly data sets uploaded by TPMs and collected by distributers
+
+AENP - Weekly data sets uploaded by TPMs and collected by distributers
+
+ARCS - Weekly data sets uploaded by TPMs and collected by distributers
+
+PaperProducts – POD files not sure whether these are downloaded from UI think FSS might just be for storage and an application might be getting them
+
+Chersoft – Business continuity
+
+VAR – specific BU for file sharing with VARs but not really anything
+
+ADDS-S100 – private S100 file ingestion to make S100 exchange sets
+
+ LooseLeaf – private BU for file sharing with this supplier
+
+S100-TidalService – S111 and S104 data for tidal trial
+
+AVCS-BespokeExchangeSets – BESS outputs, these need to be collected from UI
+
+SENC - specific BU for file sharing with SENCs but not really anything
+
+TestPenrose-S57 – old test BU
+
+TestPenrose-S63 – old test BU
+
+PrintedMedia – for sending files to Packaged Sounds printer
+
+DefenceProducts – defence file sharing collected from UI - defence data in here so don’t use for testing
+
+ADSD-ViewerUpdates – Sailing directions data being added here in case ADDS distributers ever want to get is via API (no files displayed on FSS UI)
