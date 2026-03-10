@@ -34,6 +34,11 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
             Keywords.Add(normalized);
         }
 
+        public void SetKeyword(string? keyword)
+        {
+            AddKeyword(keyword);
+        }
+
         public void AddKeywords(IEnumerable<string?>? keywords)
         {
             if (keywords is null)

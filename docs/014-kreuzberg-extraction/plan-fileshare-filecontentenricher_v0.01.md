@@ -1,0 +1,154 @@
+# Implementation Plan
+
+Version: v0.01  
+Status: Draft  
+Work Package: `docs/014-kreuzberg-extraction/`  
+Based on: `docs/014-kreuzberg-extraction/spec-fileshare-filecontentenricher_v0.01.md`
+
+## FileShare: FileContentEnricher (Kreuzberg Extraction)
+
+- [x] Work Item 1: Implement `FileContentEnricher` end-to-end (download → unzip → extract → enrich) - Completed
+  - **Purpose**: Deliver a runnable enrichment step that downloads a FileShare batch ZIP, extracts text from allowlisted file types via Kreuzberg, and appends content/keywords onto the `CanonicalDocument`.
+  - **Acceptance Criteria**:
+    - Given a request with `AddItem.Id` or `UpdateItem.Id`, the enricher resolves the batch id correctly.
+    - If `ingestion:fileContentExtractionAllowedExtensions` is missing/empty, the enricher logs a warning and no-ops (does not download).
+    - If ZIP download fails (unsuccessful `IResult`), the enricher logs an error and throws.
+    - If ZIP unzip fails (corrupt ZIP / extraction error), the enricher logs an error and throws.
+    - For each allowlisted file that yields extracted text, the enricher appends to `document.SetContent(text)` and adds a keyword for the file name without extension (via `document.AddKeyword(...)`).
+    - Temporary ZIP + extracted contents are deleted on both success and failure paths.
+  - **Definition of Done**:
+    - `FileContentEnricher` implemented with required logging, error handling, and cleanup.
+    - Configuration key is read via injected `IConfiguration` and parsed as a semicolon-delimited allowlist.
+    - Unit tests for core behaviours added and passing.
+    - Can execute end-to-end via: `dotnet test` and a manual run of the ingestion host.
+  - Summary (Work Item 1): Implemented `FileContentEnricher` with configuration-driven extension allowlist, FileShare ZIP download (throws on failure), safe unzip (zip-slip protection, throws on failure), Kreuzberg extraction (best-effort per file), canonical enrichment (`SetContent` + `SetKeyword`), and guaranteed temp workspace cleanup.
+    - Files changed:
+      - `src/UKHO.Search.Ingestion.Providers.FileShare/Enrichment/FileContentEnricher.cs`
+      - `src/UKHO.Search.Ingestion/Pipeline/Documents/CanonicalDocument.cs` (added `SetKeyword` alias)
+
+  - [x] Task 1.1: Update enricher dependencies and constructor - Completed
+    - [x] Step 1: Update `FileContentEnricher` constructor to inject:
+      - `IFileShareReadOnlyClient` (existing)
+      - `IConfiguration` (new)
+      - `ILogger<FileContentEnricher>` (new)
+    - [x] Step 2: Store dependencies as underscore-prefixed private fields.
+    - [x] Step 3: Keep `Ordinal` as `100`.
+  - [x] Task 1.2: Implement batch id selection - Completed
+    - [x] Step 1: Resolve `batchId` from `request.AddItem?.Id` else `request.UpdateItem?.Id`.
+    - [x] Step 2: If no batch id, return `Task.CompletedTask` (no-op).
+  - [x] Task 1.3: Implement allowlist parsing from configuration - Completed
+    - [x] Step 1: Read `ingestion:fileContentExtractionAllowedExtensions` from `IConfiguration`.
+    - [x] Step 2: If missing/empty, log a warning and no-op.
+    - [x] Step 3: Parse as `;` delimited tokens, trimming entries, case-insensitive.
+    - [x] Step 4: Normalize extensions so comparisons are made with a leading dot (e.g., `pdf` → `.pdf`).
+  - [x] Task 1.4: Download the ZIP from FileShare - Completed
+    - [x] Step 1: Call `DownloadZipFileAsync(batchId, cancellationToken)`.
+    - [x] Step 2: Use the established `IResult<Stream>` pattern (as per `tools/FileShareImageBuilder/ContentImporter.cs`).
+    - [x] Step 3: If result is unsuccessful or stream is null, log error (include batch id + error) and throw.
+    - [x] Step 4: Ensure the returned stream is disposed (`await using`).
+  - [x] Task 1.5: Create per-invocation temp workspace + copy ZIP to disk - Completed
+    - [x] Step 1: Create a unique temp working directory under `Path.GetTempPath()`.
+    - [x] Step 2: Copy the downloaded ZIP stream to a temp file using async file I/O.
+    - [x] Step 3: Use `try/finally` so the temp workspace is always deleted.
+  - [x] Task 1.6: Unzip safely (zip-slip protection) - Completed
+    - [x] Step 1: Open the temp ZIP file via `System.IO.Compression.ZipArchive`.
+    - [x] Step 2: Extract entries to a temp extraction directory.
+    - [x] Step 3: Validate each destination path via `Path.GetFullPath(...)` to ensure it remains under the extraction root.
+    - [x] Step 4: If extraction fails, log error and throw.
+  - [x] Task 1.7: Extract text per file using Kreuzberg and enrich the canonical document - Completed
+    - [x] Step 1: Iterate extracted files in a deterministic order (e.g., sort by relative path).
+    - [x] Step 2: For each file:
+      - Skip directories.
+      - Check extension against parsed allowlist; skip non-allowlisted extensions.
+    - [x] Step 3: Extract text via Kreuzberg.
+      - If extraction yields null/empty/whitespace text: skip.
+      - If extraction throws for a file: catch, log warning, continue.
+    - [x] Step 4: Enrich:
+      - `document.SetContent(extractedText)` (append semantics).
+      - `document.AddKeyword(Path.GetFileNameWithoutExtension(filePath))`.
+  - [x] Task 1.8: Ensure mandatory cleanup - Completed
+    - [x] Step 1: Ensure both the temp ZIP file and extracted contents are deleted in `finally`.
+    - [x] Step 2: Cleanup must run even when download/unzip throws.
+    - [x] Step 3: Cleanup failures should be logged as warnings but must not prevent the original exception from surfacing.
+  - **Files**:
+    - `src/UKHO.Search.Ingestion.Providers.FileShare/Enrichment/FileContentEnricher.cs`: implement the enrichment logic, config parsing, logging, and cleanup.
+    - (Optional) `src/UKHO.Search.Ingestion.Providers.FileShare/Enrichment/KreuzbergTextExtractor.cs`: small adapter around Kreuzberg extraction to keep `FileContentEnricher` focused and testable.
+  - **Work Item Dependencies**: none.
+  - **Run / Verification Instructions**:
+    - `dotnet test`
+    - Manual smoke test:
+      - Ensure FileShareEmulator is running and contains a batch ZIP for a known batch id.
+      - Run: `dotnet run --project src/Hosts/IngestionServiceHost/IngestionServiceHost.csproj`
+      - Enqueue/trigger an ingestion request for that batch id and confirm extracted `Content` and `Keywords` are present in indexed document.
+  - **User Instructions**:
+    - Update `configuration/configuration.json` allowlist value if you need additional file types beyond `.pdf;.docx;.txt;.html`.
+
+- [x] Work Item 2: Add focused unit tests for `FileContentEnricher` behaviour - Completed
+  - **Purpose**: Provide regression coverage for batch id selection, allowlist filtering, error policy (throw on download/unzip), best-effort per-file extraction, and cleanup.
+  - **Acceptance Criteria**:
+    - Tests cover:
+      - `AddItem` vs `UpdateItem` batch id selection.
+      - Missing/empty allowlist → warning + no-op.
+      - Non-allowlisted extensions are skipped.
+      - Unsuccessful download `IResult` → throws.
+      - Corrupt ZIP → throws.
+      - Per-file extraction exception → logged warning, continues.
+      - Temp workspace deleted after completion (success and failure).
+  - **Definition of Done**:
+    - New tests added and passing in CI via `dotnet test`.
+    - No flaky dependencies on external services.
+  - Summary (Work Item 2): Added unit tests for `FileContentEnricher` and introduced a small FileShare download adapter (`IFileShareZipDownloader`) so tests can avoid mocking the full external FileShare client surface. Updated an existing integration test to register `IConfiguration` so FileShare enrichers can be constructed.
+    - Files changed:
+      - `test/UKHO.Search.Ingestion.Tests/Enrichment/FileContentEnricherTests.cs`
+      - `test/UKHO.Search.Ingestion.Tests/Rules/RulesEngineSlice1IntegrationTests.cs`
+      - `test/UKHO.Search.Ingestion.Tests/TestSupport/ThrowingZipDownloader.cs`
+      - `test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`
+      - `src/UKHO.Search.Ingestion.Providers.FileShare/Enrichment/IFileShareZipDownloader.cs`
+      - `src/UKHO.Search.Ingestion.Providers.FileShare/Enrichment/FileShareZipDownloader.cs`
+      - `src/UKHO.Search.Ingestion.Providers.FileShare/Injection/InjectionExtensions.cs`
+      - `src/UKHO.Search.Ingestion.Providers.FileShare/Enrichment/FileContentEnricher.cs`
+
+    - Follow-up decision: Removed the `DisabledFileShareZipDownloader` fallback. If the ZIP downloader isn’t registered, DI resolution fails immediately (terminal). The slice integration test now explicitly registers a stub `IFileShareZipDownloader`.
+
+  - [x] Task 2.1: Create in-memory ZIP fixtures - Completed
+    - [x] Step 1: Build a ZIP in memory containing multiple entries (e.g., `a.txt`, `b.pdf`, `c.bin`) to validate allowlist behaviour.
+    - [x] Step 2: Include a corrupted ZIP payload fixture for unzip-failure tests.
+  - [x] Task 2.2: Mock ZIP download and drive `TryBuildEnrichmentAsync` - Completed
+    - [x] Step 1: Introduce `IFileShareZipDownloader` as a small adapter around `IFileShareReadOnlyClient` + `IResult<Stream>` handling.
+    - [x] Step 2: In unit tests, inject a fake `IFileShareZipDownloader` returning an in-memory ZIP stream.
+    - [x] Step 3: Inject a fake `IFileShareZipDownloader` that throws to validate the “throw on download failure” policy.
+  - [x] Task 2.3: Keep Kreuzberg extraction deterministic enough for unit tests - Completed
+    - [x] Step 1: Use allowlisted `.txt` fixtures so Kreuzberg extraction succeeds without external dependencies.
+    - [x] Step 2: Use corrupt ZIP fixtures to validate unzip failure behaviour.
+  - [x] Task 2.4: Validate cleanup - Completed
+    - [x] Step 1: Ensure the implementation exposes enough seams (e.g., injectable temp workspace factory) to assert the workspace is removed after execution.
+  - **Files**:
+    - `test/UKHO.Search.Ingestion.Tests/Enrichment/FileContentEnricherTests.cs`: new tests.
+    - (Optional) `src/UKHO.Search.Ingestion.Providers.FileShare/Enrichment/IFileTextExtractor.cs`: adapter interface.
+    - (Optional) `src/UKHO.Search.Ingestion.Providers.FileShare/Enrichment/KreuzbergFileTextExtractor.cs`: production implementation.
+  - **Work Item Dependencies**: Work Item 1.
+  - **Run / Verification Instructions**:
+    - `dotnet test --filter FileContentEnricherTests`
+
+- [x] Work Item 3: Integration smoke test against FileShareEmulator (optional but recommended) - Completed
+  - **Purpose**: Validate real ZIP download + Kreuzberg extraction works against the emulator using representative documents.
+  - **Acceptance Criteria**:
+    - With FileShareEmulator running, ingestion of a known batch id produces non-empty `CanonicalDocument.Content` for allowlisted file types.
+    - Keywords include each processed file name (without extension).
+  - **Definition of Done**:
+    - A repeatable manual procedure exists (and/or an automated integration test if feasible) to validate extraction end-to-end.
+  - Summary (Work Item 3): Added a repeatable manual smoke test runbook for validating FileShareEmulator ZIP download + Kreuzberg extraction behaviour.
+    - New document:
+      - `docs/014-kreuzberg-extraction/smoke-test-fileshare-kreuzberg-extraction_v0.01.md`
+
+  - [x] Task 3.1: Prepare a representative batch ZIP in FileShareEmulator - Completed
+    - [x] Step 1: Add files of each allowlisted type.
+  - [x] Task 3.2: Run ingestion host and validate output - Completed
+    - [x] Step 1: Run `dotnet run --project src/Hosts/IngestionServiceHost/IngestionServiceHost.csproj`.
+    - [x] Step 2: Trigger ingestion for the batch id.
+    - [x] Step 3: Inspect indexed document and confirm appended content + keywords.
+  - **Files**:
+    - No code changes required unless adding automated integration tests.
+  - **Work Item Dependencies**: Work Item 1.
+  - **Run / Verification Instructions**:
+    - Manual procedure described above.

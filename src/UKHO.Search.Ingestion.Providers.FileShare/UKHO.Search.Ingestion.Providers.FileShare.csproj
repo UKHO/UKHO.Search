@@ -11,6 +11,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
+		<PackageReference Include="UKHO.ADDS.Clients.FileShareService.ReadOnly" Version="0.0.50728-alpha.8" />
 	</ItemGroup>
 
 	<ItemGroup>

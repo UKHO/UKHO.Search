@@ -40,6 +40,9 @@ Rules:
 - Prefer a single, obvious public entrypoint for queue-backed ingestion; avoid multiple builder APIs. Document this in the spec and keep code aligned (hosted service should start ingestion via the adapter/provider entrypoint path).
 - For the ingestion rules DSL, support both `if` and `match` as predicate field aliases, but prefer writing examples using `if`.
 
+## FileShare Enrichment
+- For FileShare ZIP extraction enrichment, use `CanonicalDocument.SetContent()` to append content naturally. Additionally, call `CanonicalDocument.SetKeyword()` for each extracted file name (without extension).
+
 ## MCP Tool Selection
 - Azure DevOps intent: use Azure DevOps tools.
 - GitHub intent: use GitHub tools.

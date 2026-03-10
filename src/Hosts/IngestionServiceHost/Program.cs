@@ -1,6 +1,8 @@
 using IngestionServiceHost.Components;
 using Radzen;
+using UKHO.ADDS.Clients.FileShareService.ReadOnly;
 using UKHO.Aspire.Configuration;
+using UKHO.Aspire.Configuration.Remote;
 using UKHO.Search.Configuration;
 using UKHO.Search.Infrastructure.Ingestion.Bootstrap;
 using UKHO.Search.Infrastructure.Ingestion.Injection;
@@ -30,6 +32,20 @@ namespace IngestionServiceHost
             builder.Services.AddRadzenComponents();
             builder.Services.AddRadzenQueryStringThemeService();
             builder.Services.AddLocalization();
+
+            builder.Services.AddSingleton<FileShareReadOnlyClientFactory>();
+
+            builder.Services.AddSingleton<IFileShareReadOnlyClient>(sp =>
+            {
+                var externalServiceRegistry = sp.GetRequiredService<IExternalServiceRegistry>();
+                var fileShareEndpoint = externalServiceRegistry.GetServiceEndpoint("FileShare"); // Using the tag "FileShare" to retrieve the endpoint defined in external-services.json
+
+                var baseAddress = fileShareEndpoint.Uri;
+
+                // Local emulator has no auth configured, so pass an empty token.
+                return sp.GetRequiredService<FileShareReadOnlyClientFactory>()
+                         .CreateClient(baseAddress.ToString(), string.Empty);
+            });
 
             var app = builder.Build();
 

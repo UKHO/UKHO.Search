@@ -25,7 +25,8 @@
             "enrichmentRetryMaxDelayMilliseconds": 5000,
             "enrichmentRetryJitterMilliseconds": 250,
             "deadletterContainer": "ingestion-deadletter",
-            "deadletterBlobPrefix": "deadletter"
+            "deadletterBlobPrefix": "deadletter",
+            "fileContentExtractionAllowedExtensions": ".pdf;.docx;.txt;.html"
         },
         "query": {
             "indexname": "ukho-search"
@@ -57,7 +58,8 @@
             "enrichmentRetryMaxDelayMilliseconds": 5000,
             "enrichmentRetryJitterMilliseconds": 250,
             "deadletterContainer": "ingestion-deadletter",
-            "deadletterBlobPrefix": "deadletter"
+            "deadletterBlobPrefix": "deadletter",
+            "fileContentExtractionAllowedExtensions": ".pdf;.docx;.txt;.html"
         },
         "query": {
             "indexname": "ukho-search"
@@ -89,7 +91,8 @@
             "enrichmentRetryMaxDelayMilliseconds": 5000,
             "enrichmentRetryJitterMilliseconds": 250,
             "deadletterContainer": "ingestion-deadletter",
-            "deadletterBlobPrefix": "deadletter"
+            "deadletterBlobPrefix": "deadletter",
+            "fileContentExtractionAllowedExtensions": ".pdf;.docx;.txt;.html"
         },
         "query": {
             "indexname": "ukho-search"
@@ -121,7 +124,8 @@
             "enrichmentRetryMaxDelayMilliseconds": 5000,
             "enrichmentRetryJitterMilliseconds": 250,
             "deadletterContainer": "ingestion-deadletter",
-            "deadletterBlobPrefix": "deadletter"
+            "deadletterBlobPrefix": "deadletter",
+            "fileContentExtractionAllowedExtensions": ".pdf;.docx;.txt;.html"
         },
         "query": {
             "indexname": "ukho-search"
@@ -153,7 +157,8 @@
             "enrichmentRetryMaxDelayMilliseconds": 5000,
             "enrichmentRetryJitterMilliseconds": 250,
             "deadletterContainer": "ingestion-deadletter",
-            "deadletterBlobPrefix": "deadletter"
+            "deadletterBlobPrefix": "deadletter",
+            "fileContentExtractionAllowedExtensions": ".pdf;.docx;.txt;.html"
         },
         "query": {
             "indexname": "ukho-search"
@@ -185,7 +190,8 @@
             "enrichmentRetryMaxDelayMilliseconds": 5000,
             "enrichmentRetryJitterMilliseconds": 250,
             "deadletterContainer": "ingestion-deadletter",
-            "deadletterBlobPrefix": "deadletter"
+            "deadletterBlobPrefix": "deadletter",
+            "fileContentExtractionAllowedExtensions": ".pdf;.docx;.txt;.html"
         },
         "query": {
             "indexname": "ukho-search"
@@ -217,7 +223,8 @@
             "enrichmentRetryMaxDelayMilliseconds": 5000,
             "enrichmentRetryJitterMilliseconds": 250,
             "deadletterContainer": "ingestion-deadletter",
-            "deadletterBlobPrefix": "deadletter"
+            "deadletterBlobPrefix": "deadletter",
+            "fileContentExtractionAllowedExtensions": ".pdf;.docx;.txt;.html"
         },
         "query": {
             "indexname": "ukho-search"

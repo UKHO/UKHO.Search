@@ -9,6 +9,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Injection
         {
             ArgumentNullException.ThrowIfNull(services);
 
+            services.AddScoped<IFileShareZipDownloader, FileShareZipDownloader>();
             services.AddScoped<IIngestionEnricher, FileContentEnricher>();
             services.AddScoped<IIngestionEnricher, ExchangeSetEnricher>();
             services.AddScoped<IIngestionEnricher, GeoLocationEnricher>();

@@ -3,11 +3,11 @@
         "FileShare": {
             "endpoints": [
               {
-                "url": "http://{{tools-fileshare-emulator}}/fss/",
+                "url": "http://{{tools-fileshare-emulator}}/",
                 "tag": ""
               },
               {
-                "url": "http://{{tools-fileshare-emulator}}/fss6357/",
+                "url": "http://{{tools-fileshare-emulator}}/",
                 "tag": "legacy"
               }
             ],
@@ -18,11 +18,11 @@
         "FileShare": {
             "endpoints": [
               {
-                "url": "https://tools-fileshare-emulator.{{cae_domain}}/fss/",
+                "url": "https://tools-fileshare-emulator.{{cae_domain}}/",
                 "tag": ""
               },
               {
-                "url": "https://tools-fileshare-emulator.{{cae_domain}}/fss6357/",
+                "url": "https://tools-fileshare-emulator.{{cae_domain}}/",
                 "tag": "legacy"
               }
             ],
