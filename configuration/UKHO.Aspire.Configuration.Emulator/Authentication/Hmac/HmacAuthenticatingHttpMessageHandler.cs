@@ -6,13 +6,9 @@ namespace UKHO.Aspire.Configuration.Emulator.Authentication.Hmac
 {
     public class HmacAuthenticatingHttpMessageHandler(string credential, string secret) : DelegatingHandler
     {
-        protected override async Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request,
-            CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            using var activity =
-                Telemetry.ActivitySource.StartActivity(
-                    $"{nameof(HmacAuthenticatingHttpMessageHandler)}.{nameof(SendAsync)}");
+            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(HmacAuthenticatingHttpMessageHandler)}.{nameof(SendAsync)}");
 
             var contentHash = await ComputeContentHash(request, cancellationToken);
             activity?.SetTag(Telemetry.HeaderContentHash, contentHash);
@@ -27,13 +23,9 @@ namespace UKHO.Aspire.Configuration.Emulator.Authentication.Hmac
             return await base.SendAsync(request, cancellationToken);
         }
 
-        private static async Task<string> ComputeContentHash(
-            HttpRequestMessage request,
-            CancellationToken cancellationToken = default)
+        private static async Task<string> ComputeContentHash(HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
-            using var activity =
-                Telemetry.ActivitySource.StartActivity(
-                    $"{nameof(HmacAuthenticatingHttpMessageHandler)}.{nameof(ComputeContentHash)}");
+            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(HmacAuthenticatingHttpMessageHandler)}.{nameof(ComputeContentHash)}");
 
             using var stream = new MemoryStream();
 
@@ -51,35 +43,27 @@ namespace UKHO.Aspire.Configuration.Emulator.Authentication.Hmac
 
         private string ComputeHash(string value)
         {
-            using var activity =
-                Telemetry.ActivitySource.StartActivity(
-                    $"{nameof(HmacAuthenticatingHttpMessageHandler)}.{nameof(ComputeHash)}");
+            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(HmacAuthenticatingHttpMessageHandler)}.{nameof(ComputeHash)}");
 
             using var hmac = new HMACSHA256(Convert.FromBase64String(secret));
 
             return Convert.ToBase64String(hmac.ComputeHash(Encoding.ASCII.GetBytes(value)));
         }
 
-        private AuthenticationHeaderValue GetAuthenticationHeaderValue(
-            HttpRequestMessage request,
-            string contentHash,
-            DateTimeOffset date)
+        private AuthenticationHeaderValue GetAuthenticationHeaderValue(HttpRequestMessage request, string contentHash, DateTimeOffset date)
         {
-            using var activity = Telemetry.ActivitySource.StartActivity(
-                $"{nameof(HmacAuthenticatingHttpMessageHandler)}.{nameof(GetAuthenticationHeaderValue)}");
+            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(HmacAuthenticatingHttpMessageHandler)}.{nameof(GetAuthenticationHeaderValue)}");
 
             const string signedHeaders = "date;host;x-ms-content-sha256";
             activity?.SetTag(Telemetry.HmacSignedHeaders, signedHeaders);
 
-            var stringToSign =
-                $"{request.Method.Method.ToUpper()}\n{request.RequestUri?.PathAndQuery}\n{date:R};{request.RequestUri?.Authority};{contentHash}";
+            var stringToSign = $"{request.Method.Method.ToUpper()}\n{request.RequestUri?.PathAndQuery}\n{date:R};{request.RequestUri?.Authority};{contentHash}";
             activity?.SetTag(Telemetry.HmacStringToSign, stringToSign);
 
             var signature = ComputeHash(stringToSign);
             activity?.SetTag(Telemetry.HmacSignature, signature);
 
-            return new AuthenticationHeaderValue("HMAC-SHA256",
-                $"Credential={credential}&SignedHeaders={signedHeaders}&Signature={signature}");
+            return new AuthenticationHeaderValue("HMAC-SHA256", $"Credential={credential}&SignedHeaders={signedHeaders}&Signature={signature}");
         }
     }
 }

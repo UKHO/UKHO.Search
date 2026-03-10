@@ -118,7 +118,7 @@
 
             <RadzenTabsItem Text="Field capabilities">
                 <RadzenCard>
-                    <RadzenDataGrid Data="@_fieldCaps" TItem="KeyValuePair<string, IndexFieldCapabilities>" AllowPaging="true" PageSize="20" AllowSorting="true" ColumnWidth="200px">
+                    <RadzenDataGrid Data="@FieldCaps" TItem="KeyValuePair<string, IndexFieldCapabilities>" AllowPaging="true" PageSize="20" AllowSorting="true" ColumnWidth="200px">
                         <Columns>
                             <RadzenDataGridColumn TItem="KeyValuePair<string, IndexFieldCapabilities>" Property="Key" Title="Field"/>
                             <RadzenDataGridColumn TItem="KeyValuePair<string, IndexFieldCapabilities>" Title="Types">
@@ -178,7 +178,7 @@
     private bool _loading;
     private string? _error;
 
-    private IEnumerable<KeyValuePair<string, IndexFieldCapabilities>> _fieldCaps =>
+    private IEnumerable<KeyValuePair<string, IndexFieldCapabilities>> FieldCaps =>
         _stats?.FieldCapabilities?.OrderBy(kvp => kvp.Key) ?? Enumerable.Empty<KeyValuePair<string, IndexFieldCapabilities>>();
 
     protected override Task OnInitializedAsync()

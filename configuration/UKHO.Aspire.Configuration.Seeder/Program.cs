@@ -17,7 +17,10 @@ namespace UKHO.Aspire.Configuration.Seeder
             {
                 var parseResult = Parser.Default.ParseArguments<CommandLineParameters>(args);
 
-                if (parseResult.Value == null) return -1;
+                if (parseResult.Value == null)
+                {
+                    return -1;
+                }
 
                 var parameters = parseResult.Value;
 
@@ -27,18 +30,11 @@ namespace UKHO.Aspire.Configuration.Seeder
                     ValidateUri(parameters.AppConfigServiceUrl, nameof(parameters.AppConfigServiceUrl));
 
                     var configService = new ConfigurationService();
-                    var configClient = new ConfigurationClient(new Uri(parameters.AppConfigServiceUrl),
-                        new DefaultAzureCredential());
+                    var configClient = new ConfigurationClient(new Uri(parameters.AppConfigServiceUrl), new DefaultAzureCredential());
 
                     var addsEnvironment = AddsEnvironment.Parse(parameters.EnvironmentName);
 
-                    await configService.SeedConfigurationAsync(
-                        addsEnvironment,
-                        configClient,
-                        parameters.ServiceName,
-                        parameters.ConfigurationFilePath,
-                        parameters.ServicesFilePath,
-                        CancellationToken.None);
+                    await configService.SeedConfigurationAsync(addsEnvironment, configClient, parameters.ServiceName, parameters.ConfigurationFilePath, parameters.ServicesFilePath, CancellationToken.None);
 
                     return 0;
                 }
@@ -64,8 +60,7 @@ namespace UKHO.Aspire.Configuration.Seeder
 
                 builder.Services.AddSingleton(x =>
                 {
-                    var serviceEnvironmentKey =
-                        $"services__{WellKnownConfigurationName.ConfigurationServiceName}__http__0";
+                    var serviceEnvironmentKey = $"services__{WellKnownConfigurationName.ConfigurationServiceName}__http__0";
                     var url = Environment.GetEnvironmentVariable(serviceEnvironmentKey)!;
 
                     var conStr = $"Endpoint={url};Id=aac-credential;Secret=c2VjcmV0;";
@@ -77,8 +72,7 @@ namespace UKHO.Aspire.Configuration.Seeder
                     var hostedLifetime = x.GetRequiredService<IHostApplicationLifetime>();
                     var configService = x.GetRequiredService<ConfigurationService>();
 
-                    return new LocalSeederService(hostedLifetime, configService, serviceName,
-                        x.GetRequiredService<ConfigurationClient>(), configFilePath, serviceFilePath);
+                    return new LocalSeederService(hostedLifetime, configService, serviceName, x.GetRequiredService<ConfigurationClient>(), configFilePath, serviceFilePath);
                 });
 
                 var app = builder.Build();
@@ -94,15 +88,20 @@ namespace UKHO.Aspire.Configuration.Seeder
         {
             Console.WriteLine($"URL is {name} : {url}");
 
-            if (!Uri.TryCreate(url, UriKind.Absolute, out _))
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var _))
+            {
                 throw new ArgumentException($"Invalid URI: {url} ({name})");
+            }
         }
 
         private static void ValidateFilePath(string path, string name)
         {
             Console.WriteLine($"File path {name} : {path}");
 
-            if (!File.Exists(path)) throw new FileNotFoundException($"File not found: {path} ({name})");
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException($"File not found: {path} ({name})");
+            }
         }
 
         public class CommandLineParameters

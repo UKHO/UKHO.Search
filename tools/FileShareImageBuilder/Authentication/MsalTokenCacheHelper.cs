@@ -5,7 +5,7 @@ namespace FileShareImageBuilder.Authentication
 {
     internal static class MsalTokenCacheHelper
     {
-        private static readonly object FileLock = new();
+        private static readonly object _fileLock = new();
 
         internal static string CacheFilePath { get; } = GetCacheFilePath();
 
@@ -13,13 +13,11 @@ namespace FileShareImageBuilder.Authentication
         {
             try
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "fss-msalcache.bin");
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "fss-msalcache.bin");
             }
             catch (PlatformNotSupportedException)
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                    "fss-msalcache.bin");
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "fss-msalcache.bin");
             }
         }
 
@@ -31,22 +29,22 @@ namespace FileShareImageBuilder.Authentication
 
         private static void BeforeAccessNotification(TokenCacheNotificationArgs args)
         {
-            lock (FileLock)
+            lock (_fileLock)
             {
-                args.TokenCache.DeserializeMsalV3(File.Exists(CacheFilePath)
-                    ? ProtectedData.Unprotect(File.ReadAllBytes(CacheFilePath), null, DataProtectionScope.CurrentUser)
-                    : null);
+                args.TokenCache.DeserializeMsalV3(File.Exists(CacheFilePath) ? ProtectedData.Unprotect(File.ReadAllBytes(CacheFilePath), null, DataProtectionScope.CurrentUser) : null);
             }
         }
 
         private static void AfterAccessNotification(TokenCacheNotificationArgs args)
         {
-            if (!args.HasStateChanged) return;
-
-            lock (FileLock)
+            if (!args.HasStateChanged)
             {
-                File.WriteAllBytes(CacheFilePath,
-                    ProtectedData.Protect(args.TokenCache.SerializeMsalV3(), null, DataProtectionScope.CurrentUser));
+                return;
+            }
+
+            lock (_fileLock)
+            {
+                File.WriteAllBytes(CacheFilePath, ProtectedData.Protect(args.TokenCache.SerializeMsalV3(), null, DataProtectionScope.CurrentUser));
             }
         }
     }

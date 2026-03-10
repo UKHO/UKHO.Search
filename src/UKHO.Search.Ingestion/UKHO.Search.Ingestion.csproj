@@ -1,18 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AppDesignerFolder>Requests</AppDesignerFolder>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AppDesignerFolder>Requests</AppDesignerFolder>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\UKHO.Search\UKHO.Search.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Providers\" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\UKHO.Search\UKHO.Search.csproj" />
+	</ItemGroup>
 
 </Project>

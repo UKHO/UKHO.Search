@@ -6,22 +6,30 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
     {
         public static void InitializeDatabase(this IApplicationBuilder app)
         {
-            using var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            using var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
+                                 .CreateScope();
             var commandFactory = scope.ServiceProvider.GetRequiredService<IDbCommandFactory>();
             var connectionFactory = scope.ServiceProvider.GetRequiredService<IDbConnectionFactory>();
 
             using var connection = connectionFactory.Create();
 
             if (!Directory.Exists(Path.GetDirectoryName(connection.DataSource)!))
+            {
                 Directory.CreateDirectory(Path.GetDirectoryName(connection.DataSource)!);
+            }
 
             // TODO Make optional
-            if (File.Exists(connection.DataSource)) File.Delete(connection.DataSource);
+            if (File.Exists(connection.DataSource))
+            {
+                File.Delete(connection.DataSource);
+            }
 
             if (!File.Exists(connection.DataSource))
+            {
                 using (var _ = File.Create(connection.DataSource))
                 {
                 }
+            }
 
             connection.Open();
 

@@ -16,13 +16,18 @@
 </dialog>
 
 @code {
-    [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    [CascadingParameter] public IDialogReference DialogReference { get; set; } = null!;
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 
-    [Parameter] public RenderFragment? FooterContent { get; set; }
+    [CascadingParameter]
+    public IDialogReference DialogReference { get; set; } = null!;
 
-    [Parameter] public RenderFragment? HeaderContent { get; set; }
+    [Parameter]
+    public RenderFragment? FooterContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? HeaderContent { get; set; }
 
     private ElementReference ElementReference { get; set; }
 

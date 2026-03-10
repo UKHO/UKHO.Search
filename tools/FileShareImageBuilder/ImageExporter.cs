@@ -11,7 +11,9 @@ namespace FileShareImageBuilder
             var binDirectory = Path.Combine(dataImagePath, "bin");
 
             if (!Directory.Exists(binDirectory))
+            {
                 throw new DirectoryNotFoundException($"Bin directory not found: {binDirectory}");
+            }
 
             var imageName = $"fss-data-{env}";
             var dockerfilePath = Path.Combine(binDirectory, "Dockerfile.dataimage");
@@ -19,8 +21,7 @@ namespace FileShareImageBuilder
             // Create a small Linux image that contains the exported files plus a shell.
             // This allows Aspire to run a one-shot init container to copy the image contents into a named volume.
             // The emulator then mounts that named volume and can read the files.
-            await File.WriteAllTextAsync(dockerfilePath, "FROM alpine:3.21\n" + "WORKDIR /data\n" + "COPY . /data\n",
-                cancellationToken);
+            await File.WriteAllTextAsync(dockerfilePath, "FROM alpine:3.21\n" + "WORKDIR /data\n" + "COPY . /data\n", cancellationToken);
 
             Console.WriteLine($"[ImageExporter] Building docker image '{imageName}' from '{binDirectory}'...");
             await RunDockerAsync($"build -f \"{dockerfilePath}\" -t {imageName} \"{binDirectory}\"", cancellationToken)
@@ -29,7 +30,8 @@ namespace FileShareImageBuilder
             var tarPath = Path.Combine(dataImagePath, $"{imageName}.tar");
             Console.WriteLine($"[ImageExporter] Saving docker image to '{tarPath}'...");
 
-            await RunDockerAsync($"save -o \"{tarPath}\" {imageName}", cancellationToken).ConfigureAwait(false);
+            await RunDockerAsync($"save -o \"{tarPath}\" {imageName}", cancellationToken)
+                .ConfigureAwait(false);
             Console.WriteLine("[ImageExporter] Docker export complete.");
         }
 
@@ -58,7 +60,10 @@ namespace FileShareImageBuilder
                     return;
                 }
 
-                if (!string.IsNullOrWhiteSpace(e.Data)) Console.WriteLine($"[docker] {e.Data}");
+                if (!string.IsNullOrWhiteSpace(e.Data))
+                {
+                    Console.WriteLine($"[docker] {e.Data}");
+                }
             };
 
             p.ErrorDataReceived += (_, e) =>
@@ -69,10 +74,16 @@ namespace FileShareImageBuilder
                     return;
                 }
 
-                if (!string.IsNullOrWhiteSpace(e.Data)) Console.Error.WriteLine($"[docker] {e.Data}");
+                if (!string.IsNullOrWhiteSpace(e.Data))
+                {
+                    Console.Error.WriteLine($"[docker] {e.Data}");
+                }
             };
 
-            if (!p.Start()) throw new InvalidOperationException("Failed to start docker process.");
+            if (!p.Start())
+            {
+                throw new InvalidOperationException("Failed to start docker process.");
+            }
 
             p.BeginOutputReadLine();
             p.BeginErrorReadLine();
@@ -82,13 +93,19 @@ namespace FileShareImageBuilder
             {
                 while (!cancellationToken.IsCancellationRequested && !p.HasExited)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken).ConfigureAwait(false);
-                    if (!p.HasExited) Console.WriteLine($"[docker] still running: docker {args}");
+                    await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken)
+                              .ConfigureAwait(false);
+                    if (!p.HasExited)
+                    {
+                        Console.WriteLine($"[docker] still running: docker {args}");
+                    }
                 }
             }, cancellationToken);
 
-            await p.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
-            await Task.WhenAll(stdoutClosed.Task, stderrClosed.Task).ConfigureAwait(false);
+            await p.WaitForExitAsync(cancellationToken)
+                   .ConfigureAwait(false);
+            await Task.WhenAll(stdoutClosed.Task, stderrClosed.Task)
+                      .ConfigureAwait(false);
             try
             {
                 await heartbeat.ConfigureAwait(false);
@@ -98,7 +115,9 @@ namespace FileShareImageBuilder
             }
 
             if (p.ExitCode != 0)
+            {
                 throw new InvalidOperationException($"docker {args} failed with exit code {p.ExitCode}.");
+            }
         }
     }
 }

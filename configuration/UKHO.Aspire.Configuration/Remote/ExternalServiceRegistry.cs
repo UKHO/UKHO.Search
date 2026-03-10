@@ -12,21 +12,24 @@ namespace UKHO.Aspire.Configuration.Remote
             _configuration = configuration;
         }
 
-        public IExternalEndpoint GetServiceEndpoint(string serviceName, string tag = "",
-            EndpointHostSubstitution host = EndpointHostSubstitution.None)
+        public IExternalEndpoint GetServiceEndpoint(string serviceName, string tag = "", EndpointHostSubstitution host = EndpointHostSubstitution.None)
         {
             var serviceKey = $"{WellKnownConfigurationName.ExternalServiceKeyPrefix}:{serviceName}";
             var serviceDefinitionJson = _configuration[serviceKey]!;
 
             if (string.IsNullOrEmpty(serviceDefinitionJson))
+            {
                 throw new KeyNotFoundException($"Service definition for '{serviceName}' not found in configuration.");
+            }
 
             var serviceDefinition = JsonCodec.Decode<ExternalServiceDefinition>(serviceDefinitionJson)!;
 
             var endpoint = serviceDefinition.Endpoints.FirstOrDefault(e => e.Tag == tag);
 
             if (endpoint == null)
+            {
                 throw new KeyNotFoundException($"No endpoint found for service '{serviceName}' with tag '{tag}'.");
+            }
 
             var url = endpoint.ResolvedUrl;
             var clientId = serviceDefinition.ClientId;

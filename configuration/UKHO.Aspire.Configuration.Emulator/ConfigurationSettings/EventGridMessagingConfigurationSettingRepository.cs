@@ -5,18 +5,11 @@ using UKHO.Aspire.Configuration.Emulator.Messaging.EventGrid;
 
 namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
 {
-    public class EventGridMessagingConfigurationSettingRepository(
-        IConfigurationSettingRepository inner,
-        IEventGridEventFactory eventGridEventFactory,
-        EventGridPublisherClient eventGridPublisherClient) : IConfigurationSettingRepository
+    public class EventGridMessagingConfigurationSettingRepository(IConfigurationSettingRepository inner, IEventGridEventFactory eventGridEventFactory, EventGridPublisherClient eventGridPublisherClient) : IConfigurationSettingRepository
     {
-        public async Task Add(
-            ConfigurationSetting setting,
-            CancellationToken cancellationToken = default)
+        public async Task Add(ConfigurationSetting setting, CancellationToken cancellationToken = default)
         {
-            using var activity =
-                Telemetry.ActivitySource.StartActivity(
-                    $"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Add)}");
+            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Add)}");
 
             await inner.Add(setting, cancellationToken);
 
@@ -30,26 +23,16 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             await eventGridPublisherClient.SendEventAsync(eventGridEvent, cancellationToken);
         }
 
-        public IAsyncEnumerable<ConfigurationSetting> Get(
-            string key = KeyFilter.Any,
-            string label = LabelFilter.Any,
-            DateTimeOffset? moment = default,
-            CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<ConfigurationSetting> Get(string key = KeyFilter.Any, string label = LabelFilter.Any, DateTimeOffset? moment = default, CancellationToken cancellationToken = default)
         {
-            using var activity =
-                Telemetry.ActivitySource.StartActivity(
-                    $"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Get)}");
+            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Get)}");
 
             return inner.Get(key, label, moment, cancellationToken);
         }
 
-        public async Task Remove(
-            ConfigurationSetting setting,
-            CancellationToken cancellationToken = default)
+        public async Task Remove(ConfigurationSetting setting, CancellationToken cancellationToken = default)
         {
-            using var activity =
-                Telemetry.ActivitySource.StartActivity(
-                    $"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Remove)}");
+            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Remove)}");
 
             await inner.Remove(setting, cancellationToken);
 
@@ -63,13 +46,9 @@ namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
             await eventGridPublisherClient.SendEventAsync(eventGridEvent, cancellationToken);
         }
 
-        public async Task Update(
-            ConfigurationSetting setting,
-            CancellationToken cancellationToken = default)
+        public async Task Update(ConfigurationSetting setting, CancellationToken cancellationToken = default)
         {
-            using var activity =
-                Telemetry.ActivitySource.StartActivity(
-                    $"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Update)}");
+            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Update)}");
 
             await inner.Update(setting, cancellationToken);
 

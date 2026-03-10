@@ -1,5 +1,5 @@
 @implements IAsyncDisposable
-@inject IJSRuntime JS
+@inject IJSRuntime Js
 
 <div class="absolute z-9999" @ref="@AnchoredRegion">
     @ChildContent
@@ -7,25 +7,36 @@
 
 @code {
 
-    [EditorRequired] [Parameter] public string Anchor { get; set; } = null!;
+    [EditorRequired]
+    [Parameter]
+    public string Anchor { get; set; } = null!;
 
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 
-    [Parameter] public HorizontalPosition HorizontalDefaultPosition { get; set; } = HorizontalPosition.Unset;
+    [Parameter]
+    public HorizontalPosition HorizontalDefaultPosition { get; set; } = HorizontalPosition.Unset;
 
-    [Parameter] public bool HorizontalInset { get; set; }
+    [Parameter]
+    public bool HorizontalInset { get; set; }
 
-    [Parameter] public AxisPositioningMode HorizontalPositioningMode { get; set; } = AxisPositioningMode.Uncontrolled;
+    [Parameter]
+    public AxisPositioningMode HorizontalPositioningMode { get; set; } = AxisPositioningMode.Uncontrolled;
 
-    [Parameter] public int HorizontalThreshold { get; set; }
+    [Parameter]
+    public int HorizontalThreshold { get; set; }
 
-    [Parameter] public VerticalPosition VerticalDefaultPosition { get; set; } = VerticalPosition.Unset;
+    [Parameter]
+    public VerticalPosition VerticalDefaultPosition { get; set; } = VerticalPosition.Unset;
 
-    [Parameter] public bool VerticalInset { get; set; }
+    [Parameter]
+    public bool VerticalInset { get; set; }
 
-    [Parameter] public AxisPositioningMode VerticalPositioningMode { get; set; } = AxisPositioningMode.Uncontrolled;
+    [Parameter]
+    public AxisPositioningMode VerticalPositioningMode { get; set; } = AxisPositioningMode.Uncontrolled;
 
-    [Parameter] public int VerticalThreshold { get; set; }
+    [Parameter]
+    public int VerticalThreshold { get; set; }
 
     private ElementReference AnchoredRegion { get; set; }
 
@@ -43,7 +54,7 @@
     {
         if (firstRender)
         {
-            Module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/AzureAnchoredRegion.razor.js");
+            Module = await Js.InvokeAsync<IJSObjectReference>("import", "./Components/AzureAnchoredRegion.razor.js");
 
             await Module.InvokeVoidAsync("anchor", AnchoredRegion, Anchor, HorizontalDefaultPosition, HorizontalInset, HorizontalPositioningMode, HorizontalThreshold, VerticalDefaultPosition, VerticalInset, VerticalPositioningMode, VerticalThreshold);
         }

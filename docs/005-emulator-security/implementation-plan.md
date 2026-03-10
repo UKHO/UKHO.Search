@@ -1,0 +1,74 @@
+# Implementation Plan
+
+## Security Token Generation (FileShareEmulator)
+- [x] Work Item 1: Compute and emit lower-case `SecurityTokens` for indexed batches - Completed
+  - **Purpose**: Align the `FileShareEmulator`’s queued `AddItemRequest` messages with real batch security memberships (groups + users) and standard batch creation tokens, ensuring all tokens are normalised to lower case.
+  - **Acceptance Criteria**:
+    - For a given `BatchId`, the emitted `AddItemRequest.SecurityTokens` contains (all lower case):
+      - All `BatchReadGroup.GroupIdentifier` values for the batch.
+      - All `BatchReadUser.UserIdentifier` values for the batch.
+      - `batchcreate`.
+      - `batchcreate_{bu}` when an active business unit exists.
+    - Tokens are trimmed, empty values are ignored, and the final token list is de-duplicated.
+    - Token output is deterministic for the same database state (stable ordering).
+    - When there is no active business unit, a warning is logged and `batchcreate_{bu}` is omitted.
+  - **Definition of Done**:
+    - Code implemented in the emulator to compute tokens from SQL and attach them to `AddItemRequest`.
+    - Unit tests added for token normalisation + dedupe + ordering.
+    - Logging and error handling added for missing/inactive business unit.
+    - Documentation remains consistent with `docs/005-emulator-security/spec.md`.
+    - Can execute end-to-end via the emulator UI and observe tokens in the queue payload.
+  - [x] Task 1: Implement SQL-backed token retrieval for a batch - Completed
+    - [x] Step 1: Add a dedicated service/class responsible for token calculation for a given `BatchId`. - Completed
+      - Suggested name: `BatchSecurityTokenService` (or `BatchSecurityTokenProvider`).
+      - Keep it in the emulator project (no new projects).
+    - [x] Step 2: Add SQL queries: - Completed
+      - [x] Query group identifiers from `BatchReadGroup` filtered by `BatchId`. - Completed
+      - [x] Query user identifiers from `BatchReadUser` filtered by `BatchId`. - Completed
+      - [x] Query active business unit name by joining `Batch` → `BusinessUnit` and applying `BusinessUnit.IsActive = 1`. - Completed
+    - [x] Step 3: Build token list per spec: - Completed
+      - [x] Trim tokens, drop blanks, and normalise to lower case using invariant casing. - Completed
+      - [x] Add standard tokens `batchcreate` and (when applicable) `batchcreate_{bu}` (with `{bu}` lower cased). - Completed
+      - [x] De-duplicate using `StringComparer.Ordinal`. - Completed
+      - [x] Ensure deterministic ordering (e.g., standard tokens first, then sorted groups, then sorted users). - Completed
+    - [x] Step 4: Add logging: - Completed
+      - [x] Warning when the BU token can’t be produced due to missing/inactive BU. - Completed
+      - [x] Optional debug-level counts for group/user tokens. - Completed
+  - [x] Task 2: Wire token calculation into ingestion request creation - Completed
+    - [x] Step 1: Update `IndexService.CreateRequestAsync` to call the new token service and set `AddItemRequest.SecurityTokens` to the computed list. - Completed
+    - [x] Step 2: Ensure `IndexService` gets required dependencies via DI (e.g., the new service, `ILogger<IndexService>`). - Completed
+  - [x] Task 3: Add unit tests for token construction rules - Completed
+    - [x] Step 1: Add a testable, pure token normalisation/construction function (or keep the builder logic internal and expose via `internal` + `InternalsVisibleTo`). - Completed
+    - [x] Step 2: Add xUnit tests covering: - Completed
+      - [x] Lower-casing (groups, users, BU-derived tokens, standard tokens). - Completed
+      - [x] Trim + blank filtering. - Completed
+      - [x] De-duplication. - Completed
+      - [x] Deterministic ordering. - Completed
+      - [x] Missing BU behaviour (no `batchcreate_{bu}`, warning path testable via unit-level abstraction if practical). - Completed
+  - **Files**:
+    - `tools/FileShareEmulator/Services/IndexService.cs`: Replace hard-coded `SecurityTokens` with computed tokens.
+    - `tools/FileShareEmulator/Services/BatchSecurityTokenService.cs` (new): SQL queries + token construction.
+    - `tools/FileShareEmulator/Program.cs`: Register new service and logger dependencies if required.
+    - `test/UKHO.Search.Ingestion.Tests/BatchSecurityTokenServiceTests.cs` (new): Unit tests for token rules.
+    - `test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`: Add `ProjectReference` to `tools/FileShareEmulator/FileShareEmulator.csproj` if tests need to access emulator types.
+  - **Work Item Dependencies**: None.
+  - **Run / Verification Instructions**:
+    - Seed data (if not already present):
+      - Run `src/Hosts/AppHost/AppHost.csproj` with `runmode=import` for the target environment.
+    - Run services:
+      - Run `src/Hosts/AppHost/AppHost.csproj` with `runmode=services`.
+    - Open the `FileShareEmulator` UI (via Aspire dashboard → FileShareEmulator endpoint), navigate to `/indexing`, click `Index`/`Index All`.
+    - Inspect the `file-share-queue` message payload and confirm `securityTokens` are present and lower case.
+  - **User Instructions**:
+    - If `src/Hosts/AppHost/appsettings.json` is set to `runmode=import`, override to `runmode=services` when running the full system to validate indexing behaviour.
+
+  - **Completed Summary**:
+    - Implemented SQL-backed security token calculation via `BatchSecurityTokenService` and pure builder `BatchSecurityTokenBuilder`.
+    - Updated `IndexService` to emit computed tokens (lower case, deduped, deterministic ordering) instead of the hard-coded token.
+    - Added unit tests for normalisation/dedup/order rules and updated test project references.
+    - Build + `dotnet test` pass.
+
+## Notes / Key Considerations
+- Keep token generation deterministic to avoid noisy diffs and flaky tests.
+- Perform lower-casing after trimming and before de-duplication.
+- Prefer minimal, single-purpose SQL queries and reuse the existing `SqlConnection` lifecycle already present in the emulator.

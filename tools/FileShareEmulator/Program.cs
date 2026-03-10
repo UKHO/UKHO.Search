@@ -17,13 +17,16 @@ namespace FileShareEmulator
 
             // Add services to the container.
             builder.Services.AddRazorComponents()
-                .AddInteractiveServerComponents();
+                   .AddInteractiveServerComponents();
 
             builder.AddSqlServerClient(StorageNames.FileShareEmulatorDatabase);
             builder.AddAzureBlobServiceClient(ServiceNames.Blobs);
             builder.AddAzureQueueServiceClient(ServiceNames.Queues);
 
+            builder.AddElasticsearchClient(ServiceNames.ElasticSearch);
+
             builder.Services.AddScoped<StatisticsService>();
+            builder.Services.AddScoped<BatchSecurityTokenService>();
             builder.Services.AddScoped<IndexService>();
 
             builder.Services.AddRadzenComponents();
@@ -46,8 +49,7 @@ namespace FileShareEmulator
             }
 
             app.MapOpenApi();
-            app.MapScalarApiReference(_ => _.Servers =
-                []); // Stop OpenAPI specifying the wrong port in the generated OpenAPI doc
+            app.MapScalarApiReference(_ => _.Servers = []); // Stop OpenAPI specifying the wrong port in the generated OpenAPI doc
 
             app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
             app.UseHttpsRedirection();
@@ -56,7 +58,7 @@ namespace FileShareEmulator
 
             app.MapStaticAssets();
             app.MapRazorComponents<App>()
-                .AddInteractiveServerRenderMode();
+               .AddInteractiveServerRenderMode();
 
             app.Run();
         }

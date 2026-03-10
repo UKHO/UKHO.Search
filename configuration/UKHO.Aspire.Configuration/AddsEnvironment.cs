@@ -48,7 +48,9 @@
         public static AddsEnvironment Parse(string input)
         {
             if (TryParse(input, out var env))
+            {
                 return env ?? throw new InvalidOperationException($"Parsed AddsEnvironment cannot be null: '{input}'");
+            }
 
             throw new ArgumentException($"Invalid AddsEnvironment: '{input}'", nameof(input));
         }
@@ -57,9 +59,10 @@
         {
             var env = Environment.GetEnvironmentVariable(WellKnownConfigurationName.AddsEnvironmentName);
 
-            if (string.IsNullOrEmpty(env) || !TryParse(env, out _))
-                throw new InvalidOperationException(
-                    $"Environment variable '{WellKnownConfigurationName.AddsEnvironmentName}' is not set or invalid. Make sure the caller is registered using UKHO.ADDS.Aspire.Configuration.Hosting");
+            if (string.IsNullOrEmpty(env) || !TryParse(env, out var _))
+            {
+                throw new InvalidOperationException($"Environment variable '{WellKnownConfigurationName.AddsEnvironmentName}' is not set or invalid. Make sure the caller is registered using UKHO.ADDS.Aspire.Configuration.Hosting");
+            }
 
             return Parse(env);
         }

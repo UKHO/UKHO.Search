@@ -2,20 +2,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace UKHO.Aspire.Configuration.Emulator.Common
 {
-    public class ReadOnlyResult(string key) :
-        IResult,
-        IContentTypeHttpResult,
-        IStatusCodeHttpResult,
-        IValueHttpResult,
-        IValueHttpResult<ProblemDetails>
+    public class ReadOnlyResult(string key) : IResult, IContentTypeHttpResult, IStatusCodeHttpResult, IValueHttpResult, IValueHttpResult<ProblemDetails>
     {
         public string? ContentType => "application/problem+json";
 
         public async Task ExecuteAsync(HttpContext httpContext)
         {
-            if (StatusCode.HasValue) httpContext.Response.StatusCode = StatusCode.Value;
+            if (StatusCode.HasValue)
+            {
+                httpContext.Response.StatusCode = StatusCode.Value;
+            }
 
-            if (Value is not null) await httpContext.Response.WriteAsJsonAsync(Value, options: default, ContentType);
+            if (Value is not null)
+            {
+                await httpContext.Response.WriteAsJsonAsync(Value, options: default, ContentType);
+            }
         }
 
         public int? StatusCode => StatusCodes.Status409Conflict;

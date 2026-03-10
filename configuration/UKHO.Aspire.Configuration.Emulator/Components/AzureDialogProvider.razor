@@ -2,7 +2,7 @@
 @using UKHO.Aspire.Configuration.Emulator.Common
 @implements IDisposable
 @inject IDialogService DialogService
-@inject IJSRuntime JS
+@inject IJSRuntime Js
 
 @foreach (var reference in References)
 {
@@ -35,7 +35,7 @@
     {
         if (firstRender)
         {
-            Module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/AzureDialogProvider.razor.js");
+            Module = await Js.InvokeAsync<IJSObjectReference>("import", "./Components/AzureDialogProvider.razor.js");
         }
     }
 

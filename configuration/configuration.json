@@ -1,7 +1,31 @@
 {
     "local": {
         "ingestion": {
-            "indexname": "ukho-search"
+            "indexname": "ukho-search",
+            "laneCount": 8,
+            "channelCapacityPrePartition": 500,
+            "channelCapacityPerLane": 100,
+            "channelCapacityMicrobatchOut": 10,
+            "documentTypePlaceholder": "unknown",
+            "queueReceiveBatchSize": 16,
+            "filesharequeuename": "file-share-queue",
+            "queueVisibilityTimeoutSeconds": 300,
+            "queueVisibilityRenewalSeconds": 60,
+            "queuePollingIntervalMilliseconds": 1000,
+            "queueMaxDequeueCount": 5,
+            "poisonQueueSuffix": "-poison",
+            "microbatchMaxItems": 200,
+            "microbatchMaxDelayMilliseconds": 100,
+            "indexRetryMaxAttempts": 5,
+            "indexRetryBaseDelayMilliseconds": 200,
+            "indexRetryMaxDelayMilliseconds": 5000,
+            "indexRetryJitterMilliseconds": 250,
+            "enrichmentRetryMaxAttempts": 5,
+            "enrichmentRetryBaseDelayMilliseconds": 200,
+            "enrichmentRetryMaxDelayMilliseconds": 5000,
+            "enrichmentRetryJitterMilliseconds": 250,
+            "deadletterContainer": "ingestion-deadletter",
+            "deadletterBlobPrefix": "deadletter"
         },
         "query": {
             "indexname": "ukho-search"
@@ -9,7 +33,31 @@
     },
     "dev": {
         "ingestion": {
-            "indexname": "ukho-search"
+            "indexname": "ukho-search",
+            "laneCount": 8,
+            "channelCapacityPrePartition": 500,
+            "channelCapacityPerLane": 100,
+            "channelCapacityMicrobatchOut": 10,
+            "documentTypePlaceholder": "unknown",
+            "queueReceiveBatchSize": 16,
+            "filesharequeuename": "file-share-queue",
+            "queueVisibilityTimeoutSeconds": 300,
+            "queueVisibilityRenewalSeconds": 60,
+            "queuePollingIntervalMilliseconds": 1000,
+            "queueMaxDequeueCount": 5,
+            "poisonQueueSuffix": "-poison",
+            "microbatchMaxItems": 200,
+            "microbatchMaxDelayMilliseconds": 100,
+            "indexRetryMaxAttempts": 5,
+            "indexRetryBaseDelayMilliseconds": 200,
+            "indexRetryMaxDelayMilliseconds": 5000,
+            "indexRetryJitterMilliseconds": 250,
+            "enrichmentRetryMaxAttempts": 5,
+            "enrichmentRetryBaseDelayMilliseconds": 200,
+            "enrichmentRetryMaxDelayMilliseconds": 5000,
+            "enrichmentRetryJitterMilliseconds": 250,
+            "deadletterContainer": "ingestion-deadletter",
+            "deadletterBlobPrefix": "deadletter"
         },
         "query": {
             "indexname": "ukho-search"
@@ -17,7 +65,31 @@
     },
     "vni": {
         "ingestion": {
-            "indexname": "ukho-search"
+            "indexname": "ukho-search",
+            "laneCount": 8,
+            "channelCapacityPrePartition": 500,
+            "channelCapacityPerLane": 100,
+            "channelCapacityMicrobatchOut": 10,
+            "documentTypePlaceholder": "unknown",
+            "queueReceiveBatchSize": 16,
+            "filesharequeuename": "file-share-queue",
+            "queueVisibilityTimeoutSeconds": 300,
+            "queueVisibilityRenewalSeconds": 60,
+            "queuePollingIntervalMilliseconds": 1000,
+            "queueMaxDequeueCount": 5,
+            "poisonQueueSuffix": "-poison",
+            "microbatchMaxItems": 200,
+            "microbatchMaxDelayMilliseconds": 100,
+            "indexRetryMaxAttempts": 5,
+            "indexRetryBaseDelayMilliseconds": 200,
+            "indexRetryMaxDelayMilliseconds": 5000,
+            "indexRetryJitterMilliseconds": 250,
+            "enrichmentRetryMaxAttempts": 5,
+            "enrichmentRetryBaseDelayMilliseconds": 200,
+            "enrichmentRetryMaxDelayMilliseconds": 5000,
+            "enrichmentRetryJitterMilliseconds": 250,
+            "deadletterContainer": "ingestion-deadletter",
+            "deadletterBlobPrefix": "deadletter"
         },
         "query": {
             "indexname": "ukho-search"
@@ -25,7 +97,31 @@
     },
     "vne": {
         "ingestion": {
-            "indexname": "ukho-search"
+            "indexname": "ukho-search",
+            "laneCount": 8,
+            "channelCapacityPrePartition": 500,
+            "channelCapacityPerLane": 100,
+            "channelCapacityMicrobatchOut": 10,
+            "documentTypePlaceholder": "unknown",
+            "queueReceiveBatchSize": 16,
+            "filesharequeuename": "file-share-queue",
+            "queueVisibilityTimeoutSeconds": 300,
+            "queueVisibilityRenewalSeconds": 60,
+            "queuePollingIntervalMilliseconds": 1000,
+            "queueMaxDequeueCount": 5,
+            "poisonQueueSuffix": "-poison",
+            "microbatchMaxItems": 200,
+            "microbatchMaxDelayMilliseconds": 100,
+            "indexRetryMaxAttempts": 5,
+            "indexRetryBaseDelayMilliseconds": 200,
+            "indexRetryMaxDelayMilliseconds": 5000,
+            "indexRetryJitterMilliseconds": 250,
+            "enrichmentRetryMaxAttempts": 5,
+            "enrichmentRetryBaseDelayMilliseconds": 200,
+            "enrichmentRetryMaxDelayMilliseconds": 5000,
+            "enrichmentRetryJitterMilliseconds": 250,
+            "deadletterContainer": "ingestion-deadletter",
+            "deadletterBlobPrefix": "deadletter"
         },
         "query": {
             "indexname": "ukho-search"
@@ -33,7 +129,31 @@
     },
     "iat": {
         "ingestion": {
-            "indexname": "ukho-search"
+            "indexname": "ukho-search",
+            "laneCount": 8,
+            "channelCapacityPrePartition": 500,
+            "channelCapacityPerLane": 100,
+            "channelCapacityMicrobatchOut": 10,
+            "documentTypePlaceholder": "unknown",
+            "queueReceiveBatchSize": 16,
+            "filesharequeuename": "file-share-queue",
+            "queueVisibilityTimeoutSeconds": 300,
+            "queueVisibilityRenewalSeconds": 60,
+            "queuePollingIntervalMilliseconds": 1000,
+            "queueMaxDequeueCount": 5,
+            "poisonQueueSuffix": "-poison",
+            "microbatchMaxItems": 200,
+            "microbatchMaxDelayMilliseconds": 100,
+            "indexRetryMaxAttempts": 5,
+            "indexRetryBaseDelayMilliseconds": 200,
+            "indexRetryMaxDelayMilliseconds": 5000,
+            "indexRetryJitterMilliseconds": 250,
+            "enrichmentRetryMaxAttempts": 5,
+            "enrichmentRetryBaseDelayMilliseconds": 200,
+            "enrichmentRetryMaxDelayMilliseconds": 5000,
+            "enrichmentRetryJitterMilliseconds": 250,
+            "deadletterContainer": "ingestion-deadletter",
+            "deadletterBlobPrefix": "deadletter"
         },
         "query": {
             "indexname": "ukho-search"
@@ -41,7 +161,31 @@
     },
     "prp": {
         "ingestion": {
-            "indexname": "ukho-search"
+            "indexname": "ukho-search",
+            "laneCount": 8,
+            "channelCapacityPrePartition": 500,
+            "channelCapacityPerLane": 100,
+            "channelCapacityMicrobatchOut": 10,
+            "documentTypePlaceholder": "unknown",
+            "queueReceiveBatchSize": 16,
+            "filesharequeuename": "file-share-queue",
+            "queueVisibilityTimeoutSeconds": 300,
+            "queueVisibilityRenewalSeconds": 60,
+            "queuePollingIntervalMilliseconds": 1000,
+            "queueMaxDequeueCount": 5,
+            "poisonQueueSuffix": "-poison",
+            "microbatchMaxItems": 200,
+            "microbatchMaxDelayMilliseconds": 100,
+            "indexRetryMaxAttempts": 5,
+            "indexRetryBaseDelayMilliseconds": 200,
+            "indexRetryMaxDelayMilliseconds": 5000,
+            "indexRetryJitterMilliseconds": 250,
+            "enrichmentRetryMaxAttempts": 5,
+            "enrichmentRetryBaseDelayMilliseconds": 200,
+            "enrichmentRetryMaxDelayMilliseconds": 5000,
+            "enrichmentRetryJitterMilliseconds": 250,
+            "deadletterContainer": "ingestion-deadletter",
+            "deadletterBlobPrefix": "deadletter"
         },
         "query": {
             "indexname": "ukho-search"
@@ -49,7 +193,31 @@
     },
     "live": {
         "ingestion": {
-            "indexname": "ukho-search"
+            "indexname": "ukho-search",
+            "laneCount": 8,
+            "channelCapacityPrePartition": 500,
+            "channelCapacityPerLane": 100,
+            "channelCapacityMicrobatchOut": 10,
+            "documentTypePlaceholder": "unknown",
+            "queueReceiveBatchSize": 16,
+            "filesharequeuename": "file-share-queue",
+            "queueVisibilityTimeoutSeconds": 300,
+            "queueVisibilityRenewalSeconds": 60,
+            "queuePollingIntervalMilliseconds": 1000,
+            "queueMaxDequeueCount": 5,
+            "poisonQueueSuffix": "-poison",
+            "microbatchMaxItems": 200,
+            "microbatchMaxDelayMilliseconds": 100,
+            "indexRetryMaxAttempts": 5,
+            "indexRetryBaseDelayMilliseconds": 200,
+            "indexRetryMaxDelayMilliseconds": 5000,
+            "indexRetryJitterMilliseconds": 250,
+            "enrichmentRetryMaxAttempts": 5,
+            "enrichmentRetryBaseDelayMilliseconds": 200,
+            "enrichmentRetryMaxDelayMilliseconds": 5000,
+            "enrichmentRetryJitterMilliseconds": 250,
+            "deadletterContainer": "ingestion-deadletter",
+            "deadletterBlobPrefix": "deadletter"
         },
         "query": {
             "indexname": "ukho-search"

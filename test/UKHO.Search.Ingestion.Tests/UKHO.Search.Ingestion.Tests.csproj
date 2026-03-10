@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="coverlet.collector" Version="6.0.4">
@@ -25,7 +25,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\src\UKHO.Search.Ingestion\UKHO.Search.Ingestion.csproj" />
+		<ProjectReference Include="..\..\src\UKHO.Search.Ingestion\UKHO.Search.Ingestion.csproj" />
+		<ProjectReference
+			Include="..\..\src\UKHO.Search.Infrastructure.Ingestion\UKHO.Search.Infrastructure.Ingestion.csproj" />
+		<ProjectReference Include="..\..\tools\FileShareEmulator\FileShareEmulator.csproj" />
 	</ItemGroup>
 
 </Project>

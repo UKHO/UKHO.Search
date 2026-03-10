@@ -4,8 +4,8 @@ namespace UKHO.Search.Services.Ingestion.Providers
 {
     public interface IIngestionProviderService
     {
-        IEnumerable<IIngestionDataProvider> GetAllProviders();
+        IEnumerable<IIngestionDataProviderFactory> GetAllProviders();
 
-        IIngestionDataProvider GetProvider(string name);
+        IIngestionDataProviderFactory GetProvider(string name);
     }
 }

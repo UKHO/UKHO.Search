@@ -12,9 +12,15 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
         public SelectJsonTypeInfoModifier(IEnumerable<string>? names = null)
         {
             if (names is not null)
+            {
                 foreach (var name in names)
+                {
                     if (!string.IsNullOrEmpty(name))
+                    {
                         Names.Add(name);
+                    }
+                }
+            }
         }
 
         private ICollection<string> Names { get; } = [];
@@ -22,10 +28,19 @@ namespace UKHO.Aspire.Configuration.Emulator.Common
         public void Modify(JsonTypeInfo type)
         {
             if (type.Kind == JsonTypeInfoKind.Object)
+            {
                 if (Names.Count > 0)
+                {
                     for (var i = type.Properties.Count - 1; i >= 0; i--)
-                        if (!Names.Append("items").Contains(type.Properties[i].Name))
+                    {
+                        if (!Names.Append("items")
+                                  .Contains(type.Properties[i].Name))
+                        {
                             type.Properties.RemoveAt(i);
+                        }
+                    }
+                }
+            }
         }
     }
 }

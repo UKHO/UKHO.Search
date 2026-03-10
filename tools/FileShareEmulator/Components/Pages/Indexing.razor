@@ -1,7 +1,9 @@
 @page "/indexing"
+@using Elastic.Clients.Elasticsearch
 @using FileShareEmulator.Services
 @inject StatisticsService StatisticsService
 @inject IndexService IndexService
+@inject ElasticsearchClient ElasticsearchClient
 
 <PageTitle>Indexing</PageTitle>
 
@@ -21,17 +23,24 @@
     }
 
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" Gap="1rem" Style="margin-top: 1rem; flex-wrap: wrap;">
-        <RadzenButton Text="Index All" ButtonStyle="ButtonStyle.Primary" Disabled="@_isIndexing" Click="@IndexAllAsync"/>
+        <RadzenButton Text="Index All" ButtonStyle="ButtonStyle.Primary" Disabled="@(_isIndexing || _isDeletingIndexes)" Click="@IndexAllAsync"/>
 
         <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem">
             <RadzenLabel Text="Count" Component="indexCount"/>
             <RadzenNumeric id="indexCount" TValue="int" Style="width: 8rem" Min="1" Value="@(_count ?? 0)" Change="@(args => SetCount(args))"/>
         </RadzenStack>
 
-        <RadzenButton Text="Index" ButtonStyle="ButtonStyle.Secondary" Disabled="@(!_canIndex || _isIndexing)" Click="@IndexNextAsync"/>
+        <RadzenButton Text="Index" ButtonStyle="ButtonStyle.Secondary" Disabled="@(!_canIndex || _isIndexing || _isDeletingIndexes)" Click="@IndexNextAsync"/>
 
-        <RadzenButton Text="Reset All" ButtonStyle="ButtonStyle.Light" Disabled="@_isIndexing" Click="@ResetAllAsync"/>
+        <RadzenButton Text="Reset All" ButtonStyle="ButtonStyle.Light" Disabled="@(_isIndexing || _isDeletingIndexes)" Click="@ResetAllAsync"/>
+
+        <RadzenButton Text="Delete Indexes" ButtonStyle="ButtonStyle.Danger" Disabled="@(_isIndexing || _isDeletingIndexes)" Click="@DeleteIndexesAsync"/>
     </RadzenStack>
+
+    @if (_deleteIndexesMessage is not null)
+    {
+        <RadzenText TextStyle="TextStyle.Body1" Style="@($"margin-top: 1rem; white-space: pre-wrap; color: {(_deleteIndexesFailed ? "var(--rz-danger)" : "var(--rz-success)")}")">@_deleteIndexesMessage</RadzenText>
+    }
 </RadzenCard>
 
 @code
@@ -43,10 +52,15 @@
     private bool _canIndex;
     private bool _isIndexing;
 
+    private bool _isDeletingIndexes;
+    private bool _deleteIndexesFailed;
+    private string? _deleteIndexesMessage;
+
     protected override async Task OnInitializedAsync()
     {
         ValidateCount();
-        _status = await StatisticsService.GetIndexingStatusAsync().ConfigureAwait(false);
+        _status = await StatisticsService.GetIndexingStatusAsync()
+                                         .ConfigureAwait(false);
 
         _timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
         _ = PollAsync();
@@ -58,14 +72,86 @@
 
         try
         {
-            while (await _timer.WaitForNextTickAsync().ConfigureAwait(false))
+            while (await _timer.WaitForNextTickAsync()
+                               .ConfigureAwait(false))
             {
-                _status = await StatisticsService.GetIndexingStatusAsync().ConfigureAwait(false);
+                _status = await StatisticsService.GetIndexingStatusAsync()
+                                                 .ConfigureAwait(false);
                 await InvokeAsync(StateHasChanged);
             }
         }
+
         catch (OperationCanceledException)
         {
+        }
+    }
+
+    private async Task DeleteIndexesAsync()
+    {
+        if (_isIndexing || _isDeletingIndexes) return;
+
+        _isDeletingIndexes = true;
+        _deleteIndexesFailed = false;
+        _deleteIndexesMessage = null;
+
+        try
+        {
+            var getResponse = await ElasticsearchClient.Indices.GetAsync("*", CancellationToken.None)
+                                                       .ConfigureAwait(false);
+
+            if (!getResponse.IsValidResponse)
+            {
+                _deleteIndexesFailed = true;
+                _deleteIndexesMessage = "Failed to query Elasticsearch for indexes.";
+                return;
+            }
+
+            var indexNames = getResponse.Indices.Keys.Select(k => k.ToString())
+                                        .Where(i => !string.IsNullOrWhiteSpace(i))
+                                        .Distinct(StringComparer.Ordinal)
+                                        .ToArray();
+
+            if (indexNames.Length == 0)
+            {
+                _deleteIndexesMessage = "No indexes found.";
+                return;
+            }
+
+            var deleted = 0;
+            var failed = new List<string>();
+
+            foreach (var indexName in indexNames)
+            {
+                var deleteResponse = await ElasticsearchClient.Indices.DeleteAsync(indexName, CancellationToken.None)
+                                                              .ConfigureAwait(false);
+
+                if (deleteResponse.IsValidResponse)
+                {
+                    deleted++;
+                }
+                else
+                {
+                    failed.Add(indexName);
+                }
+            }
+
+            if (failed.Count > 0)
+            {
+                _deleteIndexesFailed = true;
+                _deleteIndexesMessage = $"Deleted {deleted:N0} index(es). Failed to delete {failed.Count:N0}: {string.Join(", ", failed)}";
+                return;
+            }
+
+            _deleteIndexesMessage = $"Deleted {deleted:N0} index(es).";
+        }
+        catch (Exception ex)
+        {
+            _deleteIndexesFailed = true;
+            _deleteIndexesMessage = $"Failed to delete indexes: {ex.Message}";
+        }
+        finally
+        {
+            _isDeletingIndexes = false;
         }
     }
 
@@ -93,7 +179,8 @@
         _isIndexing = true;
         try
         {
-            _ = await IndexService.IndexAllPendingAsync().ConfigureAwait(false);
+            _ = await IndexService.IndexAllPendingAsync()
+                                  .ConfigureAwait(false);
         }
         finally
         {
@@ -108,7 +195,8 @@
         _isIndexing = true;
         try
         {
-            _ = await IndexService.IndexNextPendingAsync(_count.Value).ConfigureAwait(false);
+            _ = await IndexService.IndexNextPendingAsync(_count.Value)
+                                  .ConfigureAwait(false);
         }
         finally
         {
@@ -123,7 +211,8 @@
         _isIndexing = true;
         try
         {
-            _ = await IndexService.ResetAllToPendingAsync().ConfigureAwait(false);
+            _ = await IndexService.ResetAllToPendingAsync()
+                                  .ConfigureAwait(false);
         }
         finally
         {

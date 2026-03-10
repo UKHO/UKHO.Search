@@ -1,0 +1,171 @@
+# Implementation Plan
+
+Work Package: `docs/010-ingestion-uplift/`
+
+Spec: `docs/010-ingestion-uplift/spec-ingestion-request-file-metadata_v0.01.md`
+
+## Ingestion request contract uplift (Timestamp + Files)
+- [x] Work Item 1: Add request model types + JSON contract (tests-first) - Completed
+  - **Purpose**: Introduce `Timestamp` and `Files` as mandatory fields on `AddItemRequest`/`UpdateItemRequest` and add the new `IngestionFile`/`IngestionFileList` model types, with strict JSON validation and serializer compatibility.
+  - **Acceptance Criteria**:
+    - `AddItemRequest` and `UpdateItemRequest` support `Timestamp: DateTimeOffset` and `Files: IngestionFileList`.
+    - Deserialization rejects missing/null `Timestamp` and missing/null `Files`.
+    - `IngestionFile` validates required fields and rejects invalid values (`Filename`/`MimeType` empty, `Size < 0`, missing fields).
+    - `IngestionFileList` serializes/deserializes as a plain JSON array when used as the `Files` value.
+    - Unit tests cover round-trip serialization and rejection cases.
+  - **Definition of Done**:
+    - Code implemented with existing conventions (Allman braces, block-scoped namespaces, one public type per file)
+    - Tests added/updated and passing
+    - No breaking changes to unrelated ingestion request types
+    - Can execute end-to-end via: `dotnet test test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`
+  - [x] Task 1.1: Introduce new model type `IngestionFile` - Completed
+    - [x] Step 1: Create `src/UKHO.Search.Ingestion/Requests/IngestionFile.cs`.
+    - [x] Step 2: Implement `Filename`, `Size`, `Timestamp`, `MimeType` with `[JsonPropertyName]` matching the spec (`Filename`, `Size`, `Timestamp`, `MimeType`).
+    - [x] Step 3: Add validation that rejects:
+      - `Filename` non-empty/non-whitespace
+      - `MimeType` non-empty/non-whitespace
+      - `Size >= 0`
+      - `Timestamp` required
+    - [x] Step 4: Ensure the type is `System.Text.Json` serializable with existing `IngestionJsonSerializerOptions`.
+  - [x] Task 1.2: Introduce new collection type `IngestionFileList` - Completed
+    - [x] Step 1: Create `src/UKHO.Search.Ingestion/Requests/IngestionFileList.cs`.
+    - [x] Step 2: Implement as a concrete collection that:
+      - Implements `IEnumerable<IngestionFile>`
+      - Serializes/deserializes as a JSON array (recommended approach: derive from `List<IngestionFile>` so STJ treats it as an array payload).
+    - [x] Step 3: Ensure null handling is producer/consumer enforced at the request level (i.e., request must reject null/missing `Files`).
+  - [x] Task 1.3: Extend `AddItemRequest` + `UpdateItemRequest` with `Timestamp` + `Files` - Completed
+    - [x] Step 1: Update `src/UKHO.Search.Ingestion/Requests/AddItemRequest.cs`:
+      - Add `Timestamp` (`DateTimeOffset`) and `Files` (`IngestionFileList`) properties.
+      - Enforce mandatory `Timestamp`/`Files` during deserialization using `[JsonRequired]` and `IJsonOnDeserialized` validation.
+      - Keep existing validations for `Id`, `Properties`, and `SecurityTokens`.
+    - [x] Step 2: Update `src/UKHO.Search.Ingestion/Requests/UpdateItemRequest.cs` with the same contract/validation.
+    - [x] Step 3: Update any call sites that construct these requests (compile-time fixes applied across tests and synthetic pipeline builder).
+  - [x] Task 1.4: Add/extend unit tests for the new JSON contract - Completed
+    - [x] Step 1: Update `test/UKHO.Search.Ingestion.Tests/IngestionModelJsonTests.cs`:
+      - Update `IngestionRequestEnvelope_RoundTrips_UpdateItem` to include `Timestamp` and `Files`.
+      - Update `RoundTrip_AllSupportedTypes_Succeeds` to include `Timestamp` and `Files` on the `AddItemRequest` instance.
+      - Update `AddItemRequest_Rejects_EmptySecurityTokens` / `UpdateItemRequest_Rejects_EmptySecurityTokens` JSON payloads to include valid `Timestamp` + `Files` so the tests continue to target the intended validation.
+    - [x] Step 2: Add new tests (either in `IngestionModelJsonTests.cs` or a new test file) to assert mandatory-but-empty list behaviour:
+      - `Files` present but empty array should deserialize successfully.
+      - Missing `Files` should throw `JsonException`.
+      - Explicit `"Files":null` should throw `JsonException`.
+    - [x] Step 3: Add `IngestionFile` / `IngestionFileList` tests:
+      - `IngestionFile` round-trip serialization.
+      - Reject missing `Filename`, `MimeType`, `Timestamp`, or negative `Size`.
+  - **Completed Summary**:
+    - Added `src/UKHO.Search.Ingestion/Requests/IngestionFile.cs` and `src/UKHO.Search.Ingestion/Requests/IngestionFileList.cs`.
+    - Extended `AddItemRequest`/`UpdateItemRequest` with `Timestamp` and `Files`, enforced mandatory fields via `[JsonRequired]` + `IJsonOnDeserialized` validation.
+    - Updated canonical ingestion request snapshot (`src/UKHO.Search.Ingestion.Providers.FileShare/Pipeline/Documents/CanonicalDocumentBuilder.cs`) to include `Timestamp` and `Files` so snapshots remain deserializable.
+    - Updated and expanded tests in `test/UKHO.Search.Ingestion.Tests/IngestionModelJsonTests.cs` and fixed affected test call sites.
+    - Verified via: `dotnet test test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`.
+  - **Files**:
+    - `src/UKHO.Search.Ingestion/Requests/IngestionFile.cs`: new type per spec.
+    - `src/UKHO.Search.Ingestion/Requests/IngestionFileList.cs`: new type per spec.
+    - `src/UKHO.Search.Ingestion/Requests/AddItemRequest.cs`: add `Timestamp` and `Files` + validation.
+    - `src/UKHO.Search.Ingestion/Requests/UpdateItemRequest.cs`: add `Timestamp` and `Files` + validation.
+    - `test/UKHO.Search.Ingestion.Tests/IngestionModelJsonTests.cs`: update/add tests.
+  - **Work Item Dependencies**: None.
+  - **Run / Verification Instructions**:
+    - `dotnet test test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`
+  - **User Instructions**: None.
+
+- [x] Work Item 2: Populate `Timestamp` + `Files` in FileShareEmulator add-message producer - Completed
+  - **Purpose**: Ensure the FileShareEmulator enriches the outgoing `AddItemRequest` with the batch timestamp and the batch file metadata from SQL before enqueuing.
+  - **Acceptance Criteria**:
+    - When indexing pending batches, the emulator serializes `IngestionRequest(AddItem)` including:
+      - `AddItem.Timestamp` sourced from `[Batch].[CreatedOn]`.
+      - `AddItem.Files` sourced from `[File]` rows filtered by `BatchId`.
+    - If unexpected null/invalid DB values are encountered for required file fields, request creation fails (no partial/invalid message written).
+    - Emulator uses the same serializer options as ingestion (`IngestionJsonSerializerOptions.Create()`), ensuring consistent contract.
+  - **Definition of Done**:
+    - Code implemented with existing conventions
+    - Existing tests still pass
+    - Manual run can enqueue a message that includes `Timestamp` and `Files`
+    - Can execute end-to-end via: emulator run + queue message inspection
+  - [x] Task 2.1: Use ingestion serializer options for message emission - Completed
+    - [x] Step 1: Update `tools/FileShareEmulator/Services/IndexService.cs` to use `UKHO.Search.Ingestion.Requests.Serialization.IngestionJsonSerializerOptions.Create()` instead of `new JsonSerializerOptions(JsonSerializerDefaults.Web)`.
+    - [x] Step 2: Confirm the emitted JSON continues to omit nulls as before (options already set `DefaultIgnoreCondition = WhenWritingNull`).
+    - Summary: FileShareEmulator now serializes queue messages using `IngestionJsonSerializerOptions.Create()` for contract alignment.
+  - [x] Task 2.2: Read and map batch timestamp (`[Batch].[CreatedOn]`) - Completed
+    - [x] Step 1: Add a query helper (e.g., `GetBatchCreatedOnAsync`) selecting `[CreatedOn]` from `[Batch]` for the current `batchId`.
+    - [x] Step 2: If the row is missing or the value is null/unreadable, throw (fail request build).
+    - [x] Step 3: Set `AddItemRequest.Timestamp` to the DB value as-is (`DateTimeOffset`, no normalization).
+    - Summary: `IndexService` now reads `[Batch].[CreatedOn]` and populates `AddItemRequest.Timestamp` during request creation.
+  - [x] Task 2.3: Read and map file metadata rows (`[File]`) - Completed
+    - [x] Step 1: Add a query helper (e.g., `GetBatchFilesAsync`) selecting `FileName`, `FileByteSize`, `CreatedOn`, `MIMEType` from `[File]` where `BatchId = @batchId`.
+    - [x] Step 2: Map each row to `IngestionFile`:
+      - `Filename` <- `FileName`
+      - `Size` <- `FileByteSize`
+      - `Timestamp` <- `CreatedOn`
+      - `MimeType` <- `MIMEType`
+    - [x] Step 3: Enforce producer-side assumptions:
+      - If any required column is null/invalid, throw (fail request build).
+      - Allow zero rows (produce an empty `Files` list).
+    - [x] Step 4: Set `AddItemRequest.Files` to the populated `IngestionFileList`.
+    - Summary: `IndexService` now reads `[File]` rows for the batch and maps them to `IngestionFile` entries.
+  - [x] Task 2.4: Wire into request creation - Completed
+    - [x] Step 1: Update `CreateRequestAsync` to fetch:
+      - Attributes (existing)
+      - Security tokens (existing)
+      - Batch created timestamp (new)
+      - Batch file metadata (new)
+    - [x] Step 2: Populate `AddItemRequest.Timestamp` and `AddItemRequest.Files`.
+    - [x] Step 3: Update logging (debug level) to include counts (e.g., file count) without logging sensitive file content.
+    - Summary: `CreateRequestAsync` now populates `Timestamp` and `Files` from SQL and logs file/token counts.
+  - **Files**:
+    - `tools/FileShareEmulator/Services/IndexService.cs`: DB reads + mapping + serializer options.
+  - **Work Item Dependencies**:
+    - Depends on Work Item 1 (new model types + request contract).
+  - **Run / Verification Instructions**:
+    - Start the emulator (example): `dotnet run --project tools/FileShareEmulator/FileShareEmulator.csproj`
+    - Trigger indexing (via emulator endpoint/CLI already present) and confirm a queue message is emitted containing `Timestamp` and `Files`.
+  - **User Instructions**:
+    - Ensure the emulator SQL database has batches and file rows for the chosen `BatchId`.
+
+  - **Completed Summary**:
+    - Updated `tools/FileShareEmulator/Services/IndexService.cs` to serialize with `IngestionJsonSerializerOptions.Create()`.
+    - Added SQL lookups for `[Batch].[CreatedOn]` and `[File]` rows, mapping them to `AddItemRequest.Timestamp` and `AddItemRequest.Files`.
+    - Added fail-fast validation for unexpected null/invalid DB values (no partial messages).
+    - Verified via: `dotnet build tools/FileShareEmulator/FileShareEmulator.csproj -c Release` and `dotnet test test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj -c Release`.
+
+- [x] Work Item 3: Contract regression coverage + documentation alignment - Completed
+  - **Purpose**: Lock in the new contract shape so future work packages (downstream consumers) can rely on `Timestamp` and `Files` being present.
+  - **Acceptance Criteria**:
+    - Unit tests cover:
+      - Empty `Files` list accepted
+      - Missing/null `Files` rejected
+      - Missing `Timestamp` rejected
+      - Missing file fields rejected
+    - The work package documentation explicitly references the new JSON shape and where it’s produced.
+  - **Definition of Done**:
+    - `dotnet test` green
+    - Documentation updated in `docs/010-ingestion-uplift/`
+    - Can demonstrate end-to-end message emission from the emulator
+  - [x] Task 3.1: Add explicit request JSON-shape tests (golden JSON) - Completed
+    - [x] Step 1: Add tests that deserialize a representative JSON payload (including `Timestamp` + `Files`) and verify object values.
+    - [x] Step 2: Add tests that ensure `IngestionFileList` is represented as `[...]` not `{...}`.
+    - Summary: Added golden JSON deserialize/serialize assertions for `IngestionRequest(AddItem)` in `test/UKHO.Search.Ingestion.Tests/IngestionModelJsonTests.cs`.
+  - [x] Task 3.2: Update work package docs - Completed
+    - [x] Step 1: Add a short “Produced message shape” section to the work package (either in this plan’s companion architecture doc or the spec overview), including an example JSON snippet (kept stable and versionable).
+    - Summary: Added a “Produced message shape (AddItem)” section (with JSON example) to `docs/010-ingestion-uplift/architecture-ingestion-request-file-metadata_v0.01.md`.
+  - **Files**:
+    - `test/UKHO.Search.Ingestion.Tests/IngestionModelJsonTests.cs` (and/or a new focused test file under `test/UKHO.Search.Ingestion.Tests/`).
+    - `docs/010-ingestion-uplift/architecture-ingestion-request-file-metadata_v0.01.md`
+  - **Work Item Dependencies**:
+    - Depends on Work Item 1 and 2.
+  - **Run / Verification Instructions**:
+    - `dotnet test`
+    - Emulator run + queue message inspection
+  - **User Instructions**: None.
+
+  - **Completed Summary**:
+    - Added golden JSON tests to lock in the `IngestionRequest(AddItem)` JSON envelope shape, including mandatory `Timestamp` and `Files`.
+    - Added serialization assertions ensuring `Files` is emitted as a JSON array within the envelope.
+    - Updated `docs/010-ingestion-uplift/architecture-ingestion-request-file-metadata_v0.01.md` with an explicit “Produced message shape (AddItem)” section and JSON example.
+    - Verified via: `dotnet test test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj -c Release`.
+
+## Summary / key considerations
+- The JSON contract change is enforced via `[JsonConstructor]` validation so missing/invalid `Timestamp`/`Files` fail deserialization with `JsonException` (consistent with existing ingestion request behaviour).
+- `IngestionFileList` should be implemented to serialize as a JSON array without introducing custom converters (prefer deriving from `List<IngestionFile>`).
+- The FileShareEmulator will be updated to source values from SQL authoritative columns (`[Batch].[CreatedOn]`, `[File]` rows) and to fail-fast if required DB values are missing.
+- Keep the request envelope stable; only `AddItemRequest`/`UpdateItemRequest` payloads are extended.
