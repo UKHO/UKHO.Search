@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Xml.Linq;
 using Kreuzberg;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -38,10 +39,10 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
             }
 
             var allowedExtensions = GetAllowedExtensions();
-            if (allowedExtensions.Count == 0)
+            var fileContentExtractionEnabled = allowedExtensions.Count > 0;
+            if (!fileContentExtractionEnabled)
             {
                 _logger.LogWarning("File content extraction disabled because configuration key '{ConfigKey}' is missing or empty. BatchId={BatchId}", "ingestion:fileContentExtractionAllowedExtensions", batchId);
-                return;
             }
 
             var workingDirectory = CreateWorkingDirectory(batchId);
@@ -61,11 +62,40 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
                     throw;
                 }
 
-                await ExtractAndEnrichAsync(batchId, extractDirectory, allowedExtensions, document, cancellationToken).ConfigureAwait(false);
+                await TryLoadCatalogXmlAsync(batchId, extractDirectory, cancellationToken).ConfigureAwait(false);
+
+                if (fileContentExtractionEnabled)
+                {
+                    await ExtractAndEnrichAsync(batchId, extractDirectory, allowedExtensions, document, cancellationToken).ConfigureAwait(false);
+                }
             }
             finally
             {
                 TryDeleteDirectory(workingDirectory);
+            }
+        }
+
+        private async Task TryLoadCatalogXmlAsync(string batchId, string extractDirectory, CancellationToken cancellationToken)
+        {
+            var catalogPath = Directory.EnumerateFiles(extractDirectory, "catalog.xml", SearchOption.AllDirectories)
+                                       .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+                                       .FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(catalogPath))
+            {
+                return;
+            }
+
+            try
+            {
+                await using var stream = File.OpenRead(catalogPath);
+                var catalogXml = await XDocument.LoadAsync(stream, LoadOptions.None, cancellationToken).ConfigureAwait(false);
+                _ = catalogXml;
+                return;
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogWarning(ex, "Failed to load catalog.xml. BatchId={BatchId} FilePath={FilePath}", batchId, catalogPath);
             }
         }
 
