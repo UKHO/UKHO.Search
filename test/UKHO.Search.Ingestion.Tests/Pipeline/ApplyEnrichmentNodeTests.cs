@@ -47,7 +47,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
 
             var add = new AddItemRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList());
             var request = new IngestionRequest(IngestionRequestType.AddItem, add, null, null, null);
-            var doc = CanonicalDocument.CreateMinimal("doc-1", "unknown");
+            var doc = CanonicalDocument.CreateMinimal("doc-1", request);
 
             var ctx = new IngestionPipelineContext
             {
@@ -120,7 +120,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             await node.StartAsync(CancellationToken.None);
 
             var request = new IngestionRequest(IngestionRequestType.AddItem, new AddItemRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList()), null, null, null);
-            var doc = CanonicalDocument.CreateMinimal("doc-1", "unknown");
+            var doc = CanonicalDocument.CreateMinimal("doc-1", request);
 
             await input.Writer.WriteAsync(new Envelope<IngestionPipelineContext>("doc-1", new IngestionPipelineContext
             {
@@ -135,10 +135,8 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
                   .ShouldBeTrue();
 
             var upsert = outEnvelope.Payload.ShouldBeOfType<UpsertOperation>();
-            upsert.Document.Source["enrichment_requestType"]!.GetValue<string>()
-                  .ShouldBe("AddItem");
-            upsert.Document.Source["enrichment_documentId"]!.GetValue<string>()
-                  .ShouldBe("doc-1");
+            upsert.Document.DocumentType.ShouldBe("AddItem");
+            upsert.Document.Facets["enrichment_documentid"].ShouldBe(new[] { "doc-1" });
         }
 
         [Fact]
@@ -216,7 +214,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             await node.StartAsync(CancellationToken.None);
 
             var request = new IngestionRequest(IngestionRequestType.AddItem, new AddItemRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList()), null, null, null);
-            var doc = CanonicalDocument.CreateMinimal("doc-1", "unknown");
+            var doc = CanonicalDocument.CreateMinimal("doc-1", request);
 
             await input.Writer.WriteAsync(new Envelope<IngestionPipelineContext>("doc-1", new IngestionPipelineContext
             {
@@ -252,7 +250,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             await node.StartAsync(CancellationToken.None);
 
             var request = new IngestionRequest(IngestionRequestType.AddItem, new AddItemRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList()), null, null, null);
-            var doc = CanonicalDocument.CreateMinimal("doc-1", "unknown");
+            var doc = CanonicalDocument.CreateMinimal("doc-1", request);
 
             await input.Writer.WriteAsync(new Envelope<IngestionPipelineContext>("doc-1", new IngestionPipelineContext
             {
@@ -297,7 +295,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             await node.StartAsync(CancellationToken.None);
 
             var request = new IngestionRequest(IngestionRequestType.AddItem, new AddItemRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList()), null, null, null);
-            var doc = CanonicalDocument.CreateMinimal("doc-1", "unknown");
+            var doc = CanonicalDocument.CreateMinimal("doc-1", request);
 
             await input.Writer.WriteAsync(new Envelope<IngestionPipelineContext>("doc-1", new IngestionPipelineContext
             {
@@ -337,7 +335,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             await node.StartAsync(CancellationToken.None);
 
             var request = new IngestionRequest(IngestionRequestType.AddItem, new AddItemRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList()), null, null, null);
-            var doc = CanonicalDocument.CreateMinimal("doc-1", "unknown");
+            var doc = CanonicalDocument.CreateMinimal("doc-1", request);
 
             await input.Writer.WriteAsync(new Envelope<IngestionPipelineContext>("doc-1", new IngestionPipelineContext
             {

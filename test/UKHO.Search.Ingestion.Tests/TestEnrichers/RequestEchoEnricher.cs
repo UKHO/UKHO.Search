@@ -12,8 +12,8 @@ namespace UKHO.Search.Ingestion.Tests.TestEnrichers
             ArgumentNullException.ThrowIfNull(request);
             ArgumentNullException.ThrowIfNull(document);
 
-            document.Source["enrichment_requestType"] = request.RequestType.ToString();
-            document.Source["enrichment_documentId"] = document.DocumentId;
+            document.DocumentType = request.RequestType.ToString();
+            document.AddFacetValue("enrichment_documentId", document.DocumentId);
 
             return Task.CompletedTask;
         }

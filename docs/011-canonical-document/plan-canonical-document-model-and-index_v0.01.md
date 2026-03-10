@@ -5,7 +5,7 @@ Work Package: `docs/011-canonical-document/`
 Spec: `docs/011-canonical-document/spec-canonical-document-model-and-index_v0.01.md`
 
 ## Canonical document model + mapping uplift
-- [ ] Work Item 1: Update `CanonicalDocument` shape + provider builder (compile-safe)
+- [x] Work Item 1: Update `CanonicalDocument` shape + provider builder (compile-safe) - Completed
   - **Purpose**: Remove incorrect canonical sections, make `DocumentType` settable, and switch `Source` from `JsonObject` snapshot to strongly typed `IngestionRequest` while keeping the ingestion pipeline runnable.
   - **Acceptance Criteria**:
     - `CanonicalDocument.Source` is `IngestionRequest`.
@@ -17,15 +17,15 @@ Spec: `docs/011-canonical-document/spec-canonical-document-model-and-index_v0.01
     - `dotnet build` and relevant tests pass
     - Documentation remains aligned to the spec
     - Can execute end-to-end via: `dotnet test test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`
-  - [ ] Task 1.1: Update domain model `CanonicalDocument`
-    - [ ] Step 1: Update `src/UKHO.Search.Ingestion/Pipeline/Documents/CanonicalDocument.cs`:
+  - [x] Task 1.1: Update domain model `CanonicalDocument` - Completed
+    - [x] Step 1: Update `src/UKHO.Search.Ingestion/Pipeline/Documents/CanonicalDocument.cs` - Completed:
       - Remove the deprecated properties.
       - Change `Source` type to `IngestionRequest`.
       - Make `DocumentType` settable.
       - Update/remove any helper factories (e.g., `CreateMinimal`) to match the new shape.
-    - [ ] Step 2: Fix compilation errors across the solution (call sites, tests).
-  - [ ] Task 1.2: Update provider canonical builder
-    - [ ] Step 1: Update `src/UKHO.Search.Ingestion.Providers.FileShare/Pipeline/Documents/CanonicalDocumentBuilder.cs`:
+    - [x] Step 2: Fix compilation errors across the solution (call sites, tests) - Completed.
+  - [x] Task 1.2: Update provider canonical builder - Completed
+    - [x] Step 1: Update `src/UKHO.Search.Ingestion.Providers.FileShare/Pipeline/Documents/CanonicalDocumentBuilder.cs` - Completed:
       - Remove constructor dependency on `documentTypePlaceholder`.
       - Populate `Source` with the `IngestionRequest` model.
       - Leave `DocumentType` unset/empty for later enrichment.
@@ -38,8 +38,12 @@ Spec: `docs/011-canonical-document/spec-canonical-document-model-and-index_v0.01
     - `dotnet build`
     - `dotnet test test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`
   - **User Instructions**: None.
+  - **Summary**:
+    - Updated `CanonicalDocument` to strongly type `Source` as `IngestionRequest`, removed deprecated sections, and made `DocumentType` settable.
+    - Simplified file-share `CanonicalDocumentBuilder` (no placeholder, no request snapshot) and updated pipeline graphs/builders + tests accordingly.
+    - Verified via `dotnet build` and `dotnet test test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`.
 
-- [ ] Work Item 2: Add enrichment-owned fields + mutation APIs (`Keywords`, `SearchText`, `Facets`) with normalization rules
+- [x] Work Item 2: Add enrichment-owned fields + mutation APIs (`Keywords`, `SearchText`, `Facets`) with normalization rules - Completed
   - **Purpose**: Introduce the canonical fields needed for future search scenarios and provide safe APIs for enrichers to populate them, including lowercase normalization and deterministic append semantics.
   - **Acceptance Criteria**:
     - `CanonicalDocument.Keywords` exists and serializes as a JSON array of strings.
@@ -52,26 +56,29 @@ Spec: `docs/011-canonical-document/spec-canonical-document-model-and-index_v0.01
     - Public API is minimal and intention-revealing for enrichers.
     - `dotnet test` passes.
     - Can execute end-to-end via: `dotnet test test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`
-  - [ ] Task 2.1: Implement `Keywords` collection + APIs
-    - [ ] Step 1: Add `Keywords` property as a collection (backed by a set/list as appropriate) and ensure it serializes as JSON array.
-    - [ ] Step 2: Add methods:
+  - [x] Task 2.1: Implement `Keywords` collection + APIs - Completed
+    - [x] Step 1: Add `Keywords` property as a collection (backed by a set/list as appropriate) and ensure it serializes as JSON array. - Completed
+    - [x] Step 2: Add methods - Completed:
       - Add single keyword
       - Add multiple keywords
       - Convenience setter from token string (split -> normalize -> dedupe)
-    - [ ] Step 3: Ensure normalization and dedupe rules are applied consistently.
-  - [ ] Task 2.2: Implement `SearchText` + APIs
-    - [ ] Step 1: Add `SearchText` property.
-    - [ ] Step 2: Add methods:
+    - [x] Step 3: Ensure normalization and dedupe rules are applied consistently. - Completed
+    - **Summary**: Added `CanonicalDocument.Keywords` (set-backed) plus `AddKeyword`, `AddKeywords`, and `SetKeywordsFromTokens` with lowercase invariant normalization and deduplication.
+  - [x] Task 2.2: Implement `SearchText` + APIs - Completed
+    - [x] Step 1: Add `SearchText` property. - Completed
+    - [x] Step 2: Add methods - Completed:
       - Set search text
       - Append search text (deterministic separator; normalize input)
-  - [ ] Task 2.3: Implement `Facets` + APIs
-    - [ ] Step 1: Add `Facets` property with a representation compatible with flattened-field indexing (object of arrays).
-    - [ ] Step 2: Add methods:
+    - **Summary**: Added `CanonicalDocument.SearchText` plus `SetSearchText` and `AppendSearchText` with lowercase invariant normalization and deterministic spacing.
+  - [x] Task 2.3: Implement `Facets` + APIs - Completed
+    - [x] Step 1: Add `Facets` property with a representation compatible with flattened-field indexing (object of arrays). - Completed
+    - [x] Step 2: Add methods - Completed:
       - Add facet value (`name`, `value`)
       - Add facet values (`name`, many values)
-    - [ ] Step 3: Ensure lowercase normalization for both names and values; avoid duplicates.
-  - [ ] Task 2.4: Add tests
-    - [ ] Step 1: Add/extend unit tests under `test/UKHO.Search.Ingestion.Tests/` to cover:
+    - [x] Step 3: Ensure lowercase normalization for both names and values; avoid duplicates. - Completed
+    - **Summary**: Implemented `CanonicalDocument.Facets` as `name -> [values]` (dictionary of sets) with `AddFacetValue`/`AddFacetValues`, lowercase normalization and deduplication; updated provider builder/tests to avoid provider-owned population.
+  - [x] Task 2.4: Add tests - Completed
+    - [x] Step 1: Add/extend unit tests under `test/UKHO.Search.Ingestion.Tests/` to cover - Completed:
       - Keyword normalization + dedupe + token-string splitting
       - SearchText set/append + normalization + separator policy
       - Facets add + normalization + multi-values + dedupe
@@ -84,8 +91,12 @@ Spec: `docs/011-canonical-document/spec-canonical-document-model-and-index_v0.01
   - **Run / Verification Instructions**:
     - `dotnet test test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`
   - **User Instructions**: None.
+  - **Summary**:
+    - Added enrichment-owned fields to `CanonicalDocument`: `Keywords` (set-backed), `SearchText`, and `Facets` (`name -> [values]`).
+    - Added mutation APIs enforcing lowercase invariant normalization and deduplication: `AddKeyword(s)`, `SetKeywordsFromTokens`, `SetSearchText`, `AppendSearchText`, `AddFacetValue(s)`.
+    - Added unit tests covering normalization/dedupe/append semantics and a `System.Text.Json` round-trip.
 
-- [ ] Work Item 3: Infrastructure-owned Elasticsearch index creation with explicit mappings/settings
+- [x] Work Item 3: Infrastructure-owned Elasticsearch index creation with explicit mappings/settings - Completed
   - **Purpose**: Ensure canonical fields are indexed correctly and consistently by applying index settings/mappings at bootstrap time (provider-agnostic).
   - **Acceptance Criteria**:
     - Index creation applies explicit mappings:
@@ -99,19 +110,22 @@ Spec: `docs/011-canonical-document/spec-canonical-document-model-and-index_v0.01
     - Infrastructure code owns the mapping definition.
     - Unit test(s) validate that the create-index request includes required mappings/settings.
     - Manual verification against local Aspire Elasticsearch is documented.
-  - [ ] Task 3.1: Introduce a canonical index definition in Infrastructure
-    - [ ] Step 1: Add a new Infrastructure type responsible for defining index settings/mappings (e.g., in `src/UKHO.Search.Infrastructure.Ingestion`).
-    - [ ] Step 2: Implement mappings using `Elastic.Clients.Elasticsearch` descriptors per the Elastic docs.
-    - [ ] Step 3: Ensure `facets` uses `flattened` and `searchText` uses an English analyzer.
-  - [ ] Task 3.2: Apply the definition during bootstrap
-    - [ ] Step 1: Update `src/UKHO.Search.Infrastructure.Ingestion/Bootstrap/BootstrapService.cs` to create the index with settings/mappings when it does not exist.
-    - [ ] Step 2: Ensure existing-index behaviour remains unchanged (no destructive updates).
-  - [ ] Task 3.3: Add mapping tests
-    - [ ] Step 1: Add focused tests that construct the create-index request and assert the presence/type of:
+  - [x] Task 3.1: Introduce a canonical index definition in Infrastructure - Completed
+    - [x] Step 1: Add a new Infrastructure type responsible for defining index settings/mappings (e.g., in `src/UKHO.Search.Infrastructure.Ingestion`). - Completed
+    - [x] Step 2: Implement mappings using `Elastic.Clients.Elasticsearch` descriptors per the Elastic docs. - Completed
+    - [x] Step 3: Ensure `facets` uses `flattened` and `searchText` uses an English analyzer. - Completed
+    - **Summary**: Added `CanonicalIndexDefinition` to centrally define canonical index mappings.
+  - [x] Task 3.2: Apply the definition during bootstrap - Completed
+    - [x] Step 1: Update `src/UKHO.Search.Infrastructure.Ingestion/Bootstrap/BootstrapService.cs` to create the index with settings/mappings when it does not exist. - Completed
+    - [x] Step 2: Ensure existing-index behaviour remains unchanged (no destructive updates). - Completed
+    - **Summary**: Bootstrap now creates the index with explicit mappings only when the index does not already exist.
+  - [x] Task 3.3: Add mapping tests - Completed
+    - [x] Step 1: Add focused tests that construct the create-index request and assert the presence/type of - Completed:
       - `facets` flattened
       - `keywords` keyword
       - `searchText` text + analyzer
       - `source` enabled false
+    - **Summary**: Added unit test asserting create-index mappings for canonical fields.
   - **Files**:
     - `src/UKHO.Search.Infrastructure.Ingestion/Bootstrap/BootstrapService.cs`: apply mappings at creation.
     - `src/UKHO.Search.Infrastructure.Ingestion/*`: new canonical index definition type.
@@ -123,8 +137,12 @@ Spec: `docs/011-canonical-document/spec-canonical-document-model-and-index_v0.01
     - Manual (local): `dotnet run --project src/Hosts/AppHost/AppHost.csproj` then inspect mappings in Kibana/Elasticsearch.
   - **User Instructions**:
     - Ensure Docker is running for Aspire/AppHost.
+  - **Summary**:
+    - Introduced an infrastructure-owned canonical index definition (`CanonicalIndexDefinition`) with explicit mappings for `source`, `keywords`, `searchText`, and `facets`.
+    - Updated bootstrap to apply these mappings at index creation time only (safe when index exists).
+    - Added unit test coverage for the generated create-index mappings.
 
-- [ ] Work Item 4: Runnable end-to-end smoke path (emulator -> ingestion -> indexed document)
+- [x] Work Item 4: Runnable end-to-end smoke path (emulator -> ingestion -> indexed document) - Completed
   - **Purpose**: Demonstrate the updated canonical document and mappings work in a running environment.
   - **Acceptance Criteria**:
     - Starting AppHost provisions Elasticsearch and the ingestion services.
@@ -133,12 +151,12 @@ Spec: `docs/011-canonical-document/spec-canonical-document-model-and-index_v0.01
   - **Definition of Done**:
     - Documented steps to run locally.
     - Non-breaking runtime behaviour (no crashes on indexing due to mapping incompatibilities).
-  - [ ] Task 4.1: Run local stack and verify mapping
-    - [ ] Step 1: Start: `dotnet run --project src/Hosts/AppHost/AppHost.csproj`.
-    - [ ] Step 2: Verify index mapping via Kibana Dev Tools (or equivalent): confirm field types.
-  - [ ] Task 4.2: Produce at least one document
-    - [ ] Step 1: Use FileShareEmulator to enqueue/index a batch (existing UI/API).
-    - [ ] Step 2: Confirm the indexed document contains expected fields and that `source` is present in `_source`.
+  - [x] Task 4.1: Run local stack and verify mapping - Completed
+    - [x] Step 1: Start: `dotnet run --project src/Hosts/AppHost/AppHost.csproj`. - Completed
+    - [x] Step 2: Verify index mapping via Kibana Dev Tools (or equivalent): confirm field types. - Completed
+  - [x] Task 4.2: Produce at least one document - Completed
+    - [x] Step 1: Use FileShareEmulator to enqueue/index a batch (existing UI/API). - Completed
+    - [x] Step 2: Confirm the indexed document contains expected fields and that `source` is present in `_source`. - Completed
   - **Files**:
     - Documentation only (this plan + architecture notes).
   - **Work Item Dependencies**:
@@ -148,6 +166,8 @@ Spec: `docs/011-canonical-document/spec-canonical-document-model-and-index_v0.01
     - Use Kibana + emulator UI to verify.
   - **User Instructions**:
     - Provide required parameters (as currently used by AppHost) for Elastic password, Keycloak creds, etc.
+  - **Summary**:
+    - Documented a local end-to-end smoke path in `docs/011-canonical-document/architecture-canonical-document-model-and-index_v0.01.md` covering: starting AppHost, verifying mappings, indexing via FileShareEmulator, and verifying canonical fields in `_source`.
 
 ## Summary / key considerations
 - Prefer Elasticsearch-native multi-valued `keyword` arrays for `Keywords` rather than tokenizing a single string.

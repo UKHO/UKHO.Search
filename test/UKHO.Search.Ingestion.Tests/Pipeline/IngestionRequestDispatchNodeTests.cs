@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Shouldly;
 using UKHO.Search.Ingestion.Pipeline;
 using UKHO.Search.Ingestion.Pipeline.Operations;
@@ -21,7 +20,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             var output = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
             var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
 
-            var canonicalBuilder = new CanonicalDocumentBuilder("unknown");
+            var canonicalBuilder = new CanonicalDocumentBuilder();
 
             var node = new IngestionRequestDispatchNode("dispatch", input.Reader, output.Writer, deadLetter.Writer, canonicalBuilder);
 
@@ -43,15 +42,10 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             var upsert = envelope.Payload.Operation.ShouldBeOfType<UpsertOperation>();
             upsert.DocumentId.ShouldBe("doc-1");
             upsert.Document.DocumentId.ShouldBe("doc-1");
-            upsert.Document.DocumentType.ShouldBe("unknown");
+            upsert.Document.DocumentType.ShouldBeEmpty();
 
-            upsert.Document.Source.ShouldNotBeNull();
-            upsert.Document.Source.ContainsKey("ingestionRequest")
-                  .ShouldBeTrue();
-
-            var roundTripped = upsert.Document.Source["ingestionRequest"]!.Deserialize<IngestionRequest>();
-            roundTripped.ShouldNotBeNull();
-            roundTripped!.RequestType.ShouldBe(IngestionRequestType.AddItem);
+            upsert.Document.Source.ShouldBeSameAs(request);
+            upsert.Document.Source.RequestType.ShouldBe(IngestionRequestType.AddItem);
         }
 
         [Fact]
@@ -61,7 +55,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             var output = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
             var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
 
-            var canonicalBuilder = new CanonicalDocumentBuilder("unknown");
+            var canonicalBuilder = new CanonicalDocumentBuilder();
 
             var node = new IngestionRequestDispatchNode("dispatch", input.Reader, output.Writer, deadLetter.Writer, canonicalBuilder);
 
@@ -88,7 +82,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             var output = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
             var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
 
-            var canonicalBuilder = new CanonicalDocumentBuilder("unknown");
+            var canonicalBuilder = new CanonicalDocumentBuilder();
 
             var node = new IngestionRequestDispatchNode("dispatch", input.Reader, output.Writer, deadLetter.Writer, canonicalBuilder);
 
@@ -125,7 +119,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             var output = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
             var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
 
-            var canonicalBuilder = new CanonicalDocumentBuilder("unknown");
+            var canonicalBuilder = new CanonicalDocumentBuilder();
 
             var node = new IngestionRequestDispatchNode("dispatch", input.Reader, output.Writer, deadLetter.Writer, canonicalBuilder);
 

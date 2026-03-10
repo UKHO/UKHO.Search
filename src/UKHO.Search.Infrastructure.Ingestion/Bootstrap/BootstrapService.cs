@@ -1,6 +1,7 @@
 ﻿using Azure.Storage.Queues;
 using Elastic.Clients.Elasticsearch;
 using Microsoft.Extensions.Configuration;
+using UKHO.Search.Infrastructure.Ingestion.Elastic;
 using UKHO.Search.Services.Ingestion.Providers;
 
 namespace UKHO.Search.Infrastructure.Ingestion.Bootstrap
@@ -8,16 +9,18 @@ namespace UKHO.Search.Infrastructure.Ingestion.Bootstrap
     public class BootstrapService : IBootstrapService
     {
         private readonly IConfiguration _configuration;
+        private readonly CanonicalIndexDefinition _indexDefinition;
         private readonly ElasticsearchClient _elasticClient;
         private readonly IIngestionProviderService _providerService;
         private readonly QueueServiceClient _queueClient;
 
-        public BootstrapService(IConfiguration configuration, IIngestionProviderService providerService, ElasticsearchClient elasticClient, QueueServiceClient queueClient)
+        public BootstrapService(IConfiguration configuration, IIngestionProviderService providerService, ElasticsearchClient elasticClient, QueueServiceClient queueClient, CanonicalIndexDefinition indexDefinition)
         {
             _configuration = configuration;
             _providerService = providerService;
             _elasticClient = elasticClient;
             _queueClient = queueClient;
+            _indexDefinition = indexDefinition;
         }
 
         public async Task BootstrapAsync(CancellationToken cancellationToken = default)
@@ -32,7 +35,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Bootstrap
                                                           .ConfigureAwait(false);
             if (!indexExistsResponse.Exists)
             {
-                await _elasticClient.Indices.CreateAsync(indexName, cancellationToken)
+                await _elasticClient.Indices.CreateAsync(indexName, d => _indexDefinition.Configure(d), cancellationToken)
                                     .ConfigureAwait(false);
             }
 

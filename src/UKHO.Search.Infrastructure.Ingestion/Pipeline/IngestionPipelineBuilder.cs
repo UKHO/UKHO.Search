@@ -97,7 +97,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
 
             var partition = new KeyPartitionNode<IngestionRequest>("ingestion-partition", validated.Reader, laneDispatchWriters, _loggerFactory.CreateLogger("ingestion-partition"), supervisor);
 
-            var canonicalBuilder = new CanonicalDocumentBuilder(documentTypePlaceholder ?? "unknown");
+            var canonicalBuilder = new CanonicalDocumentBuilder();
 
             var laneSinks = new List<CollectingBatchSinkNode<IndexOperation>>(laneCount);
             for (var lane = 0; lane < laneCount; lane++)

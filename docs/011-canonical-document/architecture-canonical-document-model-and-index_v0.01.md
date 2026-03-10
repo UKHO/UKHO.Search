@@ -82,3 +82,50 @@ Elasticsearch mapping intent:
 
 Notes:
 - Lowercasing is applied before indexing, so mapping does not need to rely on analyzers/normalizers for case-folding (though a keyword normalizer may be added defensively for `keywords`).
+
+## Local smoke verification (manual)
+
+### Prerequisites
+- Docker running (Aspire / AppHost dependencies).
+
+### 1. Start the local stack
+Start Aspire AppHost:
+
+- `dotnet run --project src/Hosts/AppHost/AppHost.csproj`
+
+This should provision Elasticsearch (+ Kibana) and the ingestion services.
+
+### 2. Verify index mapping
+Determine the configured index name (configuration key: `ingestion:indexname`).
+
+In Kibana Dev Tools (or via any Elasticsearch client), run:
+
+- `GET /<indexName>/_mapping`
+
+Expected field types:
+- `source`: object with `enabled: false` (stored in `_source`, not indexed)
+- `keywords`: `keyword`
+- `searchText`: `text` with `analyzer: english`
+- `facets`: `flattened`
+
+### 3. Enqueue and index at least one document
+Run the FileShare emulator UI (separate process):
+
+- `dotnet run --project tools/FileShareEmulator/FileShareEmulator.csproj`
+
+Navigate to the emulator `Indexing` page (`/indexing`) and click either:
+- `Index All` (or)
+- `Index` with a small `Count`
+
+This enqueues ingestion requests to the file-share queue for the ingestion service to process and index.
+
+### 4. Verify a document is indexed and contains canonical fields
+In Kibana Dev Tools:
+
+- `GET /<indexName>/_search?size=1`
+
+For at least one document, confirm `_source` contains:
+- `source` (stored ingestion request)
+- `keywords` (array, may be empty)
+- `searchText` (string, may be empty)
+- `facets` (object of arrays, may be empty)

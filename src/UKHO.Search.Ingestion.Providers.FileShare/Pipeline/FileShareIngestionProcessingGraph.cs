@@ -40,7 +40,6 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline
             var channelCapacityMicrobatchOut = configuration.GetValue<int>("ingestion:channelCapacityMicrobatchOut");
             var microbatchMaxItems = configuration.GetValue<int>("ingestion:microbatchMaxItems");
             var microbatchMaxDelayMs = configuration.GetValue<int>("ingestion:microbatchMaxDelayMilliseconds");
-            var documentTypePlaceholder = configuration.GetValue<string>("ingestion:documentTypePlaceholder");
 
             var enrichmentRetryMaxAttempts = configuration.GetValue("ingestion:enrichmentRetryMaxAttempts", 5);
             var enrichmentRetryBaseDelayMs = configuration.GetValue("ingestion:enrichmentRetryBaseDelayMilliseconds", 200);
@@ -80,7 +79,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline
             var indexDeadLetterReaders = new List<ChannelReader<Envelope<IndexOperation>>>(laneCount * 2);
             var diagnosticsReaders = new List<ChannelReader<Envelope<IndexOperation>>>(laneCount);
 
-            var canonicalBuilder = new CanonicalDocumentBuilder(documentTypePlaceholder ?? "unknown");
+            var canonicalBuilder = new CanonicalDocumentBuilder();
 
             for (var lane = 0; lane < laneCount; lane++)
             {

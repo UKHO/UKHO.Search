@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shouldly;
@@ -62,13 +61,10 @@ namespace UKHO.Search.Ingestion.Tests
         private static int GetSequence(IndexOperation operation)
         {
             var upsert = operation.ShouldBeOfType<UpsertOperation>();
-            upsert.Document.Source.ContainsKey("ingestionRequest")
-                  .ShouldBeTrue();
-
-            var request = upsert.Document.Source["ingestionRequest"]!.Deserialize<IngestionRequest>();
+            var request = upsert.Document.Source;
             request.ShouldNotBeNull();
 
-            var properties = request!.UpdateItem?.Properties ?? Array.Empty<IngestionProperty>();
+            var properties = request.UpdateItem?.Properties ?? Array.Empty<IngestionProperty>();
             var seq = properties.FirstOrDefault(p => string.Equals(p.Name, "sequence", StringComparison.Ordinal));
             seq.ShouldNotBeNull();
             seq!.Type.ShouldBe(IngestionPropertyType.Integer);

@@ -72,6 +72,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Injection
             });
 
             collection.AddSingleton<IIngestionProviderService, IngestionProviderService>();
+            collection.AddSingleton<CanonicalIndexDefinition>();
             collection.AddSingleton<IBootstrapService, BootstrapService>();
             collection.AddSingleton<IStatisticsService, StatisticsService>();
 
