@@ -10,6 +10,11 @@ using UKHO.Search.Infrastructure.Ingestion.Pipeline;
 using UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes;
 using UKHO.Search.Infrastructure.Ingestion.Pipeline.Terminal;
 using UKHO.Search.Infrastructure.Ingestion.Queue;
+using UKHO.Search.Infrastructure.Ingestion.Rules;
+using UKHO.Search.Infrastructure.Ingestion.Rules.Actions;
+using UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation;
+using UKHO.Search.Infrastructure.Ingestion.Rules.Templating;
+using UKHO.Search.Infrastructure.Ingestion.Rules.Validation;
 using UKHO.Search.Infrastructure.Ingestion.Statistics;
 using UKHO.Search.Ingestion.Pipeline.Operations;
 using UKHO.Search.Ingestion.Providers;
@@ -27,6 +32,20 @@ namespace UKHO.Search.Infrastructure.Ingestion.Injection
         public static IServiceCollection AddIngestionServices(this IServiceCollection collection)
         {
             collection.AddFileShareProvider();
+
+            collection.AddScoped<UKHO.Search.Ingestion.Rules.IIngestionProviderContext, IngestionProviderContext>();
+
+            collection.AddSingleton<IngestionRulesLoader>();
+            collection.AddSingleton<IngestionRulesPathValidator>();
+            collection.AddSingleton<IngestionRulesValidator>();
+            collection.AddSingleton<IngestionRulesCatalog>();
+            collection.AddSingleton<IIngestionRulesCatalog>(sp => sp.GetRequiredService<IngestionRulesCatalog>());
+            collection.AddSingleton<IPathResolver, IngestionRulesPathResolver>();
+            collection.AddSingleton<IngestionRulesPredicateEvaluator>();
+            collection.AddSingleton<IngestionRulesTemplateExpander>();
+            collection.AddSingleton<IngestionRulesActionApplier>();
+            collection.AddSingleton<IIngestionRulesEngine, IngestionRulesEngine>();
+            collection.AddScoped<UKHO.Search.Ingestion.IIngestionEnricher, IngestionRulesEnricher>();
 
             collection.AddSingleton<IIngestionDataProviderFactory>(sp =>
             {

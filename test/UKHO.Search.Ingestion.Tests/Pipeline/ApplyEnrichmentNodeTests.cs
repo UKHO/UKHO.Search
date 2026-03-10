@@ -6,6 +6,7 @@ using UKHO.Search.Ingestion.Pipeline.Nodes;
 using UKHO.Search.Ingestion.Pipeline.Operations;
 using UKHO.Search.Ingestion.Requests;
 using UKHO.Search.Ingestion.Tests.TestEnrichers;
+using UKHO.Search.Ingestion.Tests.TestSupport;
 using UKHO.Search.Pipelines.Channels;
 using UKHO.Search.Pipelines.Messaging;
 using Xunit;
@@ -67,6 +68,42 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
                       .ShouldBeFalse();
 
             calls.ShouldBe(new[] { nameof(RecordingEnricherA), nameof(RecordingEnricherB) });
+        }
+
+        [Fact]
+        public async Task Provider_name_is_set_in_ingestion_provider_context_for_enrichers()
+        {
+            var input = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
+            var output = BoundedChannelFactory.Create<Envelope<IndexOperation>>(1, true, true);
+            var deadLetter = BoundedChannelFactory.Create<Envelope<IndexOperation>>(1, true, true);
+
+            var providerNames = new List<string?>();
+
+            var services = new ServiceCollection();
+            services.AddScoped<UKHO.Search.Ingestion.Rules.IIngestionProviderContext, TestIngestionProviderContext>();
+            services.AddSingleton(providerNames);
+            services.AddScoped<IIngestionEnricher, ProviderContextRecordingEnricher>();
+
+            await using var provider = services.BuildServiceProvider();
+
+            var node = new ApplyEnrichmentNode("enrich", input.Reader, output.Writer, deadLetter.Writer, provider.GetRequiredService<IServiceScopeFactory>(), providerName: "file-share");
+
+            await node.StartAsync(CancellationToken.None);
+
+            var add = new AddItemRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList());
+            var request = new IngestionRequest(IngestionRequestType.AddItem, add, null, null, null);
+            var doc = CanonicalDocument.CreateMinimal("doc-1", request);
+
+            await input.Writer.WriteAsync(new Envelope<IngestionPipelineContext>("doc-1", new IngestionPipelineContext
+            {
+                Request = request,
+                Operation = new UpsertOperation("doc-1", doc)
+            }));
+            input.Writer.TryComplete();
+
+            await node.Completion.WaitAsync(TimeSpan.FromSeconds(2));
+
+            providerNames.ShouldBe(new string?[] { "file-share" });
         }
 
         [Fact]

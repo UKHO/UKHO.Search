@@ -1,0 +1,26 @@
+﻿{
+	"schemaVersion": "1.0",
+	"rules": {
+		"file-share": [
+			{
+				"id": "slice1-add-keyword",
+				"description": "Slice 1 minimal rule to prove rules engine integration.",
+				"if": {
+					"any": [
+						{
+							"path": "id",
+							"exists": true
+						}
+					]
+				},
+				"then": {
+					"keywords": {
+						"add": [
+							"slice1-keyword"
+						]
+					}
+				}
+			}
+		]
+	}
+}

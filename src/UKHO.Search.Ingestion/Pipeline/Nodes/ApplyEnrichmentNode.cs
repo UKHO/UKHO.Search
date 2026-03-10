@@ -2,6 +2,7 @@ using System.Threading.Channels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using UKHO.Search.Ingestion.Pipeline.Operations;
+using UKHO.Search.Ingestion.Rules;
 using UKHO.Search.Pipelines.Errors;
 using UKHO.Search.Pipelines.Messaging;
 using UKHO.Search.Pipelines.Nodes;
@@ -21,6 +22,7 @@ namespace UKHO.Search.Ingestion.Pipeline.Nodes
         private readonly ILogger? _logger;
         private readonly int _maxAttempts;
         private readonly TimeSpan _maxDelay;
+        private readonly string? _providerName;
         private readonly Random _random;
         private readonly TimeSpan _retryBaseDelay;
         private readonly IServiceScopeFactory _scopeFactory;
@@ -73,6 +75,7 @@ namespace UKHO.Search.Ingestion.Pipeline.Nodes
             }
 
             _maxAttempts = retryMaxAttempts + 1;
+            _providerName = providerName;
         }
 
         protected override async ValueTask HandleItemAsync(Envelope<IngestionPipelineContext> item, CancellationToken cancellationToken)
@@ -99,6 +102,12 @@ namespace UKHO.Search.Ingestion.Pipeline.Nodes
             }
 
             using var scope = _scopeFactory.CreateScope();
+
+            var providerContext = scope.ServiceProvider.GetService<IIngestionProviderContext>();
+            if (providerContext is not null)
+            {
+                providerContext.ProviderName = _providerName;
+            }
 
             var enrichers = scope.ServiceProvider.GetServices<IIngestionEnricher>()
                                  .OrderBy(x => x.Ordinal)

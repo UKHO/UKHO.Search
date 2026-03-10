@@ -38,6 +38,7 @@ Rules:
 - Only Host projects contain UI/endpoints and startup/DI wiring. Do not place domain logic or infrastructure implementations in hosts.
 - For ingestion, keep queue/client wiring in `UKHO.Search.Infrastructure.Ingestion`, but place file-share-specific pipeline nodes (parsing/enrichment of file-share data) in `UKHO.Search.Ingestion.Providers.FileShare` (provider project).
 - Prefer a single, obvious public entrypoint for queue-backed ingestion; avoid multiple builder APIs. Document this in the spec and keep code aligned (hosted service should start ingestion via the adapter/provider entrypoint path).
+- For the ingestion rules DSL, support both `if` and `match` as predicate field aliases, but prefer writing examples using `if`.
 
 ## MCP Tool Selection
 - Azure DevOps intent: use Azure DevOps tools.
@@ -62,6 +63,9 @@ Rules:
 
 ## Search Indexing Guidelines
 - For search indexing, normalize `Keywords`, `SearchText`, and `Facets` to lowercase (case-insensitive exact matching).
+
+## Rule Evaluation Guidelines
+- Differentiate ruleset validation vs runtime data: fail-fast only for invalid JSON/schema/operators/path syntax. If a given `AddItem`/`UpdateItem` payload is missing a referenced property/path at evaluation time, the rule/condition should simply not match, and any derived outputs should be skipped (expected often).
 
 ## Detailed Topic Guides
 Refer to specialized instruction files for full detail:
