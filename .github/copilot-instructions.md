@@ -60,6 +60,9 @@ Rules:
 ## .csproj File Editing Guidelines
 - When editing `.csproj` files, keep `PackageReference` entries in `ItemGroup` blocks that contain only `PackageReference` entries (do not mix `ProjectReference` and `PackageReference` in the same `ItemGroup`).
 
+## Search Indexing Guidelines
+- For search indexing, normalize `Keywords`, `SearchText`, and `Facets` to lowercase (case-insensitive exact matching).
+
 ## Detailed Topic Guides
 Refer to specialized instruction files for full detail:
 - Architecture: `.github/instructions/architecture.instructions.md`
