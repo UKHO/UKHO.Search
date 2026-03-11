@@ -16,19 +16,19 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         {
             using var temp = new TempRulesRoot();
             temp.WriteRulesFile("""
-            {
-              "schemaVersion": "1.0",
-              "rules": {
-                "file-share": [
-                  {
-                    "id": "docType-wildcard-path",
-                    "if": { "id": "doc-1" },
-                    "then": { "documentType": { "set": "$path:files[*].mimeType" } }
-                  }
-                ]
-              }
-            }
-            """);
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rules": {
+                                    "file-share": [
+                                      {
+                                        "id": "docType-wildcard-path",
+                                        "if": { "id": "doc-1" },
+                                        "then": { "documentType": { "set": "$path:files[*].mimeType" } }
+                                      }
+                                    ]
+                                  }
+                                }
+                                """);
 
             using var provider = CreateProvider(temp.RootPath);
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
@@ -42,19 +42,19 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         {
             using var temp = new TempRulesRoot();
             temp.WriteRulesFile("""
-            {
-              "schemaVersion": "1.0",
-              "rules": {
-                "file-share": [
-                  {
-                    "id": "docType-val-wildcard",
-                    "if": { "files[*].mimeType": "app/s63" },
-                    "then": { "documentType": { "set": "$val" } }
-                  }
-                ]
-              }
-            }
-            """);
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rules": {
+                                    "file-share": [
+                                      {
+                                        "id": "docType-val-wildcard",
+                                        "if": { "files[*].mimeType": "app/s63" },
+                                        "then": { "documentType": { "set": "$val" } }
+                                      }
+                                    ]
+                                  }
+                                }
+                                """);
 
             using var provider = CreateProvider(temp.RootPath);
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
@@ -68,19 +68,19 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         {
             using var temp = new TempRulesRoot();
             temp.WriteRulesFile("""
-            {
-              "schemaVersion": "1.0",
-              "rules": {
-                "file-share": [
-                  {
-                    "id": "docType-val-multi-leaf",
-                    "if": { "id": "doc-1", "properties[\"abcdef\"]": "a value" },
-                    "then": { "documentType": { "set": "$val" } }
-                  }
-                ]
-              }
-            }
-            """);
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rules": {
+                                    "file-share": [
+                                      {
+                                        "id": "docType-val-multi-leaf",
+                                        "if": { "id": "doc-1", "properties[\"abcdef\"]": "a value" },
+                                        "then": { "documentType": { "set": "$val" } }
+                                      }
+                                    ]
+                                  }
+                                }
+                                """);
 
             using var provider = CreateProvider(temp.RootPath);
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
@@ -94,19 +94,19 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         {
             using var temp = new TempRulesRoot();
             temp.WriteRulesFile("""
-            {
-              "schemaVersion": "1.0",
-              "rules": {
-                "file-share": [
-                  {
-                    "id": "docType-val-single-leaf",
-                    "if": { "properties[\"abcdef\"]": "a value" },
-                    "then": { "documentType": { "set": "$val" } }
-                  }
-                ]
-              }
-            }
-            """);
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rules": {
+                                    "file-share": [
+                                      {
+                                        "id": "docType-val-single-leaf",
+                                        "if": { "properties[\"abcdef\"]": "a value" },
+                                        "then": { "documentType": { "set": "$val" } }
+                                      }
+                                    ]
+                                  }
+                                }
+                                """);
 
             using var provider = CreateProvider(temp.RootPath);
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();

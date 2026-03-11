@@ -1,17 +1,17 @@
 using Microsoft.Extensions.Logging;
-using UKHO.Search.Ingestion.Pipeline.Documents;
-using UKHO.Search.Ingestion.Requests;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Actions;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation;
+using UKHO.Search.Ingestion.Pipeline.Documents;
+using UKHO.Search.Ingestion.Requests;
 
 namespace UKHO.Search.Infrastructure.Ingestion.Rules
 {
     internal sealed class IngestionRulesEngine : IIngestionRulesEngine
     {
-        private readonly IngestionRulesCatalog _catalog;
-        private readonly IngestionRulesPredicateEvaluator _predicateEvaluator;
         private readonly IngestionRulesActionApplier _actionApplier;
+        private readonly IngestionRulesCatalog _catalog;
         private readonly ILogger<IngestionRulesEngine> _logger;
+        private readonly IngestionRulesPredicateEvaluator _predicateEvaluator;
 
         public IngestionRulesEngine(IngestionRulesCatalog catalog, IngestionRulesPredicateEvaluator predicateEvaluator, IngestionRulesActionApplier actionApplier, ILogger<IngestionRulesEngine> logger)
         {
@@ -64,15 +64,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
                 summary.Add(_actionApplier.Apply(rule.Then, payload, document, match.MatchedValues));
             }
 
-            _logger.LogDebug(
-                "Ingestion rules applied. ProviderName={ProviderName} MatchedRuleIds={MatchedRuleIds} KeywordsAdded={KeywordsAdded} SearchTextAdded={SearchTextAdded} ContentAdded={ContentAdded} FacetValuesAdded={FacetValuesAdded} DocumentTypeSet={DocumentTypeSet}",
-                providerName,
-                matchedRuleIds,
-                summary.KeywordsAdded,
-                summary.SearchTextAdded,
-                summary.ContentAdded,
-                summary.FacetValuesAdded,
-                summary.DocumentTypeSet);
+            _logger.LogDebug("Ingestion rules applied. ProviderName={ProviderName} MatchedRuleIds={MatchedRuleIds} KeywordsAdded={KeywordsAdded} SearchTextAdded={SearchTextAdded} ContentAdded={ContentAdded} FacetValuesAdded={FacetValuesAdded} DocumentTypeSet={DocumentTypeSet}", providerName, matchedRuleIds, summary.KeywordsAdded, summary.SearchTextAdded, summary.ContentAdded,
+                summary.FacetValuesAdded, summary.DocumentTypeSet);
         }
     }
 }

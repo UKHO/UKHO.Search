@@ -56,9 +56,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare
         {
             var logger = _loggerFactory.CreateLogger<FileShareIngestionDataProvider>();
 
-            return _processingGraphDependencies is null
-                ? new FileShareIngestionDataProvider(Name, _ingressCapacity, logger)
-                : new FileShareIngestionDataProvider(Name, _processingGraphDependencies, _ingressCapacity, logger);
+            return _processingGraphDependencies is null ? new FileShareIngestionDataProvider(Name, _ingressCapacity, logger) : new FileShareIngestionDataProvider(Name, _processingGraphDependencies, _ingressCapacity, logger);
         }
     }
 }

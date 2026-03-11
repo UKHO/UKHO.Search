@@ -80,8 +80,8 @@ namespace UKHO.Search.ServiceDefaults
                        {
                            metrics.AddAspNetCoreInstrumentation()
                                   .AddHttpClientInstrumentation()
-                                   .AddRuntimeInstrumentation()
-                                   .AddMeter("UKHO.Search.Ingestion.Pipeline");
+                                  .AddRuntimeInstrumentation()
+                                  .AddMeter("UKHO.Search.Ingestion.Pipeline");
                        })
                        .WithTracing(tracing =>
                        {

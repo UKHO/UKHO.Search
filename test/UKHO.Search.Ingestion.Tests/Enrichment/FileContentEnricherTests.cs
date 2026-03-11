@@ -12,10 +12,22 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
     public sealed class FileContentEnricherTests
     {
         [Fact]
-        public async Task TryBuildEnrichmentAsync_noops_when_allowlist_missing()
+        public async Task TryBuildEnrichmentAsync_does_not_extract_content_when_allowlist_missing()
         {
-            var downloader = new FakeZipDownloader(_ => throw new InvalidOperationException("Download should not be called"));
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>()).Build();
+            var zipBytes = CreateZipBytes(new Dictionary<string, byte[]>
+            {
+                ["a.txt"] = "Hello world"u8.ToArray(),
+                ["catalog.xml"] = "<catalog />"u8.ToArray()
+            });
+
+            var calls = new List<string>();
+            var downloader = new FakeZipDownloader(batchId =>
+            {
+                calls.Add(batchId);
+                return new MemoryStream(zipBytes);
+            });
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>())
+                                                          .Build();
             var enricher = new FileContentEnricher(downloader, configuration, NullLogger<FileContentEnricher>.Instance);
 
             var request = CreateAddRequest("batch-1");
@@ -23,7 +35,9 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
 
             await enricher.TryBuildEnrichmentAsync(request, document, CancellationToken.None);
 
+            calls.ShouldBe(new[] { request.AddItem!.Id });
             document.Content.ShouldBeEmpty();
+            document.Keywords.ShouldBeEmpty();
         }
 
         [Fact]
@@ -120,16 +134,18 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             var batchRoot = Path.Combine(Path.GetTempPath(), "ukho-search", "fileshare", "kreuzberg", batchId);
             if (Directory.Exists(batchRoot))
             {
-                Directory.EnumerateDirectories(batchRoot).ShouldBeEmpty();
+                Directory.EnumerateDirectories(batchRoot)
+                         .ShouldBeEmpty();
             }
         }
 
         private static IConfiguration CreateConfig(string allowlist)
         {
             return new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ingestion:fileContentExtractionAllowedExtensions"] = allowlist
-            }).Build();
+                                             {
+                                                 ["ingestion:fileContentExtractionAllowedExtensions"] = allowlist
+                                             })
+                                             .Build();
         }
 
         private static IngestionRequest CreateAddRequest(string batchId)
@@ -141,7 +157,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
         private static byte[] CreateZipBytes(IReadOnlyDictionary<string, byte[]> entries)
         {
             using var ms = new MemoryStream();
-            using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+            using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, true))
             {
                 foreach (var (name, bytes) in entries)
                 {

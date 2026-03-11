@@ -18,20 +18,20 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         {
             using var temp = new TempRulesRoot();
             temp.WriteRulesFile("""
-            {
-              "schemaVersion": "1.0",
-              "rules": {
-                "file-share": [
-                  {
-                    "id": "payload-selection",
-                    "enabled": true,
-                    "if": { "id": "add-id" },
-                    "then": { "keywords": { "add": [ "matched" ] } }
-                  }
-                ]
-              }
-            }
-            """);
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rules": {
+                                    "file-share": [
+                                      {
+                                        "id": "payload-selection",
+                                        "enabled": true,
+                                        "if": { "id": "add-id" },
+                                        "then": { "keywords": { "add": [ "matched" ] } }
+                                      }
+                                    ]
+                                  }
+                                }
+                                """);
 
             using var provider = CreateProvider(temp.RootPath);
             var engine = provider.GetRequiredService<IIngestionRulesEngine>();
@@ -55,26 +55,26 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         {
             using var temp = new TempRulesRoot();
             temp.WriteRulesFile("""
-            {
-              "schemaVersion": "1.0",
-              "rules": {
-                "file-share": [
-                  {
-                    "id": "payload-selection-update",
-                    "enabled": true,
-                    "if": { "id": "update-id" },
-                    "then": { "keywords": { "add": [ "matched" ] } }
-                  }
-                ]
-              }
-            }
-            """);
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rules": {
+                                    "file-share": [
+                                      {
+                                        "id": "payload-selection-update",
+                                        "enabled": true,
+                                        "if": { "id": "update-id" },
+                                        "then": { "keywords": { "add": [ "matched" ] } }
+                                      }
+                                    ]
+                                  }
+                                }
+                                """);
 
             using var provider = CreateProvider(temp.RootPath);
             var engine = provider.GetRequiredService<IIngestionRulesEngine>();
 
             var update = new UpdateItemRequest("update-id", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList());
-            var request = new IngestionRequest(IngestionRequestType.UpdateItem, addItem: null, update, deleteItem: null, updateAcl: null);
+            var request = new IngestionRequest(IngestionRequestType.UpdateItem, null, update, null, null);
 
             var document = CanonicalDocument.CreateMinimal("doc-1", Array.Empty<IngestionProperty>(), DateTimeOffset.UnixEpoch);
 

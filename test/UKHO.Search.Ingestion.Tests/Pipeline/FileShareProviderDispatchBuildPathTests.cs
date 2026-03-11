@@ -46,7 +46,8 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             upsert.Document.DocumentType.ShouldBeEmpty();
             upsert.Document.Source.ShouldNotBeSameAs(add.Properties);
             upsert.Document.Source.Count.ShouldBe(1);
-            upsert.Document.Source[0].ShouldBeSameAs(p1);
+            upsert.Document.Source[0]
+                  .ShouldBeSameAs(p1);
             upsert.Document.Timestamp.ShouldBe(add.Timestamp);
         }
     }

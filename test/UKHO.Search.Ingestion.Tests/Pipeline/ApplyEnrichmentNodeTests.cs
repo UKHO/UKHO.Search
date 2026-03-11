@@ -5,6 +5,7 @@ using UKHO.Search.Ingestion.Pipeline.Documents;
 using UKHO.Search.Ingestion.Pipeline.Nodes;
 using UKHO.Search.Ingestion.Pipeline.Operations;
 using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Rules;
 using UKHO.Search.Ingestion.Tests.TestEnrichers;
 using UKHO.Search.Ingestion.Tests.TestSupport;
 using UKHO.Search.Pipelines.Channels;
@@ -80,7 +81,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             var providerNames = new List<string?>();
 
             var services = new ServiceCollection();
-            services.AddScoped<UKHO.Search.Ingestion.Rules.IIngestionProviderContext, TestIngestionProviderContext>();
+            services.AddScoped<IIngestionProviderContext, TestIngestionProviderContext>();
             services.AddSingleton(providerNames);
             services.AddScoped<IIngestionEnricher, ProviderContextRecordingEnricher>();
 
@@ -103,7 +104,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
 
             await node.Completion.WaitAsync(TimeSpan.FromSeconds(2));
 
-            providerNames.ShouldBe(new string?[] { "file-share" });
+            providerNames.ShouldBe(new[] { "file-share" });
         }
 
         [Fact]
@@ -173,7 +174,8 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
 
             var upsert = outEnvelope.Payload.ShouldBeOfType<UpsertOperation>();
             upsert.Document.DocumentType.ShouldBe("AddItem");
-            upsert.Document.Facets["enrichment_documentid"].ShouldBe(new[] { "doc-1" });
+            upsert.Document.Facets["enrichment_documentid"]
+                  .ShouldBe(new[] { "doc-1" });
         }
 
         [Fact]

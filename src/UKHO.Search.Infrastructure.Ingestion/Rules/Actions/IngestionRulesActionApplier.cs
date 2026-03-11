@@ -251,7 +251,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Actions
                 return null;
             }
 
-            return value.Trim().ToLowerInvariant();
+            return value.Trim()
+                        .ToLowerInvariant();
         }
     }
 }

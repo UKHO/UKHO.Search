@@ -13,7 +13,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
                 return false;
             }
 
-            var span = path.AsSpan().Trim();
+            var span = path.AsSpan()
+                           .Trim();
             var i = 0;
 
             string? lastPropertyName = null;
@@ -32,7 +33,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
                     return false;
                 }
 
-                var identifier = span.Slice(start, i - start).ToString();
+                var identifier = span.Slice(start, i - start)
+                                     .ToString();
                 if (string.IsNullOrWhiteSpace(identifier))
                 {
                     error = "Path contains an empty segment.";
@@ -89,7 +91,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
                             return false;
                         }
 
-                        var key = span.Slice(keyStart, i - keyStart).ToString();
+                        var key = span.Slice(keyStart, i - keyStart)
+                                      .ToString();
                         i++;
 
                         if (i >= span.Length || span[i] != ']')
@@ -117,7 +120,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
                             i++;
                         }
 
-                        var selector = span.Slice(selectorStart, Math.Max(0, i - selectorStart)).ToString();
+                        var selector = span.Slice(selectorStart, Math.Max(0, i - selectorStart))
+                                           .ToString();
                         error = $"Unsupported selector '[{selector}]'. Only '[*]' is supported.";
                         return false;
                     }
@@ -154,7 +158,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
                             i++;
                         }
 
-                        var key = span.Slice(nameStart, i - nameStart).ToString();
+                        var key = span.Slice(nameStart, i - nameStart)
+                                      .ToString();
                         if (string.IsNullOrWhiteSpace(key))
                         {
                             error = "properties.<name> requires a non-empty name.";

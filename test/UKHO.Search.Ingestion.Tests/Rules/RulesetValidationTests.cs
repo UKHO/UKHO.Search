@@ -33,7 +33,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
 
             var ex = Should.Throw<IngestionRulesValidationException>(() => catalog.EnsureLoaded());
-            ex.Message.ShouldContain("invalid JSON", Case.Insensitive);
+            ex.Message.ShouldContain("invalid JSON");
             ex.InnerException.ShouldNotBeNull();
         }
 
@@ -42,18 +42,18 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         {
             using var temp = new TempRulesRoot();
             temp.WriteRulesFile("""
-            {
-              "rules": {
-                "file-share": [
-                  {
-                    "id": "r1",
-                    "if": { "any": [ { "path": "id", "exists": true } ] },
-                    "then": { "keywords": { "add": [ "k" ] } }
-                  }
-                ]
-              }
-            }
-            """);
+                                {
+                                  "rules": {
+                                    "file-share": [
+                                      {
+                                        "id": "r1",
+                                        "if": { "any": [ { "path": "id", "exists": true } ] },
+                                        "then": { "keywords": { "add": [ "k" ] } }
+                                      }
+                                    ]
+                                  }
+                                }
+                                """);
 
             using var provider = CreateProvider(temp.RootPath);
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
@@ -67,19 +67,19 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         {
             using var temp = new TempRulesRoot();
             temp.WriteRulesFile("""
-            {
-              "schemaVersion": "2.0",
-              "rules": {
-                "file-share": [
-                  {
-                    "id": "r1",
-                    "if": { "any": [ { "path": "id", "exists": true } ] },
-                    "then": { "keywords": { "add": [ "k" ] } }
-                  }
-                ]
-              }
-            }
-            """);
+                                {
+                                  "schemaVersion": "2.0",
+                                  "rules": {
+                                    "file-share": [
+                                      {
+                                        "id": "r1",
+                                        "if": { "any": [ { "path": "id", "exists": true } ] },
+                                        "then": { "keywords": { "add": [ "k" ] } }
+                                      }
+                                    ]
+                                  }
+                                }
+                                """);
 
             using var provider = CreateProvider(temp.RootPath);
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
@@ -93,11 +93,11 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         {
             using var temp = new TempRulesRoot();
             temp.WriteRulesFile("""
-            {
-              "schemaVersion": "1.0",
-              "rules": { }
-            }
-            """);
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rules": { }
+                                }
+                                """);
 
             using var provider = CreateProvider(temp.RootPath);
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
@@ -111,17 +111,17 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         {
             using var temp = new TempRulesRoot();
             temp.WriteRulesFile("""
-            {
-              "schemaVersion": "1.0",
-              "rules": {
-                "file-share": [
-                  { "id": "all-empty", "if": { "all": [ ] }, "then": { "keywords": { "add": [ "k" ] } } },
-                  { "id": "not-array", "if": { "not": [ ] }, "then": { "keywords": { "add": [ "k" ] } } },
-                  { "id": "multi", "if": { "all": [ { "path": "id", "exists": true } ], "any": [ { "path": "id", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } }
-                ]
-              }
-            }
-            """);
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rules": {
+                                    "file-share": [
+                                      { "id": "all-empty", "if": { "all": [ ] }, "then": { "keywords": { "add": [ "k" ] } } },
+                                      { "id": "not-array", "if": { "not": [ ] }, "then": { "keywords": { "add": [ "k" ] } } },
+                                      { "id": "multi", "if": { "all": [ { "path": "id", "exists": true } ], "any": [ { "path": "id", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } }
+                                    ]
+                                  }
+                                }
+                                """);
 
             using var provider = CreateProvider(temp.RootPath);
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
@@ -137,17 +137,17 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         {
             using var temp = new TempRulesRoot();
             temp.WriteRulesFile("""
-            {
-              "schemaVersion": "1.0",
-              "rules": {
-                "file-share": [
-                  { "id": "missing-wildcard", "if": { "any": [ { "path": "files.mimeType", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } },
-                  { "id": "numeric-index", "if": { "any": [ { "path": "files[0].mimeType", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } },
-                  { "id": "selector", "if": { "any": [ { "path": "files[name=\"a\"].mimeType", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } }
-                ]
-              }
-            }
-            """);
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rules": {
+                                    "file-share": [
+                                      { "id": "missing-wildcard", "if": { "any": [ { "path": "files.mimeType", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } },
+                                      { "id": "numeric-index", "if": { "any": [ { "path": "files[0].mimeType", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } },
+                                      { "id": "selector", "if": { "any": [ { "path": "files[name=\"a\"].mimeType", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } }
+                                    ]
+                                  }
+                                }
+                                """);
 
             using var provider = CreateProvider(temp.RootPath);
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
@@ -162,25 +162,25 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         {
             using var temp = new TempRulesRoot();
             temp.WriteRulesFile("""
-            {
-              "schemaVersion": "1.0",
-              "rules": {
-                "file-share": [
-                  {
-                    "id": "facet-bad",
-                    "if": { "any": [ { "path": "id", "exists": true } ] },
-                    "then": {
-                      "facets": {
-                        "add": [
-                          { "name": "facet1", "value": "a", "values": [ "b" ] }
-                        ]
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-            """);
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rules": {
+                                    "file-share": [
+                                      {
+                                        "id": "facet-bad",
+                                        "if": { "any": [ { "path": "id", "exists": true } ] },
+                                        "then": {
+                                          "facets": {
+                                            "add": [
+                                              { "name": "facet1", "value": "a", "values": [ "b" ] }
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                                """);
 
             using var provider = CreateProvider(temp.RootPath);
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();

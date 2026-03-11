@@ -5,6 +5,13 @@ namespace UKHO.Search.Ingestion.Tests.TestSupport
 {
     internal sealed class TestHostEnvironment : IHostEnvironment
     {
+        private string _contentRootPath = Directory.GetCurrentDirectory();
+
+        public TestHostEnvironment()
+        {
+            ContentRootFileProvider = new PhysicalFileProvider(_contentRootPath);
+        }
+
         public string EnvironmentName { get; set; } = Environments.Development;
 
         public string ApplicationName { get; set; } = "UKHO.Search.Ingestion.Tests";
@@ -20,12 +27,5 @@ namespace UKHO.Search.Ingestion.Tests.TestSupport
         }
 
         public IFileProvider ContentRootFileProvider { get; set; }
-
-        private string _contentRootPath = Directory.GetCurrentDirectory();
-
-        public TestHostEnvironment()
-        {
-            ContentRootFileProvider = new PhysicalFileProvider(_contentRootPath);
-        }
     }
 }

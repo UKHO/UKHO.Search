@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Shouldly;
-using UKHO.Search.Ingestion.Requests;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation;
+using UKHO.Search.Ingestion.Requests;
 using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests.Rules
@@ -16,7 +16,8 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
             using var doc = JsonDocument.Parse("""{ "path": "id", "exists": true }""");
 
-            evaluator.Evaluate("r1", doc.RootElement, payload).IsMatch.ShouldBeTrue();
+            evaluator.Evaluate("r1", doc.RootElement, payload)
+                     .IsMatch.ShouldBeTrue();
         }
 
         [Fact]
@@ -26,10 +27,12 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var evaluator = CreateEvaluator();
 
             using var starts = JsonDocument.Parse("""{ "path": "files[*].mimeType", "startsWith": "app/" }""");
-            evaluator.Evaluate("r1", starts.RootElement, payload).IsMatch.ShouldBeTrue();
+            evaluator.Evaluate("r1", starts.RootElement, payload)
+                     .IsMatch.ShouldBeTrue();
 
             using var ends = JsonDocument.Parse("""{ "path": "files[*].mimeType", "endsWith": "plain" }""");
-            evaluator.Evaluate("r1", ends.RootElement, payload).IsMatch.ShouldBeTrue();
+            evaluator.Evaluate("r1", ends.RootElement, payload)
+                     .IsMatch.ShouldBeTrue();
         }
 
         [Fact]
@@ -40,7 +43,8 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
             using var doc = JsonDocument.Parse("""{ "path": "properties.abcdef", "eq": "A VALUE" }""");
 
-            evaluator.Evaluate("r1", doc.RootElement, payload).IsMatch.ShouldBeTrue();
+            evaluator.Evaluate("r1", doc.RootElement, payload)
+                     .IsMatch.ShouldBeTrue();
         }
 
         [Fact]
@@ -51,7 +55,8 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
             using var doc = JsonDocument.Parse("""{ "path": "files[*].mimeType", "contains": "s63" }""");
 
-            evaluator.Evaluate("r1", doc.RootElement, payload).IsMatch.ShouldBeTrue();
+            evaluator.Evaluate("r1", doc.RootElement, payload)
+                     .IsMatch.ShouldBeTrue();
         }
 
         [Fact]
@@ -62,7 +67,8 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
             using var doc = JsonDocument.Parse("""{ "path": "files[*].mimeType", "in": ["text/plain"] }""");
 
-            evaluator.Evaluate("r1", doc.RootElement, payload).IsMatch.ShouldBeTrue();
+            evaluator.Evaluate("r1", doc.RootElement, payload)
+                     .IsMatch.ShouldBeTrue();
         }
 
         [Fact]
@@ -72,15 +78,16 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var evaluator = CreateEvaluator();
 
             using var doc = JsonDocument.Parse("""
-            {
-              "any": [
-                { "path": "id", "eq": "nope" },
-                { "path": "id", "eq": "doc-1" }
-              ]
-            }
-            """);
+                                               {
+                                                 "any": [
+                                                   { "path": "id", "eq": "nope" },
+                                                   { "path": "id", "eq": "doc-1" }
+                                                 ]
+                                               }
+                                               """);
 
-            evaluator.Evaluate("r1", doc.RootElement, payload).IsMatch.ShouldBeTrue();
+            evaluator.Evaluate("r1", doc.RootElement, payload)
+                     .IsMatch.ShouldBeTrue();
         }
 
         [Fact]
@@ -90,15 +97,16 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var evaluator = CreateEvaluator();
 
             using var doc = JsonDocument.Parse("""
-            {
-              "all": [
-                { "path": "id", "exists": true },
-                { "not": { "path": "id", "eq": "nope" } }
-              ]
-            }
-            """);
+                                               {
+                                                 "all": [
+                                                   { "path": "id", "exists": true },
+                                                   { "not": { "path": "id", "eq": "nope" } }
+                                                 ]
+                                               }
+                                               """);
 
-            evaluator.Evaluate("r1", doc.RootElement, payload).IsMatch.ShouldBeTrue();
+            evaluator.Evaluate("r1", doc.RootElement, payload)
+                     .IsMatch.ShouldBeTrue();
         }
 
         [Fact]
@@ -108,10 +116,12 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var evaluator = CreateEvaluator();
 
             using var doc = JsonDocument.Parse("""{ "id": "doc-1", "properties.abcdef": "a value" }""");
-            evaluator.Evaluate("r1", doc.RootElement, payload).IsMatch.ShouldBeTrue();
+            evaluator.Evaluate("r1", doc.RootElement, payload)
+                     .IsMatch.ShouldBeTrue();
 
             using var docFail = JsonDocument.Parse("""{ "id": "doc-1", "properties.abcdef": "nope" }""");
-            evaluator.Evaluate("r1", docFail.RootElement, payload).IsMatch.ShouldBeFalse();
+            evaluator.Evaluate("r1", docFail.RootElement, payload)
+                     .IsMatch.ShouldBeFalse();
         }
 
         [Fact]
@@ -122,7 +132,8 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
             using var doc = JsonDocument.Parse("""{ "path": "does.not.exist", "exists": true }""");
 
-            evaluator.Evaluate("r1", doc.RootElement, payload).IsMatch.ShouldBeFalse();
+            evaluator.Evaluate("r1", doc.RootElement, payload)
+                     .IsMatch.ShouldBeFalse();
         }
 
         private static IngestionRulesPredicateEvaluator CreateEvaluator()
@@ -133,19 +144,13 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
         private static AddItemRequest CreateAddItem()
         {
-            return new AddItemRequest(
-                id: "doc-1",
-                properties:
-                [
-                    new IngestionProperty { Name = "abcdef", Type = IngestionPropertyType.String, Value = "a value" }
-                ],
-                securityTokens: ["token"],
-                timestamp: DateTimeOffset.UtcNow,
-                files: new IngestionFileList
-                {
-                    new IngestionFile("f1", 1, DateTimeOffset.UtcNow, "app/s63"),
-                    new IngestionFile("f2", 1, DateTimeOffset.UtcNow, "text/plain")
-                });
+            return new AddItemRequest("doc-1", [
+                new IngestionProperty { Name = "abcdef", Type = IngestionPropertyType.String, Value = "a value" }
+            ], ["token"], DateTimeOffset.UtcNow, new IngestionFileList
+            {
+                new IngestionFile("f1", 1, DateTimeOffset.UtcNow, "app/s63"),
+                new IngestionFile("f2", 1, DateTimeOffset.UtcNow, "text/plain")
+            });
         }
     }
 }

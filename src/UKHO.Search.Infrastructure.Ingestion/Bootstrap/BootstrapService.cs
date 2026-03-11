@@ -11,8 +11,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Bootstrap
     public class BootstrapService : IBootstrapService
     {
         private readonly IConfiguration _configuration;
-        private readonly CanonicalIndexDefinition _indexDefinition;
         private readonly ElasticsearchClient _elasticClient;
+        private readonly CanonicalIndexDefinition _indexDefinition;
         private readonly ILogger<BootstrapService> _logger;
         private readonly IIngestionProviderService _providerService;
         private readonly QueueServiceClient _queueClient;

@@ -49,7 +49,8 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
 
             upsert.Document.Source.ShouldNotBeSameAs(add.Properties);
             upsert.Document.Source.Count.ShouldBe(1);
-            upsert.Document.Source[0].ShouldBeSameAs(p1);
+            upsert.Document.Source[0]
+                  .ShouldBeSameAs(p1);
             upsert.Document.Timestamp.ShouldBe(addTimestamp);
         }
 
@@ -89,7 +90,8 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
 
             upsert.Document.Source.ShouldNotBeSameAs(update.Properties);
             upsert.Document.Source.Count.ShouldBe(1);
-            upsert.Document.Source[0].ShouldBeSameAs(p1);
+            upsert.Document.Source[0]
+                  .ShouldBeSameAs(p1);
             upsert.Document.Timestamp.ShouldBe(updateTimestamp);
         }
 

@@ -16,6 +16,34 @@ namespace UKHO.Search.Ingestion.Requests
             Validate();
         }
 
+        public AddItemRequest()
+        {
+        }
+
+        [JsonPropertyName("Id")]
+        [JsonRequired]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Id { get; init; } = string.Empty;
+
+        [JsonPropertyName("Properties")]
+        [JsonRequired]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public IReadOnlyList<IngestionProperty> Properties { get; init; } = Array.Empty<IngestionProperty>();
+
+        [JsonPropertyName("SecurityTokens")]
+        [JsonRequired]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string[] SecurityTokens { get; init; } = Array.Empty<string>();
+
+        [JsonPropertyName("Timestamp")]
+        [JsonRequired]
+        public DateTimeOffset Timestamp { get; init; }
+
+        [JsonPropertyName("Files")]
+        [JsonRequired]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public IngestionFileList Files { get; init; } = new();
+
         public void OnDeserialized()
         {
             Validate();
@@ -67,33 +95,5 @@ namespace UKHO.Search.Ingestion.Requests
                 throw new JsonException($"AddItemRequest.Properties contains duplicate Name '{duplicates.Key}'. Names are case-insensitive.");
             }
         }
-
-        public AddItemRequest()
-        {
-        }
-
-        [JsonPropertyName("Id")]
-        [JsonRequired]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string Id { get; init; } = string.Empty;
-
-        [JsonPropertyName("Properties")]
-        [JsonRequired]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public IReadOnlyList<IngestionProperty> Properties { get; init; } = Array.Empty<IngestionProperty>();
-
-        [JsonPropertyName("SecurityTokens")]
-        [JsonRequired]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string[] SecurityTokens { get; init; } = Array.Empty<string>();
-
-        [JsonPropertyName("Timestamp")]
-        [JsonRequired]
-        public DateTimeOffset Timestamp { get; init; }
-
-        [JsonPropertyName("Files")]
-        [JsonRequired]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public IngestionFileList Files { get; init; } = new();
     }
 }

@@ -17,8 +17,8 @@ namespace UKHO.Search.Ingestion.Providers.FileShare
 
         private readonly IngestionRequestIngressChannel _ingress;
         private readonly ILogger<FileShareIngestionDataProvider> _logger;
-        private readonly string _providerName;
         private readonly FileShareIngestionProcessingGraphDependencies? _processingGraphDependencies;
+        private readonly string _providerName;
         private readonly CancellationTokenSource _shutdown = new();
         private readonly object _startGate = new();
         private int _disposed;
@@ -145,7 +145,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare
 
                 _logger.LogInformation("Starting provider processing graph. ProviderName={ProviderName}", Name);
 
-                 _processingGraph = FileShareIngestionProcessingGraph.Build(IngressReader, _processingGraphDependencies, Name, _shutdown.Token);
+                _processingGraph = FileShareIngestionProcessingGraph.Build(IngressReader, _processingGraphDependencies, Name, _shutdown.Token);
                 _startTask = _processingGraph.Supervisor.StartAsync();
 
                 return _startTask;

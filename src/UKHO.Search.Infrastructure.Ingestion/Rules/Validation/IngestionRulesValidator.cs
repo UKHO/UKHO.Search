@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.Json;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Model;
 
@@ -63,7 +62,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
                         }
 
                         var enabled = rule.Enabled ?? true;
-                        var predicate = ResolvePredicate(rule, errors: null);
+                        var predicate = ResolvePredicate(rule, null);
                         if (predicate is null || rule.Then is null || string.IsNullOrWhiteSpace(rule.Id))
                         {
                             continue;
@@ -330,7 +329,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
                 return;
             }
 
-            var props = node.EnumerateObject().ToArray();
+            var props = node.EnumerateObject()
+                            .ToArray();
             if (props.Length == 0)
             {
                 errors.Add("Predicate object must not be empty.");
@@ -470,12 +470,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
 
         private static bool IsSupportedOperator(string op)
         {
-            return op.Equals("exists", StringComparison.OrdinalIgnoreCase) ||
-                   op.Equals("eq", StringComparison.OrdinalIgnoreCase) ||
-                   op.Equals("contains", StringComparison.OrdinalIgnoreCase) ||
-                   op.Equals("startsWith", StringComparison.OrdinalIgnoreCase) ||
-                   op.Equals("endsWith", StringComparison.OrdinalIgnoreCase) ||
-                   op.Equals("in", StringComparison.OrdinalIgnoreCase);
+            return op.Equals("exists", StringComparison.OrdinalIgnoreCase) || op.Equals("eq", StringComparison.OrdinalIgnoreCase) || op.Equals("contains", StringComparison.OrdinalIgnoreCase) || op.Equals("startsWith", StringComparison.OrdinalIgnoreCase) || op.Equals("endsWith", StringComparison.OrdinalIgnoreCase) || op.Equals("in", StringComparison.OrdinalIgnoreCase);
         }
 
         private static void ValidateOperatorValue(string op, JsonElement value, List<string> errors)

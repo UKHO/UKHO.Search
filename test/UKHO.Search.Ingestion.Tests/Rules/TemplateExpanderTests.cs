@@ -1,7 +1,7 @@
 using Shouldly;
-using UKHO.Search.Ingestion.Requests;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Templating;
+using UKHO.Search.Ingestion.Requests;
 using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests.Rules
@@ -16,8 +16,10 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var expander = new IngestionRulesTemplateExpander();
             var context = new TemplateContext(payload, resolver, ["a", "b"]);
 
-            expander.Expand("$val", context).ShouldBe(new[] { "a", "b" });
-            expander.Expand("facet-$val", context).ShouldBe(new[] { "facet-a", "facet-b" });
+            expander.Expand("$val", context)
+                    .ShouldBe(new[] { "a", "b" });
+            expander.Expand("facet-$val", context)
+                    .ShouldBe(new[] { "facet-a", "facet-b" });
         }
 
         [Fact]
@@ -28,8 +30,10 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var expander = new IngestionRulesTemplateExpander();
             var context = new TemplateContext(payload, resolver, ["ignored"]);
 
-            expander.Expand("$path:id", context).ShouldBe(new[] { "doc-1" });
-            expander.Expand("mime-$path:files[*].mimeType", context).ShouldBe(new[] { "mime-app/s63", "mime-text/plain" });
+            expander.Expand("$path:id", context)
+                    .ShouldBe(new[] { "doc-1" });
+            expander.Expand("mime-$path:files[*].mimeType", context)
+                    .ShouldBe(new[] { "mime-app/s63", "mime-text/plain" });
         }
 
         [Fact]
@@ -39,25 +43,21 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var resolver = new IngestionRulesPathResolver();
             var expander = new IngestionRulesTemplateExpander();
 
-            expander.Expand("$nope", new TemplateContext(payload, resolver, ["a"])).ShouldBeEmpty();
-            expander.Expand("$val", new TemplateContext(payload, resolver, Array.Empty<string>())).ShouldBeEmpty();
+            expander.Expand("$nope", new TemplateContext(payload, resolver, ["a"]))
+                    .ShouldBeEmpty();
+            expander.Expand("$val", new TemplateContext(payload, resolver, Array.Empty<string>()))
+                    .ShouldBeEmpty();
         }
 
         private static AddItemRequest CreateAddItem()
         {
-            return new AddItemRequest(
-                id: "doc-1",
-                properties:
-                [
-                    new IngestionProperty { Name = "abcdef", Type = IngestionPropertyType.String, Value = "a value" }
-                ],
-                securityTokens: ["token"],
-                timestamp: DateTimeOffset.UtcNow,
-                files: new IngestionFileList
-                {
-                    new IngestionFile("f1", 1, DateTimeOffset.UtcNow, "app/s63"),
-                    new IngestionFile("f2", 1, DateTimeOffset.UtcNow, "text/plain")
-                });
+            return new AddItemRequest("doc-1", [
+                new IngestionProperty { Name = "abcdef", Type = IngestionPropertyType.String, Value = "a value" }
+            ], ["token"], DateTimeOffset.UtcNow, new IngestionFileList
+            {
+                new IngestionFile("f1", 1, DateTimeOffset.UtcNow, "app/s63"),
+                new IngestionFile("f2", 1, DateTimeOffset.UtcNow, "text/plain")
+            });
         }
     }
 }

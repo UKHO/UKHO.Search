@@ -86,7 +86,7 @@ namespace UKHO.Search.Tests.Pipelines.Metrics
             listener.Start();
 
             using var metrics = new NodeMetrics(nodeName, providerName);
-            metrics.RecordIn(item: null);
+            metrics.RecordIn(null);
 
             SpinWait.SpinUntil(() => !seen.IsEmpty, TimeSpan.FromSeconds(2))
                     .ShouldBeTrue();
@@ -197,7 +197,8 @@ namespace UKHO.Search.Tests.Pipelines.Metrics
             {
                 if (string.Equals(tags[i].Key, key, StringComparison.Ordinal))
                 {
-                    return tags[i].Value?.ToString();
+                    return tags[i]
+                           .Value?.ToString();
                 }
             }
 

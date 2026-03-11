@@ -1,5 +1,4 @@
 using IngestionServiceHost.Components;
-using Microsoft.Extensions.Logging;
 using Radzen;
 using UKHO.ADDS.Clients.FileShareService.ReadOnly;
 using UKHO.Aspire.Configuration;

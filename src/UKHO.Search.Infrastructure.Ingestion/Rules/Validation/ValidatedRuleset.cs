@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
 {
     internal sealed class ValidatedRuleset

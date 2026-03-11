@@ -13,7 +13,8 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes
         private readonly ChannelWriter<Envelope<IngestionRequest>> _deadLetterOutput;
         private readonly ILogger? _logger;
 
-        public IngestionRequestValidateNode(string name, ChannelReader<Envelope<IngestionRequest>> input, ChannelWriter<Envelope<IngestionRequest>> output, ChannelWriter<Envelope<IngestionRequest>> deadLetterOutput, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, string? providerName = null) : base(name, input, output, logger, fatalErrorReporter, providerName: providerName)
+        public IngestionRequestValidateNode(string name, ChannelReader<Envelope<IngestionRequest>> input, ChannelWriter<Envelope<IngestionRequest>> output, ChannelWriter<Envelope<IngestionRequest>> deadLetterOutput, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, string? providerName = null) : base(name, input, output, logger, fatalErrorReporter,
+            providerName: providerName)
         {
             _deadLetterOutput = deadLetterOutput;
             _logger = logger;

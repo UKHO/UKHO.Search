@@ -7,8 +7,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
 {
     internal sealed class IngestionRulesEnricher : IIngestionEnricher
     {
-        private readonly IIngestionRulesEngine _rulesEngine;
         private readonly IIngestionProviderContext _providerContext;
+        private readonly IIngestionRulesEngine _rulesEngine;
 
         public IngestionRulesEnricher(IIngestionRulesEngine rulesEngine, IIngestionProviderContext providerContext)
         {

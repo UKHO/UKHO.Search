@@ -10,9 +10,9 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
 {
     public sealed class FileContentEnricher : IIngestionEnricher
     {
-        private readonly IFileShareZipDownloader _zipDownloader;
         private readonly IConfiguration _configuration;
         private readonly ILogger<FileContentEnricher> _logger;
+        private readonly IFileShareZipDownloader _zipDownloader;
 
         public FileContentEnricher(IFileShareZipDownloader zipDownloader, IConfiguration configuration, ILogger<FileContentEnricher> logger)
         {
@@ -51,7 +51,8 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
                 var zipFilePath = Path.Combine(workingDirectory, "batch.zip");
                 var extractDirectory = Path.Combine(workingDirectory, "unzipped");
 
-                await DownloadZipFileAsync(batchId, zipFilePath, cancellationToken).ConfigureAwait(false);
+                await DownloadZipFileAsync(batchId, zipFilePath, cancellationToken)
+                    .ConfigureAwait(false);
                 try
                 {
                     ExtractZipFileSafely(zipFilePath, extractDirectory);
@@ -62,11 +63,13 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
                     throw;
                 }
 
-                await TryLoadCatalogXmlAsync(batchId, extractDirectory, cancellationToken).ConfigureAwait(false);
+                await TryLoadCatalogXmlAsync(batchId, extractDirectory, cancellationToken)
+                    .ConfigureAwait(false);
 
                 if (fileContentExtractionEnabled)
                 {
-                    await ExtractAndEnrichAsync(batchId, extractDirectory, allowedExtensions, document, cancellationToken).ConfigureAwait(false);
+                    await ExtractAndEnrichAsync(batchId, extractDirectory, allowedExtensions, document, cancellationToken)
+                        .ConfigureAwait(false);
                 }
             }
             finally
@@ -89,9 +92,9 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
             try
             {
                 await using var stream = File.OpenRead(catalogPath);
-                var catalogXml = await XDocument.LoadAsync(stream, LoadOptions.None, cancellationToken).ConfigureAwait(false);
+                var catalogXml = await XDocument.LoadAsync(stream, LoadOptions.None, cancellationToken)
+                                                .ConfigureAwait(false);
                 _ = catalogXml;
-                return;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
@@ -124,7 +127,8 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
 
         private static string CreateWorkingDirectory(string batchId)
         {
-            var basePath = Path.Combine(Path.GetTempPath(), "ukho-search", "fileshare", "kreuzberg", batchId, Guid.NewGuid().ToString("N"));
+            var basePath = Path.Combine(Path.GetTempPath(), "ukho-search", "fileshare", "kreuzberg", batchId, Guid.NewGuid()
+                                                                                                                  .ToString("N"));
             Directory.CreateDirectory(basePath);
             return basePath;
         }
@@ -133,11 +137,13 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
         {
             try
             {
-                await using var stream = await _zipDownloader.DownloadZipFileAsync(batchId, cancellationToken).ConfigureAwait(false);
+                await using var stream = await _zipDownloader.DownloadZipFileAsync(batchId, cancellationToken)
+                                                             .ConfigureAwait(false);
 
                 await using (var fileStream = new FileStream(zipFilePath, FileMode.Create, FileAccess.Write, System.IO.FileShare.None, 128 * 1024, true))
                 {
-                    await stream.CopyToAsync(fileStream, cancellationToken).ConfigureAwait(false);
+                    await stream.CopyToAsync(fileStream, cancellationToken)
+                                .ConfigureAwait(false);
                 }
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
@@ -173,21 +179,22 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
                 }
 
                 Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
-                entry.ExtractToFile(destinationPath, overwrite: true);
+                entry.ExtractToFile(destinationPath, true);
             }
         }
 
         private async Task ExtractAndEnrichAsync(string batchId, string extractDirectory, HashSet<string> allowedExtensions, CanonicalDocument document, CancellationToken cancellationToken)
         {
             var extractedFiles = Directory.EnumerateFiles(extractDirectory, "*", SearchOption.AllDirectories)
-                                         .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
-                                         .ToList();
+                                          .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+                                          .ToList();
 
             foreach (var filePath in extractedFiles)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var extension = Path.GetExtension(filePath).ToLowerInvariant();
+                var extension = Path.GetExtension(filePath)
+                                    .ToLowerInvariant();
                 if (string.IsNullOrWhiteSpace(extension) || !allowedExtensions.Contains(extension))
                 {
                     continue;
@@ -195,7 +202,8 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
 
                 try
                 {
-                    var result = await KreuzbergClient.ExtractFileAsync(filePath, config: null, cancellationToken).ConfigureAwait(false);
+                    var result = await KreuzbergClient.ExtractFileAsync(filePath, null, cancellationToken)
+                                                      .ConfigureAwait(false);
                     if (string.IsNullOrWhiteSpace(result.Content))
                     {
                         continue;
@@ -224,7 +232,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
             {
                 if (Directory.Exists(directory))
                 {
-                    Directory.Delete(directory, recursive: true);
+                    Directory.Delete(directory, true);
                 }
             }
             catch (Exception ex)

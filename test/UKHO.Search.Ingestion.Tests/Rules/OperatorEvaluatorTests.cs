@@ -13,7 +13,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             using var doc = JsonDocument.Parse("\"foo\"");
 
             IngestionRulesOperatorEvaluator.Evaluate("eq", new[] { " Foo ", "bar" }, doc.RootElement, out var matched)
-                .ShouldBeTrue();
+                                           .ShouldBeTrue();
 
             matched.ShouldBe(new[] { " Foo " });
         }
@@ -24,7 +24,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             using var doc = JsonDocument.Parse("\"s63\"");
 
             IngestionRulesOperatorEvaluator.Evaluate("contains", new[] { "APP/S63", "text/plain" }, doc.RootElement, out var matched)
-                .ShouldBeTrue();
+                                           .ShouldBeTrue();
 
             matched.ShouldBe(new[] { "APP/S63" });
         }
@@ -36,11 +36,11 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             using var ends = JsonDocument.Parse("\"plain\"");
 
             IngestionRulesOperatorEvaluator.Evaluate("startsWith", new[] { " APP/S63 ", "text/plain" }, starts.RootElement, out var startsMatched)
-                .ShouldBeTrue();
+                                           .ShouldBeTrue();
             startsMatched.ShouldBe(new[] { " APP/S63 " });
 
             IngestionRulesOperatorEvaluator.Evaluate("endsWith", new[] { "APP/S63", "text/plain" }, ends.RootElement, out var endsMatched)
-                .ShouldBeTrue();
+                                           .ShouldBeTrue();
             endsMatched.ShouldBe(new[] { "text/plain" });
         }
 
@@ -50,7 +50,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             using var doc = JsonDocument.Parse("[\"a\", \"b\"]");
 
             IngestionRulesOperatorEvaluator.Evaluate("in", new[] { "c", " B " }, doc.RootElement, out var matched)
-                .ShouldBeTrue();
+                                           .ShouldBeTrue();
 
             matched.ShouldBe(new[] { " B " });
         }
@@ -61,7 +61,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             using var doc = JsonDocument.Parse("true");
 
             IngestionRulesOperatorEvaluator.Evaluate("exists", new[] { "", "  ", "x" }, doc.RootElement, out var matched)
-                .ShouldBeTrue();
+                                           .ShouldBeTrue();
 
             matched.ShouldBe(new[] { "x" });
         }

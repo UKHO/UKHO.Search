@@ -16,7 +16,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare
                 throw new ArgumentOutOfRangeException(nameof(capacity), "Ingress channel capacity must be > 0.");
             }
 
-            _channel = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(capacity, true, false);
+            _channel = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(capacity, true);
         }
 
         public ChannelReader<Envelope<IngestionRequest>> Reader => _channel.Reader;

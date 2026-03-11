@@ -28,36 +28,36 @@
             <RadzenText TextStyle="TextStyle.Body2">Indexes the next <b>Count</b> pending batch(es) only. Use this for incremental indexing.</RadzenText>
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" Gap="1rem" Style="flex-wrap: wrap;">
                 <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem">
-                    <RadzenLabel Text="Count" Component="indexCount" />
-                    <RadzenNumeric id="indexCount" TValue="int" Style="width: 8rem" Min="1" Value="@(_count ?? 0)" Change="@(args => SetCount(args))" />
+                    <RadzenLabel Text="Count" Component="indexCount"/>
+                    <RadzenNumeric id="indexCount" TValue="int" Style="width: 8rem" Min="1" Value="@(_count ?? 0)" Change="@(args => SetCount(args))"/>
                 </RadzenStack>
 
-                <RadzenButton Text="Index" ButtonStyle="ButtonStyle.Secondary" Disabled="@(!_canIndex || _isIndexing || _isDeletingIndexes)" Click="@IndexNextAsync" />
+                <RadzenButton Text="Index" ButtonStyle="ButtonStyle.Secondary" Disabled="@(!_canIndex || _isIndexing || _isDeletingIndexes)" Click="@IndexNextAsync"/>
             </RadzenStack>
         </RadzenStack>
 
-        <RadzenDivider />
+        <RadzenDivider/>
 
         <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem">
             <RadzenText TextStyle="TextStyle.H6">Index all pending batches</RadzenText>
             <RadzenText TextStyle="TextStyle.Body2">Indexes everything currently marked as pending, continuing until there are no pending batches left.</RadzenText>
-            <RadzenButton Text="Index All" ButtonStyle="ButtonStyle.Primary" Disabled="@(_isIndexing || _isDeletingIndexes)" Click="@IndexAllAsync" />
+            <RadzenButton Text="Index All" ButtonStyle="ButtonStyle.Primary" Disabled="@(_isIndexing || _isDeletingIndexes)" Click="@IndexAllAsync"/>
         </RadzenStack>
 
-        <RadzenDivider />
+        <RadzenDivider/>
 
         <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem">
             <RadzenText TextStyle="TextStyle.H6">Reset all batches to pending</RadzenText>
             <RadzenText TextStyle="TextStyle.Body2">Marks all batches as pending so they can be re-indexed from scratch (does not delete Elasticsearch indexes).</RadzenText>
-            <RadzenButton Text="Reset All" ButtonStyle="ButtonStyle.Light" Disabled="@(_isIndexing || _isDeletingIndexes)" Click="@ResetAllAsync" />
+            <RadzenButton Text="Reset All" ButtonStyle="ButtonStyle.Light" Disabled="@(_isIndexing || _isDeletingIndexes)" Click="@ResetAllAsync"/>
         </RadzenStack>
 
-        <RadzenDivider />
+        <RadzenDivider/>
 
         <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem">
             <RadzenText TextStyle="TextStyle.H6">Delete Elasticsearch indexes</RadzenText>
             <RadzenText TextStyle="TextStyle.Body2">Deletes <b>all</b> indexes in the connected Elasticsearch instance (using <code>*</code>). Use with caution.</RadzenText>
-            <RadzenButton Text="Delete Indexes" ButtonStyle="ButtonStyle.Danger" Disabled="@(_isIndexing || _isDeletingIndexes)" Click="@DeleteIndexesAsync" />
+            <RadzenButton Text="Delete Indexes" ButtonStyle="ButtonStyle.Danger" Disabled="@(_isIndexing || _isDeletingIndexes)" Click="@DeleteIndexesAsync"/>
 
             @if (_deleteIndexesMessage is not null)
             {

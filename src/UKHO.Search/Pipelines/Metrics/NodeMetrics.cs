@@ -16,15 +16,13 @@ namespace UKHO.Search.Pipelines.Metrics
         private static readonly Counter<long> _nodeDropped = _meter.CreateCounter<long>("ukho.pipeline.node.dropped");
         private static readonly Histogram<double> _nodeDurationMs = _meter.CreateHistogram<double>("ukho.pipeline.node.duration_ms");
 
-        private readonly record struct GaugeProvider(Func<long> ValueProvider, KeyValuePair<string, object?>[] Tags);
-
         private static readonly ConcurrentDictionary<(string Provider, string Node), GaugeProvider> _inFlightProviders = new();
         private static readonly ConcurrentDictionary<(string Provider, string Node), GaugeProvider> _queueDepthProviders = new();
 
         private readonly string _nodeName;
+        private readonly (string Provider, string Node) _providerKey;
         private readonly string _providerName;
         private readonly Func<long> _queueDepthProvider;
-        private readonly (string Provider, string Node) _providerKey;
         private readonly KeyValuePair<string, object?>[] _tags;
         private long _inFlight;
 
@@ -34,7 +32,7 @@ namespace UKHO.Search.Pipelines.Metrics
             _providerName = string.Empty;
             _queueDepthProvider = queueDepthProvider ?? (() => 0);
             _providerKey = (_providerName, _nodeName);
-            _tags = CreateTags(_nodeName, providerName: null);
+            _tags = CreateTags(_nodeName, null);
 
             _inFlightProviders[_providerKey] = new GaugeProvider(() => Volatile.Read(ref _inFlight), _tags);
             _queueDepthProviders[_providerKey] = new GaugeProvider(_queueDepthProvider, _tags);
@@ -128,6 +126,8 @@ namespace UKHO.Search.Pipelines.Metrics
                 new KeyValuePair<string, object?>("node", nodeName)
             ];
         }
+
+        private readonly record struct GaugeProvider(Func<long> ValueProvider, KeyValuePair<string, object?>[] Tags);
 
         // Gauges must be singletons per meter name; they return measurements for all nodes via tags.
 #pragma warning disable IDE0052

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Linq;
 using System.Reflection;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Validation;
 
@@ -14,7 +13,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation
                 return Array.Empty<string>();
             }
 
-            if (!IngestionRulesPathParser.TryParse(path, out var steps, out _))
+            if (!IngestionRulesPathParser.TryParse(path, out var steps, out var _))
             {
                 // Should be prevented by startup validation. Treat as non-match.
                 return Array.Empty<string>();
@@ -37,9 +36,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation
 
                     // Special-case: properties.<name> and properties["<name>"] are represented as
                     // property("properties") + propertiesLookup("<name>") by the parser.
-                    if (string.Equals(name, "properties", StringComparison.OrdinalIgnoreCase) &&
-                        i + 1 < steps.Count &&
-                        string.Equals(steps[i + 1].Kind, "propertiesLookup", StringComparison.Ordinal))
+                    if (string.Equals(name, "properties", StringComparison.OrdinalIgnoreCase) && i + 1 < steps.Count && string.Equals(steps[i + 1].Kind, "propertiesLookup", StringComparison.Ordinal))
                     {
                         return ResolvePropertiesLookup(payload, steps[i + 1].Value ?? string.Empty);
                     }
@@ -175,7 +172,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation
             {
                 null => null,
                 string s => s,
-                _ => value.ToString()
+                var _ => value.ToString()
             };
         }
     }

@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace UKHO.Search.Infrastructure.Ingestion.Rules.Templating
 {
     internal sealed class IngestionRulesTemplateExpander
@@ -59,7 +57,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Templating
                 }
             }
 
-            return outputs.Where(o => !string.IsNullOrWhiteSpace(o)).ToArray();
+            return outputs.Where(o => !string.IsNullOrWhiteSpace(o))
+                          .ToArray();
         }
 
         private static IReadOnlyList<string> ResolveVariable(string variableKind, string? argument, TemplateContext context)
@@ -97,14 +96,16 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Templating
 
             startIndex = i;
 
-            if (text.AsSpan(i).StartsWith("$val".AsSpan(), StringComparison.Ordinal))
+            if (text.AsSpan(i)
+                    .StartsWith("$val".AsSpan(), StringComparison.Ordinal))
             {
                 length = 4;
                 variableKind = "val";
                 return true;
             }
 
-            if (text.AsSpan(i).StartsWith("$path:".AsSpan(), StringComparison.Ordinal))
+            if (text.AsSpan(i)
+                    .StartsWith("$path:".AsSpan(), StringComparison.Ordinal))
             {
                 variableKind = "path";
 

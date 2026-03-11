@@ -153,25 +153,8 @@ namespace UKHO.Search.Ingestion.Tests
         [Fact]
         public void IngestionRequestEnvelope_GoldenJson_AddItem_Deserializes()
         {
-            var json = "{" +
-                       "\"RequestType\":\"AddItem\"," +
-                       "\"AddItem\":{" +
-                       "\"Id\":\"ABC123\"," +
-                       "\"Timestamp\":\"2026-03-05T10:15:30+00:00\"," +
-                       "\"Files\":[{" +
-                       "\"Filename\":\"a.txt\"," +
-                       "\"Size\":123," +
-                       "\"Timestamp\":\"2026-03-05T10:15:31+00:00\"," +
-                       "\"MimeType\":\"text/plain\"" +
-                       "}]," +
-                       "\"Properties\":[{" +
-                       "\"Name\":\"Title\"," +
-                       "\"Type\":\"string\"," +
-                       "\"Value\":\"Hello\"" +
-                       "}]," +
-                       "\"SecurityTokens\":[\"t\"]" +
-                       "}" +
-                       "}";
+            var json = "{" + "\"RequestType\":\"AddItem\"," + "\"AddItem\":{" + "\"Id\":\"ABC123\"," + "\"Timestamp\":\"2026-03-05T10:15:30+00:00\"," + "\"Files\":[{" + "\"Filename\":\"a.txt\"," + "\"Size\":123," + "\"Timestamp\":\"2026-03-05T10:15:31+00:00\"," + "\"MimeType\":\"text/plain\"" + "}]," + "\"Properties\":[{" + "\"Name\":\"Title\"," + "\"Type\":\"string\"," + "\"Value\":\"Hello\"" +
+                "}]," + "\"SecurityTokens\":[\"t\"]" + "}" + "}";
 
             var hydrated = JsonSerializer.Deserialize<IngestionRequest>(json, _options);
             hydrated.ShouldNotBeNull();
@@ -180,10 +163,14 @@ namespace UKHO.Search.Ingestion.Tests
 
             hydrated.AddItem!.Timestamp.ShouldBe(new DateTimeOffset(2026, 3, 5, 10, 15, 30, TimeSpan.Zero));
             hydrated.AddItem.Files.Count.ShouldBe(1);
-            hydrated.AddItem.Files[0].Filename.ShouldBe("a.txt");
-            hydrated.AddItem.Files[0].Size.ShouldBe(123);
-            hydrated.AddItem.Files[0].Timestamp.ShouldBe(new DateTimeOffset(2026, 3, 5, 10, 15, 31, TimeSpan.Zero));
-            hydrated.AddItem.Files[0].MimeType.ShouldBe("text/plain");
+            hydrated.AddItem.Files[0]
+                    .Filename.ShouldBe("a.txt");
+            hydrated.AddItem.Files[0]
+                    .Size.ShouldBe(123);
+            hydrated.AddItem.Files[0]
+                    .Timestamp.ShouldBe(new DateTimeOffset(2026, 3, 5, 10, 15, 31, TimeSpan.Zero));
+            hydrated.AddItem.Files[0]
+                    .MimeType.ShouldBe("text/plain");
         }
 
         [Fact]
@@ -251,7 +238,8 @@ namespace UKHO.Search.Ingestion.Tests
             };
 
             var json = JsonSerializer.Serialize(list, _options);
-            json.TrimStart().ShouldStartWith("[");
+            json.TrimStart()
+                .ShouldStartWith("[");
 
             var hydrated = JsonSerializer.Deserialize<IngestionFileList>(json, _options);
             hydrated.ShouldNotBeNull();

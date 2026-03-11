@@ -17,7 +17,8 @@ namespace UKHO.Search.Ingestion.Tests.Documents
             doc.AddFacetValue(" category ", " alpha ");
 
             doc.Facets.Keys.ShouldBe(new[] { "category" });
-            doc.Facets["category"].ShouldBe(new[] { "alpha" });
+            doc.Facets["category"]
+               .ShouldBe(new[] { "alpha" });
         }
 
         [Fact]
@@ -40,7 +41,8 @@ namespace UKHO.Search.Ingestion.Tests.Documents
 
             doc.AddFacetValues("tag", new[] { "A", "b", "A", null, "  " });
 
-            doc.Facets["tag"].ShouldBe(new[] { "a", "b" });
+            doc.Facets["tag"]
+               .ShouldBe(new[] { "a", "b" });
         }
 
         private static CanonicalDocument CreateDoc()

@@ -1,6 +1,6 @@
 using Shouldly;
-using UKHO.Search.Ingestion.Requests;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation;
+using UKHO.Search.Ingestion.Requests;
 using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests.Rules
@@ -13,7 +13,8 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var payload = CreateAddItem();
             var resolver = new IngestionRulesPathResolver();
 
-            resolver.Resolve(payload, "id").ShouldBe(new[] { "doc-1" });
+            resolver.Resolve(payload, "id")
+                    .ShouldBe(new[] { "doc-1" });
         }
 
         [Fact]
@@ -22,7 +23,8 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var payload = CreateAddItem();
             var resolver = new IngestionRulesPathResolver();
 
-            resolver.Resolve(payload, "files[*].mimeType").ShouldBe(new[] { "app/s63", "text/plain" });
+            resolver.Resolve(payload, "files[*].mimeType")
+                    .ShouldBe(new[] { "app/s63", "text/plain" });
         }
 
         [Fact]
@@ -31,7 +33,8 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var payload = CreateAddItem();
             var resolver = new IngestionRulesPathResolver();
 
-            resolver.Resolve(payload, "properties.abcdef").ShouldBe(new[] { "a value" });
+            resolver.Resolve(payload, "properties.abcdef")
+                    .ShouldBe(new[] { "a value" });
         }
 
         [Fact]
@@ -40,24 +43,19 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var payload = CreateAddItem();
             var resolver = new IngestionRulesPathResolver();
 
-            resolver.Resolve(payload, "properties[\"abcdef\"]").ShouldBe(new[] { "a value" });
+            resolver.Resolve(payload, "properties[\"abcdef\"]")
+                    .ShouldBe(new[] { "a value" });
         }
 
         private static AddItemRequest CreateAddItem()
         {
-            return new AddItemRequest(
-                id: "doc-1",
-                properties:
-                [
-                    new IngestionProperty { Name = "abcdef", Type = IngestionPropertyType.String, Value = "a value" }
-                ],
-                securityTokens: ["token"],
-                timestamp: DateTimeOffset.UtcNow,
-                files: new IngestionFileList
-                {
-                    new IngestionFile("f1", 1, DateTimeOffset.UtcNow, "app/s63"),
-                    new IngestionFile("f2", 1, DateTimeOffset.UtcNow, "text/plain")
-                });
+            return new AddItemRequest("doc-1", [
+                new IngestionProperty { Name = "abcdef", Type = IngestionPropertyType.String, Value = "a value" }
+            ], ["token"], DateTimeOffset.UtcNow, new IngestionFileList
+            {
+                new IngestionFile("f1", 1, DateTimeOffset.UtcNow, "app/s63"),
+                new IngestionFile("f2", 1, DateTimeOffset.UtcNow, "text/plain")
+            });
         }
     }
 }

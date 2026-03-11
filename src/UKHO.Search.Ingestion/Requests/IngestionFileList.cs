@@ -6,8 +6,7 @@ namespace UKHO.Search.Ingestion.Requests
         {
         }
 
-        public IngestionFileList(IEnumerable<IngestionFile> files)
-            : base(files)
+        public IngestionFileList(IEnumerable<IngestionFile> files) : base(files)
         {
         }
     }

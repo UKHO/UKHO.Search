@@ -87,7 +87,7 @@ namespace FileShareEmulator.Api
 
                     // Stream the zip directly from blob storage (no buffering in memory).
                     var download = await resolvedBlobClient.DownloadStreamingAsync(cancellationToken: cancellationToken)
-                                                          .ConfigureAwait(false);
+                                                           .ConfigureAwait(false);
 
                     var contentType = download.Value.Details.ContentType;
                     if (string.IsNullOrWhiteSpace(contentType))

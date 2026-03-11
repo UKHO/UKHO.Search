@@ -15,6 +15,28 @@ namespace UKHO.Search.Ingestion.Requests
             Validate();
         }
 
+        public IngestionFile()
+        {
+        }
+
+        [JsonPropertyName("Filename")]
+        [JsonRequired]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Filename { get; init; } = string.Empty;
+
+        [JsonPropertyName("Size")]
+        [JsonRequired]
+        public long Size { get; init; }
+
+        [JsonPropertyName("Timestamp")]
+        [JsonRequired]
+        public DateTimeOffset Timestamp { get; init; }
+
+        [JsonPropertyName("MimeType")]
+        [JsonRequired]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string MimeType { get; init; } = string.Empty;
+
         public void OnDeserialized()
         {
             Validate();
@@ -37,27 +59,5 @@ namespace UKHO.Search.Ingestion.Requests
                 throw new JsonException("IngestionFile.MimeType is required.");
             }
         }
-
-        public IngestionFile()
-        {
-        }
-
-        [JsonPropertyName("Filename")]
-        [JsonRequired]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string Filename { get; init; } = string.Empty;
-
-        [JsonPropertyName("Size")]
-        [JsonRequired]
-        public long Size { get; init; }
-
-        [JsonPropertyName("Timestamp")]
-        [JsonRequired]
-        public DateTimeOffset Timestamp { get; init; }
-
-        [JsonPropertyName("MimeType")]
-        [JsonRequired]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string MimeType { get; init; } = string.Empty;
     }
 }

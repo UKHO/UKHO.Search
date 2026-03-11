@@ -1,4 +1,3 @@
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Validation;
 
@@ -6,8 +5,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
 {
     internal sealed class IngestionRulesCatalog : IIngestionRulesCatalog
     {
-        private readonly ILogger<IngestionRulesCatalog> _logger;
         private readonly IngestionRulesLoader _loader;
+        private readonly ILogger<IngestionRulesCatalog> _logger;
         private readonly IngestionRulesValidator _validator;
 
         private ValidatedRuleset? _ruleset;
@@ -27,10 +26,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
         public IReadOnlyDictionary<string, IReadOnlyList<string>> GetRuleIdsByProvider()
         {
             var ruleset = GetOrLoadRuleset();
-            return ruleset.RulesByProvider.ToDictionary(
-                k => k.Key,
-                v => (IReadOnlyList<string>)v.Value.Select(r => r.Id).ToArray(),
-                StringComparer.OrdinalIgnoreCase);
+            return ruleset.RulesByProvider.ToDictionary(k => k.Key, v => (IReadOnlyList<string>)v.Value.Select(r => r.Id)
+                                                                                                 .ToArray(), StringComparer.OrdinalIgnoreCase);
         }
 
         internal bool TryGetProviderRules(string providerName, out IReadOnlyList<ValidatedRule> rules)

@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.Json;
 
 namespace UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation
@@ -16,7 +15,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation
 
             if (@operator.Equals("exists", StringComparison.OrdinalIgnoreCase))
             {
-                var nonEmpty = resolvedValues.Where(v => !string.IsNullOrWhiteSpace(v)).ToArray();
+                var nonEmpty = resolvedValues.Where(v => !string.IsNullOrWhiteSpace(v))
+                                             .ToArray();
                 matchedValues = nonEmpty;
                 return nonEmpty.Length > 0;
             }
@@ -48,7 +48,9 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation
                     return false;
                 }
 
-                var matched = resolvedValues.Where(v => set.Contains(Normalize(v))).Where(v => !string.IsNullOrEmpty(v)).ToArray();
+                var matched = resolvedValues.Where(v => set.Contains(Normalize(v)))
+                                            .Where(v => !string.IsNullOrEmpty(v))
+                                            .ToArray();
                 matchedValues = matched;
                 return matched.Length > 0;
             }
@@ -66,28 +68,39 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation
 
             if (@operator.Equals("eq", StringComparison.OrdinalIgnoreCase))
             {
-                var matched = resolvedValues.Where(v => Normalize(v) == comparator).Where(v => !string.IsNullOrEmpty(v)).ToArray();
+                var matched = resolvedValues.Where(v => Normalize(v) == comparator)
+                                            .Where(v => !string.IsNullOrEmpty(v))
+                                            .ToArray();
                 matchedValues = matched;
                 return matched.Length > 0;
             }
 
             if (@operator.Equals("contains", StringComparison.OrdinalIgnoreCase))
             {
-                var matched = resolvedValues.Where(v => Normalize(v).Contains(comparator, StringComparison.Ordinal)).Where(v => !string.IsNullOrEmpty(v)).ToArray();
+                var matched = resolvedValues.Where(v => Normalize(v)
+                                                .Contains(comparator, StringComparison.Ordinal))
+                                            .Where(v => !string.IsNullOrEmpty(v))
+                                            .ToArray();
                 matchedValues = matched;
                 return matched.Length > 0;
             }
 
             if (@operator.Equals("startsWith", StringComparison.OrdinalIgnoreCase))
             {
-                var matched = resolvedValues.Where(v => Normalize(v).StartsWith(comparator, StringComparison.Ordinal)).Where(v => !string.IsNullOrEmpty(v)).ToArray();
+                var matched = resolvedValues.Where(v => Normalize(v)
+                                                .StartsWith(comparator, StringComparison.Ordinal))
+                                            .Where(v => !string.IsNullOrEmpty(v))
+                                            .ToArray();
                 matchedValues = matched;
                 return matched.Length > 0;
             }
 
             if (@operator.Equals("endsWith", StringComparison.OrdinalIgnoreCase))
             {
-                var matched = resolvedValues.Where(v => Normalize(v).EndsWith(comparator, StringComparison.Ordinal)).Where(v => !string.IsNullOrEmpty(v)).ToArray();
+                var matched = resolvedValues.Where(v => Normalize(v)
+                                                .EndsWith(comparator, StringComparison.Ordinal))
+                                            .Where(v => !string.IsNullOrEmpty(v))
+                                            .ToArray();
                 matchedValues = matched;
                 return matched.Length > 0;
             }
@@ -97,7 +110,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation
 
         private static string Normalize(string? input)
         {
-            return (input ?? string.Empty).Trim().ToLowerInvariant();
+            return (input ?? string.Empty).Trim()
+                                          .ToLowerInvariant();
         }
     }
 }

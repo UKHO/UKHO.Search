@@ -16,7 +16,8 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(batchId);
 
-            var result = await _fileShareClient.DownloadZipFileAsync(batchId, cancellationToken).ConfigureAwait(false);
+            var result = await _fileShareClient.DownloadZipFileAsync(batchId, cancellationToken)
+                                               .ConfigureAwait(false);
             if (!result.IsSuccess(out var stream, out var error) || stream is null)
             {
                 throw new InvalidOperationException($"Failed to download ZIP from FileShare for batch '{batchId}': {error}");

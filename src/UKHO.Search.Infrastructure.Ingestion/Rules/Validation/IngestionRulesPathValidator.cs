@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Linq;
 using System.Reflection;
 using UKHO.Search.Ingestion.Requests;
 
@@ -25,7 +24,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
 
             foreach (var payloadType in _payloadTypes)
             {
-                if (TryValidateAgainstType(payloadType, steps, out _))
+                if (TryValidateAgainstType(payloadType, steps, out var _))
                 {
                     return true;
                 }
@@ -134,7 +133,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
             }
 
             var enumerableInterface = sequenceType.GetInterfaces()
-                .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+                                                  .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
 
             if (enumerableInterface is not null)
             {

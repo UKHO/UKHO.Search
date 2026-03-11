@@ -1,10 +1,9 @@
-using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Shouldly;
 using UKHO.Search.Infrastructure.Ingestion.Injection;
-using UKHO.Search.Ingestion;
 using UKHO.Search.Ingestion.Pipeline.Documents;
 using UKHO.Search.Ingestion.Providers.FileShare.Enrichment;
 using UKHO.Search.Ingestion.Requests;
@@ -26,30 +25,31 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             {
                 var rulesPath = Path.Combine(tempRoot, "ingestion-rules.json");
                 await File.WriteAllTextAsync(rulesPath, """
-                {
-                  "schemaVersion": "1.0",
-                  "rules": {
-                    "file-share": [
-                      {
-                        "id": "slice1-test-rule",
-                        "if": { "any": [ { "path": "id", "exists": true } ] },
-                        "then": { "keywords": { "add": [ "slice1-keyword" ] } }
-                      }
-                    ]
-                  }
-                }
-                """);
+                                                        {
+                                                          "schemaVersion": "1.0",
+                                                          "rules": {
+                                                            "file-share": [
+                                                              {
+                                                                "id": "slice1-test-rule",
+                                                                "if": { "any": [ { "path": "id", "exists": true } ] },
+                                                                "then": { "keywords": { "add": [ "slice1-keyword" ] } }
+                                                              }
+                                                            ]
+                                                          }
+                                                        }
+                                                        """);
 
                 var env = new TestHostEnvironment { ContentRootPath = tempRoot };
 
                 var services = new ServiceCollection();
-                services.AddSingleton<Microsoft.Extensions.Hosting.IHostEnvironment>(env);
+                services.AddSingleton<IHostEnvironment>(env);
                 services.AddLogging(b => b.SetMinimumLevel(LogLevel.Debug));
 
                 services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["ingestion:fileContentExtractionAllowedExtensions"] = string.Empty
-                }).Build());
+                                                                                {
+                                                                                    ["ingestion:fileContentExtractionAllowedExtensions"] = string.Empty
+                                                                                })
+                                                                                .Build());
 
                 services.AddIngestionServices();
 
@@ -61,12 +61,12 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                 var providerContext = scope.ServiceProvider.GetRequiredService<IIngestionProviderContext>();
                 providerContext.ProviderName = "file-share";
 
-                var enrichers = scope.ServiceProvider.GetServices<IIngestionEnricher>().ToArray();
-                var rulesEnricher = enrichers.Single(x => string.Equals(x.GetType().Name, "IngestionRulesEnricher", StringComparison.Ordinal));
+                var enrichers = scope.ServiceProvider.GetServices<IIngestionEnricher>()
+                                     .ToArray();
+                var rulesEnricher = enrichers.Single(x => string.Equals(x.GetType()
+                                                                         .Name, "IngestionRulesEnricher", StringComparison.Ordinal));
 
-                var request = new IngestionRequest(IngestionRequestType.AddItem,
-                    new AddItemRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList()),
-                    null, null, null);
+                var request = new IngestionRequest(IngestionRequestType.AddItem, new AddItemRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList()), null, null, null);
 
                 var doc = CanonicalDocument.CreateMinimal("doc-1", request.AddItem!.Properties, request.AddItem.Timestamp);
 
@@ -76,9 +76,8 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             }
             finally
             {
-                Directory.Delete(tempRoot, recursive: true);
+                Directory.Delete(tempRoot, true);
             }
-
         }
     }
 }
