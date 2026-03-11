@@ -1,74 +1,86 @@
 using System.Text.Json;
 using Azure.Messaging.EventGrid;
-using UKHO.Aspire.Configuration.Emulator.Common;
-using UKHO.Aspire.Configuration.Emulator.Messaging.EventGrid;
+using UKHO.ADDS.Aspire.Configuration.Emulator.Common;
+using UKHO.ADDS.Aspire.Configuration.Emulator.Messaging.EventGrid;
 
-namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
+namespace UKHO.ADDS.Aspire.Configuration.Emulator.ConfigurationSettings;
+
+public class EventGridMessagingConfigurationSettingRepository(
+    IConfigurationSettingRepository inner,
+    IEventGridEventFactory eventGridEventFactory,
+    EventGridPublisherClient eventGridPublisherClient) : IConfigurationSettingRepository
 {
-    public class EventGridMessagingConfigurationSettingRepository(IConfigurationSettingRepository inner, IEventGridEventFactory eventGridEventFactory, EventGridPublisherClient eventGridPublisherClient) : IConfigurationSettingRepository
+    public async Task Add(
+        ConfigurationSetting setting,
+        CancellationToken cancellationToken = default)
     {
-        public async Task Add(ConfigurationSetting setting, CancellationToken cancellationToken = default)
-        {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Add)}");
+        using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Add)}");
 
-            await inner.Add(setting, cancellationToken);
+        await inner.Add(setting, cancellationToken);
 
-            var eventGridEvent = CreateEventGridEvent(EventType.ConfigurationSettingModified, setting);
+        var eventGridEvent = CreateEventGridEvent(EventType.ConfigurationSettingModified, setting);
 
-            activity?.SetTag(Telemetry.MessagingEventId, eventGridEvent.Id);
-            activity?.SetTag(Telemetry.MessagingEventSubject, eventGridEvent.Subject);
-            activity?.SetTag(Telemetry.MessagingEventTime, eventGridEvent.EventTime);
-            activity?.SetTag(Telemetry.MessagingEventType, eventGridEvent.EventType);
+        activity?.SetTag(Telemetry.MessagingEventId, eventGridEvent.Id);
+        activity?.SetTag(Telemetry.MessagingEventSubject, eventGridEvent.Subject);
+        activity?.SetTag(Telemetry.MessagingEventTime, eventGridEvent.EventTime);
+        activity?.SetTag(Telemetry.MessagingEventType, eventGridEvent.EventType);
 
-            await eventGridPublisherClient.SendEventAsync(eventGridEvent, cancellationToken);
-        }
+        await eventGridPublisherClient.SendEventAsync(eventGridEvent, cancellationToken);
+    }
 
-        public IAsyncEnumerable<ConfigurationSetting> Get(string key = KeyFilter.Any, string label = LabelFilter.Any, DateTimeOffset? moment = default, CancellationToken cancellationToken = default)
-        {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Get)}");
+    public IAsyncEnumerable<ConfigurationSetting> Get(
+        string key = KeyFilter.Any,
+        string label = LabelFilter.Any,
+        DateTimeOffset? moment = default,
+        CancellationToken cancellationToken = default)
+    {
+        using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Get)}");
 
-            return inner.Get(key, label, moment, cancellationToken);
-        }
+        return inner.Get(key, label, moment, cancellationToken);
+    }
 
-        public async Task Remove(ConfigurationSetting setting, CancellationToken cancellationToken = default)
-        {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Remove)}");
+    public async Task Remove(
+        ConfigurationSetting setting,
+        CancellationToken cancellationToken = default)
+    {
+        using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Remove)}");
 
-            await inner.Remove(setting, cancellationToken);
+        await inner.Remove(setting, cancellationToken);
 
-            var eventGridEvent = CreateEventGridEvent(EventType.ConfigurationSettingDeleted, setting);
+        var eventGridEvent = CreateEventGridEvent(EventType.ConfigurationSettingDeleted, setting);
 
-            activity?.SetTag(Telemetry.MessagingEventId, eventGridEvent.Id);
-            activity?.SetTag(Telemetry.MessagingEventSubject, eventGridEvent.Subject);
-            activity?.SetTag(Telemetry.MessagingEventTime, eventGridEvent.EventTime);
-            activity?.SetTag(Telemetry.MessagingEventType, eventGridEvent.EventType);
+        activity?.SetTag(Telemetry.MessagingEventId, eventGridEvent.Id);
+        activity?.SetTag(Telemetry.MessagingEventSubject, eventGridEvent.Subject);
+        activity?.SetTag(Telemetry.MessagingEventTime, eventGridEvent.EventTime);
+        activity?.SetTag(Telemetry.MessagingEventType, eventGridEvent.EventType);
 
-            await eventGridPublisherClient.SendEventAsync(eventGridEvent, cancellationToken);
-        }
+        await eventGridPublisherClient.SendEventAsync(eventGridEvent, cancellationToken);
+    }
 
-        public async Task Update(ConfigurationSetting setting, CancellationToken cancellationToken = default)
-        {
-            using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Update)}");
+    public async Task Update(
+        ConfigurationSetting setting,
+        CancellationToken cancellationToken = default)
+    {
+        using var activity = Telemetry.ActivitySource.StartActivity($"{nameof(EventGridMessagingConfigurationSettingRepository)}.{nameof(Update)}");
 
-            await inner.Update(setting, cancellationToken);
+        await inner.Update(setting, cancellationToken);
 
-            var eventGridEvent = CreateEventGridEvent(EventType.ConfigurationSettingModified, setting);
+        var eventGridEvent = CreateEventGridEvent(EventType.ConfigurationSettingModified, setting);
 
-            activity?.SetTag(Telemetry.MessagingEventId, eventGridEvent.Id);
-            activity?.SetTag(Telemetry.MessagingEventSubject, eventGridEvent.Subject);
-            activity?.SetTag(Telemetry.MessagingEventTime, eventGridEvent.EventTime);
-            activity?.SetTag(Telemetry.MessagingEventType, eventGridEvent.EventType);
+        activity?.SetTag(Telemetry.MessagingEventId, eventGridEvent.Id);
+        activity?.SetTag(Telemetry.MessagingEventSubject, eventGridEvent.Subject);
+        activity?.SetTag(Telemetry.MessagingEventTime, eventGridEvent.EventTime);
+        activity?.SetTag(Telemetry.MessagingEventType, eventGridEvent.EventType);
 
-            await eventGridPublisherClient.SendEventAsync(eventGridEvent, cancellationToken);
-        }
+        await eventGridPublisherClient.SendEventAsync(eventGridEvent, cancellationToken);
+    }
 
-        private EventGridEvent CreateEventGridEvent(string eventType, ConfigurationSetting setting)
-        {
-            var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    private EventGridEvent CreateEventGridEvent(string eventType, ConfigurationSetting setting)
+    {
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
-            var data = new BinaryData(new { setting.Key, setting.Label, setting.Etag }, options);
+        var data = new BinaryData(new { setting.Key, setting.Label, setting.Etag }, options);
 
-            return eventGridEventFactory.Create(eventType, "1", data);
-        }
+        return eventGridEventFactory.Create(eventType, "1", data);
     }
 }

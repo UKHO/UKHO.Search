@@ -1,24 +1,23 @@
 using System.Text;
 
-namespace UKHO.Aspire.Configuration.Emulator.Common
+namespace UKHO.ADDS.Aspire.Configuration.Emulator.Common;
+
+public static class StringExtensions
 {
-    public static class StringExtensions
+    public static string Unescape(this string s)
     {
-        public static string Unescape(this string s)
+        var builder = new StringBuilder();
+
+        for (int i = 0; i < s.Length; i++)
         {
-            var builder = new StringBuilder();
-
-            for (var i = 0; i < s.Length; i++)
+            if (s[i] is '\\' && i < s.Length - 1)
             {
-                if (s[i] is '\\' && i < s.Length - 1)
-                {
-                    i++;
-                }
-
-                builder.Append(s[i]);
+                i++;
             }
 
-            return builder.ToString();
+            builder.Append(s[i]);
         }
+
+        return builder.ToString();
     }
 }

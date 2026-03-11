@@ -175,7 +175,8 @@ ORDER BY bu.[Name] ASC, BatchCount DESC, ba.[AttributeKey] ASC;";
 
                 var businessUnitName = reader.GetString(0);
                 var attributeName = reader.GetString(1);
-                var count = checked((int)reader.GetInt64(2));
+                var countValue = Convert.ToInt64(reader.GetValue(2));
+                var count = checked((int)countValue);
 
                 if (!results.TryGetValue(businessUnitName, out var builder))
                 {
@@ -216,7 +217,8 @@ ORDER BY bu.[Name] ASC, FileCount DESC, f.[MIMEType] ASC;";
 
                 var businessUnitName = reader.GetString(0);
                 var mimeType = reader.GetString(1);
-                var count = checked((int)reader.GetInt64(2));
+                var countValue = Convert.ToInt64(reader.GetValue(2));
+                var count = checked((int)countValue);
 
                 if (!results.TryGetValue(businessUnitName, out var builder))
                 {

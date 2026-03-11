@@ -1,9 +1,8 @@
 using Azure.Messaging.EventGrid;
 
-namespace UKHO.Aspire.Configuration.Emulator.Messaging.EventGrid
+namespace UKHO.ADDS.Aspire.Configuration.Emulator.Messaging.EventGrid;
+
+public interface IEventGridEventFactory
 {
-    public interface IEventGridEventFactory
-    {
-        public EventGridEvent Create(string eventType, string dataVersion, BinaryData data);
-    }
+    public EventGridEvent Create(string eventType, string dataVersion, BinaryData data);
 }

@@ -1,5 +1,5 @@
-@using UKHO.Aspire.Configuration.Emulator.Common
-@using UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
+@using UKHO.ADDS.Aspire.Configuration.Emulator.Common
+@using UKHO.ADDS.Aspire.Configuration.Emulator.ConfigurationSettings
 @inject IConfigurationSettingFactory ConfigurationSettingFactory
 @inject IDialogService DialogService
 
@@ -42,9 +42,7 @@
 </AzureDialog>
 
 @code {
-
-    [CascadingParameter]
-    public IDialogReference DialogReference { get; set; } = null!;
+    [CascadingParameter] public IDialogReference DialogReference { get; set; } = null!;
 
     private InputModel Input { get; } = new();
 

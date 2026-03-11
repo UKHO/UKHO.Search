@@ -7,12 +7,7 @@
 </div>
 
 @code {
+    [EditorRequired, Parameter] public string Header { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public string Header { get; set; } = null!;
-
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 }

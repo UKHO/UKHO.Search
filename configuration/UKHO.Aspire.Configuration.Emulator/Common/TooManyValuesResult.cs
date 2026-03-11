@@ -1,35 +1,39 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace UKHO.Aspire.Configuration.Emulator.Common
+namespace UKHO.ADDS.Aspire.Configuration.Emulator.Common;
+
+public class TooManyValuesResult(string name) :
+    IResult,
+    IContentTypeHttpResult,
+    IStatusCodeHttpResult,
+    IValueHttpResult,
+    IValueHttpResult<ProblemDetails>
 {
-    public class TooManyValuesResult(string name) : IResult, IContentTypeHttpResult, IStatusCodeHttpResult, IValueHttpResult, IValueHttpResult<ProblemDetails>
+    public async Task ExecuteAsync(HttpContext httpContext)
     {
-        public string? ContentType => "application/problem+json";
-
-        public async Task ExecuteAsync(HttpContext httpContext)
+        if (StatusCode.HasValue)
         {
-            if (StatusCode.HasValue)
-            {
-                httpContext.Response.StatusCode = StatusCode.Value;
-            }
-
-            if (Value is not null)
-            {
-                await httpContext.Response.WriteAsJsonAsync(Value, options: default, ContentType);
-            }
+            httpContext.Response.StatusCode = StatusCode.Value;
         }
 
-        public int? StatusCode => StatusCodes.Status400BadRequest;
-
-        object? IValueHttpResult.Value => Value;
-
-        public ProblemDetails? Value => new()
+        if (Value is not null)
         {
-            Type = "https://azconfig.io/errors/invalid-argument",
-            Title = $"Invalid request parameter '{name}'",
-            Status = StatusCode,
-            Detail = $"{name}: Too many values. Maximum supported is 5",
-            Extensions = new Dictionary<string, object?> { { nameof(name), name } }
-        };
+            await httpContext.Response.WriteAsJsonAsync(Value, options: default, ContentType);
+        }
     }
+
+    public string? ContentType => "application/problem+json";
+
+    public int? StatusCode => StatusCodes.Status400BadRequest;
+
+    object? IValueHttpResult.Value => Value;
+
+    public ProblemDetails? Value => new()
+    {
+        Type = "https://azconfig.io/errors/invalid-argument",
+        Title = $"Invalid request parameter '{name}'",
+        Status = StatusCode,
+        Detail = $"{name}: Too many values. Maximum supported is 5",
+        Extensions = new Dictionary<string, object?> { { nameof(name), name } }
+    };
 }

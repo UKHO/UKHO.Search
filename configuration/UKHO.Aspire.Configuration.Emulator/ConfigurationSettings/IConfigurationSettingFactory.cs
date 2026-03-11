@@ -1,9 +1,21 @@
-namespace UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
-{
-    public interface IConfigurationSettingFactory
-    {
-        public ConfigurationSetting Create(string key, string? label = null, string? contentType = null, string? value = null, IDictionary<string, string>? tags = null);
+namespace UKHO.ADDS.Aspire.Configuration.Emulator.ConfigurationSettings;
 
-        public ConfigurationSetting Create(string etag, string key, DateTimeOffset lastModified, bool locked, string? label = null, string? contentType = null, string? value = null, IDictionary<string, string>? tags = null);
-    }
+public interface IConfigurationSettingFactory
+{
+    public ConfigurationSetting Create(
+        string key,
+        string? label = null,
+        string? contentType = null,
+        string? value = null,
+        IDictionary<string, string>? tags = null);
+
+    public ConfigurationSetting Create(
+        string etag,
+        string key,
+        DateTimeOffset lastModified,
+        bool locked,
+        string? label = null,
+        string? contentType = null,
+        string? value = null,
+        IDictionary<string, string>? tags = null);
 }

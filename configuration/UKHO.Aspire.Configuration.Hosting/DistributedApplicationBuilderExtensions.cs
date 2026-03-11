@@ -27,6 +27,7 @@ namespace UKHO.Aspire.Configuration.Hosting
             var externalServicesFilePath = CopyToTempFile(externalServicesResolvedPath);
 
             var emulator = builder.AddProject<UKHO_Aspire_Configuration_Emulator>(WellKnownConfigurationName.ConfigurationServiceName)
+                                  .WithExternalHttpEndpoints()
                                   .WithEnvironment(WellKnownConfigurationName.AddsEnvironmentName, AddsEnvironment.Local.Value);
 
             // Only add the seeder service in local development environment

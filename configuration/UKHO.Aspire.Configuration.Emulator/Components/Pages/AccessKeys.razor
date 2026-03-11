@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Hosting.Server
 @using Microsoft.AspNetCore.Hosting.Server.Features
 @using Microsoft.Extensions.Options
-@using UKHO.Aspire.Configuration.Emulator.Authentication.Hmac
+@using UKHO.ADDS.Aspire.Configuration.Emulator.Authentication.Hmac
 
 <PageTitle>Access keys</PageTitle>
 
@@ -61,18 +61,11 @@
 @code {
     private string ConnectionString => IsHidden ? new string('•', 99) : $"Endpoint={Endpoint};Id={Credential};Secret={Secret}";
 
-    private string Credential => IsHidden
-        ? new string('•', 99)
-        : HmacOptionsMonitor.Get(HmacDefaults.AuthenticationScheme)
-                            .Credential;
+    private string Credential => IsHidden ? new string('•', 99) : HmacOptionsMonitor.Get(HmacDefaults.AuthenticationScheme).Credential;
 
-    private string? Endpoint => Server.Features.Get<IServerAddressesFeature>()
-                                      ?.Addresses.FirstOrDefault();
+    private string? Endpoint => Server.Features.Get<IServerAddressesFeature>()?.Addresses.FirstOrDefault();
 
-    private string Secret => IsHidden
-        ? new string('•', 99)
-        : HmacOptionsMonitor.Get(HmacDefaults.AuthenticationScheme)
-                            .Secret;
+    private string Secret => IsHidden ? new string('•', 99) : HmacOptionsMonitor.Get(HmacDefaults.AuthenticationScheme).Secret;
 
     private bool IsHidden { get; set; } = true;
 

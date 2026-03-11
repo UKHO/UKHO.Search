@@ -3,11 +3,7 @@
 <InputRadio @attributes="@AdditionalAttributes" class="hidden" Value="@Value"/>
 
 @code {
-
-    [Parameter(CaptureUnmatchedValues = true)]
-    public IDictionary<string, object>? AdditionalAttributes { get; set; }
-
-    [Parameter]
-    public TValue? Value { get; set; }
-
+    [Parameter(CaptureUnmatchedValues = true)] public IDictionary<string, object>? AdditionalAttributes { get; set; }
+    
+    [Parameter] public TValue? Value { get; set; }
 }

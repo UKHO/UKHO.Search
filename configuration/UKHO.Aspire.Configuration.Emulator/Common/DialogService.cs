@@ -1,62 +1,62 @@
 using Microsoft.AspNetCore.Components;
 
-namespace UKHO.Aspire.Configuration.Emulator.Common
+namespace UKHO.ADDS.Aspire.Configuration.Emulator.Common;
+
+public class DialogReference(Type type, IDictionary<string, object?>? parameters = null) : IDialogReference
 {
-    public class DialogReference(Type type, IDictionary<string, object?>? parameters = null) : IDialogReference
+    public Task<ElementReference> Element => ElementTaskCompletionSource.Task;
+
+    public IDictionary<string, object?>? Parameters { get; } = parameters;
+
+    public Task<IDialogResult?> Result => ResultTaskCompletionSource.Task;
+
+    public Type Type { get; } = type;
+
+    private TaskCompletionSource<ElementReference> ElementTaskCompletionSource { get; } = new();
+
+    private TaskCompletionSource<IDialogResult?> ResultTaskCompletionSource { get; } = new();
+
+    public bool TrySetElement(ElementReference element)
     {
-        private TaskCompletionSource<ElementReference> ElementTaskCompletionSource { get; } = new();
-
-        private TaskCompletionSource<IDialogResult?> ResultTaskCompletionSource { get; } = new();
-        public Task<ElementReference> Element => ElementTaskCompletionSource.Task;
-
-        public IDictionary<string, object?>? Parameters { get; } = parameters;
-
-        public Task<IDialogResult?> Result => ResultTaskCompletionSource.Task;
-
-        public Type Type { get; } = type;
-
-        public bool TrySetElement(ElementReference element)
-        {
-            return ElementTaskCompletionSource.TrySetResult(element);
-        }
-
-        public bool TrySetResult(IDialogResult? result = null)
-        {
-            return ResultTaskCompletionSource.TrySetResult(result);
-        }
+        return ElementTaskCompletionSource.TrySetResult(element);
     }
 
-    public class DialogResult(object? data = null) : IDialogResult
+    public bool TrySetResult(IDialogResult? result = null)
     {
-        public object? Data { get; } = data;
+        return ResultTaskCompletionSource.TrySetResult(result);
+    }
+}
+
+public class DialogResult(object? data = null) : IDialogResult
+{
+    public object? Data { get; } = data;
+}
+
+public class DialogService : IDialogService
+{
+    public event Func<IDialogReference, IDialogResult?, Task>? OnDialogClosed;
+
+    public event Func<IDialogReference, Task>? OnDialogShown;
+
+    public async Task Close(IDialogReference reference, IDialogResult? result = null)
+    {
+        if (OnDialogClosed is not null)
+        {
+            await OnDialogClosed.Invoke(reference, result);
+        }
+        
+        reference.TrySetResult(result);
     }
 
-    public class DialogService : IDialogService
+    public async Task<IDialogReference> Show<TComponent>(IDictionary<string, object?>? parameters = null)
     {
-        public event Func<IDialogReference, IDialogResult?, Task>? OnDialogClosed;
+        var reference = new DialogReference(typeof(TComponent), parameters);
 
-        public event Func<IDialogReference, Task>? OnDialogShown;
-
-        public async Task Close(IDialogReference reference, IDialogResult? result = null)
+        if (OnDialogShown is not null)
         {
-            if (OnDialogClosed is not null)
-            {
-                await OnDialogClosed.Invoke(reference, result);
-            }
-
-            reference.TrySetResult(result);
+            await OnDialogShown.Invoke(reference);
         }
 
-        public async Task<IDialogReference> Show<TComponent>(IDictionary<string, object?>? parameters = null)
-        {
-            var reference = new DialogReference(typeof(TComponent), parameters);
-
-            if (OnDialogShown is not null)
-            {
-                await OnDialogShown.Invoke(reference);
-            }
-
-            return reference;
-        }
+        return reference;
     }
 }

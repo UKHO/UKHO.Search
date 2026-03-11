@@ -1,9 +1,8 @@
 using System.Data.Common;
 
-namespace UKHO.Aspire.Configuration.Emulator.Data
+namespace UKHO.ADDS.Aspire.Configuration.Emulator.Data;
+
+public interface IDbParameterFactory
 {
-    public interface IDbParameterFactory
-    {
-        public DbParameter Create<TValue>(string name, TValue? value);
-    }
+    public DbParameter Create<TValue>(string name, TValue? value);
 }

@@ -2,8 +2,8 @@
 @inject IConfigurationSettingRepository ConfigurationSettingRepository
 @inject IDialogService DialogService
 @page "/ff"
-@using UKHO.Aspire.Configuration.Emulator.Common
-@using UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
+@using UKHO.ADDS.Aspire.Configuration.Emulator.Common
+@using UKHO.ADDS.Aspire.Configuration.Emulator.ConfigurationSettings
 
 <PageTitle>Feature manager</PageTitle>
 
@@ -45,9 +45,7 @@
 @code {
     private List<FeatureFlagConfigurationSetting> ConfigurationSettings { get; } = [];
 
-    private List<FeatureFlagConfigurationSetting> FilteredConfigurationSettings => ConfigurationSettings.Where(setting => string.IsNullOrEmpty(SearchQuery) || setting.Key.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) || setting.Description?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) == true || setting.Label?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) == true)
-                                                                                                        .OrderBy(setting => setting.Id)
-                                                                                                        .ToList();
+    private List<FeatureFlagConfigurationSetting> FilteredConfigurationSettings => ConfigurationSettings.Where(setting => string.IsNullOrEmpty(SearchQuery) || setting.Key.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) || setting.Description?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) == true || setting.Label?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) == true).OrderBy(setting => setting.Id).ToList();
 
     private string? SearchQuery { get; set; }
 

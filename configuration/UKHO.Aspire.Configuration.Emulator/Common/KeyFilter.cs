@@ -1,13 +1,12 @@
-namespace UKHO.Aspire.Configuration.Emulator.Common
+namespace UKHO.ADDS.Aspire.Configuration.Emulator.Common;
+
+/// <summary>
+/// Defines well known key filters that are used within Azure App Configuration.
+/// </summary>
+public static class KeyFilter
 {
     /// <summary>
-    ///     Defines well known key filters that are used within Azure App Configuration.
+    /// The filter that matches key-values with any keys.
     /// </summary>
-    public static class KeyFilter
-    {
-        /// <summary>
-        ///     The filter that matches key-values with any keys.
-        /// </summary>
-        public const string Any = "*";
-    }
+    public const string Any = "*";
 }

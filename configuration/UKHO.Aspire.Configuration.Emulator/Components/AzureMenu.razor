@@ -1,8 +1,8 @@
 @implements IAsyncDisposable
 @implements IDisposable
-@inject IJSRuntime Js
+@inject IJSRuntime JS
 
-<CascadingValue Value="@(this)">
+<CascadingValue Value="@this">
     @if (Open)
     {
         @if (Anchored)
@@ -31,41 +31,29 @@
 
 @code {
 
-    [Parameter]
-    public string? Anchor { get; set; }
+    [Parameter] public string? Anchor { get; set; }
 
-    [Parameter]
-    public bool Anchored { get; set; } = true;
+    [Parameter] public bool Anchored { get; set; } = true;
 
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    [Parameter]
-    public bool HorizontalInset { get; set; } = true;
+    [Parameter] public bool HorizontalInset { get; set; } = true;
 
-    [Parameter]
-    public AzureAnchoredRegion.HorizontalPosition HorizontalPosition { get; set; } = AzureAnchoredRegion.HorizontalPosition.Unset;
+    [Parameter] public AzureAnchoredRegion.HorizontalPosition HorizontalPosition { get; set; } = AzureAnchoredRegion.HorizontalPosition.Unset;
 
-    [Parameter]
-    public int HorizontalThreshold { get; set; } = 200;
+    [Parameter] public int HorizontalThreshold { get; set; } = 200;
 
-    [Parameter]
-    public bool Open { get; set; }
+    [Parameter] public bool Open { get; set; }
 
-    [Parameter]
-    public EventCallback<bool> OpenChanged { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
 
-    [Parameter]
-    public MouseButton Trigger { get; set; } = MouseButton.None;
+    [Parameter] public MouseButton Trigger { get; set; } = MouseButton.None;
 
-    [Parameter]
-    public bool VerticalInset { get; set; }
+    [Parameter] public bool VerticalInset { get; set; }
 
-    [Parameter]
-    public AzureAnchoredRegion.VerticalPosition VerticalPosition { get; set; } = AzureAnchoredRegion.VerticalPosition.Bottom;
+    [Parameter] public AzureAnchoredRegion.VerticalPosition VerticalPosition { get; set; } = AzureAnchoredRegion.VerticalPosition.Bottom;
 
-    [Parameter]
-    public int VerticalThreshold { get; set; } = 200;
+    [Parameter] public int VerticalThreshold { get; set; } = 200;
 
     private DotNetObjectReference<AzureMenu>? DotNetHelper { get; set; }
 
@@ -171,7 +159,7 @@
         {
             if (Trigger is not MouseButton.None)
             {
-                Module = await Js.InvokeAsync<IJSObjectReference>("import", "./Components/AzureMenu.razor.js");
+                Module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/AzureMenu.razor.js");
 
                 DotNetHelper = DotNetObjectReference.Create(this);
 
@@ -202,22 +190,22 @@
     }
 
     /// <summary>
-    ///     Describes the mouse button trigger of an <see cref="AzureMenu" />.
+    /// Describes the mouse button trigger of an <see cref="AzureMenu"/>.
     /// </summary>
     public enum MouseButton
     {
         /// <summary>
-        ///     The menu cannot be opened by clicking on the <see cref="AzureMenu.Anchor" />.
+        /// The menu cannot be opened by clicking on the <see cref="AzureMenu.Anchor"/>.
         /// </summary>
         None,
 
         /// <summary>
-        ///     The menu can be opened by left clicking on the <see cref="AzureMenu.Anchor" />.
+        /// The menu can be opened by left clicking on the <see cref="AzureMenu.Anchor"/>.
         /// </summary>
         Left,
 
         /// <summary>
-        ///     The menu can be opened by right clicking on the <see cref="AzureMenu.Anchor" />.
+        /// The menu can be opened by right clicking on the <see cref="AzureMenu.Anchor"/>.
         /// </summary>
         Right
     }

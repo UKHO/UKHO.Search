@@ -1,43 +1,37 @@
 using System.Text.Json.Serialization.Metadata;
 
-namespace UKHO.Aspire.Configuration.Emulator.Common
+namespace UKHO.ADDS.Aspire.Configuration.Emulator.Common;
+
+/// <seealso href="https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/custom-contracts#example-ignore-properties-with-a-specific-type">Customize a JSON contract</seealso>
+public class SelectJsonTypeInfoModifier
 {
-    /// <seealso
-    ///     href="https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/custom-contracts#example-ignore-properties-with-a-specific-type">
-    ///     Customize
-    ///     a JSON contract
-    /// </seealso>
-    public class SelectJsonTypeInfoModifier
+    public SelectJsonTypeInfoModifier(IEnumerable<string>? names = null)
     {
-        public SelectJsonTypeInfoModifier(IEnumerable<string>? names = null)
+        if (names is not null)
         {
-            if (names is not null)
+            foreach (var name in names)
             {
-                foreach (var name in names)
+                if (!string.IsNullOrEmpty(name))
                 {
-                    if (!string.IsNullOrEmpty(name))
-                    {
-                        Names.Add(name);
-                    }
+                    Names.Add(name);
                 }
             }
         }
+    }
 
-        private ICollection<string> Names { get; } = [];
+    private ICollection<string> Names { get; } = [];
 
-        public void Modify(JsonTypeInfo type)
+    public void Modify(JsonTypeInfo type)
+    {
+        if (type.Kind == JsonTypeInfoKind.Object)
         {
-            if (type.Kind == JsonTypeInfoKind.Object)
+            if (Names.Count > 0)
             {
-                if (Names.Count > 0)
+                for (var i = type.Properties.Count - 1; i >= 0; i--)
                 {
-                    for (var i = type.Properties.Count - 1; i >= 0; i--)
+                    if (!Names.Append("items").Contains(type.Properties[i].Name))
                     {
-                        if (!Names.Append("items")
-                                  .Contains(type.Properties[i].Name))
-                        {
-                            type.Properties.RemoveAt(i);
-                        }
+                        type.Properties.RemoveAt(i);
                     }
                 }
             }

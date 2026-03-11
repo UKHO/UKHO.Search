@@ -1,4 +1,4 @@
-@using UKHO.Aspire.Configuration.Emulator.Common
+@using UKHO.ADDS.Aspire.Configuration.Emulator.Common
 <dialog class="mr-0 ml-auto max-w-full h-full max-h-full bg-white text-mine-shaft w-[585px] dark:bg-cod-grey dark:text-desert-storm" @ref="@ElementReference">
     <div class="flex flex-col w-full h-full">
         <header class="py-2 px-5">
@@ -16,18 +16,13 @@
 </dialog>
 
 @code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [CascadingParameter] public IDialogReference DialogReference { get; set; } = null!;
 
-    [CascadingParameter]
-    public IDialogReference DialogReference { get; set; } = null!;
+    [Parameter] public RenderFragment? FooterContent { get; set; }
 
-    [Parameter]
-    public RenderFragment? FooterContent { get; set; }
-
-    [Parameter]
-    public RenderFragment? HeaderContent { get; set; }
+    [Parameter] public RenderFragment? HeaderContent { get; set; }
 
     private ElementReference ElementReference { get; set; }
 

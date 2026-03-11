@@ -1,18 +1,19 @@
+@implements IAsyncDisposable
+@inject IConfigurationSettingFactory ConfigurationSettingFactory
+@inject IConfigurationSettingRepository ConfigurationSettingRepository
+@inject IJSRuntime JS
+@inject IKeyValuePairJsonDecoder KeyValuePairJsonDecoder
+@inject IKeyValuePairJsonEncoder KeyValuePairJsonEncoder
+@page "/kvdata"
 @using System.Net
 @using System.Security.Cryptography
 @using System.Text
 @using System.Text.Json
 @using OpenTelemetry.Trace
-@using UKHO.Aspire.Configuration.Emulator.Authentication.Hmac
-@using UKHO.Aspire.Configuration.Emulator.Common
-@using UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
-@implements IAsyncDisposable
-@inject IConfigurationSettingFactory ConfigurationSettingFactory
-@inject IConfigurationSettingRepository ConfigurationSettingRepository
-@inject IJSRuntime Js
-@inject IKeyValuePairJsonDecoder KeyValuePairJsonDecoder
-@inject IKeyValuePairJsonEncoder KeyValuePairJsonEncoder
-@page "/kvdata"
+@using UKHO.ADDS.Aspire.Configuration.Emulator
+@using UKHO.ADDS.Aspire.Configuration.Emulator.Authentication.Hmac
+@using UKHO.ADDS.Aspire.Configuration.Emulator.Common
+@using UKHO.ADDS.Aspire.Configuration.Emulator.ConfigurationSettings
 
 <PageTitle>Import/export</PageTitle>
 
@@ -277,9 +278,7 @@
 </div>
 
 @code {
-
-    [SupplyParameterFromForm]
-    public InputModel? Model { get; set; }
+    [SupplyParameterFromForm] public InputModel? Model { get; set; }
 
     private ICollection<string?> Labels { get; } = [];
 
@@ -297,7 +296,7 @@
     {
         if (firstRender)
         {
-            Module = await Js.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/ImportExport.razor.js");
+            Module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/ImportExport.razor.js");
         }
     }
 
@@ -320,8 +319,7 @@
 
             if (operation is ImportExportOperationInputRadioGroup.Operation.Export)
             {
-                await foreach (var label in ConfigurationSettingRepository.Get()
-                                                                          .Select(setting => setting.Label))
+                await foreach (var label in ConfigurationSettingRepository.Get().Select(setting => setting.Label))
                 {
                     Labels.Add(label);
                     StateHasChanged();
@@ -346,9 +344,7 @@
             {
                 try
                 {
-                    var dictionary = connectionString.Split(';')
-                                                     .Select(s => s.Split('=', 2))
-                                                     .ToDictionary(s => s[0], s => s[1]);
+                    var dictionary = connectionString.Split(';').Select(s => s.Split('=', 2)).ToDictionary(s => s[0], s => s[1]);
                     var endpoint = dictionary["Endpoint"];
                     var credential = dictionary["Id"];
                     var secret = dictionary["Secret"];
@@ -385,9 +381,7 @@
                 {
                     case ImportExportTargetTypeInputSelect.TargetType.AzureAppConfiguration:
                     {
-                        var dictionary = Model.TargetConnectionString!.Split(';')
-                                              .Select(s => s.Split('=', 2))
-                                              .ToDictionary(s => s[0], s => s[1]);
+                        var dictionary = Model.TargetConnectionString!.Split(';').Select(s => s.Split('=', 2)).ToDictionary(s => s[0], s => s[1]);
                         var endpoint = dictionary["Endpoint"];
                         var credential = dictionary["Id"];
                         var secret = dictionary["Secret"];
@@ -416,9 +410,7 @@
                     }
                     case ImportExportTargetTypeInputSelect.TargetType.ConfigurationFile:
                     {
-                        using var document = KeyValuePairJsonEncoder.Encode(await ConfigurationSettingRepository.Get()
-                                                                                                                .Where(setting => setting is not FeatureFlagConfigurationSetting)
-                                                                                                                .ToDictionaryAsync(setting => setting.Key, setting => setting.Value), Model.Prefix, Model.Separator);
+                        using var document = KeyValuePairJsonEncoder.Encode(await ConfigurationSettingRepository.Get().Where(setting => setting is not FeatureFlagConfigurationSetting).ToDictionaryAsync(setting => setting.Key, setting => setting.Value), Model.Prefix, Model.Separator);
 
                         if (Module is not null)
                         {
@@ -439,9 +431,7 @@
                 {
                     case ImportExportSourceTypeInputSelect.SourceType.AzureAppConfiguration:
                     {
-                        var dictionary = Model.SourceConnectionString!.Split(';')
-                                              .Select(s => s.Split('=', 2))
-                                              .ToDictionary(s => s[0], s => s[1]);
+                        var dictionary = Model.SourceConnectionString!.Split(';').Select(s => s.Split('=', 2)).ToDictionary(s => s[0], s => s[1]);
                         var endpoint = dictionary["Endpoint"];
                         var credential = dictionary["Id"];
                         var secret = dictionary["Secret"];
@@ -459,8 +449,7 @@
                                 continue;
                             }
 
-                            if (await ConfigurationSettingRepository.Get(sourceSetting.Key, sourceSetting.Label ?? LabelFilter.Null)
-                                                                    .SingleOrDefaultAsync() is { } destinationSetting)
+                            if (await ConfigurationSettingRepository.Get(sourceSetting.Key, sourceSetting.Label ?? LabelFilter.Null).SingleOrDefaultAsync() is { } destinationSetting)
                             {
                                 var date = DateTimeOffset.UtcNow;
 
@@ -495,8 +484,7 @@
 
                         foreach (var (sourceKey, sourceValue) in KeyValuePairJsonDecoder.Decode(document, Model.Prefix, Model.Separator))
                         {
-                            if (await ConfigurationSettingRepository.Get(sourceKey, Model.Label ?? LabelFilter.Null)
-                                                                    .SingleOrDefaultAsync() is { } destinationSetting)
+                            if (await ConfigurationSettingRepository.Get(sourceKey, Model.Label ?? LabelFilter.Null).SingleOrDefaultAsync() is { } destinationSetting)
                             {
                                 var date = DateTimeOffset.UtcNow;
 
@@ -511,7 +499,7 @@
                             {
                                 var date = DateTimeOffset.UtcNow;
 
-                                destinationSetting = ConfigurationSettingFactory.Create(Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss")))), sourceKey, date, false, Model.Label, Model.ContentType, sourceValue);
+                                destinationSetting = ConfigurationSettingFactory.Create(Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(date.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss")))), sourceKey, date, false, Model.Label, Model.ContentType, sourceValue, null);
 
                                 await ConfigurationSettingRepository.Add(destinationSetting);
                             }

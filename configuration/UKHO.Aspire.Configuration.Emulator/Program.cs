@@ -5,17 +5,17 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using UKHO.Aspire.Configuration.Emulator.Authentication.Hmac;
-using UKHO.Aspire.Configuration.Emulator.Common;
+using UKHO.ADDS.Aspire.Configuration.Emulator.Authentication.Hmac;
+using UKHO.ADDS.Aspire.Configuration.Emulator.Common;
 using UKHO.Aspire.Configuration.Emulator.Components;
-using UKHO.Aspire.Configuration.Emulator.ConfigurationSettings;
-using UKHO.Aspire.Configuration.Emulator.Data;
-using UKHO.Aspire.Configuration.Emulator.Keys;
-using UKHO.Aspire.Configuration.Emulator.Labels;
-using UKHO.Aspire.Configuration.Emulator.Locks;
-using UKHO.Aspire.Configuration.Emulator.Messaging.EventGrid;
+using UKHO.ADDS.Aspire.Configuration.Emulator.ConfigurationSettings;
+using UKHO.ADDS.Aspire.Configuration.Emulator.Data;
+using UKHO.ADDS.Aspire.Configuration.Emulator.Keys;
+using UKHO.ADDS.Aspire.Configuration.Emulator.Labels;
+using UKHO.ADDS.Aspire.Configuration.Emulator.Locks;
+using UKHO.ADDS.Aspire.Configuration.Emulator.Messaging.EventGrid;
 
-namespace UKHO.Aspire.Configuration.Emulator
+namespace UKHO.ADDS.Aspire.Configuration.Emulator
 {
     internal static class Program
     {
@@ -29,63 +29,59 @@ namespace UKHO.Aspire.Configuration.Emulator
             });
 
             builder.Services.AddAuthentication(options =>
-                   {
-                       options.DefaultScheme = "MicrosoftEntraId";
-                   })
-                   .AddHmac()
-                   .AddJwtBearer("MicrosoftEntraId", options =>
-                   {
-                       options.TokenValidationParameters.ValidateAudience = true;
-                       options.TokenValidationParameters.ValidateIssuer = true;
+                {
+                    options.DefaultScheme = "MicrosoftEntraId";
+                })
+                .AddHmac()
+                .AddJwtBearer("MicrosoftEntraId", options =>
+                {
+                    options.TokenValidationParameters.ValidateAudience = true;
+                    options.TokenValidationParameters.ValidateIssuer = true;
 
-                       options.ForwardDefaultSelector = context =>
-                       {
-                           if (AuthenticationHeaderValue.TryParse(context.Request.Headers.Authorization, out var value))
-                           {
-                               if (value.Scheme.Equals("HMAC-SHA256", StringComparison.OrdinalIgnoreCase))
-                               {
-                                   return HmacDefaults.AuthenticationScheme;
-                               }
-                           }
+                    options.ForwardDefaultSelector = context =>
+                    {
+                        if (AuthenticationHeaderValue.TryParse(context.Request.Headers.Authorization, out var value))
+                        {
+                            if (value.Scheme.Equals("HMAC-SHA256", StringComparison.OrdinalIgnoreCase))
+                            {
+                                return HmacDefaults.AuthenticationScheme;
+                            }
+                        }
 
-                           return null;
-                       };
-                   });
+                        return null;
+                    };
+                });
 
             builder.Services.AddAuthorization();
 
             builder.Services.AddAzureClients(factory =>
             {
-                foreach (var section in builder.Configuration.GetSection("Messaging")
-                                               .GetSection("EventGridTopics")
-                                               .GetChildren())
+                foreach (var section in builder.Configuration.GetSection("Messaging").GetSection("EventGridTopics").GetChildren())
                 {
-                    factory.AddEventGridPublisherClient(section)
-                           .WithName(section.Key);
+                    factory.AddEventGridPublisherClient(section).WithName(section.Key);
                 }
             });
 
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddOpenTelemetry()
-                   .ConfigureResource(resource =>
-                   {
-                       resource.AddService(builder.Environment.ApplicationName);
-                   })
-                   .WithMetrics(metrics =>
-                   {
-                       metrics.AddAspNetCoreInstrumentation();
-                       metrics.AddOtlpExporter();
-                   })
-                   .WithTracing(tracing =>
-                   {
-                       tracing.AddAspNetCoreInstrumentation();
-                       tracing.AddSource(Telemetry.ActivitySource.Name);
-                       tracing.AddOtlpExporter();
-                   });
+                .ConfigureResource(resource =>
+                {
+                    resource.AddService(builder.Environment.ApplicationName);
+                })
+                .WithMetrics(metrics =>
+                {
+                    metrics.AddAspNetCoreInstrumentation();
+                    metrics.AddOtlpExporter();
+                })
+                .WithTracing(tracing =>
+                {
+                    tracing.AddAspNetCoreInstrumentation();
+                    tracing.AddSource(Telemetry.ActivitySource.Name);
+                    tracing.AddOtlpExporter();
+                });
 
-            builder.Services.AddRazorComponents()
-                   .AddInteractiveServerComponents();
+            builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
             builder.Services.AddScoped<IDialogService, DialogService>();
 
@@ -108,8 +104,7 @@ namespace UKHO.Aspire.Configuration.Emulator
 
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapRazorComponents<App>()
-                             .AddInteractiveServerRenderMode();
+                    endpoints.MapRazorComponents<App>().AddInteractiveServerRenderMode();
                 });
             });
 
@@ -117,22 +112,14 @@ namespace UKHO.Aspire.Configuration.Emulator
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapGet("/kv/{**key}", ConfigurationSettingHandler.Get)
-               .RequireAuthorization();
-            app.MapGet("/kv", ConfigurationSettingHandler.List)
-               .RequireAuthorization();
-            app.MapPut("/kv/{**key}", ConfigurationSettingHandler.Set)
-               .RequireAuthorization();
-            app.MapDelete("/kv/{**key}", ConfigurationSettingHandler.Delete)
-               .RequireAuthorization();
-            app.MapGet("/keys", KeyHandler.List)
-               .RequireAuthorization();
-            app.MapGet("/labels", LabelHandler.List)
-               .RequireAuthorization();
-            app.MapPut("/locks/{**key}", LockHandler.Lock)
-               .RequireAuthorization();
-            app.MapDelete("/locks/{**key}", LockHandler.Unlock)
-               .RequireAuthorization();
+            app.MapGet("/kv/{**key}", ConfigurationSettingHandler.Get).RequireAuthorization();
+            app.MapGet("/kv", ConfigurationSettingHandler.List).RequireAuthorization();
+            app.MapPut("/kv/{**key}", ConfigurationSettingHandler.Set).RequireAuthorization();
+            app.MapDelete("/kv/{**key}", ConfigurationSettingHandler.Delete).RequireAuthorization();
+            app.MapGet("/keys", KeyHandler.List).RequireAuthorization();
+            app.MapGet("/labels", LabelHandler.List).RequireAuthorization();
+            app.MapPut("/locks/{**key}", LockHandler.Lock).RequireAuthorization();
+            app.MapDelete("/locks/{**key}", LockHandler.Unlock).RequireAuthorization();
 
             app.InitializeDatabase();
 
@@ -140,14 +127,19 @@ namespace UKHO.Aspire.Configuration.Emulator
 
             IConfigurationSettingRepository ConfigurationSettingRepositoryImplementationFactory(IServiceProvider provider)
             {
-                IConfigurationSettingRepository repository = new ConfigurationSettingRepository(provider.GetRequiredService<IDbCommandFactory>(), provider.GetRequiredService<IConfigurationSettingFactory>(), provider.GetRequiredService<IDbConnectionFactory>(), provider.GetRequiredService<ILogger<ConfigurationSettingRepository>>(), provider.GetRequiredService<IDbParameterFactory>());
+                IConfigurationSettingRepository repository = new ConfigurationSettingRepository(
+                    provider.GetRequiredService<IDbCommandFactory>(),
+                    provider.GetRequiredService<IConfigurationSettingFactory>(),
+                    provider.GetRequiredService<IDbConnectionFactory>(),
+                    provider.GetRequiredService<ILogger<ConfigurationSettingRepository>>(),
+                    provider.GetRequiredService<IDbParameterFactory>());
 
-                foreach (var section in builder.Configuration.GetSection("Messaging")
-                                               .GetSection("EventGridTopics")
-                                               .GetChildren())
+                foreach (var section in builder.Configuration.GetSection("Messaging").GetSection("EventGridTopics").GetChildren())
                 {
-                    repository = new EventGridMessagingConfigurationSettingRepository(repository, provider.GetRequiredService<IEventGridEventFactory>(), provider.GetRequiredService<IAzureClientFactory<EventGridPublisherClient>>()
-                                                                                                                                                                 .CreateClient(section.Key));
+                    repository = new EventGridMessagingConfigurationSettingRepository(
+                        repository,
+                        provider.GetRequiredService<IEventGridEventFactory>(),
+                        provider.GetRequiredService<IAzureClientFactory<EventGridPublisherClient>>().CreateClient(section.Key));
                 }
 
                 return repository;

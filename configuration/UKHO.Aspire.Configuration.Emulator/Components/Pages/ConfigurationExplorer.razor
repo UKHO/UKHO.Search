@@ -2,8 +2,8 @@
 @inject IConfigurationSettingRepository ConfigurationSettingRepository
 @inject IDialogService DialogService
 @page "/kvs"
-@using UKHO.Aspire.Configuration.Emulator.Common
-@using UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
+@using UKHO.ADDS.Aspire.Configuration.Emulator.Common
+@using UKHO.ADDS.Aspire.Configuration.Emulator.ConfigurationSettings
 
 <PageTitle>Configuration explorer</PageTitle>
 
@@ -49,9 +49,7 @@
 @code {
     private List<ConfigurationSetting> ConfigurationSettings { get; } = [];
 
-    private List<ConfigurationSetting> FilteredConfigurationSettings => ConfigurationSettings.Where(setting => string.IsNullOrEmpty(SearchQuery) || setting.Key.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) || setting.Label?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) == true || setting.Value?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) == true)
-                                                                                             .OrderBy(setting => setting.Key)
-                                                                                             .ToList();
+    private List<ConfigurationSetting> FilteredConfigurationSettings => ConfigurationSettings.Where(setting => string.IsNullOrEmpty(SearchQuery) || setting.Key.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) || setting.Label?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) == true || setting.Value?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) == true).OrderBy(setting => setting.Key).ToList();
 
     private bool IsValuesHidden { get; set; } = true;
 

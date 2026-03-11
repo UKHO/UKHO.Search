@@ -1,6 +1,7 @@
 @using System.Security.Cryptography
 @using System.Text
-@using UKHO.Aspire.Configuration.Emulator.ConfigurationSettings
+@using UKHO.ADDS.Aspire.Configuration.Emulator.ConfigurationSettings
+
 <AzureTable Items="@ConfigurationSettings" SelectedItems="@SelectedConfigurationSettings" SelectedItemsChanged="@SelectedConfigurationSettingsChanged" TItem="@FeatureFlagConfigurationSetting">
     <HeaderContent>
         <AzureTableHeaderCell>Name</AzureTableHeaderCell>
@@ -15,9 +16,7 @@
     <RowTemplate>
         <AzureTableDataCell>@context.Id</AzureTableDataCell>
         <AzureTableDataCell>@(!string.IsNullOrEmpty(context.Label) ? context.Label : "(No label)")</AzureTableDataCell>
-        <AzureTableDataCell>
-            <AzureInputToggle Value="@context.Enabled" ValueChanged="@(enabled => HandleEnabledChanged(context, enabled))" ValueExpression="@(() => context.Enabled)"/>
-        </AzureTableDataCell>
+        <AzureTableDataCell><AzureInputToggle Value="@context.Enabled" ValueChanged="@(enabled => HandleEnabledChanged(context, enabled))" ValueExpression="@(() => context.Enabled)"/></AzureTableDataCell>
         <AzureTableDataCell>@context.ClientFilters.Count</AzureTableDataCell>
         <AzureTableDataCell>@context.Description</AzureTableDataCell>
         <AzureTableDataCell>@context.LastModified.ToString("G")</AzureTableDataCell>
@@ -26,18 +25,13 @@
 </AzureTable>
 
 @code {
+    [Parameter] public IEnumerable<FeatureFlagConfigurationSetting> ConfigurationSettings { get; set; } = [];
 
-    [Parameter]
-    public IEnumerable<FeatureFlagConfigurationSetting> ConfigurationSettings { get; set; } = [];
+    [Parameter] public EventCallback<FeatureFlagConfigurationSetting> OnConfigurationSettingChange { get; set; }
 
-    [Parameter]
-    public EventCallback<FeatureFlagConfigurationSetting> OnConfigurationSettingChange { get; set; }
+    [Parameter] public ICollection<FeatureFlagConfigurationSetting> SelectedConfigurationSettings { get; set; } = [];
 
-    [Parameter]
-    public ICollection<FeatureFlagConfigurationSetting> SelectedConfigurationSettings { get; set; } = [];
-
-    [Parameter]
-    public EventCallback<ICollection<FeatureFlagConfigurationSetting>> SelectedConfigurationSettingsChanged { get; set; }
+    [Parameter] public EventCallback<ICollection<FeatureFlagConfigurationSetting>> SelectedConfigurationSettingsChanged { get; set; }
 
     private async Task HandleEnabledChanged(FeatureFlagConfigurationSetting setting, bool enabled)
     {
