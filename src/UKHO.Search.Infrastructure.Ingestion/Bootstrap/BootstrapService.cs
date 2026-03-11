@@ -50,9 +50,18 @@ namespace UKHO.Search.Infrastructure.Ingestion.Bootstrap
                                                           .ConfigureAwait(false);
             if (!indexExistsResponse.Exists)
             {
-                await _elasticClient.Indices.CreateAsync(indexName, d => _indexDefinition.Configure(d), cancellationToken)
-                                    .ConfigureAwait(false);
+                var createResponse = await _elasticClient.Indices.CreateAsync(indexName, d => _indexDefinition.Configure(d), cancellationToken)
+                                                     .ConfigureAwait(false);
+
+                if (!createResponse.IsValidResponse)
+                {
+                    _logger.LogError("Failed to create Elasticsearch index '{IndexName}'. DebugInformation={DebugInformation}", indexName, createResponse.DebugInformation);
+                    throw new InvalidOperationException($"Failed to create Elasticsearch index '{indexName}'.");
+                }
             }
+
+            await ValidateIndexMappingAsync(indexName, cancellationToken)
+                .ConfigureAwait(false);
 
             foreach (var provider in _providerService.GetAllProviders())
             {
@@ -70,6 +79,61 @@ namespace UKHO.Search.Infrastructure.Ingestion.Bootstrap
                 var poisonQueueClient = _queueClient.GetQueueClient(poisonQueueName);
                 await poisonQueueClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken)
                                        .ConfigureAwait(false);
+            }
+
+        }
+
+        private async ValueTask ValidateIndexMappingAsync(string indexName, CancellationToken cancellationToken)
+        {
+            var existsResponse = await _elasticClient.Indices.ExistsAsync(indexName, cancellationToken)
+                                                    .ConfigureAwait(false);
+            if (!existsResponse.Exists)
+            {
+                _logger.LogInformation("Skipping index mapping validation because index '{IndexName}' does not exist yet.", indexName);
+                return;
+            }
+
+            var fieldCapsResponse = await _elasticClient.FieldCapsAsync(f => f.Indices(indexName)
+                                                                             .Fields("*"), cancellationToken)
+                                                        .ConfigureAwait(false);
+
+            if (!fieldCapsResponse.IsValidResponse)
+            {
+                _logger.LogWarning("Failed to read field capabilities for index '{IndexName}'. DebugInformation={DebugInformation}", indexName, fieldCapsResponse.DebugInformation);
+                return;
+            }
+
+            var fields = fieldCapsResponse.Fields;
+            if (fields is null)
+            {
+                _logger.LogWarning("Field capabilities response for index '{IndexName}' did not include any fields; skipping mapping validation.", indexName);
+                return;
+            }
+
+            EnsureHasType(fields, "documentId", "keyword");
+            EnsureHasType(fields, "documentType", "keyword");
+            EnsureHasType(fields, "keywords", "keyword");
+
+            // Default dynamic mapping typically creates a keyword multi-field; the canonical mapping intentionally does not.
+            EnsureAbsent(fields, "keywords.keyword");
+            EnsureAbsent(fields, "searchText.keyword");
+            EnsureAbsent(fields, "content.keyword");
+        }
+
+        private static void EnsureHasType<T>(IReadOnlyDictionary<string, IReadOnlyDictionary<string, T>> fields, string fieldName, string expectedType)
+        {
+            if (!fields.TryGetValue(fieldName, out var perType) || perType is null || !perType.ContainsKey(expectedType))
+            {
+                var types = perType is null ? "<missing>" : string.Join(",", perType.Keys);
+                throw new InvalidOperationException($"Index mapping mismatch: expected field '{fieldName}' to include type '{expectedType}', but found '{types}'.");
+            }
+        }
+
+        private static void EnsureAbsent<T>(IReadOnlyDictionary<string, IReadOnlyDictionary<string, T>> fields, string fieldName)
+        {
+            if (fields.ContainsKey(fieldName))
+            {
+                throw new InvalidOperationException($"Index mapping mismatch: unexpected multi-field '{fieldName}' exists; index appears to have been created with dynamic mappings.");
             }
         }
     }

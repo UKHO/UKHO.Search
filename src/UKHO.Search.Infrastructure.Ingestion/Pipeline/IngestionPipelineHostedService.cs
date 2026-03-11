@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using UKHO.Search.Infrastructure.Ingestion.Bootstrap;
 using UKHO.Search.Infrastructure.Ingestion.Queue;
 using UKHO.Search.Services.Ingestion.Providers;
 
@@ -8,6 +9,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
 {
     public sealed class IngestionPipelineHostedService : IHostedService
     {
+        private readonly IBootstrapService _bootstrapService;
         private readonly IConfiguration _configuration;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ILogger<IngestionPipelineHostedService> _logger;
@@ -16,11 +18,17 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
         private CancellationTokenSource? _runCts;
         private Task? _runTask;
 
-        public IngestionPipelineHostedService(IConfiguration configuration, IIngestionProviderService providerService, IQueueClientFactory queueClientFactory, IHostApplicationLifetime hostApplicationLifetime, ILogger<IngestionPipelineHostedService> logger)
+        public IngestionPipelineHostedService(IConfiguration configuration,
+            IIngestionProviderService providerService,
+            IQueueClientFactory queueClientFactory,
+            IBootstrapService bootstrapService,
+            IHostApplicationLifetime hostApplicationLifetime,
+            ILogger<IngestionPipelineHostedService> logger)
         {
             _configuration = configuration;
             _providerService = providerService;
             _queueClientFactory = queueClientFactory;
+            _bootstrapService = bootstrapService;
             _hostApplicationLifetime = hostApplicationLifetime;
             _logger = logger;
         }
@@ -48,6 +56,9 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
             try
             {
                 _logger.LogInformation("Ingestion queue host starting.");
+
+                await _bootstrapService.BootstrapAsync(cancellationToken)
+                                       .ConfigureAwait(false);
 
                 var node = new IngestionSourceNode("ingestion-source-queue", _configuration, _providerService, _queueClientFactory, _logger);
 

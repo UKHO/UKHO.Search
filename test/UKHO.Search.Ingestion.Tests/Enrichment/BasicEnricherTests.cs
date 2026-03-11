@@ -17,7 +17,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
         }
 
         [Fact]
-        public async Task AddItem_copies_property_values_into_keywords_and_facets()
+        public async Task AddItem_copies_property_values_into_keywords()
         {
             var enricher = new BasicEnricher();
 
@@ -32,15 +32,11 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             await enricher.TryBuildEnrichmentAsync(request, document);
 
             document.Keywords.ShouldBe(new[] { "hello world", "hydro" });
-            document.Facets.Keys.ShouldBe(new[] { "department", "title" });
-            document.Facets["title"]
-                    .ShouldBe(new[] { "hello world" });
-            document.Facets["department"]
-                    .ShouldBe(new[] { "hydro" });
+            document.Facets.ShouldBeEmpty();
         }
 
         [Fact]
-        public async Task UpdateItem_copies_property_values_into_keywords_and_facets()
+        public async Task UpdateItem_copies_property_values_into_keywords()
         {
             var enricher = new BasicEnricher();
 
@@ -54,9 +50,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             await enricher.TryBuildEnrichmentAsync(request, document);
 
             document.Keywords.ShouldBe(new[] { "hello world" });
-            document.Facets.Keys.ShouldBe(new[] { "title" });
-            document.Facets["title"]
-                    .ShouldBe(new[] { "hello world" });
+            document.Facets.ShouldBeEmpty();
         }
 
         [Fact]
@@ -74,9 +68,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             await enricher.TryBuildEnrichmentAsync(request, document);
 
             document.Keywords.ShouldBe(new[] { "a", "b" });
-            document.Facets.Keys.ShouldBe(new[] { "tags" });
-            document.Facets["tags"]
-                    .ShouldBe(new[] { "a", "b" });
+            document.Facets.ShouldBeEmpty();
         }
 
         [Fact]
@@ -112,9 +104,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             await enricher.TryBuildEnrichmentAsync(request, document);
 
             document.Keywords.ShouldBe(new[] { "https://example.com/path" });
-            document.Facets.Keys.ShouldBe(new[] { "url" });
-            document.Facets["url"]
-                    .ShouldBe(new[] { "https://example.com/path" });
+            document.Facets.ShouldBeEmpty();
         }
 
         [Fact]
@@ -133,10 +123,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             await enricher.TryBuildEnrichmentAsync(request, document);
 
             document.Keywords.ShouldBe(new[] { "alpha" });
-            document.Facets["title"]
-                    .ShouldBe(new[] { "alpha" });
-            document.Facets["department"]
-                    .ShouldBe(new[] { "alpha" });
+            document.Facets.ShouldBeEmpty();
         }
     }
 }

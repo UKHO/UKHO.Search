@@ -45,7 +45,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Statistics
             var statsResponse = await _elasticClient.Indices.StatsAsync(s => s.Indices(indexName), cancellationToken)
                                                     .ConfigureAwait(false);
 
-            var fieldCapsResponse = await _elasticClient.FieldCapsAsync(f => f.Indices(indexName), cancellationToken)
+            var fieldCapsResponse = await _elasticClient.FieldCapsAsync(f => f.Indices(indexName)
+                                                                             .Fields("*"), cancellationToken)
                                                         .ConfigureAwait(false);
 
             return new IndexStatistics

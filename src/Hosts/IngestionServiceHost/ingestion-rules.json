@@ -9,6 +9,14 @@
 					"properties[\"businessUnitName\"]": "adds"
 				},
 				"then": {
+					"facets": {
+						"add": [
+							{ "name": "businessUnitName", "value": "$path:properties[\"businessUnitName\"]" },
+							{ "name": "agency", "value": "$path:properties[\"agency\"]" },
+							{ "name": "productCode", "value": "$path:properties[\"productCode\"]" },
+							{ "name": "source", "value": "$path:properties[\"source\"]" }
+						]
+					},
 					"keywords": {
 						"add": [
 							"S63",
@@ -31,6 +39,14 @@
 					"properties[\"businessUnitName\"]": "adds-s57"
 				},
 				"then": {
+					"facets": {
+						"add": [
+							{ "name": "businessUnitName", "value": "$path:properties[\"businessUnitName\"]" },
+							{ "name": "agency", "value": "$path:properties[\"agency\"]" },
+							{ "name": "productCode", "value": "$path:properties[\"productCode\"]" },
+							{ "name": "source", "value": "$path:properties[\"source\"]" }
+						]
+					},
 					"keywords": {
 						"add": [
 							"S57",
@@ -53,6 +69,14 @@
 					"properties[\"businessUnitName\"]": "adds-s100"
 				},
 				"then": {
+					"facets": {
+						"add": [
+							{ "name": "businessUnitName", "value": "$path:properties[\"businessUnitName\"]" },
+							{ "name": "agency", "value": "$path:properties[\"agency\"]" },
+							{ "name": "productCode", "value": "$path:properties[\"productCode\"]" },
+							{ "name": "source", "value": "$path:properties[\"source\"]" }
+						]
+					},
 					"keywords": {
 						"add": [
 							"S100",
@@ -76,6 +100,14 @@
 					"properties[\"businessUnitName\"]": "avcscustomexchangesets"
 				},
 				"then": {
+					"facets": {
+						"add": [
+							{ "name": "businessUnitName", "value": "$path:properties[\"businessUnitName\"]" },
+							{ "name": "agency", "value": "$path:properties[\"agency\"]" },
+							{ "name": "productCode", "value": "$path:properties[\"productCode\"]" },
+							{ "name": "source", "value": "$path:properties[\"source\"]" }
+						]
+					},
 					"keywords": {
 						"add": [
 							"AVCS",
@@ -100,6 +132,14 @@
 					"properties[\"businessUnitName\"]": "avcs-bespokeexchangesets"
 				},
 				"then": {
+					"facets": {
+						"add": [
+							{ "name": "businessUnitName", "value": "$path:properties[\"businessUnitName\"]" },
+							{ "name": "agency", "value": "$path:properties[\"agency\"]" },
+							{ "name": "productCode", "value": "$path:properties[\"productCode\"]" },
+							{ "name": "source", "value": "$path:properties[\"source\"]" }
+						]
+					},
 					"keywords": {
 						"add": [
 							"AVCS",
@@ -124,6 +164,14 @@
 					"properties[\"businessUnitName\"]": "avcsdata"
 				},
 				"then": {
+					"facets": {
+						"add": [
+							{ "name": "businessUnitName", "value": "$path:properties[\"businessUnitName\"]" },
+							{ "name": "agency", "value": "$path:properties[\"agency\"]" },
+							{ "name": "productCode", "value": "$path:properties[\"productCode\"]" },
+							{ "name": "source", "value": "$path:properties[\"source\"]" }
+						]
+					},
 					"keywords": {
 						"add": [
 							"AVCS",
@@ -148,6 +196,14 @@
 					"properties[\"businessUnitName\"]": "adp"
 				},
 				"then": {
+					"facets": {
+						"add": [
+							{ "name": "businessUnitName", "value": "$path:properties[\"businessUnitName\"]" },
+							{ "name": "agency", "value": "$path:properties[\"agency\"]" },
+							{ "name": "productCode", "value": "$path:properties[\"productCode\"]" },
+							{ "name": "source", "value": "$path:properties[\"source\"]" }
+						]
+					},
 					"keywords": {
 						"add": [
 							"ADP",
@@ -172,6 +228,14 @@
 					"properties[\"businessUnitName\"]": "aenp"
 				},
 				"then": {
+					"facets": {
+						"add": [
+							{ "name": "businessUnitName", "value": "$path:properties[\"businessUnitName\"]" },
+							{ "name": "agency", "value": "$path:properties[\"agency\"]" },
+							{ "name": "productCode", "value": "$path:properties[\"productCode\"]" },
+							{ "name": "source", "value": "$path:properties[\"source\"]" }
+						]
+					},
 					"keywords": {
 						"add": [
 							"AENP",
@@ -196,6 +260,14 @@
 					"properties[\"businessUnitName\"]": "arcs"
 				},
 				"then": {
+					"facets": {
+						"add": [
+							{ "name": "businessUnitName", "value": "$path:properties[\"businessUnitName\"]" },
+							{ "name": "agency", "value": "$path:properties[\"agency\"]" },
+							{ "name": "productCode", "value": "$path:properties[\"productCode\"]" },
+							{ "name": "source", "value": "$path:properties[\"source\"]" }
+						]
+					},
 					"keywords": {
 						"add": [
 							"ARCS",
@@ -220,6 +292,14 @@
 					"properties[\"businessUnitName\"]": "maritimesafetyinformation"
 				},
 				"then": {
+					"facets": {
+						"add": [
+							{ "name": "businessUnitName", "value": "$path:properties[\"businessUnitName\"]" },
+							{ "name": "agency", "value": "$path:properties[\"agency\"]" },
+							{ "name": "productCode", "value": "$path:properties[\"productCode\"]" },
+							{ "name": "source", "value": "$path:properties[\"source\"]" }
+						]
+					},
 					"keywords": {
 						"add": [
 							"MSI",
@@ -243,6 +323,14 @@
 					"properties[\"businessUnitName\"]": "s100-tidalservice"
 				},
 				"then": {
+					"facets": {
+						"add": [
+							{ "name": "businessUnitName", "value": "$path:properties[\"businessUnitName\"]" },
+							{ "name": "agency", "value": "$path:properties[\"agency\"]" },
+							{ "name": "productCode", "value": "$path:properties[\"productCode\"]" },
+							{ "name": "source", "value": "$path:properties[\"source\"]" }
+						]
+					},
 					"keywords": {
 						"add": [
 							"S100",
@@ -267,6 +355,14 @@
 					"properties[\"businessUnitName\"]": "adsd-viewerupdates"
 				},
 				"then": {
+					"facets": {
+						"add": [
+							{ "name": "businessUnitName", "value": "$path:properties[\"businessUnitName\"]" },
+							{ "name": "agency", "value": "$path:properties[\"agency\"]" },
+							{ "name": "productCode", "value": "$path:properties[\"productCode\"]" },
+							{ "name": "source", "value": "$path:properties[\"source\"]" }
+						]
+					},
 					"keywords": {
 						"add": [
 							"ADSD",

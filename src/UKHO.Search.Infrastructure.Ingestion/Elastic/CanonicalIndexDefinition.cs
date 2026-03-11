@@ -16,6 +16,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
                                                  })
                                              })
                                              .Properties(p => p.Object("source", o => o.Enabled(false))
+                                                               .Keyword("documentId")
+                                                               .Keyword("documentType")
                                                                .Date("timestamp")
                                                                .Keyword("keywords")
                                                                .Text("searchText", t => t.Analyzer("english"))

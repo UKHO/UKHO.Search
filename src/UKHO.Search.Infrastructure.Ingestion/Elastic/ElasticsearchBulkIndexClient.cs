@@ -1,3 +1,4 @@
+using System.Threading;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Core.Bulk;
 using Microsoft.Extensions.Configuration;
@@ -11,12 +12,17 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
     public sealed class ElasticsearchBulkIndexClient : IBulkIndexClient<IndexOperation>
     {
         private readonly ElasticsearchClient _client;
+        private readonly CanonicalIndexDefinition _indexDefinition;
         private readonly string _indexName;
         private readonly ILogger<ElasticsearchBulkIndexClient> _logger;
 
-        public ElasticsearchBulkIndexClient(ElasticsearchClient client, IConfiguration configuration, ILogger<ElasticsearchBulkIndexClient> logger)
+        private readonly SemaphoreSlim _indexEnsureLock = new(1, 1);
+        private volatile bool _indexEnsured;
+
+        public ElasticsearchBulkIndexClient(ElasticsearchClient client, IConfiguration configuration, CanonicalIndexDefinition indexDefinition, ILogger<ElasticsearchBulkIndexClient> logger)
         {
             _client = client;
+            _indexDefinition = indexDefinition;
             _logger = logger;
 
             _indexName = configuration["ingestion:indexname"] ?? throw new InvalidOperationException("Missing required configuration value 'ingestion:indexname'.");
@@ -24,6 +30,9 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
 
         public async ValueTask<BulkIndexResponse> BulkIndexAsync(BulkIndexRequest<IndexOperation> request, CancellationToken cancellationToken)
         {
+            await EnsureIndexReadyAsync(cancellationToken)
+                .ConfigureAwait(false);
+
             var bulkRequest = new BulkRequest(_indexName)
             {
                 Operations = new BulkOperationsCollection()
@@ -83,6 +92,111 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
             {
                 Items = results
             };
+        }
+
+        private async ValueTask EnsureIndexReadyAsync(CancellationToken cancellationToken)
+        {
+            if (_indexEnsured)
+            {
+                // The index may be deleted/recreated while the service is running; re-check existence to avoid
+                // Elasticsearch auto-creating the index with default dynamic mappings on the next bulk request.
+                var existsResponse = await _client.Indices.ExistsAsync(_indexName, cancellationToken)
+                                                        .ConfigureAwait(false);
+                if (existsResponse.Exists)
+                {
+                    return;
+                }
+
+                _indexEnsured = false;
+            }
+
+            await _indexEnsureLock.WaitAsync(cancellationToken)
+                                 .ConfigureAwait(false);
+            try
+            {
+                if (_indexEnsured)
+                {
+                    return;
+                }
+
+                var existsResponse = await _client.Indices.ExistsAsync(_indexName, cancellationToken)
+                                                        .ConfigureAwait(false);
+
+                if (!existsResponse.Exists)
+                {
+                    var createResponse = await _client.Indices.CreateAsync(_indexName, d => _indexDefinition.Configure(d), cancellationToken)
+                                                             .ConfigureAwait(false);
+
+                    if (!createResponse.IsValidResponse)
+                    {
+                        _logger.LogError("Failed to create Elasticsearch index '{IndexName}'. DebugInformation={DebugInformation}", _indexName, createResponse.DebugInformation);
+                        throw new InvalidOperationException($"Failed to create Elasticsearch index '{_indexName}'.");
+                    }
+                }
+
+                await ValidateIndexMappingAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                _indexEnsured = true;
+            }
+            finally
+            {
+                _indexEnsureLock.Release();
+            }
+        }
+
+        private async ValueTask ValidateIndexMappingAsync(CancellationToken cancellationToken)
+        {
+            for (var attempt = 1; attempt <= 3; attempt++)
+            {
+                var fieldCapsResponse = await _client.FieldCapsAsync(f => f.Indices(_indexName)
+                                                                           .Fields("*"), cancellationToken)
+                                                    .ConfigureAwait(false);
+
+                if (fieldCapsResponse.IsValidResponse && fieldCapsResponse.Fields is not null)
+                {
+                    var fields = fieldCapsResponse.Fields;
+
+                    // These fields should be mapped explicitly (not default dynamic 'text' with '.keyword' multi-fields).
+                    EnsureHasType(fields, "documentId", "keyword");
+                    EnsureHasType(fields, "documentType", "keyword");
+                    EnsureHasType(fields, "keywords", "keyword");
+                    EnsureHasType(fields, "searchText", "text");
+                    EnsureHasType(fields, "content", "text");
+
+                    // If the index was created via default dynamic mapping, these multi-fields will typically exist.
+                    EnsureAbsent(fields, "keywords.keyword");
+                    EnsureAbsent(fields, "searchText.keyword");
+                    EnsureAbsent(fields, "content.keyword");
+
+                    return;
+                }
+
+                if (attempt < 3)
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(200), cancellationToken)
+                              .ConfigureAwait(false);
+                }
+            }
+
+            throw new InvalidOperationException($"Elasticsearch index '{_indexName}' did not return any field capabilities after retries.");
+        }
+
+        private static void EnsureHasType<T>(IReadOnlyDictionary<string, IReadOnlyDictionary<string, T>> fields, string fieldName, string expectedType)
+        {
+            if (!fields.TryGetValue(fieldName, out var perType) || perType is null || !perType.ContainsKey(expectedType))
+            {
+                var types = perType is null ? "<missing>" : string.Join(",", perType.Keys);
+                throw new InvalidOperationException($"Index mapping mismatch: expected field '{fieldName}' to include type '{expectedType}', but found '{types}'.");
+            }
+        }
+
+        private static void EnsureAbsent<T>(IReadOnlyDictionary<string, IReadOnlyDictionary<string, T>> fields, string fieldName)
+        {
+            if (fields.ContainsKey(fieldName))
+            {
+                throw new InvalidOperationException($"Index mapping mismatch: unexpected multi-field '{fieldName}' exists; index appears to have been created with dynamic mappings.");
+            }
         }
     }
 }

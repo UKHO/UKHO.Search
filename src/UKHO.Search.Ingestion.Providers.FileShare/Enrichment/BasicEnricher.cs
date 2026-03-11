@@ -38,7 +38,6 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
                     }
 
                     document.AddKeyword(value);
-                    document.AddFacetValue(property.Name, value);
                 }
             }
 
