@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using UKHO.Search.Ingestion.Pipeline.Documents;
 using UKHO.Search.Ingestion.Providers.FileShare.Enrichment.Handlers;
+using System.Xml.Linq;
 using UKHO.Search.Ingestion.Requests;
 using Xunit;
 
@@ -20,6 +21,8 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             var document = CanonicalDocument.CreateMinimal("doc-1", request.AddItem!.Properties, request.AddItem.Timestamp);
 
             await handler.HandleFiles(new[] { catalogPath }, request, document, CancellationToken.None);
+
+            document.DocumentType.ShouldBe("S-101");
 
             document.Keywords.ShouldContain("s-101");
             document.Keywords.ShouldContain("s101");
@@ -41,6 +44,8 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             var document = CanonicalDocument.CreateMinimal("doc-1", request.AddItem!.Properties, request.AddItem.Timestamp);
 
             await handler.HandleFiles(new[] { catalogPath }, request, document, CancellationToken.None);
+
+            document.DocumentType.ShouldBe("S-102");
 
             document.Keywords.ShouldBeEmpty();
             document.SearchText.ShouldBeEmpty();
