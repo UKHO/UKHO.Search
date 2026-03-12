@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://schemas.s100dev.net/schemas/S100/5.0.0/S100Catalog/20220705/S100_XC.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<XC:S100_ExchangeCatalogue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:S100SE="http://www.iho.int/s100/se/5.2" xmlns:XC="http://www.iho.int/s100/xc/5.2" xmlns:cit="http://standards.iso.org/iso/19115/-3/cit/2.0" xmlns:gco="http://standards.iso.org/iso/19115/-3/gco/1.0" xmlns:gcx="http://standards.iso.org/iso/19115/-3/gcx/1.0" xmlns:gex="http://standards.iso.org/iso/19115/-3/gex/1.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:lan="http://standards.iso.org/iso/19115/-3/lan/1.0" xmlns:mcc="http://standards.iso.org/iso/19115/-3/mcc/1.0" xmlns:mco="http://standards.iso.org/iso/19115/-3/mco/1.0" xmlns:mmi="http://standards.iso.org/iso/19115/-3/mmi/1.0" xmlns:mri="http://standards.iso.org/iso/19115/-3/mri/1.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <XC:identifier>
+    <XC:identifier>101MQ3NU7M8</XC:identifier>
+    <XC:dateTime>2025-05-16T01:40:53Z</XC:dateTime>
+  </XC:identifier>
+  <XC:contact>
+    <XC:organization>
+      <gco:CharacterString>Australian Hydrographic Office</gco:CharacterString>
+    </XC:organization>
+  </XC:contact>
+  <XC:productSpecification>
+    <XC:name>S-101</XC:name>
+    <XC:version>2.0.0</XC:version>
+    <XC:date>2024-09-23</XC:date>
+    <XC:productIdentifier>S-101</XC:productIdentifier>
+    <XC:number>214</XC:number>
+    <XC:compliancyCategory>category4</XC:compliancyCategory>
+  </XC:productSpecification>
+  <XC:defaultLocale>
+    <lan:PT_Locale>
+      <lan:language>
+        <lan:LanguageCode codeList="http://www.iho.int/S100/4.0.0/resources/Codelists/cat/codelists.xml#S100_MD_LanguageCode" codeListValue="eng">eng</lan:LanguageCode>
+      </lan:language>
+      <lan:characterEncoding>
+        <lan:MD_CharacterSetCode codeList="http://www.iho.int/S100/4.0.0/resources/Codelists/cat/codelists.xml#S100_MD_CharacterSetCode" codeListValue="UTF-8">UTF-8</lan:MD_CharacterSetCode>
+      </lan:characterEncoding>
+    </lan:PT_Locale>
+  </XC:defaultLocale>
+  <XC:exchangeCatalogueComment xsi:type="lan:PT_FreeText_PropertyType">
+    <gco:CharacterString>This is an S-101 ENC produced by the Australian Hydrographic Office (AHO). The data in this ENC is sourced from the AHO Test and Development Environment for evaluation purposes only and Not for Navigation. This data is not to be used for any other purpose and is not maintained. The evaluation period for this dataset expires November 01 2025. © Commonwealth of Australia 2025.</gco:CharacterString>
+  </XC:exchangeCatalogueComment>
+  <XC:datasetDiscoveryMetadata>
+    <XC:S100_DatasetDiscoveryMetadata>
+      <XC:fileName>file:/S-101/DATASET_FILES/101MQ3NU7M8.000</XC:fileName>
+      <XC:description>
+        <gco:CharacterString>AU5BTB01</gco:CharacterString>
+      </XC:description>
+      <XC:compressionFlag>false</XC:compressionFlag>
+      <XC:dataProtection>false</XC:dataProtection>
+      <XC:protectionScheme>S100p15</XC:protectionScheme>
+      <XC:digitalSignatureReference>DSA</XC:digitalSignatureReference>
+      <XC:digitalSignatureValue>
+        <S100SE:S100_SE_DigitalSignature id="caris" certificateRef="CertRef00">12345678</S100SE:S100_SE_DigitalSignature>
+      </XC:digitalSignatureValue>
+      <XC:copyright>true</XC:copyright>
+      <XC:classification gco:isoType="mco:MD_ClassificationCode">
+        <mco:MD_ClassificationCode codeList="http://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml#MD_ClassificationCode" codeListValue="unclassified">unclassified</mco:MD_ClassificationCode>
+      </XC:classification>
+      <XC:purpose>newDataset</XC:purpose>
+      <XC:notForNavigation>true</XC:notForNavigation>
+      <XC:editionNumber>2</XC:editionNumber>
+      <XC:updateNumber>0</XC:updateNumber>
+      <XC:updateApplicationDate>2025-05-16</XC:updateApplicationDate>
+      <XC:issueDate>2025-05-16</XC:issueDate>
+      <XC:boundingBox gco:isoType="gex:EX_GeographicBoundingBox">
+        <gex:westBoundLongitude>
+          <gco:Decimal>151.024444</gco:Decimal>
+        </gex:westBoundLongitude>
+        <gex:eastBoundLongitude>
+          <gco:Decimal>151.3333333</gco:Decimal>
+        </gex:eastBoundLongitude>
+        <gex:southBoundLatitude>
+          <gco:Decimal>-34.090556</gco:Decimal>
+        </gex:southBoundLatitude>
+        <gex:northBoundLatitude>
+          <gco:Decimal>-33.943334</gco:Decimal>
+        </gex:northBoundLatitude>
+      </XC:boundingBox>
+      <XC:productSpecification>
+        <XC:name>S-101</XC:name>
+        <XC:version>2.0.0</XC:version>
+        <XC:date>2024-09-23</XC:date>
+        <XC:productIdentifier>S-101</XC:productIdentifier>
+        <XC:number>214</XC:number>
+        <XC:compliancyCategory>category4</XC:compliancyCategory>
+      </XC:productSpecification>
+      <XC:producingAgency>
+        <cit:CI_Responsibility>
+          <cit:role>
+            <cit:CI_RoleCode codeList="http://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml#CI_RoleCode" codeListValue="custodian">custodian</cit:CI_RoleCode>
+          </cit:role>
+          <cit:party>
+            <cit:CI_Organisation>
+              <cit:name>
+                <gco:CharacterString>Australian Hydrographic Office</gco:CharacterString>
+              </cit:name>
+              <cit:contactInfo>
+                <cit:CI_Contact>
+                  <cit:onlineResource>
+                    <cit:CI_OnlineResource>
+                      <cit:linkage>
+                        <gco:CharacterString>www.hydro.gov.au</gco:CharacterString>
+                      </cit:linkage>
+                    </cit:CI_OnlineResource>
+                  </cit:onlineResource>
+                </cit:CI_Contact>
+              </cit:contactInfo>
+              <cit:individual>
+                <cit:CI_Individual>
+                  <cit:positionName>
+                    <gco:CharacterString>Hydrographer of Australia</gco:CharacterString>
+                  </cit:positionName>
+                </cit:CI_Individual>
+              </cit:individual>
+            </cit:CI_Organisation>
+          </cit:party>
+        </cit:CI_Responsibility>
+      </XC:producingAgency>
+      <XC:producerCode>AU</XC:producerCode>
+      <XC:encodingFormat>ISO/IEC 8211</XC:encodingFormat>
+      <XC:dataCoverage>
+        <XC:boundingPolygon gco:isoType="gex:EX_BoundingPolygon">
+          <gex:polygon>
+            <gml:Polygon gml:id="DC1_101MQ3NU7M8" srsName="urn:ogc:def:crs:EPSG::4326">
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList> -34.0152780 151.1850000 -34.0145423 151.1850000 -34.0145423 151.1850000 -34.0076091 151.1850000 -34.0076091 151.1850000 -34.0060793 151.1850000 -34.0060793 151.1850000 -34.0060535 151.1850000 -34.0060535 151.1850000 -34.0053986 151.1850000 -34.0053986 151.1850000 -34.0023605 151.1850000 -34.0023605 151.1850000 -33.9938537 151.1850000 -33.9938537 151.1850000 -33.9897011 151.1850000 -33.9897011 151.1850000 -33.9873738 151.1850000 -33.9873738 151.1850000 -33.9762196 151.1850000 -33.9762196 151.1850000 -33.9717189 151.1850000 -33.9717189 151.1850000 -33.9682902 151.1850000 -33.9682902 151.1850000 -33.9673953 151.1850000 -33.9673953 151.1850000 -33.9672757 151.1850000 -33.9672757 151.1850000 -33.9671933 151.1850000 -33.9671933 151.1850000 -33.9623748 151.1850000 -33.9623748 151.1850000 -33.9622891 151.1850000 -33.9622891 151.1850000 -33.9614999 151.1850000 -33.9614999 151.1850000 -33.9574152 151.1850000 -33.9574152 151.1850000 -33.9518706 151.1850000 -33.9518706 151.1850000 -33.9518060 151.1850000 -33.9518060 151.1850000 -33.9512671 151.1850000 -33.9512671 151.1850000 -33.9508644 151.1850000 -33.9508644 151.1850000 -33.9507107 151.1850000 -33.9507107 151.1850000 -33.9501161 151.1850000 -33.9501161 151.1850000 -33.9500000 151.1850000 -33.9500000 151.1856228 -33.9500000 151.1856228 -33.9500000 151.1874099 -33.9500000 151.1874099 -33.9500000 151.1878847 -33.9500000 151.1878847 -33.9500000 151.1886784 -33.9500000 151.1886784 -33.9500000 151.1896840 -33.9500000 151.1896840 -33.9500000 151.1901465 -33.9500000 151.1901465 -33.9500000 151.1905292 -33.9500000 151.1905292 -33.9500000 151.1909059 -33.9500000 151.1909059 -33.9500000 151.2383333 -33.9904111 151.2383333 -33.9904111 151.2383333 -33.9915493 151.2383333 -33.9915493 151.2383333 -33.9918819 151.2383333 -33.9918819 151.2383333 -33.9953295 151.2383333 -33.9953295 151.2383333 -33.9958863 151.2383333 -33.9958863 151.2383333 -33.9985340 151.2383333 -33.9985340 151.2383333 -33.9988450 151.2383333 -33.9988450 151.2383333 -33.9991901 151.2383333 -33.9991901 151.2383333 -33.9993890 151.2383333 -33.9993890 151.2383333 -33.9997463 151.2383333 -33.9997463 151.2383333 -33.9999723 151.2383333 -33.9999723 151.2383333 -34.0003239 151.2383333 -34.0003239 151.2383333 -34.0035098 151.2383333 -34.0035098 151.2383333 -34.0038601 151.2383333 -34.0038601 151.2383333 -34.0064404 151.2383333 -34.0064404 151.2383333 -34.0084506 151.2383333 -34.0084506 151.2383333 -34.0110191 151.2383333 -34.0110191 151.2383333 -34.0152780 151.2383333 -34.0152780 151.2383333 -34.0175362 151.2383333 -34.0175362 151.2383333 -34.0200000 151.2383333 -34.0200000 151.2373872 -34.0200000 151.2373872 -34.0200000 151.2323088 -34.0200000 151.2323088 -34.0200000 151.2319878 -34.0200000 151.2319878 -34.0200000 151.2319292 -34.0200000 151.2319292 -34.0200000 151.2311653 -34.0200000 151.2311653 -34.0200000 151.2309014 -34.0200000 151.2309014 -34.0200000 151.2306208 -34.0200000 151.2306208 -34.0200000 151.2302430 -34.0200000 151.2302430 -34.0200000 151.2297166 -34.0200000 151.2297166 -34.0200000 151.1875165 -34.0200000 151.1875165 -34.0200000 151.1850000 -34.0190059 151.1850000 -34.0190059 151.1850000 -34.0152780 151.1850000</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:Polygon>
+          </gex:polygon>
+        </XC:boundingPolygon>
+        <XC:optimumDisplayScale>4000</XC:optimumDisplayScale>
+        <XC:maximumDisplayScale>2000</XC:maximumDisplayScale>
+        <XC:minimumDisplayScale>45000</XC:minimumDisplayScale>
+      </XC:dataCoverage>
+      <XC:dataCoverage>
+        <XC:boundingPolygon gco:isoType="gex:EX_BoundingPolygon">
+          <gex:polygon>
+            <gml:Polygon gml:id="DC2_101MQ3NU7M8" srsName="urn:ogc:def:crs:EPSG::4326">
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList> -34.0152780 151.2383333 -34.0110191 151.2383333 -34.0110191 151.2383333 -34.0084506 151.2383333 -34.0084506 151.2383333 -34.0064404 151.2383333 -34.0064404 151.2383333 -34.0038601 151.2383333 -34.0038601 151.2383333 -34.0035098 151.2383333 -34.0035098 151.2383333 -34.0003239 151.2383333 -34.0003239 151.2383333 -33.9999723 151.2383333 -33.9999723 151.2383333 -33.9997463 151.2383333 -33.9997463 151.2383333 -33.9993890 151.2383333 -33.9993890 151.2383333 -33.9991901 151.2383333 -33.9991901 151.2383333 -33.9988450 151.2383333 -33.9988450 151.2383333 -33.9985340 151.2383333 -33.9985340 151.2383333 -33.9958863 151.2383333 -33.9958863 151.2383333 -33.9953295 151.2383333 -33.9953295 151.2383333 -33.9918819 151.2383333 -33.9918819 151.2383333 -33.9915493 151.2383333 -33.9915493 151.2383333 -33.9904111 151.2383333 -33.9904111 151.2383333 -33.9500000 151.2383333 -33.9500000 151.1909059 -33.9500000 151.1909059 -33.9500000 151.1905292 -33.9500000 151.1905292 -33.9500000 151.1901465 -33.9500000 151.1901465 -33.9500000 151.1896840 -33.9500000 151.1896840 -33.9500000 151.1886784 -33.9500000 151.1886784 -33.9500000 151.1878847 -33.9500000 151.1878847 -33.9500000 151.1874099 -33.9500000 151.1874099 -33.9500000 151.1856228 -33.9500000 151.1856228 -33.9500000 151.1850000 -33.9501161 151.1850000 -33.9501161 151.1850000 -33.9507107 151.1850000 -33.9507107 151.1850000 -33.9508644 151.1850000 -33.9508644 151.1850000 -33.9512671 151.1850000 -33.9512671 151.1850000 -33.9518060 151.1850000 -33.9518060 151.1850000 -33.9518706 151.1850000 -33.9518706 151.1850000 -33.9574152 151.1850000 -33.9574152 151.1850000 -33.9614999 151.1850000 -33.9614999 151.1850000 -33.9622891 151.1850000 -33.9622891 151.1850000 -33.9623748 151.1850000 -33.9623748 151.1850000 -33.9671933 151.1850000 -33.9671933 151.1850000 -33.9672757 151.1850000 -33.9672757 151.1850000 -33.9673953 151.1850000 -33.9673953 151.1850000 -33.9682902 151.1850000 -33.9682902 151.1850000 -33.9717189 151.1850000 -33.9717189 151.1850000 -33.9762196 151.1850000 -33.9762196 151.1850000 -33.9873738 151.1850000 -33.9873738 151.1850000 -33.9897011 151.1850000 -33.9897011 151.1850000 -33.9938537 151.1850000 -33.9938537 151.1850000 -34.0023605 151.1850000 -34.0023605 151.1850000 -34.0053986 151.1850000 -34.0053986 151.1850000 -34.0060535 151.1850000 -34.0060535 151.1850000 -34.0060793 151.1850000 -34.0060793 151.1850000 -34.0076091 151.1850000 -34.0076091 151.1850000 -34.0145423 151.1850000 -34.0145423 151.1850000 -34.0152780 151.1850000 -34.0152780 151.1850000 -34.0152780 151.1813832 -34.0152780 151.1813832 -34.0152780 151.1796198 -34.0152780 151.1796198 -34.0152780 151.1786608 -34.0152780 151.1786608 -34.0152780 151.1784735 -34.0152780 151.1784735 -34.0152780 151.1777873 -34.0152780 151.1777873 -34.0152780 151.1776327 -34.0152780 151.1776327 -34.0152780 151.1764974 -34.0152780 151.1764974 -34.0152780 151.1760290 -34.0152780 151.1760290 -34.0152780 151.1659476 -34.0152780 151.1659476 -34.0152780 151.1623753 -34.0152780 151.1623753 -34.0152780 151.1589107 -34.0152780 151.1589107 -34.0152780 151.1586547 -34.0152780 151.1586547 -34.0152780 151.1496700 -34.0152780 151.1496700 -34.0152780 151.1413660 -34.0152780 151.1413660 -34.0152780 151.1400092 -34.0152780 151.1400092 -34.0152780 151.1400000 -34.0142803 151.1400000 -34.0142803 151.1400000 -34.0138674 151.1400000 -34.0138674 151.1400000 -34.0124404 151.1400000 -34.0124404 151.1400000 -34.0099060 151.1400000 -34.0099060 151.1400000 -34.0098692 151.1400000 -34.0098692 151.1400000 -34.0096714 151.1400000 -34.0096714 151.1400000 -34.0095328 151.1400000 -34.0095328 151.1400000 -34.0047874 151.1400000 -34.0047874 151.1400000 -34.0031650 151.1400000 -34.0031650 151.1400000 -34.0012573 151.1400000 -34.0012573 151.1400000 -34.0009263 151.1400000 -34.0009263 151.1400000 -34.0004544 151.1400000 -34.0004544 151.1400000 -34.0003065 151.1400000 -34.0003065 151.1400000 -33.9447220 151.1400000 -33.9447220 151.1597160 -33.9447220 151.1597160 -33.9447220 151.1617520 -33.9447220 151.1617520 -33.9447220 151.1734360 -33.9447220 151.1734360 -33.9447220 151.1737540 -33.9447220 151.1737540 -33.9447220 151.1752600 -33.9447220 151.1752600 -33.9447220 151.1759760 -33.9447220 151.1759760 -33.9447220 151.1777000 -33.9447220 151.1777000 -33.9447220 151.1779380 -33.9447220 151.1779380 -33.9447220 151.1785540 -33.9447220 151.1785540 -33.9447220 151.1788000 -33.9447220 151.1788000 -33.9447220 151.1879980 -33.9447220 151.1879980 -33.9447220 151.2620771 -33.9447220 151.2620771 -33.9447220 151.2623412 -33.9447220 151.2623412 -33.9447220 151.2626685 -33.9447220 151.2626685 -33.9447220 151.2638456 -33.9447220 151.2638456 -33.9447220 151.2648655 -33.9447220 151.2648655 -33.9447220 151.2656103 -33.9447220 151.2656103 -33.9447220 151.2656795 -33.9447220 151.2656795 -33.9447220 151.2667332 -33.9447220 151.2667332 -33.9447220 151.2681563 -33.9447220 151.2681563 -33.9447220 151.2706328 -33.9447220 151.2706328 -33.9447220 151.2741660 -33.9825620 151.2741660 -33.9825620 151.2741660 -34.0015369 151.2741660 -34.0015369 151.2741660 -34.0145060 151.2741660 -34.0145060 151.2741660 -34.0152780 151.2741660 -34.0152780 151.2735240 -34.0152780 151.2735240 -34.0152780 151.2577820 -34.0152780 151.2577820 -34.0152780 151.2506897 -34.0152780 151.2506897 -34.0152780 151.2501406 -34.0152780 151.2501406 -34.0152780 151.2500788 -34.0152780 151.2500788 -34.0152780 151.2495699 -34.0152780 151.2495699 -34.0152780 151.2391505 -34.0152780 151.2391505 -34.0152780 151.2383333</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:Polygon>
+          </gex:polygon>
+        </XC:boundingPolygon>
+        <XC:optimumDisplayScale>12000</XC:optimumDisplayScale>
+        <XC:maximumDisplayScale>6000</XC:maximumDisplayScale>
+        <XC:minimumDisplayScale>45000</XC:minimumDisplayScale>
+      </XC:dataCoverage>
+      <XC:dataCoverage>
+        <XC:boundingPolygon gco:isoType="gex:EX_BoundingPolygon">
+          <gex:polygon>
+            <gml:Polygon gml:id="DC3_101MQ3NU7M8" srsName="urn:ogc:def:crs:EPSG::4326">
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList> -33.9708120 151.0244440 -33.9679860 151.0244440 -33.9679860 151.0244440 -33.9676420 151.0244440 -33.9676420 151.0244440 -33.9671040 151.0244440 -33.9671040 151.0244440 -33.9433340 151.0244440 -33.9433340 151.0406900 -33.9433340 151.0406900 -33.9433340 151.0411940 -33.9433340 151.0411940 -33.9433340 151.1596180 -33.9433340 151.1596180 -33.9433340 151.1602560 -33.9433340 151.1602560 -33.9433340 151.1611960 -33.9433340 151.1611960 -33.9433340 151.1730800 -33.9433340 151.1730800 -33.9433340 151.1734020 -33.9433340 151.1734020 -33.9433340 151.1749100 -33.9433340 151.1749100 -33.9433340 151.1756160 -33.9433340 151.1756160 -33.9433340 151.1773400 -33.9433340 151.1773400 -33.9433340 151.1775700 -33.9433340 151.1775700 -33.9433340 151.1781880 -33.9433340 151.1781880 -33.9433340 151.1784360 -33.9433340 151.1784360 -33.9433340 151.1873060 -33.9433340 151.1873060 -33.9433340 151.2636322 -33.9433340 151.2636322 -33.9433340 151.2645272 -33.9433340 151.2645272 -33.9433340 151.2647490 -33.9433340 151.2647490 -33.9433340 151.2659318 -33.9433340 151.2659318 -33.9433340 151.2668900 -33.9433340 151.2668900 -33.9433340 151.2677669 -33.9433340 151.2677669 -33.9433340 151.2681098 -33.9433340 151.2681098 -33.9433340 151.2703061 -33.9433340 151.2703061 -33.9433340 151.2829563 -33.9433340 151.2829563 -33.9433340 151.2963651 -33.9433340 151.2963651 -33.9433340 151.3002286 -33.9433340 151.3002286 -33.9433340 151.3038880 -33.9433340 151.3038880 -33.9433340 151.3098591 -33.9433340 151.3098591 -33.9433340 151.3333333 -33.9515816 151.3333333 -33.9515816 151.3333333 -33.9601317 151.3333333 -33.9601317 151.3333333 -33.9958079 151.3333333 -33.9958079 151.3333333 -34.0059350 151.3333333 -34.0059350 151.3333333 -34.0251042 151.3333333 -34.0251042 151.3333333 -34.0775467 151.3333333 -34.0775467 151.3333333 -34.0905560 151.3333333 -34.0905560 151.2305600 -34.0905560 151.2305600 -34.0905560 151.1908160 -34.0905560 151.1908160 -34.0905560 151.1880542 -34.0905560 151.1880542 -34.0905560 151.1845122 -34.0905560 151.1845122 -34.0905560 151.1736078 -34.0905560 151.1736078 -34.0905560 151.1732820 -34.0905560 151.1732820 -34.0905560 151.1718680 -34.0905560 151.1718680 -34.0905560 151.1698464 -34.0905560 151.1698464 -34.0905560 151.1696320 -34.0905560 151.1696320 -34.0905560 151.1688880 -34.0905560 151.1688880 -34.0905560 151.1250800 -34.0905560 151.1250800 -34.0905560 151.1241580 -34.0905560 151.1241580 -34.0905560 151.0788160 -34.0905560 151.0788160 -34.0905560 151.0532960 -34.0905560 151.0532960 -34.0905560 151.0244440 -34.0258020 151.0244440 -34.0258020 151.0244440 -34.0254940 151.0244440 -34.0254940 151.0244440 -33.9785420 151.0244440 -33.9785420 151.0244440 -33.9775560 151.0244440 -33.9775560 151.0244440 -33.9770140 151.0244440 -33.9770140 151.0244440 -33.9735680 151.0244440 -33.9735680 151.0244440 -33.9716120 151.0244440 -33.9716120 151.0244440 -33.9708120 151.0244440</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:Polygon>
+          </gex:polygon>
+        </XC:boundingPolygon>
+        <XC:optimumDisplayScale>22000</XC:optimumDisplayScale>
+        <XC:maximumDisplayScale>11000</XC:maximumDisplayScale>
+        <XC:minimumDisplayScale>45000</XC:minimumDisplayScale>
+      </XC:dataCoverage>
+      <XC:comment>
+        <gco:CharacterString>This is an S-101 ENC produced by the Australian Hydrographic Office (AHO). The data in this ENC is sourced from the AHO Test and Development Environment for evaluation purposes only and Not for Navigation. This data is not to be used for any other purpose and is not maintained. The evaluation period for this dataset expires November 01 2025. © Commonwealth of Australia 2025.</gco:CharacterString>
+      </XC:comment>
+      <XC:navigationPurpose>port</XC:navigationPurpose>
+    </XC:S100_DatasetDiscoveryMetadata>
+  </XC:datasetDiscoveryMetadata>
+  <XC:supportFileDiscoveryMetadata>
+    <XC:S100_SupportFileDiscoveryMetadata>
+      <XC:fileName>file:/S-101/SUPPORT_FILES/101AU00007_04.TXT</XC:fileName>
+      <XC:revisionStatus>new</XC:revisionStatus>
+      <XC:editionNumber>1</XC:editionNumber>
+      <XC:issueDate>2025-05-16</XC:issueDate>
+      <XC:supportFileSpecification>
+        <XC:name>TXT_UTF-8</XC:name>
+        <XC:version>4</XC:version>
+      </XC:supportFileSpecification>
+      <XC:dataType>TXT_UTF-8</XC:dataType>
+      <XC:compressionFlag>false</XC:compressionFlag>
+      <XC:digitalSignatureReference>DSA</XC:digitalSignatureReference>
+      <XC:digitalSignatureValue>
+        <S100SE:S100_SE_DigitalSignature id="caris" certificateRef="CertRef00">12345678</S100SE:S100_SE_DigitalSignature>
+      </XC:digitalSignatureValue>
+      <XC:resourcePurpose>supportFile</XC:resourcePurpose>
+    </XC:S100_SupportFileDiscoveryMetadata>
+    <XC:S100_SupportFileDiscoveryMetadata>
+      <XC:fileName>file:/S-101/SUPPORT_FILES/101AU00278_03.TXT</XC:fileName>
+      <XC:revisionStatus>new</XC:revisionStatus>
+      <XC:editionNumber>1</XC:editionNumber>
+      <XC:issueDate>2025-05-16</XC:issueDate>
+      <XC:supportFileSpecification>
+        <XC:name>TXT_UTF-8</XC:name>
+        <XC:version>3</XC:version>
+      </XC:supportFileSpecification>
+      <XC:dataType>TXT_UTF-8</XC:dataType>
+      <XC:compressionFlag>false</XC:compressionFlag>
+      <XC:digitalSignatureReference>DSA</XC:digitalSignatureReference>
+      <XC:digitalSignatureValue>
+        <S100SE:S100_SE_DigitalSignature id="caris" certificateRef="CertRef00">12345678</S100SE:S100_SE_DigitalSignature>
+      </XC:digitalSignatureValue>
+      <XC:resourcePurpose>supportFile</XC:resourcePurpose>
+    </XC:S100_SupportFileDiscoveryMetadata>
+    <XC:S100_SupportFileDiscoveryMetadata>
+      <XC:fileName>file:/S-101/SUPPORT_FILES/101AU00281_02.TXT</XC:fileName>
+      <XC:revisionStatus>new</XC:revisionStatus>
+      <XC:editionNumber>1</XC:editionNumber>
+      <XC:issueDate>2025-05-16</XC:issueDate>
+      <XC:supportFileSpecification>
+        <XC:name>TXT_UTF-8</XC:name>
+        <XC:version>2</XC:version>
+      </XC:supportFileSpecification>
+      <XC:dataType>TXT_UTF-8</XC:dataType>
+      <XC:compressionFlag>false</XC:compressionFlag>
+      <XC:digitalSignatureReference>DSA</XC:digitalSignatureReference>
+      <XC:digitalSignatureValue>
+        <S100SE:S100_SE_DigitalSignature id="caris" certificateRef="CertRef00">12345678</S100SE:S100_SE_DigitalSignature>
+      </XC:digitalSignatureValue>
+      <XC:resourcePurpose>supportFile</XC:resourcePurpose>
+    </XC:S100_SupportFileDiscoveryMetadata>
+    <XC:S100_SupportFileDiscoveryMetadata>
+      <XC:fileName>file:/S-101/SUPPORT_FILES/101AU00282_01.TXT</XC:fileName>
+      <XC:revisionStatus>new</XC:revisionStatus>
+      <XC:editionNumber>1</XC:editionNumber>
+      <XC:issueDate>2025-05-16</XC:issueDate>
+      <XC:supportFileSpecification>
+        <XC:name>TXT_UTF-8</XC:name>
+        <XC:version>1</XC:version>
+      </XC:supportFileSpecification>
+      <XC:dataType>TXT_UTF-8</XC:dataType>
+      <XC:compressionFlag>false</XC:compressionFlag>
+      <XC:digitalSignatureReference>DSA</XC:digitalSignatureReference>
+      <XC:digitalSignatureValue>
+        <S100SE:S100_SE_DigitalSignature id="caris" certificateRef="CertRef00">12345678</S100SE:S100_SE_DigitalSignature>
+      </XC:digitalSignatureValue>
+      <XC:resourcePurpose>supportFile</XC:resourcePurpose>
+    </XC:S100_SupportFileDiscoveryMetadata>
+    <XC:S100_SupportFileDiscoveryMetadata>
+      <XC:fileName>file:/S-101/SUPPORT_FILES/101AU00283_01.TXT</XC:fileName>
+      <XC:revisionStatus>new</XC:revisionStatus>
+      <XC:editionNumber>1</XC:editionNumber>
+      <XC:issueDate>2025-05-16</XC:issueDate>
+      <XC:supportFileSpecification>
+        <XC:name>TXT_UTF-8</XC:name>
+        <XC:version>1</XC:version>
+      </XC:supportFileSpecification>
+      <XC:dataType>TXT_UTF-8</XC:dataType>
+      <XC:compressionFlag>false</XC:compressionFlag>
+      <XC:digitalSignatureReference>DSA</XC:digitalSignatureReference>
+      <XC:digitalSignatureValue>
+        <S100SE:S100_SE_DigitalSignature id="caris" certificateRef="CertRef00">12345678</S100SE:S100_SE_DigitalSignature>
+      </XC:digitalSignatureValue>
+      <XC:resourcePurpose>supportFile</XC:resourcePurpose>
+    </XC:S100_SupportFileDiscoveryMetadata>
+    <XC:S100_SupportFileDiscoveryMetadata>
+      <XC:fileName>file:/S-101/SUPPORT_FILES/101AU00284_01.TXT</XC:fileName>
+      <XC:revisionStatus>new</XC:revisionStatus>
+      <XC:editionNumber>1</XC:editionNumber>
+      <XC:issueDate>2025-05-16</XC:issueDate>
+      <XC:supportFileSpecification>
+        <XC:name>TXT_UTF-8</XC:name>
+        <XC:version>1</XC:version>
+      </XC:supportFileSpecification>
+      <XC:dataType>TXT_UTF-8</XC:dataType>
+      <XC:compressionFlag>false</XC:compressionFlag>
+      <XC:digitalSignatureReference>DSA</XC:digitalSignatureReference>
+      <XC:digitalSignatureValue>
+        <S100SE:S100_SE_DigitalSignature id="caris" certificateRef="CertRef00">12345678</S100SE:S100_SE_DigitalSignature>
+      </XC:digitalSignatureValue>
+      <XC:resourcePurpose>supportFile</XC:resourcePurpose>
+    </XC:S100_SupportFileDiscoveryMetadata>
+    <XC:S100_SupportFileDiscoveryMetadata>
+      <XC:fileName>file:/S-101/SUPPORT_FILES/101AU00628_01.TXT</XC:fileName>
+      <XC:revisionStatus>new</XC:revisionStatus>
+      <XC:editionNumber>1</XC:editionNumber>
+      <XC:issueDate>2025-05-16</XC:issueDate>
+      <XC:supportFileSpecification>
+        <XC:name>TXT_UTF-8</XC:name>
+        <XC:version>1</XC:version>
+      </XC:supportFileSpecification>
+      <XC:dataType>TXT_UTF-8</XC:dataType>
+      <XC:compressionFlag>false</XC:compressionFlag>
+      <XC:digitalSignatureReference>DSA</XC:digitalSignatureReference>
+      <XC:digitalSignatureValue>
+        <S100SE:S100_SE_DigitalSignature id="caris" certificateRef="CertRef00">12345678</S100SE:S100_SE_DigitalSignature>
+      </XC:digitalSignatureValue>
+      <XC:resourcePurpose>supportFile</XC:resourcePurpose>
+    </XC:S100_SupportFileDiscoveryMetadata>
+    <XC:S100_SupportFileDiscoveryMetadata>
+      <XC:fileName>file:/S-101/SUPPORT_FILES/101AU00645_03.TXT</XC:fileName>
+      <XC:revisionStatus>new</XC:revisionStatus>
+      <XC:editionNumber>1</XC:editionNumber>
+      <XC:issueDate>2025-05-16</XC:issueDate>
+      <XC:supportFileSpecification>
+        <XC:name>TXT_UTF-8</XC:name>
+        <XC:version>3</XC:version>
+      </XC:supportFileSpecification>
+      <XC:dataType>TXT_UTF-8</XC:dataType>
+      <XC:compressionFlag>false</XC:compressionFlag>
+      <XC:digitalSignatureReference>DSA</XC:digitalSignatureReference>
+      <XC:digitalSignatureValue>
+        <S100SE:S100_SE_DigitalSignature id="caris" certificateRef="CertRef00">12345678</S100SE:S100_SE_DigitalSignature>
+      </XC:digitalSignatureValue>
+      <XC:resourcePurpose>supportFile</XC:resourcePurpose>
+    </XC:S100_SupportFileDiscoveryMetadata>
+    <XC:S100_SupportFileDiscoveryMetadata>
+      <XC:fileName>file:/S-101/SUPPORT_FILES/101AU00686_01.TXT</XC:fileName>
+      <XC:revisionStatus>new</XC:revisionStatus>
+      <XC:editionNumber>1</XC:editionNumber>
+      <XC:issueDate>2025-05-16</XC:issueDate>
+      <XC:supportFileSpecification>
+        <XC:name>TXT_UTF-8</XC:name>
+        <XC:version>1</XC:version>
+      </XC:supportFileSpecification>
+      <XC:dataType>TXT_UTF-8</XC:dataType>
+      <XC:compressionFlag>false</XC:compressionFlag>
+      <XC:digitalSignatureReference>DSA</XC:digitalSignatureReference>
+      <XC:digitalSignatureValue>
+        <S100SE:S100_SE_DigitalSignature id="caris" certificateRef="CertRef00">12345678</S100SE:S100_SE_DigitalSignature>
+      </XC:digitalSignatureValue>
+      <XC:resourcePurpose>supportFile</XC:resourcePurpose>
+    </XC:S100_SupportFileDiscoveryMetadata>
+    <XC:S100_SupportFileDiscoveryMetadata>
+      <XC:fileName>file:/S-101/SUPPORT_FILES/101AU00714_02.TXT</XC:fileName>
+      <XC:revisionStatus>new</XC:revisionStatus>
+      <XC:editionNumber>1</XC:editionNumber>
+      <XC:issueDate>2025-05-16</XC:issueDate>
+      <XC:supportFileSpecification>
+        <XC:name>TXT_UTF-8</XC:name>
+        <XC:version>2</XC:version>
+      </XC:supportFileSpecification>
+      <XC:dataType>TXT_UTF-8</XC:dataType>
+      <XC:compressionFlag>false</XC:compressionFlag>
+      <XC:digitalSignatureReference>DSA</XC:digitalSignatureReference>
+      <XC:digitalSignatureValue>
+        <S100SE:S100_SE_DigitalSignature id="caris" certificateRef="CertRef00">12345678</S100SE:S100_SE_DigitalSignature>
+      </XC:digitalSignatureValue>
+      <XC:resourcePurpose>supportFile</XC:resourcePurpose>
+    </XC:S100_SupportFileDiscoveryMetadata>
+    <XC:S100_SupportFileDiscoveryMetadata>
+      <XC:fileName>file:/S-101/SUPPORT_FILES/101AU00766_01.TXT</XC:fileName>
+      <XC:revisionStatus>new</XC:revisionStatus>
+      <XC:editionNumber>1</XC:editionNumber>
+      <XC:issueDate>2025-05-16</XC:issueDate>
+      <XC:supportFileSpecification>
+        <XC:name>TXT_UTF-8</XC:name>
+        <XC:version>1</XC:version>
+      </XC:supportFileSpecification>
+      <XC:dataType>TXT_UTF-8</XC:dataType>
+      <XC:compressionFlag>false</XC:compressionFlag>
+      <XC:digitalSignatureReference>DSA</XC:digitalSignatureReference>
+      <XC:digitalSignatureValue>
+        <S100SE:S100_SE_DigitalSignature id="caris" certificateRef="CertRef00">12345678</S100SE:S100_SE_DigitalSignature>
+      </XC:digitalSignatureValue>
+      <XC:resourcePurpose>supportFile</XC:resourcePurpose>
+    </XC:S100_SupportFileDiscoveryMetadata>
+    <XC:S100_SupportFileDiscoveryMetadata>
+      <XC:fileName>file:/S-101/SUPPORT_FILES/101AU00769_03.TXT</XC:fileName>
+      <XC:revisionStatus>new</XC:revisionStatus>
+      <XC:editionNumber>1</XC:editionNumber>
+      <XC:issueDate>2025-05-16</XC:issueDate>
+      <XC:supportFileSpecification>
+        <XC:name>TXT_UTF-8</XC:name>
+        <XC:version>3</XC:version>
+      </XC:supportFileSpecification>
+      <XC:dataType>TXT_UTF-8</XC:dataType>
+      <XC:compressionFlag>false</XC:compressionFlag>
+      <XC:digitalSignatureReference>DSA</XC:digitalSignatureReference>
+      <XC:digitalSignatureValue>
+        <S100SE:S100_SE_DigitalSignature id="caris" certificateRef="CertRef00">12345678</S100SE:S100_SE_DigitalSignature>
+      </XC:digitalSignatureValue>
+      <XC:resourcePurpose>supportFile</XC:resourcePurpose>
+    </XC:S100_SupportFileDiscoveryMetadata>
+  </XC:supportFileDiscoveryMetadata>
+  <XC:catalogueDiscoveryMetadata/>
+</XC:S100_ExchangeCatalogue>
