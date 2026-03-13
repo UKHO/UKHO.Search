@@ -96,6 +96,13 @@ namespace AppHost
                                                    .WaitFor(elasticsearch)
                                                    .WithScalar("Emulator API");
 
+                    var rulesWorkbench = builder.AddProject<RulesWorkbench>(ServiceNames.RulesWorkbench)
+                                                .WithExternalHttpEndpoints()
+                                                .WithReference(sqlServer)
+                                                .WithReference(storageBlob)
+                                                .WaitFor(sqlServer)
+                                                .WaitFor(storageBlob);
+
                     // Configuration
                     if (builder.ExecutionContext.IsRunMode)
                     {

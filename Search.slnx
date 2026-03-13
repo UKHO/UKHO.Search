@@ -29,6 +29,7 @@
     <Project Path="tools/FileShareEmulator/FileShareEmulator.csproj" />
     <Project Path="tools/FileShareImageBuilder/FileShareImageBuilder.csproj" Id="d05948ce-767a-4d18-8fb0-d2a13e1f4557" />
     <Project Path="tools/FileShareImageLoader/FileShareImageLoader.csproj" Id="8ed6b18d-5417-4ec9-be3a-88729c2eb987" />
+    <Project Path="tools/RulesWorkbench/RulesWorkbench.csproj" />
   </Folder>
   <Folder Name="/99 Scratch/">
     <Project Path="scratch/TestS57Parser/TestS57Parser.csproj" Id="4d5d9c5c-a10e-4057-ba2d-b7d630cdee11" />

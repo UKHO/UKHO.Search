@@ -1,0 +1,38 @@
+.query-ui-root {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.query-ui-header {
+    flex: 0 0 auto;
+}
+
+.query-ui-main {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: auto;
+}
+
+.query-ui-footer {
+    flex: 0 0 auto;
+}
+
+.query-ui-panel {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+::deep .query-ui-panel > .rz-card {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}

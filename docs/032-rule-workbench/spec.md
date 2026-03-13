@@ -75,6 +75,7 @@ The standard Blazor project at `tools/RulesWorkbench` will already exist and be 
   2) via a future rules store abstraction.
 
   Initial implementation note: rules are loaded from a private copy of `ingestion-rules.json` placed in the root of the `tools/RulesWorkbench` project.
+  - Decision: include this private rules file as a content file copied to output.
 
 ## 2. System / Component scope
 
@@ -110,6 +111,9 @@ The standard Blazor project at `tools/RulesWorkbench` will already exist and be 
 ### 3.2 Rule editing
 
 - The UI SHALL allow selecting an individual rule.
+- Builder mode v1 SHALL support creating new rules (in-memory only) as well as editing existing rules from the private rules file.
+
+- When creating/editing a rule `id` in Builder mode, the UI SHOULD normalize user input to lowercase (e.g., if the user enters capitals, lowercase it and redisplay).
 - The UI SHALL support dual-mode editing:
   - **Builder mode**: guided editing controls that patch/update the underlying rule JSON.
   - **JSON mode**: direct JSON editing for power users.
@@ -118,6 +122,21 @@ The standard Blazor project at `tools/RulesWorkbench` will already exist and be 
   - choose a condition (e.g. equals, exists)
   - select which `CanonicalDocument` target field/action to set/add (supported `then` actions)
   - the Workbench SHALL apply these changes by patching the rule JSON representation.
+
+- The primary aim of Builder mode is to allow users to build and modify rules without needing to write JSON from scratch.
+
+- Builder mode v1 SHALL support creating/editing IF predicates using:
+  - `properties["x"] == "value"` (string equals)
+  - `properties["x"] exists`
+  - `files[*].mimeType == "..."`
+  - composition using `all` / `any`
+
+- Builder mode v1 SHALL support creating/editing THEN actions for:
+  - Keywords
+  - SearchText
+  - Content
+  - Taxonomy fields: Category, Series, Instance, Authority, Region, Fornat
+  - Version fields: MajorVersion, MinorVersion
 - In **JSON mode**, the UI SHALL show the selected rule JSON in an editor.
 - The JSON editor SHOULD provide a high-quality JSON editing experience (Monaco preferred).
 - The UI SHALL validate rule JSON syntax.
@@ -145,11 +164,15 @@ The standard Blazor project at `tools/RulesWorkbench` will already exist and be 
   - The batch lookup and request construction SHOULD follow the same logic as the FileShare emulator, referencing:
     - `tools/FileShareEmulator/Services/IndexService.cs` (see class `FileShareEmulator.Services.IndexService`, method flow `IndexBatchByIdAsync(...)` → `CreateRequestAsync(...)`).
     - Type: `src/UKHO.Search.Ingestion/Requests/IngestionRequest.cs` (`UKHO.Search.Ingestion.Requests.IngestionRequest`).
+  - Decision: copy the relevant SQL/query logic into `tools/RulesWorkbench` (keep it contained to the Workbench), while using the emulator implementation as the reference.
 
 ### 3.4 Rule evaluation
 
 - The workbench SHALL allow running evaluation for the `file-share` provider.
-- The workbench SHALL run evaluation against the current in-memory rule draft (not persisted).
+- On Workbench load, the system SHALL read the `rules.file-share` ruleset from the private rules JSON file once and create a single in-memory editable copy.
+- The default "Run" behavior SHALL evaluate the entire in-memory `rules.file-share` ruleset against the current payload.
+- The workbench SHALL run evaluation using only the current in-memory edited ruleset copy.
+- The workbench SHALL NOT re-read the source rules file on each run, and SHALL NOT merge or refresh rules from disk during the session.
 - The engine SHALL produce outputs consistent with ingestion.
 
 - After the user clicks the "Run" action, the UI SHALL display the transformed `CanonicalDocument` output as JSON somewhere in the results area.
@@ -158,7 +181,7 @@ The standard Blazor project at `tools/RulesWorkbench` will already exist and be 
 
 - The results UI SHALL display:
   - which rules matched/fired
-  - ordering of application
+  - ordering of application (ruleset order)
   - resulting `CanonicalDocument` state (including a JSON representation)
 
 - The report SHOULD include action summaries per rule (counts of values added).
@@ -191,9 +214,14 @@ The standard Blazor project at `tools/RulesWorkbench` will already exist and be 
 - The workbench MUST run as a web service deployable into a test environment.
 - The workbench SHOULD integrate with Aspire so it can be run locally and deployed to test.
 
+### 4.2.1 UI styling and Blazor setup consistency
+
+- The RulesWorkbench UI styling/theme MUST match `src/Hosts/QueryServiceHost`.
+- The Blazor setup (layout, shared components, and static assets) SHOULD be taken from `src/Hosts/QueryServiceHost`, including `wwwroot` contents, so the look-and-feel is consistent.
+
 ### 4.3 Rule loading (no persistence)
 
-- In the first iteration, rules SHOULD be loaded from a ruleset snapshot source (e.g., the existing JSON file or configuration) at startup/request.
+- In the first iteration, rules SHOULD be loaded once from a ruleset snapshot source at Workbench start.
 - Edits SHALL remain in-memory for the session and shall not persist by default.
 
 ### 4.4 API contracts (indicative)
@@ -226,7 +254,6 @@ The standard Blazor project at `tools/RulesWorkbench` will already exist and be 
 6. No rule persistence back to `ingestion-rules.json` occurs.
 
 ## 6. Validation / Test plan
-
 - Unit tests:
   - Validate `RuleEvaluationReport` generation logic.
   - Validate request parsing for evaluation payloads.

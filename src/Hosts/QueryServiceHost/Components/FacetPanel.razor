@@ -1,0 +1,40 @@
+@using QueryServiceHost.State
+
+@inject QueryUiState State
+
+<RadzenCard Variant="Variant.Outlined" Style="height: 100%; overflow: auto;">
+    <RadzenText TextStyle="TextStyle.Subtitle2" Text="Facets" />
+
+    @if (State.FacetGroups.Count == 0)
+    {
+        <RadzenText TextStyle="TextStyle.Body2" Text="(no facets yet)" />
+    }
+    else
+    {
+        @foreach (var group in State.FacetGroups)
+        {
+            <RadzenStack Gap="0.25rem" Style="padding-top: 0.75rem;">
+                <RadzenButton ButtonStyle="ButtonStyle.Light"
+                              Size="ButtonSize.Small"
+                              Icon="@(group.IsCollapsed ? "chevron_right" : "expand_more")"
+                              Text="@group.Name"
+                              Click="(() => State.ToggleFacetGroupCollapsed(group.Name))" />
+
+                @if (!group.IsCollapsed)
+                {
+                    @foreach (var facet in group.Values)
+                    {
+                        var selected = State.IsFacetValueSelected(group.Name, facet.Value);
+
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <RadzenCheckBox TValue="bool"
+                                           Value="selected"
+                                           Change="(async _ => await State.ToggleFacetValueAsync(group.Name, facet.Value, CancellationToken.None))" />
+                            <span>@facet.Value (@facet.Count)</span>
+                        </div>
+                    }
+                }
+            </RadzenStack>
+        }
+    }
+</RadzenCard>

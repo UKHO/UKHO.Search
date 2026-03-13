@@ -1,7 +1,86 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+@using QueryServiceHost.Models
+@implements IDisposable
+@inject QueryServiceHost.State.QueryUiState State
 
-<h1>Hello, world!</h1>
+<PageTitle>Query</PageTitle>
 
-Welcome to your new app.
+<LoggedErrorBoundary @ref="_errorBoundary">
+    <ChildContent>
+        <div class="query-ui-root">
+            <header class="query-ui-header">
+                <SearchBar />
+            </header>
+
+            @if (State.HasSubmitted)
+            {
+                <main class="query-ui-main">
+                    <RadzenRow Style="height: 100%; margin: 0; gap: 3px;">
+                        <RadzenColumn Size="12" SizeMD="3" Class="query-ui-panel" Style="padding: 0;">
+                            <FacetPanel />
+                        </RadzenColumn>
+
+                        <RadzenColumn Size="12" SizeMD="6" Class="query-ui-panel" Style="padding: 0;">
+                            <ResultsPanel />
+                        </RadzenColumn>
+
+                        <RadzenColumn Size="12" SizeMD="3" Class="query-ui-panel" Style="padding: 0;">
+                            <DetailsPanel />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </main>
+
+                <footer class="query-ui-footer">
+                    <RadzenCard Variant="Variant.Outlined" Style="margin: 0;">
+                        @if (State.IsLoading)
+                        {
+                            <RadzenText TextStyle="TextStyle.Body2" Text="Loading..." />
+                        }
+                        else if (State.LastResponse is not null)
+                        {
+                            <RadzenText TextStyle="TextStyle.Body2" Text="@($"{State.LastResponse.Total} results | {State.LastResponse.Duration.TotalMilliseconds:0} ms")" />
+                        }
+                        else
+                        {
+                            <RadzenText TextStyle="TextStyle.Body2" Text="Ready" />
+                        }
+                    </RadzenCard>
+                </footer>
+            }
+        </div>
+    </ChildContent>
+
+    <ErrorContent>
+        <RadzenCard Variant="Variant.Outlined" Style="margin: 1rem;">
+            <RadzenText TextStyle="TextStyle.H6" Text="An error occurred rendering this page." />
+            <RadzenText TextStyle="TextStyle.Body2" Text="See server output and browser console for details." Style="margin-top: 0.5rem;" />
+            <RadzenButton Text="Retry" Click="Retry" Style="margin-top: 0.75rem;" />
+        </RadzenCard>
+    </ErrorContent>
+</LoggedErrorBoundary>
+
+@code
+{
+    private LoggedErrorBoundary? _errorBoundary;
+
+    protected override void OnInitialized()
+    {
+        State.Changed += OnStateChanged;
+    }
+
+    public void Dispose()
+    {
+        State.Changed -= OnStateChanged;
+    }
+
+    private void OnStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Retry()
+    {
+        _errorBoundary?.Recover();
+    }
+}

@@ -27,5 +27,7 @@
         public const string FileShareBuilder = "tools-fileshare-builder";
 
         public const string FileShareLoader = "tools-fileshare-loader";
+
+        public const string RulesWorkbench = "tools-rules-workbench";
     }
 }

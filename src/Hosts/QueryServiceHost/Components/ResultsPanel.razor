@@ -1,0 +1,50 @@
+@using QueryServiceHost.Models
+@using QueryServiceHost.State
+
+@inject QueryUiState State
+
+<RadzenCard Variant="Variant.Outlined" Style="height: 100%; min-height: 0; display: flex; flex-direction: column;">
+    <RadzenText TextStyle="TextStyle.Subtitle2" Text="Results" />
+
+    <div style="flex: 1; min-height: 0; overflow: auto;">
+        @if (State.IsLoading)
+        {
+            <RadzenText TextStyle="TextStyle.Body2" Text="Searching..." />
+        }
+        else if (!string.IsNullOrWhiteSpace(State.Error))
+        {
+            <RadzenAlert Variant="Variant.Flat" Severity="AlertSeverity.Error">@State.Error</RadzenAlert>
+        }
+        else if (State.LastResponse is null)
+        {
+            <RadzenText TextStyle="TextStyle.Body2" Text="No results yet." />
+        }
+        else if (State.LastResponse.Hits.Count == 0)
+        {
+            <RadzenText TextStyle="TextStyle.Body2" Text="No results." />
+        }
+        else
+        {
+            <RadzenDataList Data="State.LastResponse.Hits" TItem="Hit">
+                <Template Context="hit">
+                    <div role="button"
+                         tabindex="0"
+                         @key="hit"
+                         style="padding: 0.5rem 0.5rem; border-left: 4px solid @(IsSelected(hit) ? "var(--rz-primary)" : "transparent"); border-bottom: 1px solid var(--rz-base-200); cursor: pointer; background: @(IsSelected(hit) ? "var(--rz-base-200)" : "transparent");"
+                         @onclick="(() => State.SelectHit(hit))">
+                        <RadzenText TextStyle="TextStyle.Subtitle1" Text="@hit.Title" />
+                        <RadzenText TextStyle="TextStyle.Body2" Text="@($"{hit.Type} | {hit.Region}")" />
+                    </div>
+                </Template>
+            </RadzenDataList>
+        }
+    </div>
+</RadzenCard>
+
+@code
+{
+    private bool IsSelected(Hit hit)
+    {
+        return State.SelectedHit is not null && ReferenceEquals(State.SelectedHit, hit);
+    }
+}

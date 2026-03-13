@@ -1,22 +1,9 @@
 ﻿@inherits LayoutComponentBase
 
 
-<RadzenComponents/>
-
 <RadzenLayout>
-    <RadzenHeader>
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" Style="width: 100%; padding: 0.75rem 1rem;">
-            <RadzenText TextStyle="TextStyle.H6">UKHO Search Query</RadzenText>
-            <RadzenLink Path="https://learn.microsoft.com/aspnet/core/" Text="About" Target="_blank"/>
-        </RadzenStack>
-    </RadzenHeader>
-
-    <RadzenSidebar Style="width: 260px;">
-        <NavMenu/>
-    </RadzenSidebar>
-
     <RadzenBody>
-        <RadzenContentContainer Style="padding: 1rem;">
+        <RadzenContentContainer Style="padding: 0; height: 100dvh;">
             @Body
         </RadzenContentContainer>
     </RadzenBody>
