@@ -1,4 +1,5 @@
 using RulesWorkbench.Components;
+using RulesWorkbench.Builder;
 using RulesWorkbench.Services;
 using UKHO.Search.Configuration;
 
@@ -15,6 +16,7 @@ public class Program
             .AddInteractiveServerComponents();
 
         builder.Services.AddSingleton<RulesSnapshotStore>();
+        builder.Services.AddSingleton<IRuleBuilderMapper, RuleBuilderMapper>();
        builder.Services.AddSingleton<IRuleJsonValidator, SystemTextJsonRuleJsonValidator>();
         builder.Services.AddScoped<IClipboardService, BrowserClipboardService>();
 

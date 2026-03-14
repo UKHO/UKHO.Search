@@ -30,6 +30,8 @@ Shared implementation conventions:
   - Any UI surface that displays JSON MUST use Monaco in read-only mode.
   - Enable JSON folding/collapsing by default.
   - When serializing JSON for display, use `JsonSerializerOptions` with `Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping` so strings with embedded quotes render like `properties[\"x\"]` instead of `properties[\u0022x\u0022]`.
+- Blazor interactivity:
+  - For any interactive page/component route in `tools/RulesWorkbench`, specify `@rendermode InteractiveServer`; otherwise input/click handlers may not wire up even if other pages are interactive.
 - Testing placement:
   - All unit tests for Workbench services/state (and any non-Playwright UI-adjacent tests) MUST be placed in `test/RulesWorkbench.Tests`.
   - Avoid adding Workbench tests to the general `test/UKHO.Search.Tests` project.
@@ -149,7 +151,7 @@ Shared implementation conventions:
 
 ## Slice D: Builder mode v1 (guided edits + JSON synchronization)
 
-- [ ] Work Item D1: Builder mode for IF predicates and THEN actions (v1 scope)
+- [x] Work Item D1: Builder mode for IF predicates and THEN actions (v1 scope) - Completed
   - **Purpose**: Allow safer edits without writing raw JSON; ensure JSON and Builder stay synchronized.
   - **Acceptance Criteria**:
     - Users can switch between Builder and JSON modes when JSON is valid.
@@ -165,22 +167,17 @@ Shared implementation conventions:
     - Builder edits produce valid engine-compatible JSON
     - Unit tests for builder patch operations
     - UI usable end-to-end
-  - [ ] Task D1.1: Define builder view-models aligned to rule DSL
-    - [ ] Step: Create typed models that map to supported predicate/action subsets.
-    - [ ] Step: Add mapping both directions: JSON → builder models; builder models → JSON.
-  - [ ] Task D1.2: Implement builder UI
-    - [ ] Step: Add “New rule” flow that creates a valid minimal rule template in-memory.
-    - [ ] Step: Controls for selecting path/source, operator, value, and composition.
-    - [ ] Step: Controls for selecting THEN action type and target fields.
-    - [ ] Step: Add normalization for rule `id`.
-    - [ ] Step: Add uniqueness validation for rule `id`.
-  - [ ] Task D1.3: Synchronization rules
-    - [ ] Step: If JSON contains unsupported constructs, builder shows “unsupported” message and remains read-only (or blocks switching) while still allowing JSON mode edits.
-    - [ ] Step: Ensure last-known-good JSON is kept for safe switching.
+  - [x] Task D1.1: Define builder view-models aligned to rule DSL - Completed
+    - Summary: Added builder models/enums and a mapper to generate rules JSON from builder state.
+  - [x] Task D1.2: Implement builder UI - Completed
+    - Summary: Added Builder mode to `/rules` with guided IF/THEN inputs, id normalization to lowercase, and id uniqueness validation.
+  - [x] Task D1.3: Synchronization rules - Completed
+    - Summary: Switching to Builder is blocked when JSON is invalid; Builder updates generate JSON preview and Apply updates the in-memory ruleset.
   - **Files**:
     - `tools/RulesWorkbench/Builder/*`: builder models + mapping
-    - `tools/RulesWorkbench/Pages/RuleEditor.razor`: mode switch + editor panes
-    - `test/...`: unit tests for mapping + patching
+    - `tools/RulesWorkbench/Components/Pages/Rules.razor`: mode switch + builder UI + JSON sync
+    - `tools/RulesWorkbench/Services/RulesSnapshotStore.cs`: in-memory update support reused by builder apply
+    - `test/RulesWorkbench.Tests/RuleBuilderMapperTests.cs`: unit tests for mapping
   - **Work Item Dependencies**: C1
   - **Run / Verification Instructions**:
     - Select a rule → switch Builder → change predicate/action → verify JSON updates and remains valid

@@ -4,11 +4,14 @@
 
 @using System.Text.Json
 @using System.Text.Encodings.Web
+@using System.Text.Json.Nodes
+@using RulesWorkbench.Builder
 @using RulesWorkbench.Services
 
 @inject RulesSnapshotStore RulesSnapshotStore
 @inject IClipboardService ClipboardService
 @inject IRuleJsonValidator RuleJsonValidator
+@inject IRuleBuilderMapper RuleBuilderMapper
 
 <PageTitle>Rules</PageTitle>
 
@@ -16,9 +19,6 @@
 
 <div class="alert alert-warning">
 	<div><strong>Debug:</strong> Query='@Query' | RulesCount=@_rules.Count | SelectedIndex=@(_selectedRule?.Index.ToString() ?? "(none)")</div>
-  <div class="mt-2">
-		<button class="btn btn-sm btn-outline-primary" @onclick="IncrementDebugClicks">Debug Click (@_debugClicks)</button>
-	</div>
 </div>
 
 <div class="mb-3">
@@ -84,17 +84,18 @@ else
 					</div>
                     <div class="d-flex gap-2">
 						<button class="btn btn-outline-secondary btn-sm" @onclick="CopySelectedRuleJsonAsync">Copy JSON</button>
-						<button class="btn btn-outline-primary btn-sm" @onclick="EnterJsonEditMode">Edit JSON</button>
+                      <button class="btn btn-outline-primary btn-sm" @onclick="EnterJsonEditMode">JSON</button>
+						<button class="btn btn-outline-primary btn-sm" @onclick="EnterBuilderMode" disabled="@(!_canEnterBuilderMode)">Builder</button>
 					</div>
 				</div>
 
-				@if (!_isEditingJson)
+               @if (!_isEditingJson && !_isBuilderMode)
 				{
 					<pre class="border rounded p-2 bg-light" style="min-height: 200px; max-height: 70vh; overflow: auto;">
 @_selectedRuleJson
 					</pre>
 				}
-				else
+                else if (_isEditingJson)
 				{
 					<div class="mb-2 d-flex align-items-center justify-content-between">
 						<div>
@@ -115,12 +116,84 @@ else
 
 					<JsonEditor Value="@_jsonDraft" ValueChanged="OnJsonDraftChanged" IsReadOnly="false" EnableFolding="true" HostStyle="height: 70vh; border: 1px solid #dee2e6; border-radius: 0.25rem;" />
 
-					<div class="mt-2">
-						<button class="btn btn-sm btn-outline-secondary" disabled="@(!_canSwitchToBuilder)">Switch to Builder (not implemented)</button>
-						@if (!_canSwitchToBuilder)
+                  @if (!_canEnterBuilderMode)
+					{
+						<div class="form-text text-danger">Fix JSON errors before switching to Builder mode.</div>
+					}
+				}
+               else
+				{
+					<div class="mb-3">
+						<label class="form-label">Rule id</label>
+						<input class="form-control" value="@_builderId" @oninput="OnBuilderIdChanged" />
+						@if (!string.IsNullOrWhiteSpace(_builderIdError))
 						{
-							<div class="form-text text-danger">Fix JSON errors before switching to Builder mode.</div>
+							<div class="form-text text-danger">@_builderIdError</div>
 						}
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label">Description</label>
+						<input class="form-control" @bind="_builderDescription" @bind:event="oninput" />
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label">IF composition</label>
+						<select class="form-select" @bind="_builderComposition">
+							<option value="All">all</option>
+							<option value="Any">any</option>
+						</select>
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label">Condition</label>
+						<select class="form-select" @bind="_builderConditionType">
+							<option value="PropertiesEqualsString">properties[\"x\"] == \"value\"</option>
+							<option value="PropertiesExists">properties[\"x\"] exists</option>
+							<option value="FilesMimeTypeEquals">files[*].mimeType == \"...\"</option>
+						</select>
+					</div>
+
+					<div class="row g-2 mb-3">
+						<div class="col-12 col-lg-6">
+							<label class="form-label">Property / Value</label>
+							<input class="form-control" @bind="_builderConditionPropertyName" @bind:event="oninput" placeholder="property name or value" />
+						</div>
+						<div class="col-12 col-lg-6">
+							<label class="form-label">Value (if applicable)</label>
+							<input class="form-control" @bind="_builderConditionValue" @bind:event="oninput" placeholder="value" />
+						</div>
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label">THEN action</label>
+						<select class="form-select" @bind="_builderThenActionType">
+							<option value="KeywordsAdd">keywords.add</option>
+							<option value="SearchTextAdd">searchText.add</option>
+							<option value="ContentAdd">content.add</option>
+							<option value="CategoryAdd">category.add</option>
+							<option value="SeriesAdd">series.add</option>
+							<option value="InstanceAdd">instance.add</option>
+							<option value="AuthorityAdd">authority.add</option>
+							<option value="RegionAdd">region.add</option>
+							<option value="MajorVersionSet">majorVersion.set</option>
+							<option value="MinorVersionSet">minorVersion.set</option>
+						</select>
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label">THEN values (one per line)</label>
+						<textarea class="form-control" rows="4" @bind="_builderThenValuesText" @bind:event="oninput"></textarea>
+					</div>
+
+					<div class="d-flex gap-2">
+						<button class="btn btn-sm btn-outline-secondary" @onclick="CancelBuilderMode">Cancel</button>
+						<button class="btn btn-sm btn-primary" @onclick="ApplyBuilderRule" disabled="@(!_canApplyBuilder)">Apply</button>
+					</div>
+
+					<div class="mt-3">
+						<label class="form-label">JSON preview</label>
+						<JsonEditor Value="@_jsonDraft" ValueChanged="OnJsonDraftChanged" IsReadOnly="false" EnableFolding="true" HostStyle="height: 35vh; border: 1px solid #dee2e6; border-radius: 0.25rem;" />
 					</div>
 				}
 			}
@@ -135,12 +208,22 @@ else
 	private IReadOnlyList<RuleSummary> _rules = Array.Empty<RuleSummary>();
 	private RuleSummary? _selectedRule;
 	private string _selectedRuleJson = string.Empty;
-	private int _debugClicks;
 	private bool _isEditingJson;
+   private bool _isBuilderMode;
 	private string _jsonDraft = string.Empty;
 	private RuleJsonValidationResult? _jsonValidation;
 	private bool _canApplyJson;
-	private bool _canSwitchToBuilder;
+   private bool _canEnterBuilderMode;
+	private string _builderId = string.Empty;
+	private string _builderDescription = string.Empty;
+	private CompositionType _builderComposition = CompositionType.All;
+	private ConditionType _builderConditionType = ConditionType.PropertiesEqualsString;
+	private string _builderConditionPropertyName = string.Empty;
+	private string _builderConditionValue = string.Empty;
+	private ThenActionType _builderThenActionType = ThenActionType.KeywordsAdd;
+	private string _builderThenValuesText = string.Empty;
+	private string? _builderIdError;
+	private bool _canApplyBuilder;
 
 	protected override void OnInitialized()
 	{
@@ -164,10 +247,14 @@ else
 		_selectedRule = rule;
      _selectedRuleJson = rule.RuleJson.ToJsonString(JsonDisplaySerializerOptions);
        _isEditingJson = false;
+      _isBuilderMode = false;
 		_jsonDraft = string.Empty;
 		_jsonValidation = null;
 		_canApplyJson = false;
-		_canSwitchToBuilder = true;
+     _canEnterBuilderMode = true;
+		_builderId = string.Empty;
+		_builderIdError = null;
+		_canApplyBuilder = false;
 	}
 
 	private void EnterJsonEditMode()
@@ -189,7 +276,7 @@ else
 		_jsonDraft = string.Empty;
 		_jsonValidation = null;
 		_canApplyJson = false;
-		_canSwitchToBuilder = true;
+     _canEnterBuilderMode = true;
 	}
 
 	private void OnJsonDraftChanged(string value)
@@ -202,7 +289,7 @@ else
 	{
 		_jsonValidation = RuleJsonValidator.Validate(_jsonDraft);
 		_canApplyJson = _jsonValidation.IsValid;
-		_canSwitchToBuilder = _jsonValidation.IsValid;
+      _canEnterBuilderMode = _jsonValidation.IsValid;
 	}
 
 	private void ApplyJsonEdit()
@@ -215,7 +302,7 @@ else
 		var result = RulesSnapshotStore.UpdateFileShareRuleJson(_selectedRule.Index, _jsonDraft);
 		_jsonValidation = result;
 		_canApplyJson = result.IsValid;
-		_canSwitchToBuilder = result.IsValid;
+       _canEnterBuilderMode = result.IsValid;
 
 		if (result.IsValid)
 		{
@@ -225,10 +312,110 @@ else
 		}
 	}
 
-	private void IncrementDebugClicks()
+	private void EnterBuilderMode()
 	{
-		_debugClicks++;
+		if (!_canEnterBuilderMode)
+		{
+			return;
+		}
+
+		_isBuilderMode = true;
+		_isEditingJson = false;
+		_builderId = string.Empty;
+		_builderDescription = _selectedRule?.Description ?? string.Empty;
+		_builderComposition = CompositionType.All;
+		_builderConditionType = ConditionType.PropertiesEqualsString;
+		_builderConditionPropertyName = string.Empty;
+		_builderConditionValue = string.Empty;
+		_builderThenActionType = ThenActionType.KeywordsAdd;
+		_builderThenValuesText = string.Empty;
+		_builderIdError = null;
+		UpdateBuilderJsonDraft();
 	}
+
+	private void CancelBuilderMode()
+	{
+		_isBuilderMode = false;
+		_builderId = string.Empty;
+		_builderIdError = null;
+		_canApplyBuilder = false;
+	}
+
+	private void OnBuilderIdChanged(ChangeEventArgs args)
+	{
+		_builderId = (args.Value?.ToString() ?? string.Empty).Trim().ToLowerInvariant();
+		UpdateBuilderJsonDraft();
+	}
+
+	private void UpdateBuilderJsonDraft()
+	{
+		_builderIdError = ValidateBuilderId(_builderId);
+		_canApplyBuilder = string.IsNullOrWhiteSpace(_builderIdError);
+
+		var values = (_builderThenValuesText ?? string.Empty)
+			.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+			.ToList();
+
+		var condition = new BuilderCondition(_builderConditionType,
+			_builderConditionType == ConditionType.FilesMimeTypeEquals ? null : _builderConditionPropertyName,
+			_builderConditionType == ConditionType.PropertiesExists ? null : (_builderConditionType == ConditionType.FilesMimeTypeEquals ? _builderConditionPropertyName : _builderConditionValue));
+
+		var builderRule = new BuilderRule(
+			_builderId,
+			string.IsNullOrWhiteSpace(_builderDescription) ? null : _builderDescription,
+			new BuilderPredicate(_builderComposition, new[] { condition }),
+			new[] { new BuilderThenAction(_builderThenActionType, values) });
+
+		var json = RuleBuilderMapper.ToJson(builderRule);
+		_jsonDraft = json.ToJsonString(JsonDisplaySerializerOptions);
+		_jsonValidation = RuleJsonValidator.Validate(_jsonDraft);
+		_canApplyBuilder &= _jsonValidation.IsValid;
+	}
+
+	private string? ValidateBuilderId(string id)
+	{
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return "Rule id is required.";
+		}
+
+		if (!id.All(c => char.IsLetterOrDigit(c) || c is '-' or '_'))
+		{
+			return "Rule id can contain only letters, digits, '-' and '_'";
+		}
+
+		var existingId = RulesSnapshotStore.GetFileShareRuleSummaries(null)
+			.Any(r => string.Equals(r.Id, id, StringComparison.OrdinalIgnoreCase));
+		if (existingId)
+		{
+			return "Rule id must be unique.";
+		}
+
+		return null;
+	}
+
+	private void ApplyBuilderRule()
+	{
+		if (_selectedRule is null)
+		{
+			return;
+		}
+
+		if (!_canApplyBuilder)
+		{
+			return;
+		}
+
+		var result = RulesSnapshotStore.UpdateFileShareRuleJson(_selectedRule.Index, _jsonDraft);
+		_jsonValidation = result;
+		if (result.IsValid)
+		{
+			RefreshRules();
+			_selectedRuleJson = _jsonDraft;
+			_isBuilderMode = false;
+		}
+	}
+
 
 	private async Task CopySelectedRuleJsonAsync()
 	{
