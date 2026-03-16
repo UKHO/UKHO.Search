@@ -13,18 +13,21 @@ namespace RulesWorkbench.Tests
 {
 	public class RulesSnapshotStoreFilteringTests
 	{
-		[Fact]
+      [Fact]
 		public void GetFileShareRuleSummaries_WhenQueryMatchesId_ReturnsSingleMatch()
 		{
+			var root = CreateTempDir();
+			WriteRule(root, "a", "first");
+			WriteRule(root, "b", "second");
+
 			var env = new TestWebHostEnvironment
 			{
-				ContentRootFileProvider = new InMemoryFileProvider(new Dictionary<string, string>
-				{
-					["ingestion-rules.json"] = "{\"rules\":{\"file-share\":[{\"id\":\"a\",\"description\":\"first\"},{\"id\":\"b\",\"description\":\"second\"}]}}",
-				}),
+               ContentRootPath = root,
+				ContentRootFileProvider = new PhysicalFileProvider(root),
 			};
 
-          var store = new RulesSnapshotStore(new NullLogger<RulesSnapshotStore>(), env, new SystemTextJsonRuleJsonValidator());
+			var store = new RulesSnapshotStore(new NullLogger<RulesSnapshotStore>(), env, new SystemTextJsonRuleJsonValidator());
+			store.LoadFileShareRules();
 
 			var result = store.GetFileShareRuleSummaries("b");
 
@@ -36,12 +39,12 @@ namespace RulesWorkbench.Tests
 		[Fact]
 		public void UpdateFileShareRuleJson_WhenJsonValid_UpdatesInMemoryRule()
 		{
+            var root = CreateTempDir();
+			WriteRule(root, "a", "first");
 			var env = new TestWebHostEnvironment
 			{
-				ContentRootFileProvider = new InMemoryFileProvider(new Dictionary<string, string>
-				{
-					["ingestion-rules.json"] = "{\"rules\":{\"file-share\":[{\"id\":\"a\",\"description\":\"first\"}]}}",
-				}),
+               ContentRootPath = root,
+				ContentRootFileProvider = new PhysicalFileProvider(root),
 			};
 
 			var store = new RulesSnapshotStore(new NullLogger<RulesSnapshotStore>(), env, new SystemTextJsonRuleJsonValidator());
@@ -58,12 +61,12 @@ namespace RulesWorkbench.Tests
 		[Fact]
 		public void UpdateFileShareRuleJson_WhenJsonInvalid_ReturnsInvalid()
 		{
+            var root = CreateTempDir();
+			WriteRule(root, "a", null);
 			var env = new TestWebHostEnvironment
 			{
-				ContentRootFileProvider = new InMemoryFileProvider(new Dictionary<string, string>
-				{
-					["ingestion-rules.json"] = "{\"rules\":{\"file-share\":[{\"id\":\"a\"}]}}",
-				}),
+               ContentRootPath = root,
+				ContentRootFileProvider = new PhysicalFileProvider(root),
 			};
 
 			var store = new RulesSnapshotStore(new NullLogger<RulesSnapshotStore>(), env, new SystemTextJsonRuleJsonValidator());
@@ -78,15 +81,17 @@ namespace RulesWorkbench.Tests
 		[Fact]
 		public void GetFileShareRuleSummaries_WhenQueryMatchesDescription_PreservesOrder()
 		{
+            var root = CreateTempDir();
+			WriteRule(root, "a", "match");
+			WriteRule(root, "b", "match");
 			var env = new TestWebHostEnvironment
 			{
-				ContentRootFileProvider = new InMemoryFileProvider(new Dictionary<string, string>
-				{
-					["ingestion-rules.json"] = "{\"rules\":{\"file-share\":[{\"id\":\"a\",\"description\":\"match\"},{\"id\":\"b\",\"description\":\"match\"}]}}",
-				}),
+               ContentRootPath = root,
+				ContentRootFileProvider = new PhysicalFileProvider(root),
 			};
 
-          var store = new RulesSnapshotStore(new NullLogger<RulesSnapshotStore>(), env, new SystemTextJsonRuleJsonValidator());
+			var store = new RulesSnapshotStore(new NullLogger<RulesSnapshotStore>(), env, new SystemTextJsonRuleJsonValidator());
+			store.LoadFileShareRules();
 
 			var result = store.GetFileShareRuleSummaries("match");
 
@@ -112,54 +117,25 @@ namespace RulesWorkbench.Tests
 			public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
 		}
 
-		private sealed class InMemoryFileProvider : IFileProvider
+       private static string CreateTempDir()
 		{
-			private readonly IReadOnlyDictionary<string, byte[]> _files;
+			var path = Path.Combine(Path.GetTempPath(), "ukho-search-tests", Guid.NewGuid().ToString("N"));
+			Directory.CreateDirectory(path);
+			return path;
+		}
 
-			public InMemoryFileProvider(IReadOnlyDictionary<string, string> files)
-			{
-				_files = files.ToDictionary(kv => kv.Key, kv => Encoding.UTF8.GetBytes(kv.Value), StringComparer.Ordinal);
-			}
+		private static void WriteRule(string contentRoot, string id, string? description)
+		{
+			var providerRoot = Path.Combine(contentRoot, "Rules", "file-share");
+			Directory.CreateDirectory(providerRoot);
+			var filePath = Path.Combine(providerRoot, $"{id}.json");
 
-			public IDirectoryContents GetDirectoryContents(string subpath)
-			{
-				return NotFoundDirectoryContents.Singleton;
-			}
+			var rule = description is null
+				? $"{{\"id\":\"{id}\"}}"
+				: $"{{\"id\":\"{id}\",\"description\":\"{description}\"}}";
 
-			public IFileInfo GetFileInfo(string subpath)
-			{
-				var cleaned = subpath.TrimStart('/').Replace('\\', '/');
-				if (_files.TryGetValue(cleaned, out var bytes))
-				{
-					return new InMemoryFileInfo(cleaned, bytes);
-				}
-
-				return new NotFoundFileInfo(subpath);
-			}
-
-			public IChangeToken Watch(string filter)
-			{
-				return NullChangeToken.Singleton;
-			}
-
-			private sealed class InMemoryFileInfo : IFileInfo
-			{
-				private readonly byte[] _bytes;
-
-				public InMemoryFileInfo(string name, byte[] bytes)
-				{
-					Name = name;
-					_bytes = bytes;
-				}
-
-				public bool Exists => true;
-				public long Length => _bytes.LongLength;
-				public string PhysicalPath => string.Empty;
-				public string Name { get; }
-				public DateTimeOffset LastModified => DateTimeOffset.UtcNow;
-				public bool IsDirectory => false;
-				public Stream CreateReadStream() => new MemoryStream(_bytes, writable: false);
-			}
+         var doc = $"{{\"schemaVersion\":\"1.0\",\"rule\":{rule}}}";
+			File.WriteAllText(filePath, doc);
 		}
 	}
 }

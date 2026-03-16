@@ -8,12 +8,18 @@ namespace RulesWorkbench.Services
 {
 	public sealed class RulesSnapshotStore
 	{
+       private const string RulesRootDirectoryName = "Rules";
+		private const string FileShareProviderDirectoryName = "file-share";
+		private const string SupportedSchemaVersion = "1.0";
+
 		private readonly ILogger<RulesSnapshotStore> _logger;
-		private readonly IFileProvider _fileProvider;
+       private readonly IWebHostEnvironment _environment;
 		private readonly IRuleJsonValidator _ruleJsonValidator;
 
 		private readonly object _gate = new();
 		private FileShareRulesSnapshot? _snapshot;
+        private string? _fileShareRulesRootAbsolutePath;
+		private bool _isUsingRuleFilesDirectory;
 
 		public RulesSnapshotStore(
             ILogger<RulesSnapshotStore> logger,
@@ -21,7 +27,7 @@ namespace RulesWorkbench.Services
 			IRuleJsonValidator ruleJsonValidator)
 		{
        _logger = logger;
-		_fileProvider = environment.ContentRootFileProvider;
+        _environment = environment;
 		_ruleJsonValidator = ruleJsonValidator;
 		}
 
@@ -37,7 +43,7 @@ namespace RulesWorkbench.Services
 			var trimmedQuery = string.IsNullOrWhiteSpace(query) ? null : query.Trim();
 			var queryLower = trimmedQuery?.ToLowerInvariant();
 
-			for (var i = 0; i < snapshot.FileShareRules.Count; i++)
+         for (var i = 0; i < snapshot.FileShareRules.Count; i++)
 			{
 				var ruleNode = snapshot.FileShareRules[i];
 				if (ruleNode is null)
@@ -45,6 +51,7 @@ namespace RulesWorkbench.Services
 					continue;
 				}
 
+               var filePath = ruleNode["$filePath"]?.GetValue<string?>();
 				var id = ruleNode["id"]?.GetValue<string?>();
 				var description = ruleNode["description"]?.GetValue<string?>();
 
@@ -66,7 +73,7 @@ namespace RulesWorkbench.Services
 					}
 				}
 
-				result.Add(new RuleSummary(i, id, description, ruleNode));
+              result.Add(new RuleSummary(i, filePath, id, description, ruleNode));
 			}
 
 			return result;
@@ -74,6 +81,8 @@ namespace RulesWorkbench.Services
 
 		public RuleJsonValidationResult UpdateFileShareRuleJson(int ruleIndex, string json)
 		{
+         _ = LoadFileShareRules();
+
 			var validation = _ruleJsonValidator.Validate(json);
 			if (!validation.IsValid)
 			{
@@ -113,8 +122,30 @@ namespace RulesWorkbench.Services
 					return RuleJsonValidationResult.Invalid("Rule index out of range.");
 				}
 
+             var existing = _snapshot.FileShareRules[ruleIndex] as JsonObject;
+				var existingFilePath = existing?["$filePath"]?.GetValue<string?>();
+
+				if (node is JsonObject obj && !string.IsNullOrWhiteSpace(existingFilePath))
+				{
+					obj["$filePath"] = existingFilePath;
+				}
+
 				_snapshot.FileShareRules[ruleIndex] = node;
 				_logger.LogInformation("Updated in-memory file-share rule at index {RuleIndex}", ruleIndex);
+
+             if (_isUsingRuleFilesDirectory)
+				{
+					try
+					{
+						PersistFileShareRule(node);
+					}
+					catch (Exception ex)
+					{
+						_logger.LogError(ex, "Failed to persist file-share rule change at index {RuleIndex}", ruleIndex);
+						return RuleJsonValidationResult.Invalid("Rule JSON updated in memory but could not be saved to disk.");
+					}
+				}
+
 				return RuleJsonValidationResult.Valid();
 			}
 		}
@@ -135,56 +166,182 @@ namespace RulesWorkbench.Services
 
 		private FileShareRulesSnapshot LoadFileShareRulesInternal()
 		{
-			const string rulesFileName = "ingestion-rules.json";
+         _isUsingRuleFilesDirectory = false;
+			_fileShareRulesRootAbsolutePath = null;
 
-			var fileInfo = _fileProvider.GetFileInfo(rulesFileName);
-			if (!fileInfo.Exists)
+			if (TryGetContentRootAbsolutePath(out var contentRoot))
 			{
-				_logger.LogError("Rules snapshot file not found: {FileName}", rulesFileName);
+				var rulesRoot = Path.Combine(contentRoot, RulesRootDirectoryName);
+				var providerRoot = Path.Combine(rulesRoot, FileShareProviderDirectoryName);
+
+				if (Directory.Exists(providerRoot))
+				{
+					_isUsingRuleFilesDirectory = true;
+					_fileShareRulesRootAbsolutePath = providerRoot;
+					return LoadFileShareRulesFromDirectory(providerRoot);
+				}
+
+				_logger.LogError("Rules directory not found: {ProviderRoot}", providerRoot);
 				return FileShareRulesSnapshot.Failed(new RulesSnapshotError(
-					rulesFileName,
-					"Rules snapshot file not found."));
+					providerRoot,
+                 "Rules directory not found.",
+					$"Expected directory '{providerRoot}'."));
 			}
 
+			_logger.LogError("RulesWorkbench requires a physical content root to load rules from the '{RulesRoot}' directory.", RulesRootDirectoryName);
+			return FileShareRulesSnapshot.Failed(new RulesSnapshotError(
+				RulesRootDirectoryName,
+				"RulesWorkbench requires a physical content root to load rules."));
+		}
+
+		private FileShareRulesSnapshot LoadFileShareRulesFromDirectory(string providerRoot)
+		{
 			try
 			{
-				using var stream = fileInfo.CreateReadStream();
-				using var document = JsonDocument.Parse(stream);
-				var rootNode = JsonNode.Parse(document.RootElement.GetRawText());
-				if (rootNode is null)
+				var allJsonFiles = Directory.EnumerateFiles(providerRoot, "*.json", SearchOption.AllDirectories)
+					.OrderBy(p => p, StringComparer.OrdinalIgnoreCase)
+					.ToArray();
+
+				var fileShareRules = new JsonArray();
+				foreach (var filePath in allJsonFiles)
 				{
-					return FileShareRulesSnapshot.Failed(new RulesSnapshotError(
-						rulesFileName,
-						"Rules snapshot file is empty or invalid JSON."));
+					var json = File.ReadAllText(filePath);
+					if (string.IsNullOrWhiteSpace(json))
+					{
+						return FileShareRulesSnapshot.Failed(new RulesSnapshotError(filePath, "Rule file is empty."));
+					}
+
+					JsonNode? node;
+					try
+					{
+						node = JsonNode.Parse(json);
+					}
+					catch (JsonException ex)
+					{
+						return FileShareRulesSnapshot.Failed(new RulesSnapshotError(filePath, "Invalid JSON in rule file.", ex.Message));
+					}
+
+					var doc = node as JsonObject;
+                 var schemaVersion = doc?["schemaVersion"]?.GetValue<string?>() ?? doc?["SchemaVersion"]?.GetValue<string?>();
+					if (!string.Equals(schemaVersion, SupportedSchemaVersion, StringComparison.Ordinal))
+					{
+						return FileShareRulesSnapshot.Failed(new RulesSnapshotError(filePath, $"Unsupported SchemaVersion '{schemaVersion}'. Expected '{SupportedSchemaVersion}'."));
+					}
+
+                  var rule = (doc?["rule"] as JsonObject) ?? (doc?["Rule"] as JsonObject);
+					if (rule is null)
+					{
+						// Allow rule documents to be stored directly at the root (schemaVersion + rule fields).
+						rule = doc;
+					}
+
+					NormalizeRuleKeys(rule);
+
+					// Track origin so edits can be persisted back to the correct file.
+                   rule["$filePath"] = filePath;
+					fileShareRules.Add(rule.DeepClone());
 				}
 
-				var fileShareRules = rootNode["rules"]?["file-share"] as JsonArray;
-				if (fileShareRules is null)
-				{
-					return FileShareRulesSnapshot.Failed(new RulesSnapshotError(
-						rulesFileName,
-						"Expected JSON path 'rules.file-share' to be an array."));
-				}
-
-				_logger.LogInformation("Loaded rules snapshot {FileName}; file-share rules: {RulesCount}", rulesFileName, fileShareRules.Count);
-				return FileShareRulesSnapshot.Loaded(rootNode, fileShareRules);
-			}
-			catch (JsonException ex)
-			{
-				_logger.LogError(ex, "Failed to parse rules snapshot JSON: {FileName}", rulesFileName);
-				return FileShareRulesSnapshot.Failed(new RulesSnapshotError(
-					rulesFileName,
-					"Invalid JSON in rules snapshot file.",
-					ex.Message));
+				_logger.LogInformation("Loaded per-rule files from {ProviderRoot}; rules: {RulesCount}", providerRoot, fileShareRules.Count);
+				return FileShareRulesSnapshot.Loaded(new JsonObject(), fileShareRules);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Failed to load rules snapshot: {FileName}", rulesFileName);
-				return FileShareRulesSnapshot.Failed(new RulesSnapshotError(
-					rulesFileName,
-					"Failed to load rules snapshot file.",
-					ex.Message));
+				_logger.LogError(ex, "Failed to load rules from directory: {ProviderRoot}", providerRoot);
+				return FileShareRulesSnapshot.Failed(new RulesSnapshotError(providerRoot, "Failed to load rules from directory.", ex.Message));
 			}
+		}
+
+		private void PersistFileShareRule(JsonNode node)
+		{
+			if (node is not JsonObject rule)
+			{
+				throw new InvalidOperationException("Rule must be a JSON object.");
+			}
+
+			NormalizeRuleKeys(rule);
+
+			var id = rule["id"]?.GetValue<string?>();
+			if (string.IsNullOrWhiteSpace(id))
+			{
+				throw new InvalidOperationException("Rule is missing required 'id'.");
+			}
+
+         if (!TryGetContentRootAbsolutePath(out var contentRoot))
+			{
+				throw new InvalidOperationException("Cannot persist rule files without a physical content root.");
+			}
+			var providerRoot = _fileShareRulesRootAbsolutePath
+				?? Path.Combine(contentRoot, RulesRootDirectoryName, FileShareProviderDirectoryName);
+
+			Directory.CreateDirectory(providerRoot);
+
+			var existingFilePath = rule["$filePath"]?.GetValue<string?>();
+			var targetPath = !string.IsNullOrWhiteSpace(existingFilePath)
+				? existingFilePath!
+				: Path.Combine(providerRoot, $"{id}.json");
+
+			var ruleCopy = new JsonObject();
+			foreach (var kvp in rule)
+			{
+              if (string.Equals(kvp.Key, "$filePath", StringComparison.Ordinal)
+					|| string.Equals(kvp.Key, "schemaVersion", StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+
+				ruleCopy[kvp.Key] = kvp.Value?.DeepClone();
+			}
+
+            var doc = new JsonObject
+			{
+				["schemaVersion"] = SupportedSchemaVersion,
+				["rule"] = ruleCopy
+			};
+
+			var json = doc.ToJsonString(new JsonSerializerOptions
+			{
+				WriteIndented = true
+			});
+
+			File.WriteAllText(targetPath, json);
+			rule["$filePath"] = targetPath;
+			_logger.LogInformation("Saved rule '{RuleId}' to {RuleFilePath}", id, targetPath);
+		}
+
+		private static void NormalizeRuleKeys(JsonObject rule)
+		{
+			// Allow both current rule schema casing variants (e.g. 'Id' and 'id') but normalize to lower-case
+			// because the Workbench UI and filtering expect 'id'/'description'.
+			if (rule.ContainsKey("id") == false && rule.TryGetPropertyValue("Id", out var idValue))
+			{
+               rule["id"] = idValue?.DeepClone();
+				rule.Remove("Id");
+			}
+
+			if (rule.ContainsKey("description") == false && rule.TryGetPropertyValue("Description", out var descValue))
+			{
+                rule["description"] = descValue?.DeepClone();
+				rule.Remove("Description");
+			}
+		}
+
+     private bool TryGetContentRootAbsolutePath(out string contentRoot)
+		{
+         contentRoot = _environment.ContentRootPath;
+			if (!string.IsNullOrWhiteSpace(contentRoot) && Directory.Exists(contentRoot))
+			{
+				return true;
+			}
+
+			if (_environment.ContentRootFileProvider is PhysicalFileProvider physical && Directory.Exists(physical.Root))
+			{
+				contentRoot = physical.Root;
+				return true;
+			}
+
+			contentRoot = string.Empty;
+			return false;
 		}
 	}
 }

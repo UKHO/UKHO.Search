@@ -42,6 +42,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Injection
         public static IServiceCollection AddIngestionRulesEngine(this IServiceCollection collection)
         {
             // RulesWorkbench uses this to reuse the existing ingestion rules engine in an isolated way.
+             collection.AddSingleton<RuleFileLoader>();
             collection.AddSingleton<IngestionRulesLoader>();
             collection.AddSingleton<IngestionRulesPathValidator>();
             collection.AddSingleton<IngestionRulesValidator>();
@@ -62,6 +63,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Injection
 
             collection.AddScoped<IIngestionProviderContext, IngestionProviderContext>();
 
+             collection.AddSingleton<RuleFileLoader>();
             collection.AddSingleton<IngestionRulesLoader>();
             collection.AddSingleton<IngestionRulesPathValidator>();
             collection.AddSingleton<IngestionRulesValidator>();

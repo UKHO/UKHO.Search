@@ -5,7 +5,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
 {
     internal sealed class IngestionRulesValidator
     {
-        private const string SupportedSchemaVersion = "1.0";
+        internal const string SupportedSchemaVersion = "1.0";
 
         private readonly IngestionRulesPathValidator _pathValidator;
 

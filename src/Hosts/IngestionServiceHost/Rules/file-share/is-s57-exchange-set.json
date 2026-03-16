@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0",
+  "rule": {
+    "id": "is-s57-exchange-set",
+    "description": "When businessUnit is 'adds-s57', enrich as S-57 exchange set.",
+    "if": {
+      "all": [
+        {
+          "path": "properties[\"edition number\"]",
+          "exists": true
+        },
+        {
+          "properties[\"businessUnitName\"]": "adds-s57"
+        }
+      ]
+    },
+    "then": {
+      "keywords": {
+        "add": [
+          "S57",
+          "S-57",
+          "ExchangeSet",
+          "ENC"
+        ]
+      },
+      "searchText": {
+        "add": [
+          "S57 S-57 Exchange Sets"
+        ]
+      },
+      "category": {
+        "add": [
+          "Exchange Set"
+        ]
+      },
+      "series": {
+        "add": [
+          "S57",
+          "S-57"
+        ]
+      },
+      "instance": {
+        "add": [
+          "$path:properties[\"product name\"]"
+        ]
+      }
+    }
+  }
+}

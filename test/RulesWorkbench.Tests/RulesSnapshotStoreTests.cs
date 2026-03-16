@@ -13,9 +13,11 @@ namespace RulesWorkbench.Tests
 		[Fact]
 		public void LoadFileShareRules_WhenFileMissing_ReturnsError()
 		{
+            var root = CreateTempDir();
 			var env = new TestWebHostEnvironment
 			{
-				ContentRootFileProvider = new NullFileProvider(),
+               ContentRootPath = root,
+				ContentRootFileProvider = new PhysicalFileProvider(root),
 			};
 
           var store = new RulesSnapshotStore(new NullLogger<RulesSnapshotStore>(), env, new SystemTextJsonRuleJsonValidator());
@@ -24,7 +26,14 @@ namespace RulesWorkbench.Tests
 
 			snapshot.IsLoaded.ShouldBeFalse();
 			snapshot.Error.ShouldNotBeNull();
-          snapshot.Error!.Message.ToLowerInvariant().ShouldContain("not found");
+            snapshot.Error!.Message.ToLowerInvariant().ShouldContain("not found");
+		}
+
+		private static string CreateTempDir()
+		{
+			var path = Path.Combine(Path.GetTempPath(), "ukho-search-tests", Guid.NewGuid().ToString("N"));
+			Directory.CreateDirectory(path);
+			return path;
 		}
 
 		private sealed class TestWebHostEnvironment : IWebHostEnvironment
