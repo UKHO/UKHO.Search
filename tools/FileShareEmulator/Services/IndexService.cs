@@ -1,6 +1,7 @@
 using System.Data;
 using System.Text.Json;
 using Azure.Storage.Queues;
+using FileShareEmulator.Common;
 using Microsoft.Data.SqlClient;
 using UKHO.Search.Ingestion.Requests;
 using UKHO.Search.Ingestion.Requests.Serialization;
@@ -150,8 +151,7 @@ namespace FileShareEmulator.Services
             var securityTokenResult = await _batchSecurityTokenService.GetSecurityTokensAsync(batchId, cancellationToken)
                                                                       .ConfigureAwait(false);
 
-            var properties = new List<IngestionProperty>(attributes.Count + 2);
-
+            var ingestionAttributes = new IngestionPropertyList();
             foreach (var (key, value) in attributes)
             {
                 if (string.IsNullOrWhiteSpace(key))
@@ -159,7 +159,7 @@ namespace FileShareEmulator.Services
                     continue;
                 }
 
-                properties.Add(new IngestionProperty
+                ingestionAttributes.Add(new IngestionProperty
                 {
                     Name = key,
                     Type = IngestionPropertyType.String,
@@ -167,22 +167,20 @@ namespace FileShareEmulator.Services
                 });
             }
 
-            properties.Add(new IngestionProperty
-            {
-                Name = "BusinessUnitName",
-                Type = IngestionPropertyType.String,
-                Value = securityTokenResult.BusinessUnitName ?? string.Empty
-            });
+            var request = FileShareIngestionMessageFactory.CreateIndexIngestionRequest(
+                batchId: batchId.ToString("D"),
+                attributes: ingestionAttributes,
+                batchCreatedOn: batchCreatedOn,
+                files: files,
+                activeBusinessUnitName: securityTokenResult.BusinessUnitName);
 
-            var indexItem = new IndexRequest(batchId.ToString("D"), properties, securityTokenResult.SecurityTokens, batchCreatedOn, files);
+            _logger.LogDebug(
+                "Created ingestion request for batch {BatchId} with {SecurityTokenCount} security tokens and {FileCount} files.",
+                batchId,
+                request.IndexItem?.SecurityTokens?.Length ?? 0,
+                files.Count);
 
-            _logger.LogDebug("Created ingestion request for batch {BatchId} with {SecurityTokenCount} security tokens and {FileCount} files.", batchId, securityTokenResult.SecurityTokens.Length, files.Count);
-
-            return new IngestionRequest
-            {
-                RequestType = IngestionRequestType.IndexItem,
-                IndexItem = indexItem
-            };
+            return request;
         }
 
         private static async Task<List<Guid>> GetPendingBatchIdsAsync(SqlConnection connection, int? count, CancellationToken cancellationToken)

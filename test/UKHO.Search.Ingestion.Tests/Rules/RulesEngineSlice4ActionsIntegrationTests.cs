@@ -113,6 +113,35 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             document.Content.ShouldBe("c1");
         }
 
+        [Fact]
+        public void Matching_rule_can_set_minorVersion_using_toInt_path_with_spaced_property_key()
+        {
+            using var temp = new TempRulesRoot();
+
+            temp.WriteRuleFile("file-share", "minorversion", """
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rule": {
+                                    "id": "minorversion",
+                                    "if": { "id": "doc-1" },
+                                    "then": {
+                                      "minorVersion": { "add": [ "toInt($path:properties[\"week number\"])" ] }
+                                    }
+                                  }
+                                }
+                                """);
+
+            using var provider = CreateProvider(temp.RootPath);
+            var engine = provider.GetRequiredService<IIngestionRulesEngine>();
+
+            var request = CreateRequestWithWeekNumber();
+            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+
+            engine.Apply("file-share", request, document);
+
+            document.MinorVersion.ShouldBe(new[] { 10 });
+        }
+
         private static ServiceProvider CreateProvider(string contentRootPath)
         {
             var services = new ServiceCollection();
@@ -133,6 +162,15 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                 new IngestionFile("f1", 1, DateTimeOffset.UtcNow, "app/s63"),
                 new IngestionFile("f2", 1, DateTimeOffset.UtcNow, "text/plain")
             });
+
+            return new IngestionRequest(IngestionRequestType.IndexItem, indexRequest, null, null);
+        }
+
+        private static IngestionRequest CreateRequestWithWeekNumber()
+        {
+            var indexRequest = new IndexRequest("doc-1", [
+                new IngestionProperty { Name = "week number", Type = IngestionPropertyType.String, Value = "10" }
+            ], ["token"], DateTimeOffset.UtcNow, new IngestionFileList());
 
             return new IngestionRequest(IngestionRequestType.IndexItem, indexRequest, null, null);
         }

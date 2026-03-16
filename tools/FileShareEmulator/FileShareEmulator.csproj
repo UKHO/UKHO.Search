@@ -22,6 +22,7 @@
 		<ProjectReference Include="..\..\src\Hosts\UKHO.Search.ServiceDefaults\UKHO.Search.ServiceDefaults.csproj" />
 		<ProjectReference Include="..\..\src\UKHO.Search\UKHO.Search.csproj" />
 		<ProjectReference Include="..\..\src\UKHO.Search.Ingestion\UKHO.Search.Ingestion.csproj" />
+        <ProjectReference Include="..\FileShareEmulator.Common\FileShareEmulator.Common.csproj" />
 	</ItemGroup>
 
 </Project>

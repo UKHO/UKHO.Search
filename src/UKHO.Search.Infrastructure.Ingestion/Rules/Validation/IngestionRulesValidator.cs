@@ -40,7 +40,13 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
 
             if (errors.Count > 0)
             {
-                throw new IngestionRulesValidationException("Rules validation failed.", errors);
+                var message = "Rules validation failed.";
+                if (errors.Count > 0)
+                {
+                    message += Environment.NewLine + string.Join(Environment.NewLine, errors.Select(e => "- " + e));
+                }
+
+                throw new IngestionRulesValidationException(message, errors);
             }
 
             var rulesByProvider = new Dictionary<string, IReadOnlyList<ValidatedRule>>(StringComparer.OrdinalIgnoreCase);

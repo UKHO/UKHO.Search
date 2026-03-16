@@ -74,7 +74,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
                 {
                     Id = id,
                     Timestamp = DateTimeOffset.UtcNow,
-                    Properties = Array.Empty<IngestionProperty>()
+                    Properties = new IngestionPropertyList()
                 },
                 deleteItem: null,
                 updateAcl: null);

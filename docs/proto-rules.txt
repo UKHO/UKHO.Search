@@ -1,0 +1,45 @@
+# Rule 1 - avcs-aio-exchange-set
+
+if "businessunitname" equals "avcsdata":
+if "exchange set type" property exists:
+
+keywords: add "avcs" "enc" "weekly" "data" "tpm" "s57" "aio"
+authority: add "ukho"
+category: add "exchange set"
+series: add "aio"
+instance: add $val of "year / week"
+majorversion: add $val of "year" toInt()
+minorversion: add $val of "week number" toInt()
+searchText: add "weekly data set uploaded by tpm for distributors"
+
+# Rule 1 - avcs-aio-catalogue
+
+if "businessunitname" equals "avcs-bespokeexchangesets":
+if "catalogue type" property exists:
+
+keywords: add "avcs" "catalog" "catalogue" "weekly" "data" "tpm"
+authority: add "ukho"
+category: add "catalogue"
+series: add "avcs"
+instance: add $val of "year / week"
+majorversion: add $val of "year" toInt()
+minorversion: add $val of "week number" toInt()
+searchText: add "weekly data set uploaded by tpm for distributors"
+
+#R Rule 3 - avcs-bespoke-bess
+
+if "businessunitname" equals "avcs-bespokeexchangesets":
+if "exchange set type" property exists:
+
+keywords: add "avcs" "enc" "data" "tpm" "s57" "aio" $val of "frequency"
+authority: add "ukho"
+format: add $val of "media type"
+category: add "exchange set"
+series: add "avcs" "base"
+instance: add $val of "id"
+majorversion: add $val of "year" toInt()
+minorversion: add $val of "week number" toInt()
+searchText: add "bess output"
+
+
+

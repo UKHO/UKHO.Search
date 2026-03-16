@@ -39,7 +39,10 @@ namespace UKHO.Search.Ingestion.Tests
                     SecurityTokens = ["token-a"],
                     Timestamp = new DateTimeOffset(2026, 3, 5, 10, 15, 30, TimeSpan.Zero),
                     Files = new IngestionFileList(),
-                    Properties = [new IngestionProperty { Name = "Title", Type = IngestionPropertyType.String, Value = "Updated" }]
+                    Properties = new IngestionPropertyList
+                    {
+                        new IngestionProperty { Name = "Title", Type = IngestionPropertyType.String, Value = "Updated" }
+                    }
                 }
             };
 
@@ -209,7 +212,7 @@ namespace UKHO.Search.Ingestion.Tests
                             MimeType = "text/plain"
                         }
                     },
-                    Properties = Array.Empty<IngestionProperty>(),
+                    Properties = new IngestionPropertyList(),
                     SecurityTokens = ["t"]
                 }
             };

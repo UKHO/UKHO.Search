@@ -14,6 +14,7 @@ namespace UKHO.Search.Ingestion.Requests.Serialization
 
             options.Converters.Add(new IngestionPropertyTypeJsonConverter());
             options.Converters.Add(new IngestionPropertyJsonConverter());
+            options.Converters.Add(new IngestionPropertyListJsonConverter());
 
             return options;
         }

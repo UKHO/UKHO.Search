@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "1.0",
+  "rule": {
+    "id": "avcs-bespoke-bess",
+    "description": "AVCS bespoke BESS exchange set output.",
+    "if": {
+      "all": [
+        {
+          "path": "properties[\"businessunitname\"]",
+          "eq": "avcs-bespokeexchangesets"
+        },
+        {
+          "path": "properties[\"exchange set type\"]",
+          "exists": true
+        }
+      ]
+    },
+    "then": {
+      "keywords": {
+        "add": [
+          "avcs",
+          "enc",
+          "data",
+          "tpm",
+          "s57",
+          "aio",
+          "$path:properties[\"frequency\"]"
+        ]
+      },
+      "authority": {
+        "add": [
+          "ukho"
+        ]
+      },
+      "format": {
+        "add": [
+          "$path:properties[\"media type\"]"
+        ]
+      },
+      "category": {
+        "add": [
+          "exchange set"
+        ]
+      },
+      "series": {
+        "add": [
+          "avcs",
+          "base"
+        ]
+      },
+      "instance": {
+        "add": [
+          "$path:properties[\"year / week\"]"
+        ]
+      },
+      "majorVersion": {
+        "add": [
+          "toInt($path:properties[\"year\"])"
+        ]
+      },
+      "minorVersion": {
+        "add": [
+          "toInt($path:properties[\"week number\"])"
+        ]
+      },
+      "searchText": {
+        "add": [
+          "bess output"
+        ]
+      }
+    }
+  }
+}

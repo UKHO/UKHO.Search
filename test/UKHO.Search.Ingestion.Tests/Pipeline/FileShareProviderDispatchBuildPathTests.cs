@@ -45,8 +45,9 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             upsert.Document.Id.ShouldBe("doc-1");
             upsert.Document.Source.Properties.ShouldNotBeSameAs(add.Properties);
             upsert.Document.Source.Properties.Count.ShouldBe(1);
-            upsert.Document.Source.Properties[0]
-                  .ShouldBeSameAs(p1);
+            upsert.Document.Source.Properties[0].Name.ShouldBe("category");
+            upsert.Document.Source.Properties[0].Type.ShouldBe(IngestionPropertyType.String);
+            upsert.Document.Source.Properties[0].Value.ShouldBe("A");
             upsert.Document.Timestamp.ShouldBe(add.Timestamp);
         }
     }

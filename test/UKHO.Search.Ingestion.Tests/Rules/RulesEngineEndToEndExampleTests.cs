@@ -23,7 +23,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             using var provider = CreateProvider(temp.RootPath);
             var engine = provider.GetRequiredService<IIngestionRulesEngine>();
 
-            var request = CreateRequest("doc-1", Array.Empty<IngestionProperty>(), new IngestionFileList
+            var request = CreateRequest("doc-1", new IngestionPropertyList(), new IngestionFileList
             {
                 new IngestionFile("f1", 1, DateTimeOffset.UtcNow, "app/s63")
             });
@@ -45,9 +45,10 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             using var provider = CreateProvider(temp.RootPath);
             var engine = provider.GetRequiredService<IIngestionRulesEngine>();
 
-            var request = CreateRequest("doc-2", [
+            var request = CreateRequest("doc-2", new IngestionPropertyList
+            {
                 new IngestionProperty { Name = "abcdef", Type = IngestionPropertyType.String, Value = "a value" }
-            ], new IngestionFileList());
+            }, new IngestionFileList());
 
             var document = CanonicalDocument.CreateMinimal("doc-2", request.IndexItem!, request.IndexItem.Timestamp);
             engine.Apply("file-share", request, document);
@@ -66,7 +67,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             return services.BuildServiceProvider();
         }
 
-        private static IngestionRequest CreateRequest(string id, IReadOnlyList<IngestionProperty> properties, IngestionFileList files)
+        private static IngestionRequest CreateRequest(string id, IngestionPropertyList properties, IngestionFileList files)
         {
             var indexRequest = new IndexRequest(id, properties, ["token"], DateTimeOffset.UtcNow, files);
 

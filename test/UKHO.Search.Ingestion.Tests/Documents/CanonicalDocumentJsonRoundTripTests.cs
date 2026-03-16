@@ -3,6 +3,7 @@ using Shouldly;
 using UKHO.Search.Geo;
 using UKHO.Search.Ingestion.Pipeline.Documents;
 using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Requests.Serialization;
 using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests.Documents
@@ -48,13 +49,13 @@ namespace UKHO.Search.Ingestion.Tests.Documents
             parsed.RootElement.GetProperty("GeoPolygons")
                   .ValueKind.ShouldBe(JsonValueKind.Array);
 
-            var roundTripped = JsonSerializer.Deserialize<CanonicalDocument>(json);
+            var roundTripped = JsonSerializer.Deserialize<CanonicalDocument>(json, IngestionJsonSerializerOptions.Create());
             roundTripped.ShouldNotBeNull();
 
             roundTripped!.Id.ShouldBe("doc-1");
             roundTripped.Source.Properties.Count.ShouldBe(1);
             roundTripped.Source.Properties[0]
-                        .Name.ShouldBe("Category");
+                        .Name.ShouldBe("category");
             roundTripped.Source.Properties[0]
                         .Type.ShouldBe(IngestionPropertyType.String);
             roundTripped.Source.Properties[0]

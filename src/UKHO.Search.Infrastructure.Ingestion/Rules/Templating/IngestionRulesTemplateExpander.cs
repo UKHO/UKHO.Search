@@ -144,12 +144,49 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Templating
                 var argStart = i + 6;
                 var argEnd = argStart;
 
+                var bracketDepth = 0;
+                var inQuotes = false;
+
                 while (argEnd < text.Length)
                 {
                     var c = text[argEnd];
-                    if (char.IsWhiteSpace(c) || c == '$')
+
+                    if (c == '$')
                     {
                         break;
+                    }
+
+                    if (bracketDepth == 0 && !inQuotes)
+                    {
+                        if (char.IsWhiteSpace(c) || c is '-' or ',' or ';' or ')')
+                        {
+                            break;
+                        }
+                    }
+
+                    if (c == '[')
+                    {
+                        bracketDepth++;
+                        argEnd++;
+                        continue;
+                    }
+
+                    if (c == ']')
+                    {
+                        if (bracketDepth > 0)
+                        {
+                            bracketDepth--;
+                        }
+
+                        argEnd++;
+                        continue;
+                    }
+
+                    if (c == '"' && bracketDepth > 0)
+                    {
+                        inQuotes = !inQuotes;
+                        argEnd++;
+                        continue;
                     }
 
                     argEnd++;

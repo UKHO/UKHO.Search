@@ -139,7 +139,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
         private static IngestionRequest CreateSyntheticRequest(int sequence)
         {
             var tokens = new[] { "t1" };
-            var properties = new[]
+            var properties = new IngestionPropertyList
             {
                 new IngestionProperty
                 {

@@ -120,6 +120,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation
                 return Array.Empty<string>();
             }
 
+            key = key.Trim().ToLowerInvariant();
+
             var propertiesProp = FindProperty(payload.GetType(), "properties");
             if (propertiesProp is null)
             {
@@ -145,7 +147,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation
                     continue;
                 }
 
-                if (!string.Equals(name, key, StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(name, key, StringComparison.Ordinal))
                 {
                     continue;
                 }

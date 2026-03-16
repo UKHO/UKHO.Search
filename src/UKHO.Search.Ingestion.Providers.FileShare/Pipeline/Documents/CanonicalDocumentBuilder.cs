@@ -14,7 +14,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Documents
             var properties = source.Properties;
             var sourceCopy = source with
             {
-                Properties = properties.Count == 0 ? Array.Empty<IngestionProperty>() : properties.ToArray()
+                Properties = properties.Count == 0 ? new IngestionPropertyList() : new IngestionPropertyList(properties)
             };
 
             return new CanonicalDocument

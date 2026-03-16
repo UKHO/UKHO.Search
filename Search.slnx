@@ -26,6 +26,7 @@
     <Project Path="src/Hosts/AppHost/AppHost.csproj" />
   </Folder>
   <Folder Name="/98 Tools/">
+    <Project Path="tools/FileShareEmulator.Common/FileShareEmulator.Common.csproj" />
     <Project Path="tools/FileShareEmulator/FileShareEmulator.csproj" />
     <Project Path="tools/FileShareImageBuilder/FileShareImageBuilder.csproj" Id="d05948ce-767a-4d18-8fb0-d2a13e1f4557" />
     <Project Path="tools/FileShareImageLoader/FileShareImageLoader.csproj" Id="8ed6b18d-5417-4ec9-be3a-88729c2eb987" />
@@ -47,6 +48,7 @@
     <Project Path="test/UKHO.Search.Tests/UKHO.Search.Tests.csproj" Id="be8fa9d3-90f0-449f-9ad0-795a833a3b38" />
   </Folder>
   <Folder Name="/@test/98 Tools/">
+    <Project Path="test/FileShareEmulator.Common.Tests/FileShareEmulator.Common.Tests.csproj" />
     <Project Path="test/RulesWorkbench.Tests/RulesWorkbench.Tests.csproj" Id="d1ac88b4-3302-4f83-be76-49c835c2eb2c" />
   </Folder>
 </Solution>

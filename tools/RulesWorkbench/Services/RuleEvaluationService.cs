@@ -49,7 +49,7 @@ namespace RulesWorkbench.Services
             var validationErrors = new List<string>();
 
             var sourceCopy = new IndexRequest(indexRequest.Id,
-                indexRequest.Properties?.ToArray() ?? Array.Empty<IngestionProperty>(),
+                indexRequest.Properties is null ? new IngestionPropertyList() : new IngestionPropertyList(indexRequest.Properties),
                 indexRequest.SecurityTokens?.ToArray() ?? Array.Empty<string>(),
                 indexRequest.Timestamp,
                 indexRequest.Files ?? new IngestionFileList());

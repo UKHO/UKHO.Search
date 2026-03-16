@@ -6,6 +6,11 @@ namespace UKHO.Search.Ingestion.Requests
     public sealed record IndexRequest : IJsonOnDeserialized
     {
         public IndexRequest(string id, IReadOnlyList<IngestionProperty> properties, string[] securityTokens, DateTimeOffset timestamp, IngestionFileList files)
+            : this(id, new IngestionPropertyList(properties), securityTokens, timestamp, files)
+        {
+        }
+
+        public IndexRequest(string id, IngestionPropertyList properties, string[] securityTokens, DateTimeOffset timestamp, IngestionFileList files)
         {
             Id = id;
             Properties = properties;
@@ -28,7 +33,7 @@ namespace UKHO.Search.Ingestion.Requests
         [JsonPropertyName("Properties")]
         [JsonRequired]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public IReadOnlyList<IngestionProperty> Properties { get; init; } = Array.Empty<IngestionProperty>();
+        public IngestionPropertyList Properties { get; init; } = new();
 
         [JsonPropertyName("SecurityTokens")]
         [JsonRequired]
@@ -84,15 +89,6 @@ namespace UKHO.Search.Ingestion.Requests
             if (Properties.Any(p => string.Equals(p.Name, "Id", StringComparison.OrdinalIgnoreCase)))
             {
                 throw new JsonException("IndexRequest.Properties cannot contain an IngestionProperty named 'Id'. Id is a first-class property.");
-            }
-
-            var duplicates = Properties.Where(p => !string.IsNullOrWhiteSpace(p.Name))
-                                       .GroupBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
-                                       .FirstOrDefault(g => g.Count() > 1);
-
-            if (duplicates is not null)
-            {
-                throw new JsonException($"IndexRequest.Properties contains duplicate Name '{duplicates.Key}'. Names are case-insensitive.");
             }
         }
     }

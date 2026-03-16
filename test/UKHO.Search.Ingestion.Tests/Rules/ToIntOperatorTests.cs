@@ -96,7 +96,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
         private static TemplateContext CreateContext(IReadOnlyList<string> matchedValues)
         {
-            var payload = new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t" }, DateTimeOffset.UnixEpoch, new IngestionFileList());
+            var payload = new IndexRequest("doc-1", new IngestionPropertyList(), new[] { "t" }, DateTimeOffset.UnixEpoch, new IngestionFileList());
             var resolver = new IngestionRulesPathResolver();
             return new TemplateContext(payload, resolver, matchedValues);
         }

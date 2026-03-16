@@ -103,7 +103,7 @@ namespace RulesWorkbench.Services
                 return (null, validation);
             }
 
-            var properties = new List<IngestionProperty>();
+            var properties = new IngestionPropertyList();
             foreach (var property in payload.Properties)
             {
                 _ = TryParseType(property.Type, out var propertyType);

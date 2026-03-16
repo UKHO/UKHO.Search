@@ -47,11 +47,22 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                     .ShouldBe(new[] { "a value" });
         }
 
+        [Fact]
+        public void Resolve_properties_bracket_name_normalizes_lookup_key_to_lowercase()
+        {
+            var payload = CreateIndexRequest();
+            var resolver = new IngestionRulesPathResolver();
+
+            resolver.Resolve(payload, "properties[\"AbCdEf\"]")
+                    .ShouldBe(new[] { "a value" });
+        }
+
         private static IndexRequest CreateIndexRequest()
         {
-            return new IndexRequest("doc-1", [
+            return new IndexRequest("doc-1", new IngestionPropertyList
+            {
                 new IngestionProperty { Name = "abcdef", Type = IngestionPropertyType.String, Value = "a value" }
-            ], ["token"], DateTimeOffset.UtcNow, new IngestionFileList
+            }, ["token"], DateTimeOffset.UtcNow, new IngestionFileList
             {
                 new IngestionFile("f1", 1, DateTimeOffset.UtcNow, "app/s63"),
                 new IngestionFile("f2", 1, DateTimeOffset.UtcNow, "text/plain")
