@@ -1,4 +1,4 @@
-# Ingestion rules guide (`ingestion-rules.json`)
+# Ingestion rules guide (per-rule JSON files)
 
 This document explains how to write and maintain ingestion enrichment rules for the **UKHO.Search Ingestion Rules Engine**.
 
@@ -26,60 +26,85 @@ Rules are **provider-scoped**. Rules for other providers are ignored.
 
 ---
 
-## 2. Where the rules file lives
+## 2. Where the rules live
 
-The host looks for a file named `ingestion-rules.json` in the host content root.
+Rules are loaded from a directory named `Rules` in the host content root.
 
-In this repository the committed rules file is at:
+Rules are stored as **one JSON file per rule**.
 
-- `src/Hosts/IngestionServiceHost/ingestion-rules.json`
+In this repository, the committed rules directory for the ingestion host is at:
 
-The host project copies it to output and the ingestion service validates it during startup.
+- `src/Hosts/IngestionServiceHost/Rules/`
+
+The host project copies the `Rules/` directory to output and the ingestion service validates rules during startup.
 
 ---
 
-## 3. Top-level file schema
+## 3. Directory layout
 
-The rules file must be valid JSON and must have this shape:
+The rules root directory must have this structure:
+
+```json
+Rules/
+  <providerName>/
+    <any-subdirectories-allowed>/
+      <rule-file>.json
+```
+
+Notes:
+
+- `<providerName>` is the provider scope (for example `file-share`).
+- Any subdirectory structure is allowed below the provider directory.
+- When loading rules for a provider, the engine scans **all** `.json` files under `Rules/<providerName>` recursively.
+
+## 4. Per-rule file schema
+
+Each rule file must be valid JSON and must have this shape:
 
 ```json
 {
   "schemaVersion": "1.0",
-  "rules": {
-    "<providerName>": [ /* Rule[] */ ]
-  }
+  "rule": { /* Rule */ }
 }
 ```
 
-### 3.1 `schemaVersion`
+### 4.1 `schemaVersion`
 
 - Required.
 - Must equal exactly `"1.0"`.
 
-### 3.2 `rules`
+### 4.2 `rule`
 
 - Required.
-- Must be an object where:
-  - each property name is a provider name (for example `"file-share"`)
-  - each value is a **non-empty array** of rules for that provider
+- Must be a JSON object conforming to the rule schema described in §5.
 
 Fail-fast behavior:
 
-- Missing `ingestion-rules.json` fails startup.
-- A file with **no providers** or **only empty provider arrays** fails startup.
+- Missing required `Rules/` directory fails startup.
+- Invalid JSON or schema errors in any rule file fail startup.
+- Duplicate rule ids within the same provider scope fail startup.
 
 ---
 
-## 4. Provider scoping
+## 5. Provider scoping
 
 Rules are scoped by provider name.
 
-- When the engine is invoked with `providerName = "file-share"`, only `rules["file-share"]` is evaluated/applied.
+- When the engine is invoked with `providerName = "file-share"`, only rules loaded from `Rules/file-share/**.json` are evaluated/applied.
 - Provider key matching is case-insensitive.
+
+### 5.1 Rule ordering
+
+Rules are applied in a deterministic order.
+
+When loading rules from per-rule files under a provider directory, ordering is:
+
+1. File path (ordinal, case-insensitive)
+2. Rule id (ordinal, case-insensitive) as a tie-break
 
 ---
 
-## 5. Rule schema
+## 6. Rule schema
 
 A rule is a JSON object with these fields:
 
@@ -93,23 +118,27 @@ A rule is a JSON object with these fields:
 }
 ```
 
-### 5.1 `id`
+### 6.1 `id`
 
 - Required.
 - Must be non-empty.
-- Must be unique **within a provider’s rule array**.
+- Must be unique **within a provider scope** (across all files under `Rules/<providerName>`).
 
-### 5.2 `description` (optional)
+Rule file name:
+
+- The file name does **not** need to match the rule id.
+
+### 6.2 `description` (optional)
 
 Free-text description for maintainability.
 
-### 5.3 `enabled` (optional)
+### 6.3 `enabled` (optional)
 
 - Optional boolean.
 - Defaults to `true`.
 - If `false`, the rule is skipped.
 
-### 5.4 `if` vs `match`
+### 6.4 `if` vs `match`
 
 Rules must contain **exactly one** predicate block, either:
 
@@ -120,7 +149,7 @@ You must not specify both.
 
 ---
 
-## 6. Predicates (matching conditions)
+## 7. Predicates (matching conditions)
 
 A predicate is evaluated against the **active payload**:
 
@@ -129,7 +158,7 @@ A predicate is evaluated against the **active payload**:
 
 If neither is present (for example `DeleteItem` / `UpdateAcl`), the rules engine performs no mutations.
 
-### 6.1 Predicate forms
+### 7.1 Predicate forms
 
 There are two supported predicate forms:
 
@@ -138,7 +167,7 @@ There are two supported predicate forms:
 
 ---
 
-## 7. Shorthand AND-only predicate form
+## 8. Shorthand AND-only predicate form
 
 Shorthand form is an object mapping **paths** to **string values**.
 
@@ -164,7 +193,7 @@ Semantics:
 
 ---
 
-## 8. Explicit boolean predicate form
+## 9. Explicit boolean predicate form
 
 Boolean nodes allow nested logic:
 
@@ -204,7 +233,7 @@ Rules:
 
 ---
 
-## 9. Paths
+## 10. Paths
 
 Paths identify values on the active payload (AddItem/UpdateItem).
 
@@ -358,7 +387,7 @@ Example structure:
   "documentType": { "set": "..." },
   "authority": { "add": ["..."] },
   "region": { "add": ["..."] },
-  "fornat": { "add": ["..."] },
+  "format": { "add": ["..."] },
   "category": { "add": ["..."] },
   "series": { "add": ["..."] },
   "instance": { "add": ["..."] },
@@ -404,18 +433,18 @@ These are **set-based**, **additive** enrichments (non-destructive):
 - Adding the same value multiple times does not create duplicates.
 - String outputs are normalized like other actions (trim + lowercase invariant).
 - Empty/null/whitespace outputs are skipped.
-- Numeric outputs must be JSON numbers; invalid/missing runtime values simply result in no output.
+- Numeric outputs are produced by parsing operators (see §13). If parsing fails, no output is produced.
 
 Notes:
 
 - String fields support templates/variables (see §12).
-- Numeric fields (`majorVersion`, `minorVersion`) do **not** support templating; values must be JSON numbers.
+- Numeric fields (`majorVersion`, `minorVersion`) support templates/variables only when used via parsing operators (see §13).
 
 Supported actions:
 
 - `authority.add` (string[])
 - `region.add` (string[])
-- `fornat.add` (string[])
+- `format.add` (string[])
 - `category.add` (string[])
 - `series.add` (string[])
 - `instance.add` (string[])
@@ -452,11 +481,102 @@ Example (numeric fields):
     ]
   },
   "then": {
-    "majorVersion": { "add": [10] },
-    "minorVersion": { "add": [1] }
+    "majorVersion": { "add": ["toInt($path:properties[\"majorVersion\"])"] },
+    "minorVersion": { "add": ["toInt($path:properties[\"minorVersion\"])"] }
   }
 }
 ```
+
+---
+
+## 13. Parsing operators (typed outputs)
+
+Parsing operators convert string values (including variables like `$val`) into typed outputs required by some actions.
+
+### 13.1 `toInt(value)`
+
+`toInt(value)` converts a value to a base-10 integer.
+
+Common usage is to parse `$val` into numeric fields like `majorVersion.add` and `minorVersion.add`.
+
+#### 13.1.1 How it works (exact semantics)
+
+When evaluating `toInt(value)`:
+
+1. The engine resolves variables first (e.g. `$val`, `$path:...`).
+2. The resolved value is treated as a string.
+3. The input string is trimmed.
+4. Parsing uses invariant culture.
+5. Accepted format is a base-10 integer, optionally with leading `+` or `-`.
+
+If parsing fails for any reason (null/empty/whitespace, non-numeric characters, overflow/out of range), **no value is produced**.
+
+#### 13.1.2 Failure behavior
+
+If `toInt(...)` fails:
+
+- The engine **does not add anything** to the target numeric field.
+- The engine continues evaluating other values/actions/rules.
+- Parsing failures MUST NOT fail ingestion.
+
+#### 13.1.3 Examples
+
+**Example A: parse `$val` into `majorVersion`**
+
+```json
+{
+  "schemaVersion": "1.0",
+  "rule": {
+    "id": "parse-major-from-val",
+    "if": { "files[*].filename": "ENC-2" },
+    "then": {
+      "majorVersion": {
+        "add": ["toInt($val)"]
+      }
+    }
+  }
+}
+```
+
+**Example B: mixed values (only valid ints are added)**
+
+```json
+{
+  "schemaVersion": "1.0",
+  "rule": {
+    "id": "mixed-parse",
+    "if": { "id": "doc-1" },
+    "then": {
+      "minorVersion": {
+        "add": ["toInt(10)", "toInt( 02 )", "toInt(not-a-number)"]
+      }
+    }
+  }
+}
+```
+
+Expected:
+
+- `10` and `2` are added.
+- `not-a-number` is ignored.
+
+**Example C: failure is non-fatal and rules still apply**
+
+```json
+{
+  "schemaVersion": "1.0",
+  "rule": {
+    "id": "parse-and-continue",
+    "if": { "id": "doc-1" },
+    "then": {
+      "majorVersion": { "add": ["toInt($path:properties[\"major\"])" ] },
+      "keywords": { "add": ["version-parsed-or-not"] }
+    }
+  }
+}
+```
+
+If `properties["major"]` is missing or not numeric, the keyword is still added while `majorVersion` remains unchanged.
 
 ---
 
@@ -558,13 +678,14 @@ This example shows three rules for provider `file-share`:
 
 ## 14. Troubleshooting and common validation errors
 
-### 14.1 Startup fails: missing rules file
+### 14.1 Startup fails: missing rules directory
 
-- Ensure `ingestion-rules.json` is present at the host content root.
+- Ensure the `Rules/` directory is present at the host content root.
+- Ensure the provider directory exists for the provider you are using (for example `Rules/file-share/`).
 
 ### 14.2 Startup fails: empty rules
 
-- Ensure at least one provider has at least one rule.
+- Ensure at least one provider directory contains at least one valid rule file.
 
 ### 14.3 Path validation errors
 

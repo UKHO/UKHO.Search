@@ -38,8 +38,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Actions
             ApplyStringAdds(then.Series?.Add, document.Series, document.AddSeries, context, summary);
             ApplyStringAdds(then.Instance?.Add, document.Instance, document.AddInstance, context, summary);
 
-            ApplyIntAdds(then.MajorVersion?.Add, document.MajorVersion, document.AddMajorVersion, summary);
-            ApplyIntAdds(then.MinorVersion?.Add, document.MinorVersion, document.AddMinorVersion, summary);
+            ApplyIntAdds(then.MajorVersion, document.MajorVersion, document.AddMajorVersion, context, summary);
+            ApplyIntAdds(then.MinorVersion, document.MinorVersion, document.AddMinorVersion, context, summary);
         }
 
         private void ApplyStringAdds(
@@ -76,17 +76,18 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Actions
         }
 
         private void ApplyIntAdds(
-            IEnumerable<int>? add,
+            IntAddActionDto? action,
             SortedSet<int> existing,
             Action<int?> addToDocument,
+            TemplateContext context,
             ActionApplySummary summary)
         {
-            if (add is null)
+            if (action is null)
             {
                 return;
             }
 
-            foreach (var value in add)
+            foreach (var value in action.GetAddValues())
             {
                 if (existing.Contains(value))
                 {
@@ -95,6 +96,20 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Actions
 
                 addToDocument(value);
                 summary.AdditionalFieldValuesAdded++;
+            }
+
+            foreach (var template in action.GetAddTemplates())
+            {
+                foreach (var value in _templateExpander.ExpandToInt(template, context))
+                {
+                    if (existing.Contains(value))
+                    {
+                        continue;
+                    }
+
+                    addToDocument(value);
+                    summary.AdditionalFieldValuesAdded++;
+                }
             }
         }
 

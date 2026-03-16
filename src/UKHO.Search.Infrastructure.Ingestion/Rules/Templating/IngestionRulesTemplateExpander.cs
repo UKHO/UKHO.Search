@@ -1,7 +1,39 @@
+using System.Globalization;
+
 namespace UKHO.Search.Infrastructure.Ingestion.Rules.Templating
 {
     internal sealed class IngestionRulesTemplateExpander
     {
+        public IReadOnlyList<int> ExpandToInt(string? template, TemplateContext context)
+        {
+            if (string.IsNullOrWhiteSpace(template))
+            {
+                return Array.Empty<int>();
+            }
+
+            if (!TryParseToIntCall(template, out var argumentTemplate))
+            {
+                return Array.Empty<int>();
+            }
+
+            var stringValues = Expand(argumentTemplate, context);
+            if (stringValues.Count == 0)
+            {
+                return Array.Empty<int>();
+            }
+
+            var results = new List<int>(stringValues.Count);
+            foreach (var value in stringValues)
+            {
+                if (TryParseInvariantInt(value, out var parsed))
+                {
+                    results.Add(parsed);
+                }
+            }
+
+            return results;
+        }
+
         public IReadOnlyList<string> Expand(string? template, TemplateContext context)
         {
             if (string.IsNullOrWhiteSpace(template))
@@ -132,6 +164,32 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Templating
             variableKind = "unknown";
             length = 1;
             return true;
+        }
+
+        private static bool TryParseToIntCall(string template, out string argument)
+        {
+            argument = string.Empty;
+
+            var trimmed = template.Trim();
+            if (!trimmed.StartsWith("toInt(", StringComparison.Ordinal) || !trimmed.EndsWith(")", StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            argument = trimmed.Substring(6, trimmed.Length - 7).Trim();
+            return true;
+        }
+
+        private static bool TryParseInvariantInt(string? value, out int parsed)
+        {
+            parsed = 0;
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            var trimmed = value.Trim();
+            return int.TryParse(trimmed, NumberStyles.Integer, CultureInfo.InvariantCulture, out parsed);
         }
     }
 }
