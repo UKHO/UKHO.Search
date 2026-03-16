@@ -23,6 +23,8 @@ namespace AppHost
             var runModeParameter = builder.AddParameter("runmode");
             var runModeValue = await runModeParameter.Resource.GetValueAsync(CancellationToken.None);
 
+            var ingestionModeParameter = builder.AddParameter("ingestionMode");
+
             var runMode = Enum.TryParse<RunMode>(runModeValue, true, out var parsedRunMode) ? parsedRunMode : RunMode.Services;
 
             var storage = builder.AddAzureStorage(ServiceNames.Storage)
@@ -66,6 +68,7 @@ namespace AppHost
 
                     var ingestionService = builder.AddProject<IngestionServiceHost>(ServiceNames.Ingestion)
                                                   .WithExternalHttpEndpoints()
+                                                   .WithEnvironment("ingestionmode", ingestionModeParameter)
                                                   .WithReference(storageQueue)
                                                   .WithReference(storageTable)
                                                   .WithReference(storageBlob)
@@ -120,6 +123,7 @@ namespace AppHost
                 {
                     builder.AddProject<FileShareImageBuilder>(ServiceNames.FileShareBuilder)
                            .WithEnvironment("environment", environmentParameter)
+                           .WithEnvironment("ingestionmode", ingestionModeParameter)
                            .WithReference(sqlServer)
                            .WaitFor(sqlServer)
                            .WithExplicitStart();

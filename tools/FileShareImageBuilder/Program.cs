@@ -83,6 +83,11 @@ namespace FileShareImageBuilder
 
             using var host = builder.Build();
 
+            var ingestionModeRaw = Environment.GetEnvironmentVariable("ingestionmode");
+            var ingestionMode = IngestionModeParser.Parse(ingestionModeRaw);
+            host.Services.GetRequiredService<ILogger<Program>>()
+                .LogWarning("Ingestion mode is set to {IngestionMode}.", ingestionMode);
+
             await host.Services.GetRequiredService<ImageBuilder>()
                       .RunAsync()
                       .ConfigureAwait(false);

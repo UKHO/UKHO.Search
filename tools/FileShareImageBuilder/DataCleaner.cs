@@ -12,6 +12,8 @@ namespace FileShareImageBuilder
             var dataImagePath = ConfigurationReader.GetDataImagePath();
             var invalidFilePath = Path.Combine(dataImagePath, "invalid.json");
 
+            var ingestionMode = IngestionModeParser.Parse(Environment.GetEnvironmentVariable("ingestionmode"));
+
             // The local DB should contain only:
             // - committed batches that were successfully downloaded, and
             // - no batches explicitly marked invalid.
@@ -58,9 +60,16 @@ namespace FileShareImageBuilder
                 }
             }
 
-            var deletedNotDownloaded = await DeleteCommittedBatchesNotDownloadedAsync(sqlConnection, downloadedBatchIds, cancellationToken)
-                .ConfigureAwait(false);
-            Console.WriteLine($"[DataCleaner] Deleted committed batches not downloaded: {deletedNotDownloaded}");
+            if (ingestionMode == IngestionMode.Strict)
+            {
+                var deletedNotDownloaded = await DeleteCommittedBatchesNotDownloadedAsync(sqlConnection, downloadedBatchIds, cancellationToken)
+                    .ConfigureAwait(false);
+                Console.WriteLine($"[DataCleaner] (Strict) Deleted committed batches not downloaded: {deletedNotDownloaded}");
+            }
+            else
+            {
+                Console.WriteLine("[DataCleaner] (BestEffort) Skipped deletion of committed batches not downloaded.");
+            }
 
             var deletedNonCommitted = await DeleteNonCommittedBatchesAsync(sqlConnection, cancellationToken)
                 .ConfigureAwait(false);
