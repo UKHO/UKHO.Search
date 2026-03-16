@@ -17,7 +17,8 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         public void Mime_type_app_s63_enriches_keywords_and_search_text()
         {
             using var temp = new TempRulesRoot();
-            temp.WriteRulesFile(GetExampleRulesJson());
+            temp.WriteRuleFile("file-share", "mime-app-s63", GetMimeAppS63RuleJson());
+            temp.WriteRuleFile("file-share", "prop-abcdef-keywords", GetPropAbcdefKeywordsRuleJson());
 
             using var provider = CreateProvider(temp.RootPath);
             var engine = provider.GetRequiredService<IIngestionRulesEngine>();
@@ -38,7 +39,8 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         public void Property_abcdef_equals_a_value_adds_keywords()
         {
             using var temp = new TempRulesRoot();
-            temp.WriteRulesFile(GetExampleRulesJson());
+            temp.WriteRuleFile("file-share", "mime-app-s63", GetMimeAppS63RuleJson());
+            temp.WriteRuleFile("file-share", "prop-abcdef-keywords", GetPropAbcdefKeywordsRuleJson());
 
             using var provider = CreateProvider(temp.RootPath);
             var engine = provider.GetRequiredService<IIngestionRulesEngine>();
@@ -71,37 +73,42 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             return new IngestionRequest(IngestionRequestType.IndexItem, indexRequest, null, null);
         }
 
-        private static string GetExampleRulesJson()
+        private static string GetMimeAppS63RuleJson()
         {
             return """
                    {
                      "schemaVersion": "1.0",
-                     "rules": {
-                       "file-share": [
-                         {
-                           "id": "mime-app-s63",
-                           "description": "When any file is app/s63, enrich as exchange set",
-                           "enabled": true,
-                           "if": {
-                             "files[*].mimeType": "app/s63"
-                           },
-                           "then": {
-                             "keywords": { "add": ["exchange-set"] },
-                             "searchText": { "add": ["exchange set", "exchangeset"] }
-                           }
-                         },
-                         {
-                           "id": "prop-abcdef-keywords",
-                           "description": "When properties.abcdef equals 'a value', add key1/key2",
-                           "enabled": true,
-                           "if": {
-                             "properties[\"abcdef\"]": "a value"
-                           },
-                           "then": {
-                             "keywords": { "add": ["key1", "key2"] }
-                           }
-                         }
-                       ]
+                     "rule": {
+                       "id": "mime-app-s63",
+                       "description": "When any file is app/s63, enrich as exchange set",
+                       "enabled": true,
+                       "if": {
+                         "files[*].mimeType": "app/s63"
+                       },
+                       "then": {
+                         "keywords": { "add": ["exchange-set"] },
+                         "searchText": { "add": ["exchange set", "exchangeset"] }
+                       }
+                     }
+                   }
+                   """;
+        }
+
+        private static string GetPropAbcdefKeywordsRuleJson()
+        {
+            return """
+                   {
+                     "schemaVersion": "1.0",
+                     "rule": {
+                       "id": "prop-abcdef-keywords",
+                       "description": "When properties.abcdef equals 'a value', add key1/key2",
+                       "enabled": true,
+                       "if": {
+                         "properties[\"abcdef\"]": "a value"
+                       },
+                       "then": {
+                         "keywords": { "add": ["key1", "key2"] }
+                       }
                      }
                    }
                    """;

@@ -17,54 +17,79 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         public void Matching_rules_apply_all_actions_with_templating_and_dedupe()
         {
             using var temp = new TempRulesRoot();
-            temp.WriteRulesFile("""
+
+            temp.WriteRuleFile("file-share", "r1", """
                                 {
                                   "schemaVersion": "1.0",
-                                  "rules": {
-                                    "file-share": [
-                                      {
-                                        "id": "r1",
-                                        "if": { "id": "doc-1" },
-                                        "then": {
-                                          "keywords": { "add": [ "Key1", "$nope" ] },
-                                          "searchText": { "add": [ "First" ] },
-                                          "content": { "add": [ "C1" ] }
-                                        }
-                                      },
-                                      {
-                                        "id": "r2",
-                                        "if": { "id": "doc-1" },
-                                        "then": {
-                                          "searchText": { "add": [ "First", "Second" ] }
-                                        }
-                                      },
-                                      {
-                                        "id": "r3",
-                                        "if": { "files[*].mimeType": "app/s63" },
-                                        "then": {
-                                          "keywords": { "add": [ "mime-$val" ] }
-                                        }
-                                      },
-                                      {
-                                        "id": "r4",
-                                        "if": { "all": [ { "path": "properties[\"abcdef\"]", "exists": true } ] },
-                                         "then": { }
-                                      },
-                                      {
-                                        "id": "r6",
-                                        "if": { "all": [ { "path": "files[*].mimeType", "exists": true } ] },
-                                        "then": {
-                                          "keywords": { "add": [ "all-$val" ] }
-                                        }
-                                      }
-                                    ],
-                                    "other-provider": [
-                                      {
-                                        "id": "other",
-                                        "if": { "id": "doc-1" },
-                                        "then": { "keywords": { "add": [ "should-not-apply" ] } }
-                                      }
-                                    ]
+                                  "rule": {
+                                    "id": "r1",
+                                    "if": { "id": "doc-1" },
+                                    "then": {
+                                      "keywords": { "add": [ "Key1", "$nope" ] },
+                                      "searchText": { "add": [ "First" ] },
+                                      "content": { "add": [ "C1" ] }
+                                    }
+                                  }
+                                }
+                                """);
+
+            temp.WriteRuleFile("file-share", "r2", """
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rule": {
+                                    "id": "r2",
+                                    "if": { "id": "doc-1" },
+                                    "then": {
+                                      "searchText": { "add": [ "First", "Second" ] }
+                                    }
+                                  }
+                                }
+                                """);
+
+            temp.WriteRuleFile("file-share", "r3", """
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rule": {
+                                    "id": "r3",
+                                    "if": { "files[*].mimeType": "app/s63" },
+                                    "then": {
+                                      "keywords": { "add": [ "mime-$val" ] }
+                                    }
+                                  }
+                                }
+                                """);
+
+            temp.WriteRuleFile("file-share", "r4", """
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rule": {
+                                    "id": "r4",
+                                    "if": { "all": [ { "path": "properties[\"abcdef\"]", "exists": true } ] },
+                                    "then": { }
+                                  }
+                                }
+                                """);
+
+            temp.WriteRuleFile("file-share", "r6", """
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rule": {
+                                    "id": "r6",
+                                    "if": { "all": [ { "path": "files[*].mimeType", "exists": true } ] },
+                                    "then": {
+                                      "keywords": { "add": [ "all-$val" ] }
+                                    }
+                                  }
+                                }
+                                """);
+
+            temp.WriteRuleFile("other-provider", "other", """
+                                {
+                                  "schemaVersion": "1.0",
+                                  "rule": {
+                                    "id": "other",
+                                    "if": { "id": "doc-1" },
+                                    "then": { "keywords": { "add": [ "should-not-apply" ] } }
                                   }
                                 }
                                 """);

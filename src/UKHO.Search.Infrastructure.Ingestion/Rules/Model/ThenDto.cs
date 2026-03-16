@@ -8,7 +8,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Model
 
         public StringAddActionDto? Region { get; set; }
 
-        public StringAddActionDto? Fornat { get; set; }
+        public StringAddActionDto? Format { get; set; }
 
         public IntAddActionDto? MajorVersion { get; set; }
 

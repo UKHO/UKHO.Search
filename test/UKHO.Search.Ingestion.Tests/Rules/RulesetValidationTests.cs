@@ -20,14 +20,14 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
 
             var ex = Should.Throw<IngestionRulesValidationException>(() => catalog.EnsureLoaded());
-            ex.Message.ShouldContain("Missing required rules file");
+            ex.Message.ShouldContain("Missing required rules directory");
         }
 
         [Fact]
         public void Invalid_json_fails_startup_validation()
         {
             using var temp = new TempRulesRoot();
-            temp.WriteRulesFile("{");
+            temp.WriteRuleFile("file-share", "bad", "{");
 
             using var provider = CreateProvider(temp.RootPath);
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
@@ -41,16 +41,12 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         public void Missing_schema_version_fails_validation()
         {
             using var temp = new TempRulesRoot();
-            temp.WriteRulesFile("""
+            temp.WriteRuleFile("file-share", "r1", """
                                 {
-                                  "rules": {
-                                    "file-share": [
-                                      {
-                                        "id": "r1",
-                                        "if": { "any": [ { "path": "id", "exists": true } ] },
-                                        "then": { "keywords": { "add": [ "k" ] } }
-                                      }
-                                    ]
+                                  "rule": {
+                                    "id": "r1",
+                                    "if": { "any": [ { "path": "id", "exists": true } ] },
+                                    "then": { "keywords": { "add": [ "k" ] } }
                                   }
                                 }
                                 """);
@@ -59,24 +55,20 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
 
             var ex = Should.Throw<IngestionRulesValidationException>(() => catalog.EnsureLoaded());
-            ex.Errors.ShouldContain(x => x.Contains("schemaVersion", StringComparison.OrdinalIgnoreCase));
+            ex.Message.ToLowerInvariant().ShouldContain("schemaversion");
         }
 
         [Fact]
         public void Unsupported_schema_version_fails_validation()
         {
             using var temp = new TempRulesRoot();
-            temp.WriteRulesFile("""
+            temp.WriteRuleFile("file-share", "r1", """
                                 {
                                   "schemaVersion": "2.0",
-                                  "rules": {
-                                    "file-share": [
-                                      {
-                                        "id": "r1",
-                                        "if": { "any": [ { "path": "id", "exists": true } ] },
-                                        "then": { "keywords": { "add": [ "k" ] } }
-                                      }
-                                    ]
+                                  "rule": {
+                                    "id": "r1",
+                                    "if": { "any": [ { "path": "id", "exists": true } ] },
+                                    "then": { "keywords": { "add": [ "k" ] } }
                                   }
                                 }
                                 """);
@@ -85,19 +77,16 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
 
             var ex = Should.Throw<IngestionRulesValidationException>(() => catalog.EnsureLoaded());
-            ex.Errors.ShouldContain(x => x.Contains("Unsupported schemaVersion", StringComparison.OrdinalIgnoreCase));
+            ex.Message.ToLowerInvariant().ShouldContain("unsupported");
+            ex.Message.ToLowerInvariant().ShouldContain("schemaversion");
         }
 
         [Fact]
         public void Empty_ruleset_fails_validation()
         {
             using var temp = new TempRulesRoot();
-            temp.WriteRulesFile("""
-                                {
-                                  "schemaVersion": "1.0",
-                                  "rules": { }
-                                }
-                                """);
+            // Ensure the Rules directory exists but contains no provider directories/rules.
+            Directory.CreateDirectory(Path.Combine(temp.RootPath, "Rules"));
 
             using var provider = CreateProvider(temp.RootPath);
             var catalog = provider.GetRequiredService<IIngestionRulesCatalog>();
@@ -110,17 +99,14 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         public void Invalid_predicate_shapes_fail_validation()
         {
             using var temp = new TempRulesRoot();
-            temp.WriteRulesFile("""
-                                {
-                                  "schemaVersion": "1.0",
-                                  "rules": {
-                                    "file-share": [
-                                      { "id": "all-empty", "if": { "all": [ ] }, "then": { "keywords": { "add": [ "k" ] } } },
-                                      { "id": "not-array", "if": { "not": [ ] }, "then": { "keywords": { "add": [ "k" ] } } },
-                                      { "id": "multi", "if": { "all": [ { "path": "id", "exists": true } ], "any": [ { "path": "id", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } }
-                                    ]
-                                  }
-                                }
+            temp.WriteRuleFile("file-share", "all-empty", """
+                                { "schemaVersion": "1.0", "rule": { "id": "all-empty", "if": { "all": [ ] }, "then": { "keywords": { "add": [ "k" ] } } } }
+                                """);
+            temp.WriteRuleFile("file-share", "not-array", """
+                                { "schemaVersion": "1.0", "rule": { "id": "not-array", "if": { "not": [ ] }, "then": { "keywords": { "add": [ "k" ] } } } }
+                                """);
+            temp.WriteRuleFile("file-share", "multi", """
+                                { "schemaVersion": "1.0", "rule": { "id": "multi", "if": { "all": [ { "path": "id", "exists": true } ], "any": [ { "path": "id", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } } }
                                 """);
 
             using var provider = CreateProvider(temp.RootPath);
@@ -136,17 +122,17 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         public void Invalid_path_syntax_fails_validation()
         {
             using var temp = new TempRulesRoot();
-            temp.WriteRulesFile("""
-                                {
-                                  "schemaVersion": "1.0",
-                                  "rules": {
-                                    "file-share": [
-                                      { "id": "missing-wildcard", "if": { "any": [ { "path": "files.mimeType", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } },
-                                      { "id": "numeric-index", "if": { "any": [ { "path": "files[0].mimeType", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } },
-                                      { "id": "selector", "if": { "any": [ { "path": "files[name=\"a\"].mimeType", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } }
-                                    ]
-                                  }
-                                }
+
+            temp.WriteRuleFile("file-share", "missing-wildcard", """
+                                { "schemaVersion": "1.0", "rule": { "id": "missing-wildcard", "if": { "any": [ { "path": "files.mimeType", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } } }
+                                """);
+
+            temp.WriteRuleFile("file-share", "numeric-index", """
+                                { "schemaVersion": "1.0", "rule": { "id": "numeric-index", "if": { "any": [ { "path": "files[0].mimeType", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } } }
+                                """);
+
+            temp.WriteRuleFile("file-share", "selector", """
+                                { "schemaVersion": "1.0", "rule": { "id": "selector", "if": { "any": [ { "path": "files[name=\"a\"].mimeType", "exists": true } ] }, "then": { "keywords": { "add": [ "k" ] } } } }
                                 """);
 
             using var provider = CreateProvider(temp.RootPath);

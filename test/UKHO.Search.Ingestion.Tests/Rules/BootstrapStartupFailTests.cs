@@ -24,19 +24,14 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var bootstrap = new BootstrapService(new ConfigurationBuilder().Build(), null!, null!, null!, null!, rulesCatalog, NullLogger<BootstrapService>.Instance);
 
             var ex = await Should.ThrowAsync<IngestionRulesValidationException>(() => bootstrap.BootstrapAsync());
-            ex.Message.ShouldContain("Missing required rules file");
+            ex.Message.ShouldContain("Missing required rules directory");
         }
 
         [Fact]
         public async Task Bootstrap_fails_when_rules_are_empty()
         {
             using var temp = new TempRulesRoot();
-            temp.WriteRulesFile("""
-                                {
-                                  "schemaVersion": "1.0",
-                                  "rules": { }
-                                }
-                                """);
+            Directory.CreateDirectory(Path.Combine(temp.RootPath, "Rules"));
 
             using var provider = CreateProvider(temp.RootPath);
             var rulesCatalog = provider.GetRequiredService<IIngestionRulesCatalog>();

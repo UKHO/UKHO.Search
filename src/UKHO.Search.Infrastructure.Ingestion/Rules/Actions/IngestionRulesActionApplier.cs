@@ -33,7 +33,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Actions
         {
             ApplyStringAdds(then.Authority?.Add, document.Authority, document.AddAuthority, context, summary);
             ApplyStringAdds(then.Region?.Add, document.Region, document.AddRegion, context, summary);
-            ApplyStringAdds(then.Fornat?.Add, document.Fornat, document.AddFornat, context, summary);
+            ApplyStringAdds(then.Format?.Add, document.Format, document.AddFormat, context, summary);
             ApplyStringAdds(then.Category?.Add, document.Category, document.AddCategory, context, summary);
             ApplyStringAdds(then.Series?.Add, document.Series, document.AddSeries, context, summary);
             ApplyStringAdds(then.Instance?.Add, document.Instance, document.AddInstance, context, summary);

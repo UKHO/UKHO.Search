@@ -52,7 +52,7 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
                       .GetProperty("type")
                       .GetString()
                       .ShouldBe("keyword");
-            properties.GetProperty("fornat")
+            properties.GetProperty("format")
                       .GetProperty("type")
                       .GetString()
                       .ShouldBe("keyword");

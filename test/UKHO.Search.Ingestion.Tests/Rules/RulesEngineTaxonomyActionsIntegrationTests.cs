@@ -20,23 +20,19 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             temp.WriteRulesFile("""
                                 {
                                   "schemaVersion": "1.0",
-                                  "rules": {
-                                    "file-share": [
-                                      {
-                                        "id": "tax1",
-                                        "if": { "id": "doc-1" },
-                                        "then": {
-                                          "authority": { "add": [ "UKHO", "Admiralty", "ukho" ] },
-                                          "region": { "add": [ "Europe", "europe", "  " ] },
-                                          "fornat": { "add": [ "PDF" ] },
-                                          "majorVersion": { "add": [ 2, 1, 2 ] },
-                                          "minorVersion": { "add": [ 10, 2 ] },
-                                          "category": { "add": [ "Charts" ] },
-                                          "series": { "add": [ "B", "a" ] },
-                                          "instance": { "add": [ "2", "1" ] }
-                                        }
-                                      }
-                                    ]
+                                  "rule": {
+                                    "id": "tax1",
+                                    "if": { "id": "doc-1" },
+                                    "then": {
+                                      "authority": { "add": [ "UKHO", "Admiralty", "ukho" ] },
+                                      "region": { "add": [ "Europe", "europe", "  " ] },
+                                      "format": { "add": [ "PDF" ] },
+                                      "majorVersion": { "add": [ 2, 1, 2 ] },
+                                      "minorVersion": { "add": [ 10, 2 ] },
+                                      "category": { "add": [ "Charts" ] },
+                                      "series": { "add": [ "B", "a" ] },
+                                      "instance": { "add": [ "2", "1" ] }
+                                    }
                                   }
                                 }
                                 """);
@@ -56,7 +52,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
             document.Authority.ShouldBe(new[] { "admiralty", "ukho" });
             document.Region.ShouldBe(new[] { "europe" });
-            document.Fornat.ShouldBe(new[] { "pdf" });
+            document.Format.ShouldBe(new[] { "pdf" });
             document.MajorVersion.ShouldBe(new[] { 1, 2 });
             document.MinorVersion.ShouldBe(new[] { 2, 10 });
             document.Category.ShouldBe(new[] { "charts" });

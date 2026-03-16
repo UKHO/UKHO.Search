@@ -23,18 +23,16 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
             try
             {
-                var rulesPath = Path.Combine(tempRoot, "ingestion-rules.json");
+                var providerRulesRoot = Path.Combine(tempRoot, "Rules", "file-share");
+                Directory.CreateDirectory(providerRulesRoot);
+                var rulesPath = Path.Combine(providerRulesRoot, "slice1-test-rule.json");
                 await File.WriteAllTextAsync(rulesPath, """
                                                         {
                                                           "schemaVersion": "1.0",
-                                                          "rules": {
-                                                            "file-share": [
-                                                              {
-                                                                "id": "slice1-test-rule",
-                                                                "if": { "any": [ { "path": "id", "exists": true } ] },
-                                                                "then": { "keywords": { "add": [ "slice1-keyword" ] } }
-                                                              }
-                                                            ]
+                                                          "rule": {
+                                                            "id": "slice1-test-rule",
+                                                            "if": { "any": [ { "path": "id", "exists": true } ] },
+                                                            "then": { "keywords": { "add": [ "slice1-keyword" ] } }
                                                           }
                                                         }
                                                         """);

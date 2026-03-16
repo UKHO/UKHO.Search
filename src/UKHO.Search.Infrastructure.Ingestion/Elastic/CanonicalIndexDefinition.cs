@@ -13,7 +13,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
                                                                .Keyword("keywords")
                                                                .Keyword("authority")
                                                                .Keyword("region")
-                                                               .Keyword("fornat")
+                                                               .Keyword("format")
                                                                .Keyword("majorVersion")
                                                                .Keyword("minorVersion")
                                                                .Keyword("category")

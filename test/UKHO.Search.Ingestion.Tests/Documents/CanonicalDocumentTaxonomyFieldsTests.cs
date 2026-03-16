@@ -34,15 +34,15 @@ namespace UKHO.Search.Ingestion.Tests.Documents
         }
 
         [Fact]
-        public void Fornat_is_additive_normalizes_to_lowercase_dedupes_and_is_sorted()
+        public void Format_is_additive_normalizes_to_lowercase_dedupes_and_is_sorted()
         {
             var doc = CreateDoc();
 
-            doc.SetFornat("Pdf");
-            doc.AddFornat("epub");
-            doc.AddFornat("PDF");
+            doc.SetFormat("Pdf");
+            doc.AddFormat("epub");
+            doc.AddFormat("PDF");
 
-            doc.Fornat.ShouldBe(new[] { "epub", "pdf" });
+            doc.Format.ShouldBe(new[] { "epub", "pdf" });
         }
 
         [Fact]

@@ -20,15 +20,11 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             temp.WriteRulesFile("""
                                 {
                                   "schemaVersion": "1.0",
-                                  "rules": {
-                                    "file-share": [
-                                      {
-                                        "id": "payload-selection",
-                                        "enabled": true,
-                                        "if": { "id": "add-id" },
-                                        "then": { "keywords": { "add": [ "matched" ] } }
-                                      }
-                                    ]
+                                  "rule": {
+                                    "id": "payload-selection",
+                                    "enabled": true,
+                                    "if": { "id": "add-id" },
+                                    "then": { "keywords": { "add": [ "matched" ] } }
                                   }
                                 }
                                 """);
@@ -56,24 +52,20 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             temp.WriteRulesFile("""
                                 {
                                   "schemaVersion": "1.0",
-                                  "rules": {
-                                    "file-share": [
-                                      {
-                                        "id": "additional-fields",
-                                        "enabled": true,
-                                        "if": { "id": "doc-1" },
-                                        "then": {
-                                          "authority": { "add": [ "UKHO" ] },
-                                          "region": { "add": [ "$path:properties[\"region\"]" ] },
-                                          "fornat": { "add": [ "PDF" ] },
-                                          "majorVersion": { "add": [ 2 ] },
-                                          "minorVersion": { "add": [ 10 ] },
-                                          "category": { "add": [ "Charts" ] },
-                                          "series": { "add": [ "A" ] },
-                                          "instance": { "add": [ "1" ] }
-                                        }
-                                      }
-                                    ]
+                                  "rule": {
+                                    "id": "additional-fields",
+                                    "enabled": true,
+                                    "if": { "id": "doc-1" },
+                                    "then": {
+                                      "authority": { "add": [ "UKHO" ] },
+                                      "region": { "add": [ "$path:properties[\"region\"]" ] },
+                                      "format": { "add": [ "PDF" ] },
+                                      "majorVersion": { "add": [ 2 ] },
+                                      "minorVersion": { "add": [ 10 ] },
+                                      "category": { "add": [ "Charts" ] },
+                                      "series": { "add": [ "A" ] },
+                                      "instance": { "add": [ "1" ] }
+                                    }
                                   }
                                 }
                                 """);
@@ -98,7 +90,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
             document.Authority.ShouldBe(new[] { "ukho" });
             document.Region.ShouldBe(new[] { "europe" });
-            document.Fornat.ShouldBe(new[] { "pdf" });
+            document.Format.ShouldBe(new[] { "pdf" });
             document.MajorVersion.ShouldBe(new[] { 2 });
             document.MinorVersion.ShouldBe(new[] { 10 });
             document.Category.ShouldBe(new[] { "charts" });

@@ -22,7 +22,7 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
         public SortedSet<string> Region { get; private set; } = new(StringComparer.Ordinal);
 
         [JsonInclude]
-        public SortedSet<string> Fornat { get; private set; } = new(StringComparer.Ordinal);
+        public SortedSet<string> Format { get; private set; } = new(StringComparer.Ordinal);
 
         [JsonInclude]
         public SortedSet<int> MajorVersion { get; private set; } = new();
@@ -79,14 +79,14 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
             AddRegion(region);
         }
 
-        public void AddFornat(string? fornat)
+        public void AddFormat(string? format)
         {
-            AddNormalizedStringValue(Fornat, fornat);
+            AddNormalizedStringValue(Format, format);
         }
 
-        public void SetFornat(string? fornat)
+        public void SetFormat(string? format)
         {
-            AddFornat(fornat);
+            AddFormat(format);
         }
 
         public void AddMajorVersion(int? majorVersion)
