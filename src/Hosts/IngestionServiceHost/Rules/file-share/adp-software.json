@@ -1,30 +1,21 @@
 {
   "schemaVersion": "1.0",
   "rule": {
-    "id": "avcs-bespoke-bess",
-    "description": "AVCS bespoke BESS exchange set output.",
+    "id": "aenp-data",
+    "description": "AENP data releases",
     "if": {
       "all": [
         {
           "path": "properties[\"businessunitname\"]",
-          "eq": "avcs-bespokeexchangesets"
-        },
-        {
-          "path": "properties[\"exchange set type\"]",
-          "exists": true
+          "eq": "aenp"
         }
       ]
     },
     "then": {
       "keywords": {
         "add": [
-          "avcs",
-          "enc",
-          "data",
-          "tpm",
-          "s57",
-          "aio",
-          "$path:properties[\"frequency\"]"
+          "aenp",
+          "ukho"
         ]
       },
       "authority": {
@@ -32,25 +23,19 @@
           "ukho"
         ]
       },
-      "format": {
-        "add": [
-          "$path:properties[\"media type\"]"
-        ]
-      },
       "category": {
         "add": [
-          "exchange set"
+          "aenp"
         ]
       },
       "series": {
         "add": [
-          "avcs",
-          "base"
+          "aenp"
         ]
       },
       "instance": {
         "add": [
-          "$path:properties[\"id\"]"
+          "$path:properties[\"product id\"]"
         ]
       },
       "majorVersion": {
@@ -60,12 +45,12 @@
       },
       "minorVersion": {
         "add": [
-          "toInt($path:properties[\"week number\"])"
+          "toInt($path:properties[\"edition\"])"
         ]
       },
       "searchText": {
         "add": [
-          "bess output"
+          "aenp data release"
         ]
       }
     }

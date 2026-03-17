@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "rule": {
+    "id": "navpac",
+    "description": "ADP NavPac releases",
+    "if": {
+      "all": [
+        {
+          "path": "properties[\"businessunitname\"]",
+          "eq": "adp"
+        },
+        {
+          "path": "properties[\"navpac version\"]",
+          "exists": true
+        }
+      ]
+    },
+    "then": {
+      "keywords": {
+        "add": [
+          "software",
+          "navpac",
+          "hmnao"
+        ]
+      },
+      "authority": {
+        "add": [
+          "hmnao"
+        ]
+      },
+      "category": {
+        "add": [
+          "software"
+        ]
+      },
+      "series": {
+        "add": [
+          "navpac"
+        ]
+      },
+      "instance": {
+        "add": [
+          "$path:properties[\"navpac version\"]"
+        ]
+      },
+      "searchText": {
+        "add": [
+          "hmnao navpac release"
+        ]
+      }
+    }
+  }
+}

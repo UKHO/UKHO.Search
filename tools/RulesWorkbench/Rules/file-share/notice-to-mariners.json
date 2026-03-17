@@ -1,29 +1,24 @@
 {
   "schemaVersion": "1.0",
   "rule": {
-    "id": "avcs-bespoke-bess",
-    "description": "AVCS bespoke BESS exchange set output.",
+    "id": "notice-to-mariners",
+    "description": "Notice to Mariners",
     "if": {
       "all": [
         {
           "path": "properties[\"businessunitname\"]",
-          "eq": "avcs-bespokeexchangesets"
-        },
-        {
-          "path": "properties[\"exchange set type\"]",
-          "exists": true
+          "eq": "maritimesafetyinformation"
         }
       ]
     },
     "then": {
       "keywords": {
         "add": [
-          "avcs",
-          "enc",
-          "data",
-          "tpm",
-          "s57",
-          "aio",
+          "ntm",
+          "safety",
+          "maritime",
+          "notice",
+          "mariners",
           "$path:properties[\"frequency\"]"
         ]
       },
@@ -32,25 +27,19 @@
           "ukho"
         ]
       },
-      "format": {
-        "add": [
-          "$path:properties[\"media type\"]"
-        ]
-      },
       "category": {
         "add": [
-          "exchange set"
+          "notice to mariners"
         ]
       },
       "series": {
         "add": [
-          "avcs",
-          "base"
+          "weekly"
         ]
       },
       "instance": {
         "add": [
-          "$path:properties[\"id\"]"
+          "$path:properties[\"data date\"]"
         ]
       },
       "majorVersion": {
@@ -65,7 +54,7 @@
       },
       "searchText": {
         "add": [
-          "bess output"
+          "maritime safety notice to mariners"
         ]
       }
     }
