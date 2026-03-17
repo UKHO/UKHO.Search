@@ -23,6 +23,12 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
             _ = GetOrLoadRuleset();
         }
 
+        internal void Reload()
+        {
+            var next = LoadAndValidate();
+            Interlocked.Exchange(ref _ruleset, next);
+        }
+
         public IReadOnlyDictionary<string, IReadOnlyList<string>> GetRuleIdsByProvider()
         {
             var ruleset = GetOrLoadRuleset();
@@ -44,8 +50,14 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
 
         private ValidatedRuleset GetOrLoadRuleset()
         {
-            _ruleset ??= LoadAndValidate();
-            return _ruleset;
+            return Volatile.Read(ref _ruleset) ?? LoadFirstTime();
+        }
+
+        private ValidatedRuleset LoadFirstTime()
+        {
+            var loaded = LoadAndValidate();
+            var existing = Interlocked.CompareExchange(ref _ruleset, loaded, null);
+            return existing ?? loaded;
         }
 
         private ValidatedRuleset LoadAndValidate()

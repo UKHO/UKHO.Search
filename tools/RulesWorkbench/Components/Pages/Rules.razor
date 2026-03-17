@@ -7,11 +7,13 @@
 @using System.Text.Json.Nodes
 @using RulesWorkbench.Builder
 @using RulesWorkbench.Services
+@using UKHO.Search.Infrastructure.Ingestion.Rules
 
-@inject RulesSnapshotStore RulesSnapshotStore
+@inject AppConfigRulesSnapshotStore RulesSnapshotStore
 @inject IClipboardService ClipboardService
 @inject IRuleJsonValidator RuleJsonValidator
 @inject IRuleBuilderMapper RuleBuilderMapper
+@inject IRuleConfigurationWriter RuleConfigurationWriter
 
 <PageTitle>Rules</PageTitle>
 
@@ -27,24 +29,14 @@
  <div class="form-text">Filters by id or description. Preserves ruleset order.</div>
 </div>
 
-@if (_snapshot is null)
+@if (_snapshot.Count == 0)
 {
-	<p>Loading rules…</p>
-}
-else if (!_snapshot.IsLoaded)
-{
-	<p><strong>Rules failed to load.</strong></p>
-	<p>@_snapshot.Error?.Message</p>
-	@if (!string.IsNullOrWhiteSpace(_snapshot.Error?.Details))
-	{
-		<pre>@_snapshot.Error!.Details</pre>
-	}
+	<p>No rules found in configuration (prefix <code>rules:</code>).</p>
 }
 else
 {
 	<div class="row g-3">
 		<div class="col-12 col-lg-5">
-			<p class="mb-2"><strong>Provider:</strong> file-share</p>
 			<p class="mb-2"><strong>Rules:</strong> @_rules.Count</p>
 
 			<div class="list-group" style="max-height: 70vh; overflow: auto;">
@@ -55,12 +47,20 @@ else
 							class="list-group-item list-group-item-action @(rule.Index == _selectedRule?.Index ? "active" : "")"
                             @onclick="(() => SelectRule(rule))">
 						<div class="d-flex w-100 justify-content-between">
-							<span class="fw-semibold">@(rule.Id ?? "(no id)")</span>
+                            <span class="fw-semibold">@rule.Provider:@(rule.RuleId ?? "(no id)")</span>
 							<small>#@rule.Index</small>
 						</div>
-						@if (!string.IsNullOrWhiteSpace(rule.Description))
+                      @if (!rule.IsValid)
 						{
-							<div class="text-truncate">@rule.Description</div>
+							<div class="text-danger text-truncate">Invalid: @rule.ErrorMessage</div>
+						}
+						else
+						{
+                          var description = TryGetDescription(rule.RuleJson);
+							@if (!string.IsNullOrWhiteSpace(description))
+							{
+								<div class="text-truncate">@description</div>
+							}
 						}
 					</button>
 				}
@@ -76,18 +76,25 @@ else
 			{
 				<div class="d-flex align-items-center justify-content-between mb-2">
 					<div>
-						<div class="fw-semibold">@(_selectedRule.Id ?? "(no id)")</div>
-						@if (!string.IsNullOrWhiteSpace(_selectedRule.Description))
+                     <div class="fw-semibold">@_selectedRule.Provider:@(_selectedRule.RuleId ?? "(no id)")</div>
+						<div class="text-muted">@_selectedRule.Key</div>
+						@if (!_selectedRule.IsValid)
 						{
-							<div class="text-muted">@_selectedRule.Description</div>
+							<div class="text-danger">Invalid: @_selectedRule.ErrorMessage</div>
 						}
 					</div>
                     <div class="d-flex gap-2">
 						<button class="btn btn-outline-secondary btn-sm" @onclick="CopySelectedRuleJsonAsync">Copy JSON</button>
                       <button class="btn btn-outline-primary btn-sm" @onclick="EnterJsonEditMode">JSON</button>
 						<button class="btn btn-outline-primary btn-sm" @onclick="EnterBuilderMode" disabled="@(!_canEnterBuilderMode)">Builder</button>
+                      <button class="btn btn-success btn-sm" @onclick="SaveRuleAsync" disabled="@(!_canSave)">Save</button>
 					</div>
 				</div>
+
+				@if (!string.IsNullOrWhiteSpace(_saveStatusMessage))
+				{
+					<div class="alert @_saveStatusCssClass" style="white-space: pre-wrap">@_saveStatusMessage</div>
+				}
 
                @if (!_isEditingJson && !_isBuilderMode)
 				{
@@ -203,10 +210,10 @@ else
 
 @code
 {
-	private FileShareRulesSnapshot? _snapshot;
+  private IReadOnlyList<RulesWorkbenchRuleEntry> _snapshot = Array.Empty<RulesWorkbenchRuleEntry>();
 	private string _query = string.Empty;
-	private IReadOnlyList<RuleSummary> _rules = Array.Empty<RuleSummary>();
-	private RuleSummary? _selectedRule;
+ private IReadOnlyList<RulesWorkbenchRuleEntry> _rules = Array.Empty<RulesWorkbenchRuleEntry>();
+	private RulesWorkbenchRuleEntry? _selectedRule;
 	private string _selectedRuleJson = string.Empty;
 	private bool _isEditingJson;
    private bool _isBuilderMode;
@@ -224,28 +231,31 @@ else
 	private string _builderThenValuesText = string.Empty;
 	private string? _builderIdError;
 	private bool _canApplyBuilder;
+	private bool _canSave;
+	private string? _saveStatusMessage;
+	private string _saveStatusCssClass = "alert-info";
 
 	protected override void OnInitialized()
 	{
-		_snapshot = RulesSnapshotStore.LoadFileShareRules();
-		RefreshRules();
+        RefreshRules();
 	}
 
 	private void RefreshRules()
 	{
-		_rules = RulesSnapshotStore.GetFileShareRuleSummaries(_query);
+      _snapshot = RulesSnapshotStore.GetRules(null);
+		_rules = RulesSnapshotStore.GetRules(_query);
 
 		if (_selectedRule is not null)
 		{
-			_selectedRule = _rules.FirstOrDefault(r => r.Index == _selectedRule.Index);
-           _selectedRuleJson = _selectedRule?.RuleJson.ToJsonString(JsonDisplaySerializerOptions) ?? string.Empty;
+         _selectedRule = _rules.FirstOrDefault(r => r.Index == _selectedRule.Index);
+			_selectedRuleJson = _selectedRule?.RuleJson?.ToJsonString(JsonDisplaySerializerOptions) ?? string.Empty;
 		}
 	}
 
-	private void SelectRule(RuleSummary rule)
+   private void SelectRule(RulesWorkbenchRuleEntry rule)
 	{
 		_selectedRule = rule;
-     _selectedRuleJson = rule.RuleJson.ToJsonString(JsonDisplaySerializerOptions);
+    _selectedRuleJson = rule.RuleJson?.ToJsonString(JsonDisplaySerializerOptions) ?? string.Empty;
        _isEditingJson = false;
       _isBuilderMode = false;
 		_jsonDraft = string.Empty;
@@ -255,6 +265,9 @@ else
 		_builderId = string.Empty;
 		_builderIdError = null;
 		_canApplyBuilder = false;
+       _canSave = false;
+		_saveStatusMessage = null;
+		_saveStatusCssClass = "alert-info";
        StateHasChanged();
 	}
 
@@ -291,6 +304,7 @@ else
 		_jsonValidation = RuleJsonValidator.Validate(_jsonDraft);
 		_canApplyJson = _jsonValidation.IsValid;
       _canEnterBuilderMode = _jsonValidation.IsValid;
+       _canSave = _jsonValidation.IsValid;
 	}
 
 	private void ApplyJsonEdit()
@@ -300,12 +314,13 @@ else
 			return;
 		}
 
-		var result = RulesSnapshotStore.UpdateFileShareRuleJson(_selectedRule.Index, _jsonDraft);
-		_jsonValidation = result;
+       var result = RulesSnapshotStore.UpdateRuleJson(_selectedRule.Provider, _selectedRule.RuleId, _jsonDraft);
+		_jsonValidation = result.IsValid ? RuleJsonValidationResult.Valid() : RuleJsonValidationResult.Invalid(result.ErrorMessage ?? "Invalid JSON.");
 		_canApplyJson = result.IsValid;
-       _canEnterBuilderMode = result.IsValid;
+		_canEnterBuilderMode = result.IsValid;
+		_canSave = result.IsValid;
 
-		if (result.IsValid)
+     if (result.IsValid)
 		{
 			RefreshRules();
 			_selectedRuleJson = _jsonDraft;
@@ -323,7 +338,7 @@ else
 		_isBuilderMode = true;
 		_isEditingJson = false;
 		_builderId = string.Empty;
-		_builderDescription = _selectedRule?.Description ?? string.Empty;
+       _builderDescription = TryGetDescription(_selectedRule?.RuleJson) ?? string.Empty;
 		_builderComposition = CompositionType.All;
 		_builderConditionType = ConditionType.PropertiesEqualsString;
 		_builderConditionPropertyName = string.Empty;
@@ -332,6 +347,16 @@ else
 		_builderThenValuesText = string.Empty;
 		_builderIdError = null;
 		UpdateBuilderJsonDraft();
+	}
+
+	private static string? TryGetDescription(JsonNode? node)
+	{
+		if (node is not JsonObject obj)
+		{
+			return null;
+		}
+
+		return obj["description"]?.GetValue<string?>() ?? obj["Description"]?.GetValue<string?>();
 	}
 
 	private void CancelBuilderMode()
@@ -371,6 +396,40 @@ else
 		_jsonDraft = json.ToJsonString(JsonDisplaySerializerOptions);
 		_jsonValidation = RuleJsonValidator.Validate(_jsonDraft);
 		_canApplyBuilder &= _jsonValidation.IsValid;
+       _canSave = _jsonValidation.IsValid;
+	}
+
+	private async Task SaveRuleAsync()
+	{
+		if (_selectedRule is null)
+		{
+			return;
+		}
+
+		if (!_canSave)
+		{
+			return;
+		}
+
+		_saveStatusMessage = null;
+		_saveStatusCssClass = "alert-info";
+
+		try
+		{
+            var jsonToSave = _isEditingJson || _isBuilderMode ? _jsonDraft : _selectedRuleJson;
+			await RuleConfigurationWriter.SetRuleAsync(_selectedRule.Provider, _selectedRule.RuleId, jsonToSave, CancellationToken.None);
+			await RuleConfigurationWriter.TouchSentinelAsync(CancellationToken.None);
+
+			_saveStatusMessage = "Saved to Azure App Configuration and refresh sentinel updated.";
+			_saveStatusCssClass = "alert-success";
+
+			RefreshRules();
+		}
+		catch (Exception ex)
+		{
+			_saveStatusMessage = $"Save failed: {ex.Message}";
+			_saveStatusCssClass = "alert-danger";
+		}
 	}
 
 	private string? ValidateBuilderId(string id)
@@ -385,8 +444,8 @@ else
 			return "Rule id can contain only letters, digits, '-' and '_'";
 		}
 
-		var existingId = RulesSnapshotStore.GetFileShareRuleSummaries(null)
-			.Any(r => string.Equals(r.Id, id, StringComparison.OrdinalIgnoreCase));
+     var existingId = RulesSnapshotStore.GetRules(null)
+			.Any(r => string.Equals(r.RuleId, id, StringComparison.OrdinalIgnoreCase));
 		if (existingId)
 		{
 			return "Rule id must be unique.";
@@ -407,8 +466,8 @@ else
 			return;
 		}
 
-		var result = RulesSnapshotStore.UpdateFileShareRuleJson(_selectedRule.Index, _jsonDraft);
-		_jsonValidation = result;
+       var result = RulesSnapshotStore.UpdateRuleJson(_selectedRule.Provider, _selectedRule.RuleId, _jsonDraft);
+		_jsonValidation = result.IsValid ? RuleJsonValidationResult.Valid() : RuleJsonValidationResult.Invalid(result.ErrorMessage ?? "Invalid JSON.");
 		if (result.IsValid)
 		{
 			RefreshRules();

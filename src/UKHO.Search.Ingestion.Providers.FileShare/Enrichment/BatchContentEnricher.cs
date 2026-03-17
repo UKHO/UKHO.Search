@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using Microsoft.Extensions.Logging;
+using UKHO.Search.Configuration;
 using UKHO.Search.Ingestion.Pipeline.Documents;
 using UKHO.Search.Ingestion.Requests;
 
@@ -10,16 +11,19 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
         private readonly ILogger<BatchContentEnricher> _logger;
         private readonly IFileShareZipDownloader _zipDownloader;
         private readonly IEnumerable<IBatchContentHandler> _handlers;
+        private readonly IngestionModeOptions _ingestionModeOptions;
 
-        public BatchContentEnricher(IFileShareZipDownloader zipDownloader, IEnumerable<IBatchContentHandler> handlers, ILogger<BatchContentEnricher> logger)
+        public BatchContentEnricher(IFileShareZipDownloader zipDownloader, IEnumerable<IBatchContentHandler> handlers, ILogger<BatchContentEnricher> logger, IngestionModeOptions ingestionModeOptions)
         {
             ArgumentNullException.ThrowIfNull(zipDownloader);
             ArgumentNullException.ThrowIfNull(handlers);
             ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(ingestionModeOptions);
 
             _zipDownloader = zipDownloader;
             _handlers = handlers;
             _logger = logger;
+            _ingestionModeOptions = ingestionModeOptions;
         }
 
         public int Ordinal => 100;
@@ -41,8 +45,13 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
                 var zipFilePath = Path.Combine(workingDirectory, "batch.zip");
                 var extractDirectory = Path.Combine(workingDirectory, "unzipped");
 
-                await DownloadZipFileAsync(batchId, zipFilePath, cancellationToken)
+                var downloaded = await TryDownloadZipFileAsync(batchId, zipFilePath, cancellationToken)
                     .ConfigureAwait(false);
+
+                if (!downloaded)
+                {
+                    return;
+                }
                 try
                 {
                     ExtractZipFileSafely(zipFilePath, extractDirectory);
@@ -96,7 +105,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
             return basePath;
         }
 
-        private async Task DownloadZipFileAsync(string batchId, string zipFilePath, CancellationToken cancellationToken)
+        private async Task<bool> TryDownloadZipFileAsync(string batchId, string zipFilePath, CancellationToken cancellationToken)
         {
             try
             {
@@ -108,12 +117,32 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
                     await stream.CopyToAsync(fileStream, cancellationToken)
                                 .ConfigureAwait(false);
                 }
+
+                return true;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
+                if (_ingestionModeOptions.Mode == IngestionMode.BestEffort && IsZipNotFound(ex))
+                {
+                    _logger.LogWarning(ex, "ZIP not found in FileShare; skipping ZIP enrichment. BatchId={BatchId} IngestionMode={IngestionMode}", batchId, _ingestionModeOptions.Mode);
+                    return false;
+                }
+
                 _logger.LogError(ex, "Failed to download ZIP from FileShare. BatchId={BatchId}", batchId);
                 throw;
             }
+        }
+
+        private static bool IsZipNotFound(Exception ex)
+        {
+            // FileShare client currently surfaces "NotFoundHttpError" via the string representation of the failure.
+            // We keep this detection narrowly scoped to avoid masking other errors.
+            if (ex is InvalidOperationException && ex.Message.Contains("NotFoundHttpError", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private static void ExtractZipFileSafely(string zipFilePath, string extractDirectory)

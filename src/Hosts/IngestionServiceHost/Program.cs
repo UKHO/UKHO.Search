@@ -17,6 +17,9 @@ namespace IngestionServiceHost
             var builder = WebApplication.CreateBuilder(args);
             builder.AddServiceDefaults();
 
+            var ingestionMode = IngestionModeParser.Parse(Environment.GetEnvironmentVariable("ingestionmode"));
+            builder.Services.AddSingleton(new IngestionModeOptions(ingestionMode));
+
             // Reduce noisy Azure SDK client logs (e.g. Azure Storage Queue polling).
             builder.Logging.AddFilter("Azure", LogLevel.Warning);
             builder.Logging.AddFilter("Azure.Core", LogLevel.Warning);
@@ -54,6 +57,8 @@ namespace IngestionServiceHost
             });
 
             var app = builder.Build();
+
+            app.Logger.LogInformation("Ingestion mode resolved as '{IngestionMode}'.", ingestionMode);
 
             using (var scope = app.Services.CreateScope())
             {

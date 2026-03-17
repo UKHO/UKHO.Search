@@ -7,6 +7,8 @@
   </PropertyGroup>
 
 	<ItemGroup>
+     <PackageReference Include="Azure.Data.AppConfiguration" Version="1.7.3" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="8.0.0" />
 		<PackageReference Include="Aspire.Elastic.Clients.Elasticsearch" Version="13.1.0" />
 		<PackageReference Include="Aspire.Azure.Storage.Queues" Version="13.1.2" />
 		<PackageReference Include="Aspire.Azure.Storage.Blobs" Version="13.1.2" />

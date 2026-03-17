@@ -113,7 +113,7 @@ namespace AppHost
 
                         builder.AddConfigurationEmulator(
                             ServiceConfiguration.ServiceGroupName,
-                            [ingestionService, queryService!],
+                            [ingestionService, queryService, rulesWorkbench!],
                             [fileShareEmulator],
                             @"../../../configuration/configuration.json",
                             @"../../../configuration/external-services.json",

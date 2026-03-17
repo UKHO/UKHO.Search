@@ -31,6 +31,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Emulator\" />
+	  <Folder Include="FileShareProvider\Enrichment\" />
 	</ItemGroup>
 
 </Project>
