@@ -12,6 +12,8 @@ Be concise but complete. Prefer current research (Microsoft Learn) for Microsoft
 - Do not interact with git (no branch creation, no git commands) unless explicitly requested.
 - When adding or modifying code in this repo, always follow `.github/instructions/coding-standards.instructions.md`: Allman braces, block-scoped namespaces, one public type per file, and underscore-prefixed private fields. Double-check new files for these conventions before finishing.
 - In this workspace/PowerShell environment, do not use the `rg` (ripgrep) command; assume it isn't available.
+- Avoid clutter in the repository root by placing per-project config files alongside the relevant test or project directories when practical.
+- Do not run Stryker again in this workspace, and remove all Stryker-related configuration/setup files when asked.
 
 ## Blazor Server Guidelines
 - For Blazor Server (Razor Components) pages, explicitly add `@rendermode InteractiveServer` on pages that must handle input/click events; otherwise, pages may render non-interactively even when other pages (e.g., Counter) are interactive.

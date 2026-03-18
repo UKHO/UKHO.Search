@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using UKHO.Search.Infrastructure.Ingestion.Bootstrap;
@@ -45,13 +44,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
         private static ServiceProvider CreateProvider(string contentRootPath)
         {
-            var services = new ServiceCollection();
-
-            services.AddSingleton<IHostEnvironment>(new TestHostEnvironment { ContentRootPath = contentRootPath });
-            services.AddLogging();
-            services.AddIngestionServices();
-
-            return services.BuildServiceProvider();
+            return IngestionRulesTestServiceProviderFactory.Create(contentRootPath);
         }
     }
 }

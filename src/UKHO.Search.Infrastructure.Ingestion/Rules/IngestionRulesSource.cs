@@ -64,11 +64,6 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
                 providerRules[entry.Provider].Add(rule);
             }
 
-            if (providerRules.Count == 0)
-            {
-                throw new IngestionRulesValidationException("No ingestion rules found in configuration under 'rules:'.");
-            }
-
             var dto = new RulesetDto
             {
                 SchemaVersion = IngestionRulesValidator.SupportedSchemaVersion,

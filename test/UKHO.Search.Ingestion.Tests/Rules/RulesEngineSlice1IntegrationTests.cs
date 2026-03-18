@@ -1,9 +1,5 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Shouldly;
-using UKHO.Search.Infrastructure.Ingestion.Injection;
 using UKHO.Search.Ingestion.Pipeline.Documents;
 using UKHO.Search.Ingestion.Providers.FileShare.Enrichment;
 using UKHO.Search.Ingestion.Requests;
@@ -37,23 +33,9 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                                                         }
                                                         """);
 
-                var env = new TestHostEnvironment { ContentRootPath = tempRoot };
-
-                var services = new ServiceCollection();
-                services.AddSingleton<IHostEnvironment>(env);
-                services.AddLogging(b => b.SetMinimumLevel(LogLevel.Debug));
-
-                services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
-                                                                                {
-                                                                                    ["ingestion:fileContentExtractionAllowedExtensions"] = string.Empty
-                                                                                })
-                                                                                .Build());
-
-                services.AddIngestionServices();
-
-                services.AddScoped<IFileShareZipDownloader>(_ => new ThrowingZipDownloader());
-
-                await using var provider = services.BuildServiceProvider();
+                await using var provider = IngestionRulesTestServiceProviderFactory.Create(
+                    tempRoot,
+                    configureServices: services => services.AddScoped<IFileShareZipDownloader>(_ => new ThrowingZipDownloader()));
                 using var scope = provider.CreateScope();
 
                 var providerContext = scope.ServiceProvider.GetRequiredService<IIngestionProviderContext>();
