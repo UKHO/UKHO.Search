@@ -155,26 +155,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
 
                 if (fieldCapsResponse.IsValidResponse && fieldCapsResponse.Fields is not null)
                 {
-                    var fields = fieldCapsResponse.Fields;
-
-                    // These fields should be mapped explicitly (not default dynamic 'text' with '.keyword' multi-fields).
-                    EnsureHasType(fields, "documentId", "keyword");
-                    EnsureHasType(fields, "keywords", "keyword");
-                    EnsureHasType(fields, "authority", "keyword");
-                    EnsureHasType(fields, "region", "keyword");
-                    EnsureHasType(fields, "format", "keyword");
-                    EnsureHasType(fields, "majorVersion", "keyword");
-                    EnsureHasType(fields, "minorVersion", "keyword");
-                    EnsureHasType(fields, "category", "keyword");
-                    EnsureHasType(fields, "series", "keyword");
-                    EnsureHasType(fields, "instance", "keyword");
-                    EnsureHasType(fields, "searchText", "text");
-                    EnsureHasType(fields, "content", "text");
-
-                    // If the index was created via default dynamic mapping, these multi-fields will typically exist.
-                    EnsureAbsent(fields, "keywords.keyword");
-                    EnsureAbsent(fields, "searchText.keyword");
-                    EnsureAbsent(fields, "content.keyword");
+                    ValidateExpectedFieldMappings(fieldCapsResponse.Fields);
 
                     return;
                 }
@@ -187,6 +168,27 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
             }
 
             throw new InvalidOperationException($"Elasticsearch index '{_indexName}' did not return any field capabilities after retries.");
+        }
+
+        internal static void ValidateExpectedFieldMappings<T>(IReadOnlyDictionary<string, IReadOnlyDictionary<string, T>> fields)
+        {
+            // These fields should be mapped explicitly (not default dynamic 'text' with '.keyword' multi-fields).
+            EnsureHasType(fields, "keywords", "keyword");
+            EnsureHasType(fields, "authority", "keyword");
+            EnsureHasType(fields, "region", "keyword");
+            EnsureHasType(fields, "format", "keyword");
+            EnsureHasType(fields, "majorVersion", "keyword");
+            EnsureHasType(fields, "minorVersion", "keyword");
+            EnsureHasType(fields, "category", "keyword");
+            EnsureHasType(fields, "series", "keyword");
+            EnsureHasType(fields, "instance", "keyword");
+            EnsureHasType(fields, "searchText", "text");
+            EnsureHasType(fields, "content", "text");
+
+            // If the index was created via default dynamic mapping, these multi-fields will typically exist.
+            EnsureAbsent(fields, "keywords.keyword");
+            EnsureAbsent(fields, "searchText.keyword");
+            EnsureAbsent(fields, "content.keyword");
         }
 
         private static void EnsureHasType<T>(IReadOnlyDictionary<string, IReadOnlyDictionary<string, T>> fields, string fieldName, string expectedType)

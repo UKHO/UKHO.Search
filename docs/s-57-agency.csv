@@ -1,0 +1,418 @@
+﻿No,Country,,Agency,,,Date,,Status
+,Name,Code,"Agency Name","Code
+Num","Code
+Alpha",Accepted,Amended
+1,Argentina,AR,"Servicio de Hidrografía Naval (SHN)",1,AR,2008-10-16,2019-09-03,Valid
+2,Australia,AU,"Australian Hydrographic Office (AHO)",10,AU,2017-12-31,2020-08-12,Valid
+3,Bahrain,BH,"Hydrographic Survey Directorate (HSD)",20,BH,2008-10-16,2026-01-07,Valid
+4,Bangladesh,BD,"Hydrographic Department",660,BD,2008-10-16,-,Valid
+5,Belgium,BE,"Maritime and Coastal Services – Flemish Hydrography",30,BE,2008-10-16,2023-03-23,Valid
+6,Brazil,BR,"Directorate of Hydrography and Navigation (DHN)",40,BR,2008-10-16,-,Valid
+7,Canada,CA,"Canadian Hydrographic Service (CHS)",50,CA,2008-10-16,-,Valid
+8,Canada,CA,"Canadian Forces",51,C4,2008-10-16,-,Valid
+9,Chile,CL,"Servicio Hidrográfico y Oceanográfico de la Armada (SHOA)",60,CL,2008-10-16,-,Valid
+10,China,CN,"Maritime Safety Administration (MSA)",70,CN,2008-10-16,-,Valid
+11,China,CN,"China Navy Hydrographic Office",71,C1,2008-10-16,2025-11-12,Valid
+12,China,CN,"Hong Kong Special Administrative Region",72,C2,2008-10-16,-,Valid
+13,China,CN,"Macau Special Administrative Region",73,C3,2008-10-16,-,Valid
+14,Colombia,CO,"Ministerio de Defensa Nacional",760,CO,2008-10-16,-,Valid
+15,"Congo (Dem. Rep. of)",CD,"Ministère des Transports et Communications",590,CD,2008-10-16,-,Valid
+16,Croatia,HR,"Hrvatski  Hidrografski Institut",80,HR,2008-10-16,-,Valid
+17,Cuba,CU,"Oficina Nacional de Hidrografia y Geodesia",90,CU,2008-10-16,-,Valid
+18,Cyprus,CY,"Hydrographic Unit of the Department of Lands and Surveys",100,CY,2008-10-16,-,Valid
+19,Denmark,DK,"Geodatastyrelsen (GST)",110,DK,2008-10-16,2019-09-03,Valid
+20,Denmark,DK,"Danish Maritime Authority",111,D1,2008-10-16,2024-06-27,Valid
+21,"Dominican Rep.",DO,"Servicio Hidrográfico y Oceanográfico, ARD",120,DO,2008-10-16,2023-01-26,Valid
+22,Ecuador,EC,"Instituto Oceanográfico de la Armada (INOCAR)",130,EC,2008-10-16,-,Valid
+23,Egypt,EG,"Egyptian Navy Hydrographic Department (ENHD)",140,EG,2008-10-16,2025-05-19,Valid
+24,Estonia,EE,"Estonian Transport Administration (ETA)",870,EE,2008-10-16,2021-12-19,Valid
+25,Fiji,FJ,"Fiji Islands Maritime Safety Administration (FIMSA)",150,FJ,2008-10-16,-,Valid
+26,Finland,FI,"Finnish Transport and Communications Agency (Traficom)",160,FI,2008-10-16,2019-09-16,Valid
+27,France,FR,"Service Hydrographique et Océanographique de la Marine (SHOM)",170,FR,2008-10-16,-,Valid
+28,Germany,DE,"Bundesamt für Seeschifffahrt und Hydrographie (BSH)",180,DE,2008-10-16,2022-12-19,Valid
+29,Greece,GR,"Hellenic Navy Hydrographic Service (HNHS)",190,GR,2008-10-16,-,Valid
+30,Guatemala,GT,"Ministerio de la Defensa Nacional",200,GT,2008-10-16,-,Valid
+31,Guatemala,GT,"Comisión Portuaria Nacional",201,G1,2008-10-16,-,Valid
+32,Iceland,IS,"Icelandic Coast Guard",210,IS,2008-10-16,-,Valid
+33,India,IN,"National Hydrographic Office",220,IN,2014-08-06,-,Valid
+34,Indonesia,ID,"Jawatan Hidro-Oseanografi (JANHIDROS)",230,ID,2008-10-16,-,Valid
+35,Ireland,IE,"Maritime Safety Directorate",990,IE,2008-10-16,-,Valid
+36,"Islamic Rep. of Iran",IR,"Ports and Shipping Organization (PSO)",240,IR,2008-10-16,-,Valid
+37,Italy,IT,"Istituto Idrografico della Marina (IIM)",250,IT,2008-10-16,-,Valid
+38,Jamaica,JM,"Surveys and Mapping Division",1010,JM,2008-10-16,-,Valid
+39,Japan,JP,"Japan Hydrographic and Oceanographic Department (JHOD)",260,JP,2008-10-16,-,Valid
+40,"Korea (DPR of)",KP,"Hydrographic Department",270,KP,2008-10-16,-,Valid
+41,"Korea (Rep. of)",KR,"Korea Hydrographic and Oceanographic Agency (KHOA)",280,KR,2008-10-16,2019-09-03,Valid
+42,Kuwait,KW,"Ministry of Communications",1050,KW,2008-10-16,-,Valid
+43,Latvia,LV,"Maritime Administration of Latvia",1060,LV,2008-10-16,-,Valid
+44,Malaysia,MY,"National Hydrographic Centre",290,MY,2008-10-16,-,Valid
+45,Mauritius,MU,"Ministry of Housing and Land, Hydrographic Unit",1170,MU,2008-10-16,-,Valid
+46,Mexico,MX,"Secretaria de Marina – Armada de Mexico, Direccion General Adjunta de Oceanografia, Hidrografia y Meteorologia",1180,MX,2008-10-16,-,Valid
+47,Monaco,MC,"Direction des Affaires Maritimes",300,MC,2008-10-16,-,Valid
+48,Morocco,MA,"Division Hydrographie et Cartographie (DHC) de la Marine Royale",1200,MA,2008-10-16,-,Valid
+49,Mozambique,MZ,"Instituto Nacional de Hidrografia e Navegação (INAHINA)",1210,MZ,2008-10-16,-,Valid
+50,Myanmar,MM,"Central Naval Hydrographic Depot (CNHD)",1220,MM,2008-10-16,-,Valid
+51,Netherlands,NL,"Koninklijke Marine Dienst der Hydrografie / CZSK",310,NL,2008-10-16,-,Valid
+52,"New Zealand",NZ,"Land Information New Zealand (LINZ)",320,NZ,2008-10-16,-,Valid
+53,Nigeria,NG,"Nigerian Navy Hydrographic Office",330,NG,2008-10-16,-,Valid
+54,Norway,NO,"Norwegian Hydrographic Service",340,NO,2008-10-16,-,Valid
+55,Norway,NO,"Electronic Chart Centre",341,N1,2008-10-16,-,Valid
+56,Norway,NO,"Norwegian Defence",342,N2,2008-10-16,-,Valid
+57,Oman,OM,"National Hydrographic  Office",350,OM,2008-10-16,-,Valid
+58,Pakistan,PK,"Pakistan Hydrographic Department",360,PK,2008-10-16,-,Valid
+59,"Papua New Guinea",PG,"Hydrographic Division, National Maritime Safety Authority (NMSA)",370,PG,2008-10-16,2019-09-04,Valid
+60,Peru,PE,"Dirección  de Hidrografía y Navegación (DHN)",380,PE,2008-10-16,-,Valid
+61,Philippines,PH,"National Mapping and Resource Information Authority, Coast & Geodetic Survey Department",390,PH,2008-10-16,-,Valid
+62,Poland,PL,"Biuro Hydrograficzne",400,PL,2008-10-16,-,Valid
+63,Portugal,PT,"Instituto Hidrografico, Portugal (IHP)",410,PT,2008-10-16,-,Valid
+64,Qatar,QA,"Urban Planning & Development Authority, Hydrographic Section",1290,QA,2008-10-16,-,Valid
+65,Romania,RO,"Directia Hidrografica Maritima",1300,RO,2008-10-16,-,Valid
+66,"Russian Federation",RU,"Head Department of Navigation & Oceanography (DNO)",420,RU,2008-10-16,-,Valid
+67,"Saudi Arabia",SA,"General Directorate of Military Survey (GDMS)",1360,SA,2008-10-16,-,Valid
+68,Serbia,RS,"Direkcija Za Unutrašnje Plovne Puteve",580,RS,2008-10-16,-,Valid
+69,Singapore,SG,"Hydrographic Department, Maritime and Port Authority (MPA)",430,SG,2008-10-16,-,Valid
+70,Slovenia,SI,"Ministry of Transport Maritime  Office",1400,SI,2008-10-16,-,Valid
+71,"South Africa (Rep. of)",ZA,"South African Navy Hydrographic Office (SANHO)",440,ZA,2008-10-16,-,Valid
+72,Spain,ES,"Instituto Hidrográfico de la Marina (IHM)",450,ES,2008-10-16,-,Valid
+73,"Sri Lanka",LK,"Sri Lanka National Hydrographic Office (SLNHO)",460,LK,2008-10-16,2025-03-28,Valid
+74,Suriname,SR,"Maritieme Autoriteit Suriname (MAS)",470,SR,2008-10-16,-,Valid
+75,Sweden,SE,"Sjöfartsverket, Swedish Maritime Administration",480,SE,2008-10-16,-,Valid
+76,"Syrian Arab Republic",SY,"General Directorate of Ports",490,SY,2008-10-16,-,Valid
+77,Thailand,TH,"Hydrographic Department, Royal Thai Navy",500,TH,2008-10-16,-,Valid
+78,Tonga,TO,"Tonga Defence Services",505,TO,2008-10-16,-,Valid
+79,"Trinidad & Tobago",TT,"Trinidad & Tobago Hydrographic Unit",510,TT,2008-10-16,-,Valid
+80,Tunisia,TN,"Service Hydrographique et Océanographique (SHO), Armée de Mer",1470,TN,2008-10-16,-,Valid
+81,Türkiye,TR,"Seyir, Hidrografi ve Osinografi Dairesi Baskanligi, Office of Navigation, Hydrography and Oceanography",520,TR,2008-10-16,2022-07-13,Valid
+82,Ukraine,UA,"State Hydrographic Service of Ukraine",1490,UA,2008-10-16,-,Valid
+83,"United Arab Emirates",AE,"Ministry of Communications",530,AE,2008-10-16,-,Valid
+84,UK,GB,"United Kingdom Hydrographic Office",540,GB,2008-10-16,-,Valid
+85,USA,US,"Office of Coast Survey, National Ocean Service, National Oceanic and Atmospheric Administration (NOS)",550,US,2008-10-16,-,Valid
+86,USA,US,"National Geospatial-Intelligence Agency Department of Defense (NGA)",551,U1,2008-10-16,-,Valid
+87,USA,US,"Commander, Naval Meteorology and Oceanography Command (CNMOC)",552,U2,2008-10-16,-,Valid
+88,USA,US,"U.S. Army Corps of Engineers (USACE)",553,U3,2008-10-16,-,Valid
+89,Uruguay,UY,"Oceanographic, Hydrographic and Meteorological Service of the Uruguayan Navy",560,UY,2008-10-16,2019-09-04,Valid
+90,Venezuela,VE,"Commandancia General de la Armada, Dirección de Hidrografía y Navegación (DHN)",570,VE,2008-10-16,-,Valid
+91,Albania,AL,"Albanian Hydrographic Service",600,AL,2008-10-16,2022-05-18,Valid
+92,Angola,AO,"Not known",620,AO,2008-10-16,2022-01-14,Valid
+93,Anguilla,AI,"Ministry of Infrastructure, Communications & Utilities",625,AI,2008-10-16,-,Valid
+94,"Antigua and Barbuda",AG,"Antigua and Barbuda Port Authority",630,AG,2008-10-16,-,Valid
+95,Aruba,AW,"Netherlands ENC charting responsibility",640,AW,2008-10-16,-,Valid
+96,Azerbaijan,AZ,"Azerbaijan Navy",645,AZ,2008-10-16,-,Valid
+97,Bahamas,BS,"Port Department, Ministry of Transport and Aviation",650,BS,2008-10-16,2025-06-02,Valid
+98,Barbados,BB,"Barbados Port Inc",670,BB,2008-10-16,-,Valid
+99,Belize,BZ,"Belize Port Authority",680,BZ,2008-10-16,-,Valid
+100,Benin,BJ,"Direction Générale du Port Autonome de Cotonou",690,BJ,2008-10-16,-,Valid
+101,Bermuda,BM,"Ministry of Works, Engineering and Housing",695,BM,2008-10-16,-,Valid
+102,Bolivia,BO,"Servicio  Nacional  de  Hidrografia  Naval  de  Bolivia",700,BO,2008-10-16,-,Valid
+103,"British Virgin Islands",VG,"Chief Minister’s Office",705,VG,2008-10-16,-,Valid
+104,"Brunei Darussalam",BN,"Department of Marine",710,BN,2008-10-16,2015-05-07,Valid
+105,"Brunei Darussalam",BN,"Survey Department",715,B2,2008-10-16,2015-05-07,Valid
+106,Bulgaria,BG,"Hidrografska Sluzhba Pri Ministerstvo Na Otbranata",720,BG,2008-10-16,2019-09-03,Valid
+107,Cambodia,KH,"Service de l’Hydrologie et des grands barrages",730,KH,2008-10-16,-,Valid
+108,Cameroon,CM,"Port Autonome de Douala (PAD)",740,CM,2008-10-16,-,Valid
+109,"Cabo Verde",CV,"Instituto Maritímo Portuário (IMP)",750,CV,2008-10-16,2023-11-28,Valid
+110,"The Cayman Islands",KY,"Governor’s Office",755,KY,2008-10-16,-,Valid
+111,Comoros,KM,"Not Known",770,KM,2008-10-16,-,Valid
+112,"Congo (Rep. of)",CG,"Port Autonome de Pointe Noire",780,CG,2008-10-16,-,Valid
+113,"Cook Islands",CK,"Maritime Division, Ministry of Tourism and Transport",790,CK,2008-10-16,-,Valid
+114,Costa-Rica,CR,"Instituto Geografico Nacional (IGN)",800,CR,2008-10-16,-,Valid
+115,"Côte d’Ivoire",CI,"Direction Générale du Port Autonome d’Abidjan",810,CI,2008-10-16,-,Valid
+116,Djibouti,DJ,"Ministère de l’Equipement et des  Transports, Direction des Affaires Maritimes",820,DJ,2008-10-16,-,Valid
+117,Dominica,DM,"Not known",830,DM,2008-10-16,-,Valid
+118,"El Salvador",SV,"Gerente de Geodesia, Centro Nacional de Registros, Instituto Geografico y del Catastro Nacional",840,SV,2008-10-16,-,Valid
+119,"Equatorial Guinea",GQ,"Ministry of Transportation and Civil Aviation",850,GQ,2008-10-16,-,Valid
+120,Eritrea,ER,"Department of Marine Transport",860,ER,2008-10-16,-,Valid
+121,Ethiopia,ET,"Ministry of Transport and Communications Marine Transport Authority",880,ET,2008-10-16,-,Valid
+122,Gabon,GA,"Direction Générale de la Marine Marchande",890,GA,2008-10-16,-,Valid
+123,Gambia,GM,"Gambia Ports Authority",900,GM,2008-10-16,2025-03-28,Valid
+124,Georgia,GE,"Maritime Transport Agency of Georgia, Division of Hydrographic Service",905,GE,2008-10-16,2025-10-23,Valid
+125,Ghana,GH,"Ghana Ports and Harbours Authority",910,GH,2008-10-16,2019-09-04,Valid
+126,Grenada,GD,"Grenada Ports Authority",920,GD,2008-10-16,-,Valid
+127,Guinea,GN,"Port Autonome de Conakry",930,GN,2008-10-16,-,Valid
+128,Guinea-Bissau,GW,"Administração dos Portos da Guiné-Bissau",940,GW,2008-10-16,-,Valid
+129,Guyana,GY,"Maritime Administration Department Hydrographic Office",950,GY,2008-10-16,2019-09-03,Valid
+130,Haiti,HT,"Service Maritime et de Navigation d’Haïti",960,HT,2008-10-16,-,Valid
+131,Honduras,HN,"Empresa Nacional Portuaria",970,HN,2008-10-16,-,Valid
+132,Iraq,IQ,"Marine Department, General  Company  for Iraki Ports",980,IQ,2008-10-16,2022-01-14,Valid
+133,Israel,IL,"Administration of Shipping and Ports",1000,IL,2008-10-16,-,Valid
+134,Israel,IL,"Survey of Israel",1001,I1,2008-10-16,-,Valid
+135,Israel,IL,"Israel Navy",1002,I2,2008-10-16,-,Valid
+136,Jordan,JO,"The Ports Corporation, Jordan",1020,JO,2008-10-16,-,Valid
+137,Kenya,KE,"Survey of Kenya, Kenya  Ports Authority",1030,KE,2008-10-16,2021-07-01,Valid
+138,Kiribati,KI,"Ministry of Transport and Communications",1040,KI,2008-10-16,2024-05-16,Valid
+139,Lebanon,LB,"Lebanese Navy Hydrographic Service",1070,LB,2008-10-16,2021-07-13,Valid
+140,Liberia,LR,"Ministry of Lands, Mines and Energy",1080,LR,2008-10-16,-,Valid
+141,"Libyan Arab Jamahiriya",LY,"Not known",1090,LY,2008-10-16,-,Valid
+142,Lithuania,LT,"Lithuanian Transport Safety Administration",1100,LT,2008-10-16,2026-01-30,Valid
+143,Madagascar,MG,"Institut Géographique et Hydrographique National",1110,MG,2008-10-16,-,Valid
+144,Malawi,MW,"Hydrographic Survey Unit",1120,MW,2008-10-16,-,Valid
+145,Malawi,MW,"Marine Department",1121,M2,2008-10-16,-,Valid
+146,Maldives,MV,"Department of Information and Broadcasting",1130,MV,2008-10-16,-,Valid
+147,Malta,MT,"Malta Maritime Authority Ports Directorate, Hydrographic Unit",1140,MT,2008-10-16,2019-09-03,Valid
+148,"Marshall Islands",MH,"Ministry of Resources and Development",1150,MH,2008-10-16,-,Valid
+149,Mauritania,MR,"Ministère de la Défense Nationale",1160,MR,2008-10-16,-,Valid
+150,"Micronesia (Federated States of)",FM,"Not known",1190,FM,2008-10-16,-,Valid
+151,Montenegro,ME,"Institute of Hydrometeorology and Seismology",1226,M1,2014-02-10,-,Valid
+152,Montserrat,MS,"Montserrat Port Authority",1197,M3,2008-10-16,-,Valid
+153,Namibia,NA,"Ministry of Works, Transports and Communications",1230,NA,2008-10-16,-,Valid
+154,Nauru,NR,"Nauru Phosphate Corporation",1240,NR,2008-10-16,-,Valid
+155,Nicaragua,NI,"Ministero  de  la  Presidencia, Instituto  Nicaragüense  de  Estudios  Territoriales, Dirección de Recursos Hídricos, Departamento de Hidrografía",1250,NI,2008-10-16,-,Valid
+156,Niue,NU,"Lands and Survey Division",1255,NU,2008-10-16,-,Valid
+157,Palau,PW,"Bureau of Domestic Affairs",1260,PW,2008-10-16,-,Valid
+158,Panama,PA,"Autoridad  Maritima  de  Panama",1270,PA,2008-10-16,2026-01-30,Valid
+159,Paraguay,PY,"Fuerzas Armadas de la Nacion, Armada Paraguaya, Comando de apoyo de combate",1280,PY,2008-10-16,-,Valid
+160,"Saint Kitts and Nevis",KN,"St. Christopher Air and Sea Ports Authority, Maritime Division",1310,KN,2008-10-16,-,Valid
+161,"Saint Lucia",LC,"Saint Lucia Air and Sea Ports Authority, Division of Maritime Affairs",1320,LC,2008-10-16,-,Valid
+162,"Saint Vincent and the Grenadines",VC,"Ministry of Communications and Works",1330,VC,2008-10-16,-,Valid
+163,Samoa,WS,"Ministry of Transport, Marine and Shipping Division",1340,WS,2008-10-16,2019-10-08,Valid
+164,"Sao Tome and Principe",ST,"Not known",1350,ST,2008-10-16,-,Valid
+165,Senegal,SN,"Service de sécurité maritime du Sénégal, Port autonome de Dakar",1370,SN,2008-10-16,-,Valid
+166,Seychelles,SC,"Hydrographic and Topographic Brigade of the Seychelles",1380,SC,2008-10-16,2019-09-04,Valid
+167,"Sierra Leone",SL,"Sierra Leone Maritime Administration, Sierra Leone Ports Authority",1390,SL,2008-10-16,-,Valid
+168,"Solomon Islands",SB,"Solomon Islands Maritime Authority (SIMA)",1410,SB,2008-10-16,2025-01-31,Valid
+169,Somalia,SO,"Somali Hydrographic Office",1420,SO,2008-10-16,-,Valid
+170,Sudan,SD,"Survey Department",1430,SD,2008-10-16,-,Valid
+171,Tanzania,TZ,"Hydrographic Surveys Section, Surveys and Mapping Division, Ministry of Lands, Housing and Human Settlements Development",1440,TZ,2008-10-16,-,Valid
+172,Tanzania,TZ,"Tanzania Ports Authority (TPA)",1441,T1,2008-10-16,-,Valid
+173,Togo,TG,"University of Lome, Research Department",1450,TG,2008-10-16,-,Valid
+174,Tokelau,TK,"Not known",1460,TK,2008-10-16,-,Valid
+175,"Turks & Caicos Islands",TC,"Governor’s Office",1475,TC,2008-10-16,-,Valid
+176,Tuvalu,TV,"Ministry of Labour, Works and Communications",1480,TV,2008-10-16,-,Valid
+177,Uganda,UG,"Commissioner for Transport Regulation",1485,UG,2008-10-16,-,Valid
+178,Vanuatu,VU,"Vanuatu Hydrographic Unit",1500,VU,2008-10-16,2019-09-04,Valid
+179,"Viet Nam",VN,"Viet Nam Maritime People's Navy",1510,VN,2008-10-16,2019-09-04,Valid
+180,"Viet Nam",VN,"Vietnam Maritime Safety Corporation (VMSC)",1511,V1,2008-10-16,2025-05-20,Valid
+181,Yemen,YE,"Ministry of Transport, Yemen Ports Authority, Maritime Affairs Authority",1520,YE,2008-10-16,-,Valid
+182,,,"International Hydrographic Organization (IHO)",1810,AA,2008-10-16,-,Valid
+183,,,"Co-operating Hydrographic Offices in the Malacca and Singapore Straits (Indonesia, Japan, Malaysia and Singapore)",2010,MS,2008-10-16,-,Valid
+184,,,"International Centre for ENC (IC-ENC)",2030,IC,2008-10-16,-,Valid
+185,,,"East Asia Hydrographic Commission (EAHC)",2040,EA,2008-10-16,-,Valid
+186,,,"Antarctic Treaty Consultative Committee",1600,QM,2008-10-16,-,Valid
+187,,,"International Radio Consultative Committee",1610,QN,2008-10-16,-,Valid
+188,,,"Comite International Radio-Maritime",1620,QO,2008-10-16,-,Valid
+189,,,"IHO Data Centre for Digital Bathymetry",1630,QP,2008-10-16,-,Valid
+190,,,"Digital Geographic Information Working Group",1640,QQ,2008-10-16,-,Valid
+191,,,"European Communities Commission",1650,QR,2008-10-16,-,Valid
+192,,,"European Harbour Masters Association",1660,QS,2008-10-16,-,Valid
+193,,,"Food and Agriculture Organization",1670,QT,2008-10-16,-,Valid
+194,,,"Federation Internationale des Geometres",1680,QU,2008-10-16,-,Valid
+195,,,"International Atomic Energy Agency",1690,QV,2008-10-16,-,Valid
+196,,,"International Association of Geodesy",1700,QW,2008-10-16,-,Valid
+197,,,"International Association of Institutes of Navigation",1710,QX,2008-10-16,-,Valid
+198,,,"International Association of Lighthouse Authorities",1720,QY,2008-10-16,-,Valid
+199,,,"International Association of Ports and Harbours",1730,QZ,2008-10-16,-,Valid
+200,,,"International Cartographic Association",1740,XA,2008-10-16,-,Valid
+201,,,"International Cable Protection Committee",1750,XB,2008-10-16,-,Valid
+202,,,"International Chamber of Shipping",1760,XC,2008-10-16,-,Valid
+203,,,"International Commission for the Scientific Exploration of the Mediterranean",1770,XD,2008-10-16,-,Valid
+204,,,"International Council of Scientific Unions",1780,XE,2008-10-16,-,Valid
+205,,,"International Electrotechnical Commission",1790,XF,2008-10-16,-,Valid
+206,,,"International Geographical Union",1800,XG,2008-10-16,-,Valid
+207,,,"International Maritime Academy",1820,XH,2008-10-16,-,Valid
+208,,,"International Maritime Organization",1830,XI,2008-10-16,-,Valid
+209,,,"International Maritime Satellite Organization",1840,XJ,2008-10-16,-,Valid
+210,,,"Intergovernmental Oceanographic Commission",1850,XK,2008-10-16,-,Valid
+211,,,"International Organization for Standardization",1860,XL,2008-10-16,-,Valid
+212,,,"International Society for Photogrammetry and Remote Sensing",1870,XM,2008-10-16,-,Valid
+213,,,"International Telecommunication Union",1880,XN,2008-10-16,-,Valid
+214,,,"International Union of Geodesy and Geophysics",1890,XO,2008-10-16,-,Valid
+215,,,"International Union of Surveying and Mapping",1900,XP,2008-10-16,-,Valid
+216,,,"Oil Companies International Marine Forum",1910,XQ,2008-10-16,-,Valid
+217,,,"Pan American Institute of Geography and History",1920,XR,2008-10-16,-,Valid
+218,,,"Radio Technical Commission for Maritime Services",1930,XS,2008-10-16,-,Valid
+219,,,"Scientific Commission on Antarctic Research",1940,XT,2008-10-16,-,Valid
+220,,,"The Hydrographic Society",1950,XU,2008-10-16,-,Valid
+221,,,"World Meteorological Organization",1960,XV,2008-10-16,-,Valid
+222,,,"United Nations, Office for Ocean Affairs and Law of the Sea",1970,XW,2008-10-16,-,Valid
+223,,,"PRIMAR Regional ENC Coordinating Centre (PRIMAR RENC)",2020,PM,2008-10-16,2023-09-12,Valid
+224,,,ARAMCO,6682,1A,2008-10-16,-,Valid
+225,,,"UKHO test and sample datasets",0,1B,2008-10-16,-,Valid
+226,,,CARIS,7196,1C,2008-10-16,-,Valid
+227,,,"Amt fuer Geoinformationswesen der Bundeswehr",7453,1D,2008-10-16,-,Valid
+228,,,"TerraNautical Data",7710,1E,2008-10-16,-,Valid
+229,,,"Force Technology, Danish Maritime Institute",7967,1F,2008-10-16,-,Valid
+230,,,"OVF (General Directorate of Water Management)",7969,1H,2008-10-16,-,Valid
+231,,,"Navionics S.p.A.",7970,1I,2008-10-16,-,Valid
+232,,,"Navionics test and sample datasets",7971,1J,2008-10-16,-,Valid
+233,,,"Kingway Technology Co",7972,1K,2008-10-16,-,Valid
+234,,,"Laser-Scan Ltd",7973,1L,2008-10-16,-,Valid
+235,,,"Channel of Moscow",7974,1M,2008-10-16,-,Valid
+236,,,"Nautical Data International, Inc.",7975,1N,2008-10-16,-,Valid
+237,,,"Offshore Systems Ltd.",7976,1O,2008-10-16,-,Valid
+238,,,"Port Of London Authority",7977,1P,2008-10-16,-,Valid
+239,,,"Quality Positioning Services",7978,1Q,2008-10-16,-,Valid
+240,,,Rijkswaterstaat,7979,1R,2008-10-16,-,Valid
+241,,,"Austrian Supreme Shipping Authority",7980,1S,2008-10-16,-,Valid
+242,,,"UKHO - private production",7981,1T,2008-10-16,-,Valid
+243,,,"ENC Center, National Taiwan Ocean University",7982,1U,2008-10-16,-,Valid
+244,,,"The Volga-Baltic State Territorial Department for Waterways",7983,1V,2008-10-16,-,Valid
+245,,,"Wasser- und Schiffahrtsverwaltung des Bundes - Direktion SW",7984,1W,2008-10-16,-,Valid
+246,,,"Noorderzon Software",7985,1X,2008-10-16,-,Valid
+247,,,"Tér-Team Ltd., Budapest",7986,1Y,2008-10-16,-,Valid
+248,,,"JS Co Geocentre-Consulting, Moscow",7987,1Z,2008-10-16,-,Valid
+249,,,"Azienda Regionale Navigazione Interna (ARNI)",10794,2A,2008-10-16,-,Valid
+250,,,"Bundesanstalt für Wasserbau, Karlsruhe",11051,2B,2008-10-16,-,Valid
+251,,,"IIC Technologies",11308,2C,2008-10-16,-,Valid
+252,,,"SVP, s.p., OZ Bratislava",11565,2D,2008-10-16,-,Valid
+253,,,"Euronav Ltd UK",11822,2E,2008-10-16,-,Valid
+254,,,"DMER, Zagreb",12055,2H,2008-10-16,-,Valid
+255,,,"Innovative Navigation GmbH",12056,2I,2008-10-16,-,Valid
+256,,,C-Map,12083,2J,2008-10-16,2019-09-05,Valid
+257,,,Kamvodput,12084,2K,2008-10-16,-,Valid
+258,,,"MARIN (Maritime Research Institute Netherlands)",12060,2M,2008-10-16,-,Valid
+259,,,"Hochschule Bremen (Nautik)",12061,2N,2008-10-16,-,Valid
+260,,,"PLOVPUT Beograd",12063,2P,2008-10-16,-,Valid
+261,,,"Port of Rotterdam",12065,2R,2008-10-16,-,Valid
+262,,,"Ssangyong Information & Communications Corp.",12079,2S,2008-10-16,-,Valid
+263,,,"Wartsila Voyage Limited",12093,2T,2008-10-16,2019-10-18,Valid
+264,,,"ULTRANS TM srl",12094,2U,2008-10-16,-,Valid
+265,,,"The Volga State Territorial Department for Waterways",12095,2V,2008-10-16,-,Valid
+266,,,"via donau - Osterreichische Wasserstrassen-Gesellschaft mbH",12096,2W,2008-10-16,-,Valid
+267,,,"e-MLX, Korea",12097,2X,2008-10-16,-,Valid
+268,,,"Azovo-Donskoe State Basin Waterway and Shipping Authority",14906,3A,2008-10-16,-,Valid
+269,,,"AEMDR, Rousse, Bulgaria",15163,3B,2008-10-16,-,Valid
+270,,,"Command & Control Technologies GmbH",15420,3C,2008-10-16,-,Valid
+271,,,"Development Centre for Ship Technology and Transport Systems, Germany",15934,3E,2008-10-16,-,Valid
+272,,,ICAN,16194,3I,2008-10-16,-,Valid
+273,,,"A.F.D.J. R.A. Galati",16203,3R,2008-10-16,-,Valid
+274,,,Leidos,16204,3S,2008-10-16,2020-03-31,Valid
+275,,,"Periskal bv",16205,3T,2008-10-16,2026-02-26,Valid
+276,,,"US Army Corps of Engineers - Channel Condition Data",16206,3U,2008-10-16,-,Valid
+277,,,"The Volga-Don Waterways And Navigation Board",16207,3V,2008-10-16,-,Valid
+278,,,Wasserschutzpolizei-Schule,16208,3W,2008-10-16,-,Valid
+279,,,"Arctic and Antarctic Research Institute (AARI) of the Russian Federal Service for Hydrometeorology and Environmental Monitoring (Roshydromet)",19018,4A,2008-10-16,-,Valid
+280,,,"BaikalChart, Russia",19275,4B,2008-10-16,-,Valid
+281,,,"Rheinschifffahrtsdirektion (RSD) Basel",19532,4C,2008-10-16,-,Valid
+282,,,"Canadian Ice Service",20306,4I,2008-10-16,-,Valid
+283,,,"MD Atlantic Technologies",20315,4R,2008-10-16,-,Valid
+284,,,"OOO Tekhpromcomplect",20317,4T,2008-10-16,-,Valid
+285,,,"Center for Coastal & Ocean Mapping/Joint Hydrographic Center, University of New Hampshire",20318,4U,2008-10-16,-,Valid
+286,,,"Voies Navigables de France (VNF)",20319,4V,2008-10-16,-,Valid
+287,,,"Fachstelle fuer Geoinformationen Sued beim WSA Regensburg",20320,4W,2008-10-16,-,Valid
+288,,,"C-Map Russia",20323,4Z,2008-10-16,-,Valid
+289,,,"CRUP d.o.o., Croatia",23644,5C,2008-10-16,-,Valid
+290,,,"Hydrographic Office of the Sarawak Marine Department",24422,5M,2008-10-16,-,Valid
+291,,,"TEC Asociados",24455,5T,2008-10-16,-,Valid
+292,,,"United Kingdom Royal Navy",24430,5U,2008-10-16,-,Valid
+293,,,"Wasser- und Schifffahrtsverwaltung des Bundes - WSA Cuxhaven",24432,5W,2008-10-16,-,Valid
+294,,,"Guoy Consultancy Sdn Bhd",27756,6C,2008-10-16,-,Valid
+295,,,"SevenCs GmbH",31868,7C,2008-10-16,2020-11-25,Valid
+296,,,"Petroslav Hydroservice, Russia",32641,7H,2008-10-16,-,Valid
+297,,,"The Federal Service of Geodesy and Cartography of Russia",32651,7R,2008-10-16,-,Valid
+298,,,"Centre Sevzapgeoinform (SZGI)",32652,7S,2008-10-16,-,Valid
+299,,,"Terra Corp",32653,7T,2008-10-16,-,Valid
+300,,,"L-3 Communications Oceania Limited",35466,8A,2008-10-16,-,Valid
+301,,,"Seebyte Ltd.",35980,8C,2008-10-16,-,Valid
+302,,,"CherSoft Ltd",39578,9A,2008-10-16,-,Valid
+303,,,"Hamburg Port Authority",40865,9H,2008-10-16,-,Valid
+304,,,"Solutions from Silicon, Sydney",40876,9S,2008-10-16,-,Valid
+305,,,"Tresco Engineering bvba",40877,9T,2008-10-16,-,Valid
+306,,,"Nobeltec, Inc",40883,9Z,2008-10-16,-,Valid
+307,"New Zealand",NZ,"Geospatial Intelligence New Zealand",321,N3,2010-08-12,-,Valid
+308,,-,"BMT ARGOSS Ltd",3817,0M,2011-03-21,-,Valid
+309,,,"Public Works and Government Services Canada - Pacific Region",16012,4P,2011-03-30,-,Valid
+310,,,Latincomp,32264,7L,2011-03-31,-,Valid
+311,,,"National Navigation Authority of the Czech Republic",39624,9D,2011-04-06,-,Valid
+312,,,"European Inland ECDIS Expert Group",24418,5I,2011-04-07,-,Valid
+313,,,"Chartworld Gmbh",40092,9C,2008-10-16,-,Valid
+314,,,"ADVETO Advanced Technology AB",20316,4S,2008-10-16,-,Valid
+315,,,AMEC,27242,6A,2008-10-16,-,Valid
+316,,,"American Commercial Lines (ACL), Inc.",23130,5A,2008-10-16,-,Valid
+317,,,"C-Tech SRL, Romania",27499,6B,2008-10-16,-,Valid
+318,,,"Environmental Systems Research Institute (ESRI)",20046,4E,2008-10-16,-,Valid
+319,,,"Finnish Navy",16191,3F,2008-10-16,-,Valid
+320,,,"HYPACK, Inc.",16193,3H,2008-10-16,-,Valid
+321,,,"Land Information New Zealand Hydrographic Services",12099,2Z,2008-10-16,-,Valid
+322,,,MeteoConsult,20311,4N,2008-10-16,-,Valid
+323,,,"NAVTRON SRL",24423,5N,2008-10-16,-,Valid
+324,,,"De Vlaamse Waterweg",32655,7V,2008-10-16,2019-12-18,Valid
+325,,,"Ocean Surveys Inc.",16200,3O,2008-10-16,-,Valid
+326,,,"Pechora Waterways and Navigation Board",16201,3P,2008-10-16,-,Valid
+327,,,"River Transport Authority (RTA), Egypt",24158,5E,2008-10-16,-,Valid
+328,,,"Safe Trip SA, Argentina",24425,5P,2008-10-16,-,Valid
+329,,,"State Federal Unitary Enterprise NW Regional Production Centre of Geoinformation and Mine Surveying Centre, ""Sevzapgeoinform"" (Russia)",24427,5R,2008-10-16,-,Valid
+330,,,"U.S. Geological Survey (USGS) - Coastal and Marine Geology",28542,6U,2008-10-16,-,Valid
+331,,,"Waterwegen en Zeekanaal",32656,7W,2008-10-16,2019-12-18,Valid
+332,,,"Raymarine Ltd",16199,3N,2008-10-16,2021-06-28,Valid
+333,,,"Azerbaijan Navy, Service of Navigation and Oceanography",31354,7A,2008-10-16,-,Valid
+334,,,"FPAEMDR DRIIREST",16035,3D,2011-07-18,-,Valid
+335,,,"ChartCo Limited",32298,7J,2011-10-05,-,Valid
+336,,,"Chart Pilot Ltd.",11973,2G,2011-10-17,-,Valid
+337,,,"Aero Karta Complex Ltd",16038,3Z,2011-10-18,-,Valid
+338,,,"Abris, Llc",36363,8T,2011-10-20,-,Valid
+339,"Russian Federation",RU,"Federal State Unitary Hydrographc Department",425,R1,2011-11-16,-,Valid
+340,"Saudi Arabia",SA,"General Authority for Survey and Geospatial Information (GEOSA)",1365,S1,2011-11-23,2025-07-16,Valid
+341,,,"Navtor AS",28233,6N,2012-02-11,-,Valid
+342,,,"SeaZone Solutions",24168,5Z,2012-03-23,-,Valid
+343,,,"Panama Canal Authority",28243,6P,2012-07-31,2014-09-02,Valid
+344,,,"SHOM test data",20127,4L,2013-03-11,-,Valid
+345,,,"ATLAS ELEKTRONIK GmbH",36376,8E,2013-04-24,-,Valid
+346,Australia,AU,"Australian Hydrographic Office - Defence forces",11,AN,2013-08-12,2020-08-12,Valid
+347,,,"Australian Hydrographic Office - Provisional and sample datasets",32328,7U,2013-08-20,2020-08-12,Valid
+348,,,"Bremer Schiffsmeldedienst",24181,5B,2013-09-05,-,Valid
+349,,,"Marine Technology sp. o.o.",32320,7M,2013-09-14,-,Valid
+350,,,"Wasser- und Schifffahrtsverwaltung des Bundes - WSA Bremerhaven",24203,5X,2013-11-04,-,Valid
+351,,,GEOMOD,20122,4G,2013-12-10,-,Valid
+352,Poland,,"Inland Navigation Office in Szczecin (Urzad Zeglugi Srodladowej w Szczecinie)",401,P1,2013-12-10,-,Valid
+353,,,"Hochschule Wismar Bereich Seefahrt (MSCW)",28266,6W,2014-02-14,-,Valid
+354,Montenegro,ME,"Ministry of Defence, Navy Headquarters",1225,ME,2008-10-16,2014-02-10,Valid
+355,,,PETROBRAS,32323,7P,2014-07-12,-,Valid
+356,India,IN,"Indian Navy Specific",221,I7,2014-08-13,2019-09-03,Valid
+357,India,,"India National Hydrographic Office - Miscellaneous",42014,7N,2014-08-12,2019-09-05,Valid
+358,,,"Associated British Ports Southampton",44444,5S,2014-08-18,-,Valid
+359,,,"VietNav Ltd, VIETNAM",43456,6V,2015-07-02,-,Valid
+360,,,"ConcENC OOO",44445,6E,2015-08-07,-,Valid
+361,,,QUADRANT-ENC,12004,2Q,2014-05-09,-,Valid
+362,,,OpenSeaMap.Org,3878,0S,2015-03-26,-,Valid
+363,,,"CTC JSC",44446,2L,2016-01-25,-,Valid
+364,,,"Mercuries Data Systems Ltd.",28249,6F,2016-02-03,2019-12-02,Valid
+365,,,"Marine Geodesy LLC",42000,6D,2017-12-31,2016-05-06,Valid
+366,"Viet Nam",VN,"Viet Nam Maritime Safety-South (VMS-S)",1512,V2,2019-09-04,-,Valid
+367,,,"David Evans and Associates, Inc. | Marine Services Division",42003,4D,2019-09-06,-,Valid
+368,Australia,AU,"Department of Transport Western Australia",42007,8W,2019-09-06,2019-09-06,Valid
+369,Germany,DE,"Elbe Pilots Germany",42015,9P,2019-09-06,2019-09-06,Valid
+370,,,"Grand Port Maritime du Havre",42013,4H,2019-09-06,-,Valid
+371,,,"Maju Geohydro Sdn Bhd",42008,M8,2019-09-06,-,Valid
+372,,,"Nautical Publications Gmbh",42010,5V,2019-09-06,-,Valid
+373,,,OceanWise,42011,4O,2019-09-06,-,Valid
+374,,,"PD Ports",42001,6G,2019-09-06,-,Valid
+375,,,"Port of Antwerp (Havenbedrijf Antwerpen NV van publiek recht)",42012,8V,2019-09-06,2019-12-17,Valid
+376,,,"Service Public de Wallonie",42009,9W,2019-09-06,-,Valid
+377,,,"TCarta Marine",42005,6T,2019-09-06,-,Valid
+378,,,"Terra OOO",42006,2O,2019-09-06,-,Valid
+379,,,"The Enisei State Territorial Department for Waterways",42002,9E,2019-09-06,2019-12-17,Valid
+380,,,"The Severnaya Dvina State Territorial Department for Waterways",42004,6S,2019-09-06,2019-12-17,Valid
+381,,,"Grand Port Maritime de Rouen",42016,6R,2019-09-16,-,Valid
+382,,,"FB Imray Laurie Norie and Wilson GmbH (FB Imray)",42017,6I,2019-09-16,2025-11-18,Valid
+383,,,"Federal Agency for Maritime and River Transport (FAMRT)",42018,8R,2019-12-17,-,Valid
+384,,,"Port de Barcelona, España",42019,7B,2020-02-18,2021-05-10,Valid
+385,USA,US,"National Geospatial-Intelligence Agency Department of Defense (NGA)",554,U4,2020-04-06,-,Valid
+386,,,"Sorlingas Data Services Ltd",42021,8S,2020-07-06,-,Valid
+387,,,CoVadem,42020,9V,2020-07-06,-,Valid
+388,,,MAPMEDIA,42022,M6,2020-10-01,-,Valid
+389,,,"Meritaito Ltd (Arctia Group)",42023,3M,2020-11-03,-,Valid
+390,,,"MORIS LLC (Marine and River Information Systems Llc)",42024,8M,2021-02-24,-,Valid
+391,,,"Lloyd’s Register Voyage AS",42025,3L,2021-05-10,-,Valid
+392,Denmark,DK,"Umhvørvisstovan (Faroe Islands)",112,D2,2021-06-21,-,Valid
+393,,,"Mapitech Ltd",42026,6M,2021-12-06,-,Valid
+394,,,"NAUTITEC GmbH & Co. KG",42027,8N,2022-01-11,-,Valid
+395,,,"Hydrographic Science Research Center, The University of Southern Mississippi",42028,9U,2022-03-29,-,Valid
+396,India,IN,"Inland Waterway Authority of India",222,I8,2022-06-20,-,Valid
+397,,,"Sii Tech Inc.",42029,2Y,2022-09-01,-,Valid
+398,UK,GB,"UKHO Royal Navy",541,G2,2022-12-19,-,Valid
+399,Australia,AU,"Maritime Geospatial Branch (MGB)",1513,A1,2023-04-12,-,Valid
+400,Australia,AU,"Maritime Geospatial Branch (MGB)",1514,A4,2023-04-12,-,Valid
+401,,,"EGS Survey Pty Ltd",44447,7E,2023-04-28,-,Valid
+402,UK,GB,"UKHO Royal Navy",1515,G4,2023-11-21,2023-12-04,Valid
+403,"United Arab Emirates",AE,"Dubai Municipality Survey Department (DMSD)",1516,A2,2023-12-13,2023-12-13,Valid
+404,,,"North Caspian Operating Company N.V. (NCOC)",44448,9N,2024-03-05,-,Valid
+405,,,"HyCAM Solutions LLP",2041,5H,2024-08-29,-,Valid
+406,,,"Port de Bruxelles / Haven van Brussel",44450,8B,2025-02-14,-,Valid
+407,Algeria,DZ,"Service Hydrographique des Forces Navales",1517,DZ,2024-10-11,-,Valid
+408,-,-,"SSG Navigation L.L.C",44449,1G,2024-10-11,-,Valid
+409,,,"Servicios Hidrograficos Punta Brava C.A.",44451,8P,2025-07-30,-,Valid
+410,,,"Argonav GmbH",44452,3G,2025-08-26,-,Valid
+411,"United Arab Emirates",AE,"Abu Dhabi Maritime",1518,A3,2025-12-01,-,Valid
+412,,,"UMI SAN",44453,8U,2025-12-05,-,Valid
+413,,,"Hydrographica AB",44454,6H,2026-01-19,-,Valid
+414,,,"Naval Meteorological &Oceanographic Office, R.O.C. Taiwan",3879,0T,2016-02-03,2016-02-03,Invalid

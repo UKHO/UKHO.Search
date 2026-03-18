@@ -1,0 +1,114 @@
+﻿No.,Country,"Agency Name","Code (Num)","Code (Alpha)",Products,"Accepted
+Date",Status,Official
+1,-,"International Centre for ENC (IC-ENC)",02030,00IC,"S-101, S-102, S-104, S-111, S-128",2023-02-10,Valid,False
+2,"Viet Nam","Vietnam Maritime Safety Corporation (VMSC)",01511,V184,"S-101, S-102, S-104, S-111, S-128, S-129",2023-02-24,Valid,True
+3,-,"International Hydrographic Organization (IHO)",01810,00AA,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-127, S-128, S-129, S-130, S-131, S-98",2023-02-28,Valid,False
+4,Canada,"Canadian Coast Guard",00052,CA01,"S-123, S-124, S-127, S-129",2023-03-15,Valid,True
+5,Belgium,"Maritime and Coastal Services – Flemish Hydrography",00030,BE00,"S-101, S-102, S-104, S-111, S-401",2023-03-29,Valid,True
+6,Norway,"Electronic Chart Centre",00341,N100,"S-101, S-102, S-104, S-111, S-128",2023-05-11,Valid,True
+7,Netherlands,"Koninklijke Marine Dienst der Hydrografie / CZSK",00310,NL00,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-127, S-128",2023-05-12,Valid,True
+8,Finland,"Finnish Transport and Communications Agency (Traficom)",00160,FI00,"S-101, S-102, S-121, S-123, S-124, S-127, S-128",2023-06-21,Valid,True
+9,Canada,"Canadian Hydrographic Service (CHS)",00050,CA00,"S-101, S-102, S-104, S-111, S-121, S-128",2023-06-21,Valid,True
+10,-,"Environmental Systems Research Institute (ESRI)",20046,004E,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-127, S-128, S-129, S-401, S-412",2023-07-01,Valid,False
+11,-,CARIS,07196,001C,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-127, S-128, S-129, S-401, S-412",2023-07-05,Valid,False
+12,Spain,"Instituto Hidrográfico de la Marina (IHM)",00450,ES00,"S-101, S-102, S-104, S-111",2023-07-06,Valid,True
+13,-,"PRIMAR Regional ENC Coordinating Centre (PRIMAR RENC)",02020,00PM,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-127, S-128, S-129, S-401, S-412",2023-08-07,Valid,False
+14,France,"Service Hydrographique et Océanographique de la Marine (SHOM)",00170,FR00,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-127, S-128, S-129, S-412",2023-08-21,Valid,True
+15,France,"Commandant de la zone maritime Manche et mer du Nord (zone NAVAREA I)",00171,FR01,S-124,2023-08-22,Valid,True
+16,France,"Commandant de la zone maritime Atlantique (zones NAVAREA I et II)",00172,FR02,S-124,2023-08-22,Valid,True
+17,France,"Commandant de la zone maritime Méditerranée (zone NAVAREA III)",00173,FR03,S-124,2023-08-22,Valid,True
+18,France,"Commandant de la zone maritime Antilles (zone NAVAREA IV)",00174,FR04,S-124,2023-08-22,Valid,True
+19,France,"Commandant de la zone maritime Guyane (zone NAVAREA IV)",00175,FR05,S-124,2023-08-22,Valid,True
+20,France,"Commandant de la zone maritime sud de l’océan Indien (zones NAVAREA VII et VIII)",00176,FR06,S-124,2023-08-22,Valid,True
+21,France,"Commandant de la zone maritime Nouvelle-Calédonie (zones NAVAREA X et XIV)",00177,FR07,S-124,2023-08-22,Valid,True
+22,France,"Commandant de la zone maritime du Pacifique (zone NAVAREA XII)",00178,FR08,S-124,2023-08-22,Valid,True
+23,France,"Commandant de la zone maritime Polynésie française (zones NAVAREA XII et XIV)",00179,FR09,S-124,2023-08-22,Valid,True
+24,France,"Chef du service affaires maritimes de la direction des territoires, de l’alimentation et de la mer (DTAM) de Saint-Pierre et Miquelon (zone NAVAREA IV)",02180,FR10,S-124,2023-08-22,Valid,True
+25,Sweden,"Sjöfartsverket, Swedish Maritime Administration",00480,SE00,"S-101, S-102, S-104, S-111, S-123, S-124, S-127, S-128",2023-08-28,Valid,True
+26,"United Kingdom of Great Britain and Northern Ireland","UK Hydrographic Office",00540,GB00,"S-101, S-102, S-104, S-111, S-121, S-124, S-128",2023-09-14,Valid,True
+27,Australia,"Australian Hydrographic Office (AHO)",00010,AU00,"S-101, S-102, S-101, S-102, S-104, S-111, S-128",2023-09-18,Valid,True
+28,Australia,"Australian Hydrographic Office - Defence forces",00011,AN00,"S-101, S-102",2023-09-18,Valid,True
+29,Australia,"Maritime Geospatial Branch (MGB)",01513,A100,"S-101, S-102, S-104, S-111, S-128",2023-09-18,Valid,True
+30,Australia,"Maritime Geospatial Branch (MGB)",01514,A400,"S-101, S-102, S-104, S-111, S-128",2023-09-18,Valid,True
+31,"Solomon Islands","Solomon Islands Maritime Safety Administration (SIMSA)",01410,SB00,"S-101, S-102, S-104, S-111, S-128, S-101, S-102, S-104, S-111, S-128",2023-09-18,Valid,True
+32,"Papua New Guinea","Hydrographic Division, National Maritime Safety Authority (NMSA)",00370,PG00,"S-101, S-102, S-104, S-111, S-128",2023-09-18,Valid,True
+33,-,"Rijkswaterstaat (RWS)",07979,001R,"S-102, S-104, S-111, S-401",2025-04-11,Valid,False
+34,Germany,"Bundesamt für Seeschifffahrt und Hydrographie (BSH)",00180,DE00,"S-101, S-102, S-104, S-111, S-128",2023-11-16,Valid,True
+35,Norway,"Norwegian Coastal Administration",00343,NO01,"S-111, S-121, S-122, S-123, S-124, S-127, S-412",2023-11-29,Valid,True
+36,"United Kingdom of Great Britain and Northern Ireland","UKHO Royal Navy",00541,G200,"S-101, S-102, S-104, S-111",2023-12-04,Valid,True
+37,"United Kingdom of Great Britain and Northern Ireland","UKHO Royal Navy",01515,G400,"S-101, S-102, S-104, S-111",2023-12-04,Valid,True
+38,Finland,"Finnish Meteorological Institute",00161,FI11,"S-104, S-111, S-412",2024-02-06,Valid,True
+39,"New Zealand","Maritime New Zealand",00322,NZ01,"S-123, S-124, S-125",2024-02-20,Valid,True
+40,Latvia,"Maritime Administration of Latvia",01060,LV00,"S-101, S-102",2024-02-22,Valid,True
+41,Romania,"Directia Hidrografica Maritima",01300,RO00,S-101,2024-03-13,Valid,True
+42,-,"International Hydrographic Organization",60001,01AA,S-100,2024-03-15,Valid,False
+43,Slovenia,"Ministry of Infrastructure, Maritime Sector",01400,SI00,"S-101, S-102, S-122",2024-03-21,Valid,True
+44,"United States of America","Office of Coast Survey, National Ocean Service, National Oceanic and Atmospheric Administration (NOS)",00550,US00,"S-101, S-102, S-104, S-111, S-128",2024-03-21,Valid,True
+45,Malaysia,"National Hydrographic Centre",00290,MY00,"S-101, S-102, S-104, S-111, S-121, S-128",2024-04-01,Valid,True
+46,-,"OMC International",60002,00MC,"S-129, S-421",2024-04-10,Valid,False
+47,Chile,"Servicio Hidrográfico y Oceanográfico de la Armada (SHOA)",00060,CL00,"S-101, S-102, S-104, S-111",2024-04-10,Valid,True
+48,Denmark,"Geodatastyrelsen (GST)",00110,DK00,"S-101, S-102",2024-04-25,Valid,True
+49,-,"ENC Center, National Taiwan Ocean University",07982,001U,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-127, S-128, S-131, S-201, S-211, S-412, S-421",2024-05-03,Valid,False
+50,-,"SevenCs GmbH",31868,007C,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-127, S-128, S-129, S-130, S-131, S-201, S-211, S-240, S-401, S-412, S-421",2024-05-03,Valid,False
+51,-,"Chartworld Gmbh",40092,009C,"S-101, S-102, S-104, S-111, S-121, S-124, S-128, S-129, S-130, S-131, S-401, S-412, S-421",2024-05-06,Valid,False
+52,Greece,"Hellenic Navy Hydrographic Service (HNHS)",00190,GR00,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-127, S-128, S-129, S-130, S-131",2024-05-13,Valid,True
+53,Indonesia,"Jawatan Hidro-Oseanografi (JANHIDROS)",00230,ID00,"S-101, S-102, S-104, S-111, S-122",2024-05-14,Valid,True
+54,Israel,"Survey of Israel",01001,I100,"S-101, S-102",2024-05-22,Valid,True
+55,Italy,"Istituto Idrografico della Marina (IIM)",00250,IT00,S-101,2024-06-10,Valid,True
+56,Peru,"Dirección  de Hidrografía y Navegación (DHN)",00380,PE00,S-101,2024-06-14,Valid,True
+57,-,"Hamburg Port Authority",40865,009H,"S-101, S-102, S-104, S-111",2024-06-25,Valid,False
+58,Denmark,"Danish Maritime Authority",00111,DK01,"S-124, S-201",2024-06-27,Valid,True
+59,Uruguay,"Oceanographic, Hydrographic and Meteorological Service of the Uruguayan Navy",00560,UY00,"S-101, S-102, S-104, S-111, S-124, S-129",2024-07-04,Valid,True
+60,-,"Co-operating Hydrographic Offices in the Malacca and Singapore Straits (Indonesia, Japan, Malaysia and Singapore)",02010,00MS,"S-101, S-102",2024-07-09,Valid,False
+61,Canada,"Department of National Defence, Canada",00051,CA02,S-101,2024-07-10,Valid,True
+62,Cuba,"Oficina Nacional de Hidrografia y Geodesia",00090,CU00,"S-101, S-102, S-104, S-111, S-122",2024-07-12,Valid,True
+63,-,"Shenzhen COSCO Shipping Digital Technology Co., Ltd.",60003,00CZ,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-127, S-128, S-129, S-130, S-131, S-201, S-211, S-240, S-401, S-412, S-421, S-98",2024-07-23,Valid,False
+64,-,"Shanghai JunMin Information Technology Co. Ltd",60004,00TF,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-127, S-128, S-129, S-130, S-411",2024-07-25,Valid,False
+65,-,"Port Authority of New South Wales",60005,00PA,"S-101, S-102",2024-07-26,Valid,False
+66,India,"National Hydrographic Office",00220,IN00,"S-101, S-102, S-104, S-111, S-121, S-124, S-128",2024-08-12,Valid,True
+67,"United Arab Emirates","Dubai Municipality Survey Department (DMSD)",01516,A200,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-127, S-129, S-201, S-412",2024-08-21,Valid,True
+68,-,"HyCAM Solutions LLP",02041,005H,S-101,2024-08-30,Valid,False
+69,Lithuania,"Lithuanian Transport Safety Administration",01100,LT00,"S-101, S-102",2024-10-09,Valid,True
+70,Australia,"Australian Maritime Safety Authority (AMSA)",00012,AU01,"S-124, S-129, S-201, S-421",2025-01-20,Valid,True
+71,Estonia,"Estonian Transport Administration (ETA)",00870,EE00,"S-101, S-102, S-104, S-111, S-124, S-128",2025-02-12,Valid,True
+72,Morocco,"Division Hydrographie et Cartographie (DHC) de la Marine Royale",01200,MA00,"S-128, S-124, S-121, S-111, S-104, S-102, S-101",2025-02-12,Valid,True
+73,Iceland,"Icelandic Coast Guard",00210,IS00,S-101,2025-02-24,Valid,True
+74,Norway,"Norwegian Hydrographic Service",00340,NO00,"S-101, S-102, S-104, S-111, S-128, S-131",2025-03-07,Valid,True
+75,"Korea (Republic of)","Korea Hydrographic and Oceanographic Agency (KHOA)",00280,KR00,"S-101, S-102, S-104, S-111, S-124, S-128",2025-03-28,Valid,True
+76,Thailand,"Hydrographic Department, Royal Thai Navy",00500,TH00,"S-101, S-102, S-104, S-111",2025-05-15,Valid,True
+77,Oman,"National Hydrographic  Office",00350,OM00,"S-101, S-102, S-104, S-111, S-124, S-129",2025-05-15,Valid,True
+78,Egypt,"Egyptian Navy Hydrographic Department (ENHD)",00140,EG00,"S-101, S-102, S-104, S-111, S-121, S-122",2025-05-20,Valid,True
+79,Denmark,"Umhvørvisstovan (Faroe Islands)",00112,FO00,"S-101, S-102",2025-05-20,Valid,True
+80,Suriname,"Maritieme Autoriteit Suriname (MAS)",00470,SR00,"S-101, S-102, S-104, S-111, S-121, S-122, S-124, S-128, S-129, S-201",2025-05-20,Valid,True
+81,Ecuador,"Instituto Oceanográfico de la Armada (INOCAR)",00130,EC00,"S-101, S-102, S-104, S-111",2025-06-02,Valid,True
+82,"Venezuela (Bolivarian Republic of)","Commandancia General de la Armada, Dirección de Hidrografía y Navegación (DHN)",00570,VE00,"S-100, S-101, S-102, S-104, S-111",2025-06-19,Valid,True
+83,Brazil,"Directorate of Hydrography and Navigation (DHN)",00040,BR00,S-101,2025-07-16,Valid,True
+84,"Saudi Arabia","General Authority for Survey and Geospatial Information (GEOSA)",01365,SA01,S-101,2025-07-23,Valid,True
+85,Japan,"Japan Hydrographic and Oceanographic Department (JHOD)",00260,JP00,S-101,2025-08-01,Valid,True
+86,-,"Servicios Hidrograficos Punta Brava C.A.",44451,008P,"S-100, S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-125, S-127, S-128, S-129, S-130, S-131",2025-08-04,Valid,False
+87,-,"Navtor AS",28233,006N,S-100,2025-08-13,Valid,False
+88,"New Zealand","Land Information New Zealand (LINZ)",00320,NZ00,"S-101, S-102, S-104",2025-09-01,Valid,True
+89,Croatia,"Hrvatski  Hidrografski Institut",00080,HR00,"S-101, S-102, S-104, S-121, S-128",2025-09-10,Valid,True
+90,China,"Maritime Safety Administration (MSA)",00070,CN00,"S-100, S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-125, S-127, S-128, S-129, S-130, S-131, S-201, S-211, S-240, S-245, S-246, S-247, S-401, S-411, S-412, S-413, S-414, S-421, S-98",2025-09-15,Valid,True
+91,-,"Wartsila Voyage Limited",12093,002T,"S-101, S-102, S-131, S-401, S-414, S-421, S-98",2025-09-17,Valid,False
+92,Turkey,"Seyir, Hidrografi ve Osinografi Dairesi Baskanligi, Office of Navigation, Hydrography and Oceanography",00520,TR00,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-125, S-127, S-128, S-129",2025-10-06,Valid,True
+93,China,"Hong Kong Special Administrative Region",00072,CN02,"S-101, S-102, S-104, S-111, S-128",2025-10-10,Valid,True
+94,-,"Witherby Publishing Group Ltd.",60006,00WP,S-421,2025-10-13,Valid,False
+95,Georgia,"Maritime Transport Agency of Georgia, Division of Hydrographic Service",00905,GE00,"S-100, S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-125, S-127, S-128, S-129",2025-10-23,Valid,True
+96,Finland,"Turku Radio",00162,FI05,S-124,2025-10-30,Valid,True
+97,China,"China Navy Hydrographic Office",00071,CN01,"S-101, S-102, S-104, S-111, S-121, S-128, S-129, S-411, S-412",2025-11-21,Valid,True
+98,-,QUADRANT-ENC,12004,002Q,"S-101, S-102",2025-11-25,Valid,False
+99,-,"UMI SAN",60007,00RH,"S-101, S-102, S-104, S-111",2025-12-01,Valid,False
+100,"United Arab Emirates","Abu Dhabi Maritime",01518,AE03,S-100,2025-12-05,Valid,True
+101,-,"Port of Rotterdam",12065,002R,"S-101, S-102, S-104, S-111, S-129, S-131, S-401",2025-12-09,Valid,False
+102,Bahrain,"Hydrographic Survey Directorate (HSD)",00020,BH00,"S-100, S-101, S-102, S-104, S-111",2026-01-07,Valid,True
+103,Mexico,"Secretaria de Marina – Armada de Mexico, Direccion General Adjunta de Oceanografia, Hidrografia y Meteorologia",01180,MX00,"S-100, S-101",2026-01-19,Valid,True
+104,Pakistan,"Pakistan Hydrographic Department",00360,PK00,S-101,2026-01-21,Valid,True
+105,France,"Shom - National Coordinator for Nautical Information",02181,FR11,S-124,2026-02-03,Valid,True
+106,"Iran (Islamic Republic of)","National Cartographic Center",00241,IR01,"S-101, S-102, S-104, S-111",2026-02-10,Valid,True
+107,Portugal,"Instituto Hidrografico, Portugal (IHP)",00410,PT00,"S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-128, S-129",2026-02-18,Valid,True
+108,-,"Periskal bv",16205,003T,S-401,2026-02-26,Valid,False
+109,"Russian Federation","Department of Navigation & Oceanography (DNO)",00420,RU00,"S-100, S-101, S-102, S-104, S-111, S-124, S-129",2026-03-02,Valid,True
+110,"United States of America","National Geospatial-Intelligence Agency Department of Defense (NGA)",00551,US01,"S-100, S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-125, S-127, S-128, S-129, S-130, S-131, S-201, S-211, S-240, S-245, S-246, S-247, S-401, S-411, S-412, S-413, S-414, S-421, S-98",2026-03-10,Valid,True
+111,"United States of America","National Geospatial-Intelligence Agency Department of Defense (NGA)",00554,US04,"S-100, S-101, S-102, S-104, S-111, S-121, S-122, S-123, S-124, S-125, S-127, S-128, S-129, S-130, S-131, S-201, S-211, S-240, S-245, S-246, S-247, S-401, S-411, S-412, S-413, S-414, S-421, S-98",2026-03-10,Valid,True
+112,-,"Tresco Engineering bvba",40877,009T,"S-100, S-101, S-102, S-401",2026-03-12,Valid,False

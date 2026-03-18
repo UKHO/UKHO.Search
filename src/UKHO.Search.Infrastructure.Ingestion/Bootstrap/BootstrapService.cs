@@ -110,30 +110,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Bootstrap
                 return;
             }
 
-            EnsureHasType(fields, "documentId", "keyword");
-            EnsureHasType(fields, "keywords", "keyword");
-
-            // Default dynamic mapping typically creates a keyword multi-field; the canonical mapping intentionally does not.
-            EnsureAbsent(fields, "keywords.keyword");
-            EnsureAbsent(fields, "searchText.keyword");
-            EnsureAbsent(fields, "content.keyword");
-        }
-
-        private static void EnsureHasType<T>(IReadOnlyDictionary<string, IReadOnlyDictionary<string, T>> fields, string fieldName, string expectedType)
-        {
-            if (!fields.TryGetValue(fieldName, out var perType) || perType is null || !perType.ContainsKey(expectedType))
-            {
-                var types = perType is null ? "<missing>" : string.Join(",", perType.Keys);
-                throw new InvalidOperationException($"Index mapping mismatch: expected field '{fieldName}' to include type '{expectedType}', but found '{types}'.");
-            }
-        }
-
-        private static void EnsureAbsent<T>(IReadOnlyDictionary<string, IReadOnlyDictionary<string, T>> fields, string fieldName)
-        {
-            if (fields.ContainsKey(fieldName))
-            {
-                throw new InvalidOperationException($"Index mapping mismatch: unexpected multi-field '{fieldName}' exists; index appears to have been created with dynamic mappings.");
-            }
+            ElasticsearchBulkIndexClient.ValidateExpectedFieldMappings(fields);
         }
     }
 }
