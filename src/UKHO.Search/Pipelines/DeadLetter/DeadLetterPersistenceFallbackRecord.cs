@@ -1,15 +1,14 @@
 using UKHO.Search.Pipelines.Errors;
-using UKHO.Search.Pipelines.Messaging;
 
 namespace UKHO.Search.Pipelines.DeadLetter
 {
-    public sealed class DeadLetterRecord<TPayload>
+    public sealed class DeadLetterPersistenceFallbackRecord
     {
         public required DateTimeOffset DeadLetteredAtUtc { get; init; }
 
         public required string NodeName { get; init; }
 
-        public required Envelope<TPayload> Envelope { get; init; }
+        public required DeadLetterFallbackEnvelope Envelope { get; init; }
 
         public PipelineError? Error { get; init; }
 
@@ -18,5 +17,7 @@ namespace UKHO.Search.Pipelines.DeadLetter
         public string? RawSnapshot { get; init; }
 
         public DeadLetterMetadata? Metadata { get; init; }
+
+        public required string SerializationError { get; init; }
     }
 }

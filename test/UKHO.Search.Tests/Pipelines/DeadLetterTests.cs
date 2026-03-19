@@ -39,12 +39,12 @@ namespace UKHO.Search.Tests.Pipelines
 
             using var json = JsonDocument.Parse(lines[0]);
             var root = json.RootElement;
-            root.GetProperty("Envelope")
-                .GetProperty("Payload")
+            root.GetProperty("envelope")
+                .GetProperty("payload")
                 .GetInt32()
                 .ShouldBe(poisonIndex);
-            root.GetProperty("Error")
-                .GetProperty("Code")
+            root.GetProperty("error")
+                .GetProperty("code")
                 .GetString()
                 .ShouldBe("KEY_EMPTY");
         }

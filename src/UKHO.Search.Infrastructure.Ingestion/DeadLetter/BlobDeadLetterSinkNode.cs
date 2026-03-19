@@ -62,51 +62,15 @@ namespace UKHO.Search.Infrastructure.Ingestion.DeadLetter
                 await EnsureContainerExistsAsync(cancellationToken)
                     .ConfigureAwait(false);
 
-                var record = new DeadLetterRecord<TPayload>
+                var record = DeadLetterRecordBuilder.Create(Name, item, _metadataProvider, payloadDiagnostics: IngestionDeadLetterPayloadDiagnosticsFactory.Create(item.Payload));
+                if (record.PayloadDiagnostics?.SnapshotError is not null)
                 {
-                    DeadLetteredAtUtc = DateTimeOffset.UtcNow,
-                    NodeName = Name,
-                    Envelope = item,
-                    Error = item.Error,
-                    RawSnapshot = null,
-                    Metadata = new DeadLetterMetadata
-                    {
-                        AppVersion = _metadataProvider.AppVersion,
-                        CommitId = _metadataProvider.CommitId,
-                        HostName = _metadataProvider.HostName
-                    }
-                };
+                    _logger?.LogWarning("Blob dead-letter payload snapshot generation failed in '{NodeName}' for MessageId={MessageId} Key='{Key}' RuntimePayloadType={RuntimePayloadType}; persisting fallback diagnostics.", Name, item.MessageId, item.Key, record.PayloadDiagnostics.RuntimePayloadType);
+                }
 
                 var blobName = CreateBlobName(record.DeadLetteredAtUtc, item);
 
-                BinaryData data;
-                try
-                {
-                    data = BinaryData.FromString(JsonSerializer.Serialize(record, _jsonOptions));
-                }
-                catch (Exception ex)
-                {
-                    var fallback = new
-                    {
-                        record.DeadLetteredAtUtc,
-                        record.NodeName,
-                        Envelope = new
-                        {
-                            item.TimestampUtc,
-                            item.CorrelationId,
-                            item.Headers,
-                            item.MessageId,
-                            item.Key,
-                            item.Attempt,
-                            item.Status,
-                            item.Error,
-                            item.Context
-                        },
-                        SerializationError = ex.ToString()
-                    };
-
-                    data = BinaryData.FromString(JsonSerializer.Serialize(fallback, _jsonOptions));
-                }
+                var data = CreateBlobPayload(record, item);
 
                 await _containerClient.GetBlobClient(blobName)
                                       .UploadAsync(data, true, cancellationToken)
@@ -142,6 +106,21 @@ namespace UKHO.Search.Infrastructure.Ingestion.DeadLetter
             catch (Exception ex)
             {
                 _logger?.LogError(ex, "Failed to delete queue message after blob dead-letter persistence. NodeName={NodeName} Key={Key} MessageId={MessageId} Attempt={Attempt}", Name, item.Key, item.MessageId, item.Attempt);
+            }
+        }
+
+        private BinaryData CreateBlobPayload(DeadLetterRecord<TPayload> record, Envelope<TPayload> item)
+        {
+            try
+            {
+                return BinaryData.FromString(JsonSerializer.Serialize(record, _jsonOptions));
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Blob dead-letter record serialization failed in '{NodeName}' for MessageId={MessageId} Key='{Key}' RuntimePayloadType={RuntimePayloadType}; persisting fallback record.", Name, item.MessageId, item.Key, record.PayloadDiagnostics?.RuntimePayloadType);
+
+                var fallback = DeadLetterRecordBuilder.CreateFallback(record, ex);
+                return BinaryData.FromString(JsonSerializer.Serialize(fallback, _jsonOptions));
             }
         }
 

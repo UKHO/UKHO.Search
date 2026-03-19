@@ -111,6 +111,7 @@ A rule is a JSON object with these fields:
 ```json
 {
   "id": "string",
+  "context": "string (optional metadata; see §6.2)",
   "description": "string (optional)",
   "enabled": true,
   "if": { /* predicate */ },
@@ -128,17 +129,32 @@ Rule file name:
 
 - The file name does **not** need to match the rule id.
 
-### 6.2 `description` (optional)
+### 6.2 `context` (optional metadata, conditionally required for `file-share`)
+
+- `context` is optional metadata on the rule definition.
+- When supplied, it is normalized to trimmed lowercase.
+- `context` is not itself a predicate and does not change predicate evaluation semantics.
+- It is intended for rule classification / tooling scenarios alongside the rule definition.
+
+Current `file-share` validation behavior:
+
+- For providers other than `file-share`, `context` is optional.
+- For `file-share`, a transitional validation rule applies:
+  - if **no** `file-share` rules declare `context`, startup validation still allows the legacy all-missing state
+  - once **any** `file-share` rule declares `context`, **all** `file-share` rules must declare `context`
+- Missing required `context` in a partially or fully uplifted `file-share` ruleset fails startup validation.
+
+### 6.3 `description` (optional)
 
 Free-text description for maintainability.
 
-### 6.3 `enabled` (optional)
+### 6.4 `enabled` (optional)
 
 - Optional boolean.
 - Defaults to `true`.
 - If `false`, the rule is skipped.
 
-### 6.4 `if` vs `match`
+### 6.5 `if` vs `match`
 
 Rules must contain **exactly one** predicate block, either:
 
@@ -620,59 +636,37 @@ Examples:
 
 ---
 
-## 13. Complete example (spec §5.8)
+## 13. Complete example (per-rule file)
 
-This example shows three rules for provider `file-share`:
+This example shows one complete per-rule JSON file for provider `file-share`.
+
+Path example:
+
+- `Rules/file-share/catalogue/mime-app-s63.json`
 
 ```json
 {
   "schemaVersion": "1.0",
-  "rules": {
-    "file-share": [
-      {
-        "id": "mime-app-s63",
-        "description": "When any file is app/s63, enrich as exchange set",
-        "enabled": true,
-        "if": {
-          "files[*].mimeType": "app/s63"
-        },
-        "then": {
-          "keywords": { "add": ["exchange-set"] },
-          "searchText": { "add": ["exchange set", "exchangeset"] }
-        }
-      },
-      {
-        "id": "prop-abcdef-keywords",
-        "description": "When properties.abcdef equals 'a value', add key1/key2",
-        "enabled": true,
-        "if": {
-          "properties[\"abcdef\"]": "a value"
-        },
-        "then": {
-          "keywords": { "add": ["key1", "key2"] }
-        }
-      },
-      {
-        "id": "prop-abcdef-facet",
-        "description": "When properties.abcdef exists, add facet 1 with that value",
-        "enabled": true,
-        "if": {
-          "all": [
-            { "path": "properties[\"abcdef\"]", "exists": true }
-          ]
-        },
-        "then": {
-          "facets": {
-            "add": [
-              { "name": "facet 1", "value": "$path:properties[\"abcdef\"]" }
-            ]
-          }
-        }
-      }
-    ]
+  "rule": {
+    "id": "mime-app-s63",
+    "context": "adds-s57",
+    "description": "When any file is app/s63, enrich as exchange set",
+    "enabled": true,
+    "if": {
+      "files[*].mimeType": "app/s63"
+    },
+    "then": {
+      "keywords": { "add": ["exchange-set"] },
+      "searchText": { "add": ["exchange set", "exchangeset"] }
+    }
   }
 }
 ```
+
+Notes:
+
+- Each file contains exactly one `rule` object.
+- `context` is shown here because `file-share` rulesets that have started using `context` must provide it consistently across all `file-share` rules.
 
 ---
 
@@ -687,7 +681,16 @@ This example shows three rules for provider `file-share`:
 
 - Ensure at least one provider directory contains at least one valid rule file.
 
-### 14.3 Path validation errors
+### 14.3 Startup fails: missing required `context`
+
+For provider `file-share`, once any rule file includes `context`, all `file-share` rule files must include it.
+
+Typical remediation:
+
+- add `context` to the missing `file-share` rule files, or
+- temporarily revert the whole provider back to the legacy all-missing state if that is the intended transitional position.
+
+### 14.4 Path validation errors
 
 Common causes:
 
@@ -699,17 +702,17 @@ Common causes:
 - Selector/filter syntax:
   - invalid: `files[name=\"x\"].mimeType`
 
-### 14.4 Predicate shape errors
+### 14.5 Predicate shape errors
 
 - `all` / `any` arrays must be non-empty.
 - `not` must be an object, not an array.
 - Leaf must specify exactly one operator.
 
-### 14.5 Facet entry errors
+### 14.6 Facet entry errors
 
 - A facet entry must not contain both `value` and `values`.
 
-### 14.6 DocumentType scalar-safety errors
+### 14.7 DocumentType scalar-safety errors
 
 - `documentType.set` must not be able to expand to multiple values.
 - `$path:` in `documentType.set` must not reference wildcard paths.

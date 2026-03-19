@@ -73,6 +73,25 @@ Common ways to slice/group:
 - `failed`/`dropped` counters should typically be near zero in steady-state; spikes often correlate with downstream availability or validation/enrichment issues.
 - `inflight` staying high for a single node can indicate an item is stuck (or the node is saturated).
 
+### Dead-letter payloads and metric impact
+
+Dead-letter persistence now captures richer payload diagnostics, including runtime payload details and, for ingestion index-operation dead-letters, the Elasticsearch-facing GeoJSON payload shape used for `geoPolygons`.
+
+Metric impact:
+
+- There is currently **no dedicated dead-letter meter or instrument** for persisted dead-letter payload contents.
+- Dead-letter payload fields such as `payloadDiagnostics`, payload snapshots, runtime payload type, and snapshot error details are **not emitted as metric tags**.
+- The richer dead-letter JSON therefore does **not increase metrics cardinality** in Aspire.
+- Existing pipeline metrics remain the primary operational signal:
+  - failures continue to show up through `ukho.pipeline.node.failed`
+  - drops continue to show up through `ukho.pipeline.node.dropped`
+  - slow or blocked persistence paths would still surface indirectly through `duration_ms`, `inflight`, or `queue_depth`
+
+Practical guidance:
+
+- Use Aspire metrics to detect **that** failures are occurring and where in the pipeline they are occurring.
+- Use the dead-letter artifact itself to inspect **why** a specific item failed, including the final serialized payload shape sent toward Elasticsearch.
+
 ---
 
 ## Notes on built-in instrumentation meters

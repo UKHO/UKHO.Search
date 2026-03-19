@@ -43,11 +43,11 @@ namespace UKHO.Search.Tests.Pipelines
             lines.Length.ShouldBe(1);
 
             using var json = JsonDocument.Parse(lines[0]);
-            var envelope = json.RootElement.GetProperty("Envelope");
-            envelope.GetProperty("Payload")
+            var envelope = json.RootElement.GetProperty("envelope");
+            envelope.GetProperty("payload")
                     .GetInt32()
                     .ShouldBe(2);
-            envelope.GetProperty("Attempt")
+            envelope.GetProperty("attempt")
                     .GetInt32()
                     .ShouldBe(3);
 

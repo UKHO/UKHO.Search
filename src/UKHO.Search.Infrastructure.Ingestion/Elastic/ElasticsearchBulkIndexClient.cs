@@ -43,7 +43,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
                 switch (envelope.Payload)
                 {
                     case UpsertOperation upsert:
-                        bulkRequest.Operations.Add(new BulkIndexOperation<CanonicalDocument>(upsert.Document) { Id = envelope.Key });
+                        bulkRequest.Operations.Add(new BulkIndexOperation<CanonicalIndexDocument>(CreateIndexDocument(upsert.Document)) { Id = envelope.Key });
                         break;
 
                     case DeleteOperation:
@@ -92,6 +92,11 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
             {
                 Items = results
             };
+        }
+
+        internal static CanonicalIndexDocument CreateIndexDocument(CanonicalDocument document)
+        {
+            return CanonicalIndexDocument.Create(document);
         }
 
         private async ValueTask EnsureIndexReadyAsync(CancellationToken cancellationToken)

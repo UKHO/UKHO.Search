@@ -24,6 +24,7 @@ Be concise but complete. Prefer current research (Microsoft Learn) for Microsoft
 
 ## Coding Standards
 - Never declare multiple classes/interfaces/enums in the same C# file; split each type into its own file. Enforce the standard of one public type per C# file.
+- Do not use `GeoJSON.Net` in this repository for geo polygon serialization because it relies on Newtonsoft.Json; prefer a System.Text.Json-compatible approach.
 
 ## Architecture (Onion)
 This repository uses **Onion Architecture**.

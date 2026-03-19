@@ -12,6 +12,7 @@ namespace UKHO.Search.Pipelines.Nodes
     public sealed class DeadLetterSinkNode<TPayload> : SinkNodeBase<Envelope<TPayload>>
     {
         private static readonly ConcurrentDictionary<string, SemaphoreSlim> _fileLocks = new(StringComparer.OrdinalIgnoreCase);
+        private static readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
         private readonly bool _fatalIfCannotPersist;
 
         private readonly string _filePath;
@@ -35,22 +36,13 @@ namespace UKHO.Search.Pipelines.Nodes
         {
             try
             {
-                var record = new DeadLetterRecord<TPayload>
+                var record = DeadLetterRecordBuilder.Create(Name, item, _metadataProvider, _snapshotter?.Invoke(item));
+                if (record.PayloadDiagnostics?.SnapshotError is not null)
                 {
-                    DeadLetteredAtUtc = DateTimeOffset.UtcNow,
-                    NodeName = Name,
-                    Envelope = item,
-                    Error = item.Error,
-                    RawSnapshot = _snapshotter?.Invoke(item),
-                    Metadata = new DeadLetterMetadata
-                    {
-                        AppVersion = _metadataProvider.AppVersion,
-                        CommitId = _metadataProvider.CommitId,
-                        HostName = _metadataProvider.HostName
-                    }
-                };
+                    _logger?.LogWarning("Dead-letter payload snapshot generation failed in '{NodeName}' for MessageId={MessageId} Key='{Key}' RuntimePayloadType={RuntimePayloadType}; persisting fallback diagnostics.", Name, item.MessageId, item.Key, record.PayloadDiagnostics.RuntimePayloadType);
+                }
 
-                var json = JsonSerializer.Serialize(record);
+                var json = SerializeRecord(record, item);
                 await AppendLineAsync(json, cancellationToken)
                     .ConfigureAwait(false);
                 Interlocked.Increment(ref _persistedCount);
@@ -63,6 +55,21 @@ namespace UKHO.Search.Pipelines.Nodes
                 {
                     throw;
                 }
+            }
+        }
+
+        private string SerializeRecord(DeadLetterRecord<TPayload> record, Envelope<TPayload> item)
+        {
+            try
+            {
+                return JsonSerializer.Serialize(record, _jsonOptions);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Dead-letter record serialization failed in '{NodeName}' for MessageId={MessageId} Key='{Key}' RuntimePayloadType={RuntimePayloadType}; persisting fallback record.", Name, item.MessageId, item.Key, record.PayloadDiagnostics?.RuntimePayloadType);
+
+                var fallback = DeadLetterRecordBuilder.CreateFallback(record, ex);
+                return JsonSerializer.Serialize(fallback, _jsonOptions);
             }
         }
 

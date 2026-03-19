@@ -11,7 +11,7 @@ namespace UKHO.Search.Tests.Pipelines
     public sealed class DeadLetterSchemaTests
     {
         [Fact]
-        public async Task Dead_letter_jsonl_includes_envelope_and_error_fields()
+        public async Task Dead_letter_jsonl_includes_runtime_payload_diagnostics_and_error_fields()
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 
@@ -36,47 +36,61 @@ namespace UKHO.Search.Tests.Pipelines
             var line = (await File.ReadAllLinesAsync(filePath, cts.Token)).Single();
             using var json = JsonDocument.Parse(line);
 
-            json.RootElement.TryGetProperty("Envelope", out var envelope)
+            json.RootElement.TryGetProperty("envelope", out var envelope)
                 .ShouldBeTrue();
-            envelope.TryGetProperty("Key", out var _)
+            envelope.TryGetProperty("key", out var _)
                     .ShouldBeTrue();
-            envelope.TryGetProperty("MessageId", out var _)
+            envelope.TryGetProperty("messageId", out var _)
                     .ShouldBeTrue();
-            envelope.TryGetProperty("Attempt", out var _)
+            envelope.TryGetProperty("attempt", out var _)
                     .ShouldBeTrue();
-            envelope.TryGetProperty("Status", out var _)
+            envelope.TryGetProperty("status", out var _)
                     .ShouldBeTrue();
-            envelope.TryGetProperty("Error", out var error)
+            envelope.TryGetProperty("error", out var error)
                     .ShouldBeTrue();
-            error.TryGetProperty("Code", out var _)
+            error.TryGetProperty("code", out var _)
                  .ShouldBeTrue();
 
-            json.RootElement.TryGetProperty("DeadLetteredAtUtc", out var _)
+            json.RootElement.TryGetProperty("deadLetteredAtUtc", out var _)
                 .ShouldBeTrue();
-            json.RootElement.TryGetProperty("NodeName", out var nodeName)
+            json.RootElement.TryGetProperty("nodeName", out var nodeName)
                 .ShouldBeTrue();
             nodeName.GetString()
                     .ShouldBe("dead-letter");
 
-            json.RootElement.TryGetProperty("RawSnapshot", out var snapshot)
+            json.RootElement.TryGetProperty("rawSnapshot", out var snapshot)
                 .ShouldBeTrue();
             snapshot.GetString()
                     .ShouldBe("payload=123");
 
-            json.RootElement.TryGetProperty("Metadata", out var metadata)
+            json.RootElement.TryGetProperty("metadata", out var metadata)
                 .ShouldBeTrue();
-            metadata.TryGetProperty("AppVersion", out var appVersion)
+            metadata.TryGetProperty("appVersion", out var appVersion)
                     .ShouldBeTrue();
             appVersion.GetString()
                       .ShouldBe("1.2.3");
-            metadata.TryGetProperty("CommitId", out var commitId)
+            metadata.TryGetProperty("commitId", out var commitId)
                     .ShouldBeTrue();
             commitId.GetString()
                     .ShouldBe("commit-123");
-            metadata.TryGetProperty("HostName", out var hostName)
+            metadata.TryGetProperty("hostName", out var hostName)
                     .ShouldBeTrue();
             hostName.GetString()
                     .ShouldBe("host-01");
+
+            json.RootElement.TryGetProperty("payloadDiagnostics", out var payloadDiagnostics)
+                .ShouldBeTrue();
+            payloadDiagnostics.TryGetProperty("runtimePayloadType", out var runtimePayloadType)
+                              .ShouldBeTrue();
+            runtimePayloadType.GetString()
+                              .ShouldBe(typeof(int).FullName);
+            payloadDiagnostics.TryGetProperty("payloadSnapshot", out var payloadSnapshot)
+                              .ShouldBeTrue();
+            payloadSnapshot.GetInt32()
+                           .ShouldBe(123);
+            payloadDiagnostics.TryGetProperty("snapshotError", out var snapshotError)
+                              .ShouldBeTrue();
+            snapshotError.ValueKind.ShouldBe(JsonValueKind.Null);
         }
     }
 }
