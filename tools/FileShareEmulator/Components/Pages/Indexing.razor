@@ -1,8 +1,10 @@
 @page "/indexing"
+@rendermode InteractiveServer
 @attribute [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Type name used for ILogger category")]
 @using Elastic.Clients.Elasticsearch
 @using FileShareEmulator.Services
 @using Microsoft.Extensions.Logging
+@inject BusinessUnitLookupService BusinessUnitLookupService
 @inject StatisticsService StatisticsService
 @inject IndexService IndexService
 @inject IngestionQueueService IngestionQueueService
@@ -65,6 +67,51 @@
         </RadzenStack>
 
         <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem">
+            <RadzenText TextStyle="TextStyle.H6">Index batch by business unit</RadzenText>
+            <RadzenText TextStyle="TextStyle.Body2">Select a business unit to submit all currently unindexed batches for that business unit to the ingestion queue.</RadzenText>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" Gap="1rem" Style="flex-wrap: wrap;">
+                <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem" Style="min-width: 24rem;">
+                    <RadzenLabel Text="Business unit" Component="indexBusinessUnit" />
+                    <RadzenDropDown id="indexBusinessUnit"
+                                    TValue="int?"
+                                    Style="width: 24rem"
+                                    Data="@_businessUnits"
+                                    TextProperty="DisplayName"
+                                    ValueProperty="Id"
+                                    Placeholder="Select a business unit"
+                                    Value="@_selectedBusinessUnitId"
+                                    Change="@OnBusinessUnitChanged"
+                                    Disabled="@(_isLoadingBusinessUnits || _isIndexing || _isDeletingIndexes || _isClearingQueue || _isIndexingSpecificBatch || _isIndexingBusinessUnit)" />
+                </RadzenStack>
+
+                <RadzenButton Text="@IndexBusinessUnitButtonText"
+                              ButtonStyle="ButtonStyle.Secondary"
+                              Disabled="@(!CanIndexBusinessUnit || _isLoadingBusinessUnits || _isIndexing || _isDeletingIndexes || _isClearingQueue || _isIndexingSpecificBatch || _isIndexingBusinessUnit)"
+                              Click="@IndexBusinessUnitAsync" />
+            </RadzenStack>
+
+            @if (_isLoadingBusinessUnits)
+            {
+                <RadzenText TextStyle="TextStyle.Body2" Style="margin-top: 0.5rem;">Loading business units...</RadzenText>
+            }
+
+            @if (_businessUnitLoadErrorMessage is not null)
+            {
+                <RadzenText TextStyle="TextStyle.Body1" Style="@BusinessUnitLoadMessageStyle">@_businessUnitLoadErrorMessage</RadzenText>
+            }
+
+            @if (_indexBusinessUnitMessage is not null)
+            {
+                <RadzenText TextStyle="TextStyle.Body1" Style="@IndexBusinessUnitMessageStyle">@_indexBusinessUnitMessage</RadzenText>
+            }
+
+            @if (_indexBusinessUnitProgressMessage is not null)
+            {
+                <RadzenText TextStyle="TextStyle.Body2" Style="margin-top: 0.5rem;">@_indexBusinessUnitProgressMessage</RadzenText>
+            }
+        </RadzenStack>
+
+        <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem">
             <RadzenText TextStyle="TextStyle.H6">Reset all batches to pending</RadzenText>
             <RadzenText TextStyle="TextStyle.Body2">Marks all batches as pending so they can be re-indexed from scratch (does not delete Elasticsearch indexes).</RadzenText>
             <RadzenButton Text="Reset All" ButtonStyle="ButtonStyle.Light" Disabled="@(_isIndexing || _isDeletingIndexes || _isClearingQueue)" Click="@ResetAllAsync"/>
@@ -119,6 +166,15 @@
     private bool _indexSpecificBatchFailed;
     private string? _indexSpecificBatchMessage;
 
+    private IReadOnlyList<BusinessUnitOptionDto> _businessUnits = Array.Empty<BusinessUnitOptionDto>();
+    private int? _selectedBusinessUnitId;
+    private bool _isLoadingBusinessUnits;
+    private string? _businessUnitLoadErrorMessage;
+    private bool _isIndexingBusinessUnit;
+    private bool _indexBusinessUnitFailed;
+    private string? _indexBusinessUnitMessage;
+    private string? _indexBusinessUnitProgressMessage;
+
     private bool _isDeletingIndexes;
     private bool _deleteIndexesFailed;
     private string? _deleteIndexesMessage;
@@ -135,6 +191,10 @@
 
     private bool CanIndexSpecificBatch => !string.IsNullOrWhiteSpace(_batchIdToIndex);
     private string IndexSpecificBatchMessageStyle => "margin-top: 0.75rem; white-space: pre-wrap; color: " + (_indexSpecificBatchFailed ? "var(--rz-danger)" : "var(--rz-success)");
+    private bool CanIndexBusinessUnit => _selectedBusinessUnitId is > 0 && _businessUnitLoadErrorMessage is null;
+    private string BusinessUnitLoadMessageStyle => "margin-top: 0.75rem; white-space: pre-wrap; color: var(--rz-danger)";
+    private string IndexBusinessUnitMessageStyle => "margin-top: 0.75rem; white-space: pre-wrap; color: " + (_indexBusinessUnitFailed ? "var(--rz-danger)" : "var(--rz-success)");
+    private string IndexBusinessUnitButtonText => _isIndexingBusinessUnit ? "Indexing Business Unit..." : "Index Business Unit";
 
     private async Task OnBatchIdChanged(object? value)
     {
@@ -153,9 +213,35 @@
         ValidateCount();
         _status = await StatisticsService.GetIndexingStatusAsync()
                                          .ConfigureAwait(false);
+        await LoadBusinessUnitsAsync().ConfigureAwait(false);
 
         _timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
         _ = PollAsync();
+    }
+
+    private async Task LoadBusinessUnitsAsync()
+    {
+        _isLoadingBusinessUnits = true;
+        _businessUnitLoadErrorMessage = null;
+
+        try
+        {
+            var result = await BusinessUnitLookupService.GetBusinessUnitsAsync(_disposeCts.Token)
+                                                        .ConfigureAwait(false);
+
+            if (!result.IsSuccess)
+            {
+                _businessUnits = Array.Empty<BusinessUnitOptionDto>();
+                _businessUnitLoadErrorMessage = result.ErrorMessage ?? "Failed to load business units.";
+                return;
+            }
+
+            _businessUnits = result.BusinessUnits;
+        }
+        finally
+        {
+            _isLoadingBusinessUnits = false;
+        }
     }
 
     private async Task PollAsync()
@@ -220,6 +306,93 @@
         {
             _isIndexingSpecificBatch = false;
         }
+    }
+
+    private async Task OnBusinessUnitChanged(object? value)
+    {
+        if (value is int businessUnitId)
+        {
+            _selectedBusinessUnitId = businessUnitId;
+        }
+        else if (value is string businessUnitIdText && int.TryParse(businessUnitIdText, out var parsedBusinessUnitId))
+        {
+            _selectedBusinessUnitId = parsedBusinessUnitId;
+        }
+        else
+        {
+            _selectedBusinessUnitId = null;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task IndexBusinessUnitAsync()
+    {
+        if (_isIndexing || _isDeletingIndexes || _isClearingQueue || _isIndexingSpecificBatch || _isIndexingBusinessUnit || !CanIndexBusinessUnit || _selectedBusinessUnitId is null)
+        {
+            return;
+        }
+
+        var businessUnit = _businessUnits.FirstOrDefault(x => x.Id == _selectedBusinessUnitId.Value);
+        if (businessUnit is null)
+        {
+            _indexBusinessUnitFailed = true;
+            _indexBusinessUnitMessage = "The selected business unit could not be found.";
+            return;
+        }
+
+        _isIndexingBusinessUnit = true;
+        _indexBusinessUnitFailed = false;
+        _indexBusinessUnitMessage = null;
+        _indexBusinessUnitProgressMessage = null;
+
+        try
+        {
+            await InvokeAsync(StateHasChanged);
+
+            var progress = new Progress<IndexBusinessUnitProgress>(progressUpdate =>
+            {
+                _indexBusinessUnitProgressMessage = progressUpdate.Message;
+                _ = InvokeAsync(StateHasChanged);
+            });
+
+            var result = await IndexService.IndexBusinessUnitAsync(businessUnit.Id, businessUnit.Name, progress, _disposeCts.Token)
+                                           .ConfigureAwait(false);
+
+            _indexBusinessUnitProgressMessage = null;
+
+            if (!result.Succeeded)
+            {
+                _indexBusinessUnitFailed = true;
+                _indexBusinessUnitMessage = result.IsPartialFailure
+                    ? $"Business unit '{businessUnit.Name}' ({businessUnit.Id}) submitted {result.SubmittedCount:N0} of {result.TotalCandidateCount:N0} batch(es) before failure: {result.FailureReason}"
+                    : $"Failed to index business unit '{businessUnit.Name}' ({businessUnit.Id}): {result.FailureReason}";
+                return;
+            }
+
+            _indexBusinessUnitMessage = result.HasNoBatches
+                ? $"No unindexed batches were found for business unit '{businessUnit.Name}' ({businessUnit.Id})."
+                : $"Submitted {result.SubmittedCount:N0} batch(es) for business unit '{businessUnit.Name}' ({businessUnit.Id}).";
+        }
+        catch (Exception ex)
+        {
+            _indexBusinessUnitFailed = true;
+            _indexBusinessUnitProgressMessage = null;
+            _indexBusinessUnitMessage = $"Failed to index business unit '{businessUnit.Name}' ({businessUnit.Id}): {ex.Message}";
+            Logger.LogError(ex, "Failed to index business unit {BusinessUnitName} ({BusinessUnitId}).", businessUnit.Name, businessUnit.Id);
+        }
+        finally
+        {
+            await RefreshIndexingStatusAsync().ConfigureAwait(false);
+            _isIndexingBusinessUnit = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task RefreshIndexingStatusAsync()
+    {
+        _status = await StatisticsService.GetIndexingStatusAsync()
+                                         .ConfigureAwait(false);
     }
 
     private async Task DeleteIndexesAsync()

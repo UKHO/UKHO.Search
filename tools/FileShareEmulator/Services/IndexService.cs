@@ -11,6 +11,7 @@ namespace FileShareEmulator.Services
     public sealed class IndexService
     {
         private const string QueueName = "file-share-queue";
+        private const int DefaultProgressInterval = 25;
 
         private readonly BatchSecurityTokenService _batchSecurityTokenService;
 
@@ -97,6 +98,156 @@ namespace FileShareEmulator.Services
 
             _logger.LogInformation("Submitted batch {BatchId} to ingestion queue.", batchGuid);
             return IndexBatchByIdResult.Success(batchGuid.ToString("D"));
+        }
+
+        public async Task<IndexBusinessUnitResult> IndexBusinessUnitAsync(
+            int businessUnitId,
+            string businessUnitName,
+            IProgress<IndexBusinessUnitProgress>? progress = null,
+            CancellationToken cancellationToken = default)
+        {
+            if (businessUnitId <= 0 || string.IsNullOrWhiteSpace(businessUnitName))
+            {
+                return IndexBusinessUnitResult.Failure(businessUnitId, businessUnitName ?? string.Empty, 0, 0, "Business unit selection is required.");
+            }
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync(cancellationToken)
+                            .ConfigureAwait(false);
+
+            var batchIds = await GetPendingBatchIdsForBusinessUnitAsync(connection, businessUnitId, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (batchIds.Count == 0)
+            {
+                _logger.LogInformation(
+                    "No pending batches found for business unit {BusinessUnitName} ({BusinessUnitId}).",
+                    businessUnitName,
+                    businessUnitId);
+
+                return IndexBusinessUnitResult.ZeroResults(businessUnitId, businessUnitName);
+            }
+
+            var queueClient = _queueServiceClient.GetQueueClient(QueueName);
+            await queueClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken)
+                             .ConfigureAwait(false);
+
+            return await IndexBusinessUnitBatchesAsync(
+                businessUnitId,
+                businessUnitName,
+                batchIds,
+                async (batchId, ct) =>
+                {
+                    var request = await CreateRequestAsync(connection, batchId, ct)
+                        .ConfigureAwait(false);
+                    var json = JsonSerializer.Serialize(request, _jsonOptions);
+
+                    await queueClient.SendMessageAsync(json, ct)
+                                     .ConfigureAwait(false);
+                },
+                (batchId, ct) => MarkBatchIndexedAsync(connection, batchId, ct),
+                _logger,
+                progress,
+                DefaultProgressInterval,
+                cancellationToken).ConfigureAwait(false);
+        }
+
+        internal static async Task<IndexBusinessUnitResult> IndexBusinessUnitBatchesAsync(
+            int businessUnitId,
+            string businessUnitName,
+            IReadOnlyList<Guid> batchIds,
+            Func<Guid, CancellationToken, Task> submitBatchAsync,
+            Func<Guid, CancellationToken, Task> markBatchIndexedAsync,
+            ILogger<IndexService> logger,
+            IProgress<IndexBusinessUnitProgress>? progress,
+            int progressInterval,
+            CancellationToken cancellationToken)
+        {
+            if (businessUnitId <= 0 || string.IsNullOrWhiteSpace(businessUnitName))
+            {
+                return IndexBusinessUnitResult.Failure(businessUnitId, businessUnitName ?? string.Empty, 0, 0, "Business unit selection is required.");
+            }
+
+            if (batchIds.Count == 0)
+            {
+                return IndexBusinessUnitResult.ZeroResults(businessUnitId, businessUnitName);
+            }
+
+            logger.LogInformation(
+                "Submitting {BatchCount} pending batches for business unit {BusinessUnitName} ({BusinessUnitId}).",
+                batchIds.Count,
+                businessUnitName,
+                businessUnitId);
+
+            progressInterval = progressInterval <= 0 ? DefaultProgressInterval : progressInterval;
+
+            progress?.Report(new IndexBusinessUnitProgress
+            {
+                BusinessUnitId = businessUnitId,
+                BusinessUnitName = businessUnitName,
+                SubmittedCount = 0,
+                TotalCandidateCount = batchIds.Count,
+            });
+
+            var submitted = 0;
+
+            foreach (var batchId in batchIds)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                try
+                {
+                    await submitBatchAsync(batchId, cancellationToken)
+                        .ConfigureAwait(false);
+                    await markBatchIndexedAsync(batchId, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    logger.LogError(
+                        ex,
+                        "Failed while submitting batches for business unit {BusinessUnitName} ({BusinessUnitId}). Submitted {SubmittedCount} of {TotalCount}.",
+                        businessUnitName,
+                        businessUnitId,
+                        submitted,
+                        batchIds.Count);
+
+                    return IndexBusinessUnitResult.Failure(
+                        businessUnitId,
+                        businessUnitName,
+                        batchIds.Count,
+                        submitted,
+                        ex.Message);
+                }
+
+                submitted++;
+
+                if (submitted < batchIds.Count && submitted % progressInterval == 0)
+                {
+                    progress?.Report(new IndexBusinessUnitProgress
+                    {
+                        BusinessUnitId = businessUnitId,
+                        BusinessUnitName = businessUnitName,
+                        SubmittedCount = submitted,
+                        TotalCandidateCount = batchIds.Count,
+                    });
+
+                    logger.LogInformation(
+                        "Business unit indexing progress for {BusinessUnitName} ({BusinessUnitId}): submitted {SubmittedCount} of {TotalCount} batches.",
+                        businessUnitName,
+                        businessUnitId,
+                        submitted,
+                        batchIds.Count);
+                }
+            }
+
+            logger.LogInformation(
+                "Submitted {SubmittedCount} pending batches for business unit {BusinessUnitName} ({BusinessUnitId}).",
+                submitted,
+                businessUnitName,
+                businessUnitId);
+
+            return IndexBusinessUnitResult.Success(businessUnitId, businessUnitName, batchIds.Count, submitted);
         }
 
         private async Task<int> IndexNextPendingAsync(int? count, CancellationToken cancellationToken)
@@ -197,6 +348,31 @@ namespace FileShareEmulator.Services
             }
 
             var results = new List<Guid>(count ?? 128);
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken)
+                                              .ConfigureAwait(false);
+            while (await reader.ReadAsync(cancellationToken)
+                               .ConfigureAwait(false))
+            {
+                results.Add(reader.GetGuid(0));
+            }
+
+            return results;
+        }
+
+        private static async Task<List<Guid>> GetPendingBatchIdsForBusinessUnitAsync(SqlConnection connection, int businessUnitId, CancellationToken cancellationToken)
+        {
+            await using var cmd = connection.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandTimeout = 30;
+            cmd.CommandText = @"SELECT [Id]
+FROM [Batch]
+WHERE [BusinessUnitId] = @businessUnitId
+AND [IndexStatus] = 0
+ORDER BY [CreatedOn] ASC, [Id] ASC;";
+            cmd.Parameters.Add(new SqlParameter("@businessUnitId", SqlDbType.Int) { Value = businessUnitId });
+
+            var results = new List<Guid>();
 
             await using var reader = await cmd.ExecuteReaderAsync(cancellationToken)
                                               .ConfigureAwait(false);
