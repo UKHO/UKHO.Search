@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-avcs-bespokeexchangesets-2-bespoke-exchange-set",
+        "context": "avcs-bespokeexchangesets",
         "description": "AVCS bespoke exchange set.",
         "enabled": true,
         "if": {

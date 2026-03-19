@@ -3,37 +3,43 @@
 @rendermode InteractiveServer
 
 @using RulesWorkbench.Services
-@inject RulesSnapshotStore RulesSnapshotStore
+@inject AppConfigRulesSnapshotStore RulesSnapshotStore
 
 <PageTitle>Home</PageTitle>
 
 <h1>Rule Workbench</h1>
 
-@if (_snapshot is null)
-{
-    <p>Loading rules…</p>
-}
-else if (!_snapshot.IsLoaded)
+@if (_loadError is not null)
 {
     <p><strong>Rules failed to load.</strong></p>
-    <p>@_snapshot.Error?.Message</p>
-    @if (!string.IsNullOrWhiteSpace(_snapshot.Error?.Details))
-    {
-        <pre>@_snapshot.Error!.Details</pre>
-    }
+    <p>@_loadError</p>
+}
+else if (_rulesLoaded is null)
+{
+    <p>Loading rules…</p>
 }
 else
 {
     <p><strong>Provider:</strong> file-share</p>
-    <p><strong>Rules loaded:</strong> @_snapshot.RuleCount</p>
+    <p><strong>Rules loaded:</strong> @_rulesLoaded</p>
 }
 
 @code
 {
-    private FileShareRulesSnapshot? _snapshot;
+    private int? _rulesLoaded;
+
+    private string? _loadError;
 
     protected override void OnInitialized()
     {
-        _snapshot = RulesSnapshotStore.LoadFileShareRules();
+        try
+        {
+            _rulesLoaded = RulesSnapshotStore.GetRules(null)
+                .Count(x => string.Equals(x.Provider, "file-share", StringComparison.OrdinalIgnoreCase));
+        }
+        catch (Exception ex)
+        {
+            _loadError = ex.Message;
+        }
     }
 }

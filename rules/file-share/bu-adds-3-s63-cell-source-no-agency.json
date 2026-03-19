@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-adds-3-s63-cell-source-no-agency",
+        "context": "adds",
         "description": "ADDS S63 cell with source and no agency.",
         "enabled": true,
         "if": {

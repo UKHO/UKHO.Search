@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-adds-6-avcs-minimal",
+        "context": "adds",
         "description": "ADDS minimal AVCS support item.",
         "enabled": true,
         "if": {

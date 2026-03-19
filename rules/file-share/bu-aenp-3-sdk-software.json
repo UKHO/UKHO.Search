@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-aenp-3-sdk-software",
+        "context": "aenp",
         "description": "AENP SDK software.",
         "enabled": true,
         "if": {

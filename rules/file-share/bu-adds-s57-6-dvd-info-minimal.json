@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-adds-s57-6-dvd-info-minimal",
+        "context": "adds-s57",
         "description": "ADDS-S57 minimal DVD info support item.",
         "enabled": true,
         "if": {

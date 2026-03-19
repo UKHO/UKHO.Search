@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-adds-2-s63-cell-source-traceid",
+        "context": "adds",
         "description": "ADDS S63 cell with source and traceid.",
         "enabled": true,
         "if": {

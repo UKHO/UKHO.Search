@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-aenp-1-publication-edition-year",
+        "context": "aenp",
         "description": "AENP publication with edition and year.",
         "enabled": true,
         "if": {

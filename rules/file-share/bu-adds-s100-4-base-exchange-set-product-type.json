@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-adds-s100-4-base-exchange-set-product-type",
+        "context": "adds-s100",
         "description": "ADDS-S100 base exchange set using product type.",
         "enabled": true,
         "if": {

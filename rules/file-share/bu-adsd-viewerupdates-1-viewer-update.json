@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-adsd-viewerupdates-1-viewer-update",
+        "context": "adsd-viewerupdates",
         "description": "ADSD viewer update.",
         "enabled": true,
         "if": {

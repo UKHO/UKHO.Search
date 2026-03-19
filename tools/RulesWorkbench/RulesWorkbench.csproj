@@ -26,4 +26,7 @@
         <ProjectReference Include="..\..\src\UKHO.Search.Infrastructure.Ingestion\UKHO.Search.Infrastructure.Ingestion.csproj" />
         <ProjectReference Include="..\FileShareEmulator.Common\FileShareEmulator.Common.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Rules\file-share\" />
+	</ItemGroup>
 </Project>

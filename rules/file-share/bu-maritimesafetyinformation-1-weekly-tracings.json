@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-maritimesafetyinformation-1-weekly-tracings",
+        "context": "maritimesafetyinformation",
         "description": "Maritime Safety Information weekly tracings.",
         "enabled": true,
         "if": {

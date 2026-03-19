@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-printtoorder-9-dimensions-basic",
+        "context": "printtoorder",
         "description": "PrintToOrder paper chart with dimensions.",
         "enabled": true,
         "if": {

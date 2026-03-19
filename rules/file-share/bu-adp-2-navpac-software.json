@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-adp-2-navpac-software",
+        "context": "adp",
         "description": "NavPac software.",
         "enabled": true,
         "if": {

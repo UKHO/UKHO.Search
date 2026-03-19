@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-adds-s57-4-catalogue-support",
+        "context": "adds-s57",
         "description": "ADDS-S57 catalogue support item.",
         "enabled": true,
         "if": {

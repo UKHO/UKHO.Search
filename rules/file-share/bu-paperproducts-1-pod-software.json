@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-paperproducts-1-pod-software",
+        "context": "paperproducts",
         "description": "PaperProducts POD software.",
         "enabled": true,
         "if": {

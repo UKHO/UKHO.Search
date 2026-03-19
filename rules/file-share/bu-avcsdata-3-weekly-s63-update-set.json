@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-avcsdata-3-weekly-s63-update-set",
+        "context": "avcsdata",
         "description": "AVCSData weekly S63 update exchange set.",
         "enabled": true,
         "if": {

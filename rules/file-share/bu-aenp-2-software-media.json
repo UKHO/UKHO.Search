@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-aenp-2-software-media",
+        "context": "aenp",
         "description": "AENP software package with media type.",
         "enabled": true,
         "if": {

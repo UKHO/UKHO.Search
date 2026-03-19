@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-avcsdata-5-annual-catalogue",
+        "context": "avcsdata",
         "description": "AVCSData annual catalogue.",
         "enabled": true,
         "if": {

@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-adds-s57-1-s57-cell-source",
+        "context": "adds-s57",
         "description": "ADDS-S57 S57 cell with source.",
         "enabled": true,
         "if": {

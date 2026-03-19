@@ -2,6 +2,7 @@
     "schemaVersion": "1.0",
     "rule": {
         "id": "bu-printtoorder-7-minimal-paper-chart",
+        "context": "printtoorder",
         "description": "PrintToOrder minimal paper chart.",
         "enabled": true,
         "if": {

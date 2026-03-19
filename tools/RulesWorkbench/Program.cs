@@ -18,7 +18,6 @@ namespace RulesWorkbench
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
-            builder.Services.AddSingleton<RulesSnapshotStore>();
             builder.Services.AddSingleton<AppConfigRulesSnapshotStore>();
             builder.Services.AddSingleton<IRuleBuilderMapper, RuleBuilderMapper>();
             builder.Services.AddSingleton<IRuleJsonValidator, SystemTextJsonRuleJsonValidator>();
