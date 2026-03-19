@@ -1,0 +1,69 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-adds-s100-4-base-exchange-set-product-type",
+        "description": "ADDS-S100 base exchange set using product type.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "adds-s100"
+                },
+                {
+                    "path": "properties[\"exchange set type\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"product type\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"product code\"]",
+                    "exists": false
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "s100",
+                    "base",
+                    "exchange set",
+                    "daily"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "format": {
+                "add": [
+                    "$path:properties[\"media type\"]"
+                ]
+            },
+            "category": {
+                "add": [
+                    "exchange set"
+                ]
+            },
+            "series": {
+                "add": [
+                    "s-100",
+                    "s100"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"exchange set type\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "daily s100 base exchange set in $path:properties[\"media type\"] format"
+                ]
+            }
+        }
+    }
+}

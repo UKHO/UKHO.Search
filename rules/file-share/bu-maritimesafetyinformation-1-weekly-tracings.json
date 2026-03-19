@@ -1,0 +1,74 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-maritimesafetyinformation-1-weekly-tracings",
+        "description": "Maritime Safety Information weekly tracings.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "maritimesafetyinformation"
+                },
+                {
+                    "path": "properties[\"content\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"frequency\"]",
+                    "eq": "weekly"
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "msi",
+                    "notice to mariners",
+                    "weekly",
+                    "tracings"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "format": {
+                "add": [
+                    "$path:properties[\"content\"]"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"year\"])"
+                ]
+            },
+            "minorVersion": {
+                "add": [
+                    "toInt($path:properties[\"week number\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "notice to mariners"
+                ]
+            },
+            "series": {
+                "add": [
+                    "msi"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"year / week\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "weekly notice to mariners tracings for $path:properties[\"year / week\"] dated $path:properties[\"data date\"]"
+                ]
+            }
+        }
+    }
+}

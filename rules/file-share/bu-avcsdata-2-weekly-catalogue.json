@@ -1,0 +1,69 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-avcsdata-2-weekly-catalogue",
+        "description": "AVCSData weekly catalogue.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "avcsdata"
+                },
+                {
+                    "path": "properties[\"catalogue type\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "avcs",
+                    "catalogue",
+                    "weekly"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "format": {
+                "add": [
+                    "catalogue"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"year\"])"
+                ]
+            },
+            "minorVersion": {
+                "add": [
+                    "toInt($path:properties[\"week number\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "catalogue"
+                ]
+            },
+            "series": {
+                "add": [
+                    "avcs"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"year / week\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "weekly avcs catalogue for $path:properties[\"year / week\"]"
+                ]
+            }
+        }
+    }
+}

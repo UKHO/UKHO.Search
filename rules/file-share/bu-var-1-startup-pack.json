@@ -1,0 +1,55 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-var-1-startup-pack",
+        "description": "VAR startup pack.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "var"
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "var",
+                    "startup",
+                    "zip"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "format": {
+                "add": [
+                    "zip"
+                ]
+            },
+            "category": {
+                "add": [
+                    "support"
+                ]
+            },
+            "series": {
+                "add": [
+                    "var"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"content\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "var startup pack zip"
+                ]
+            }
+        }
+    }
+}

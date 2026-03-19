@@ -1,0 +1,72 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-maritimesafetyinformation-2-weekly-notices",
+        "description": "Maritime Safety Information weekly notices.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "maritimesafetyinformation"
+                },
+                {
+                    "path": "properties[\"frequency\"]",
+                    "eq": "weekly"
+                },
+                {
+                    "path": "properties[\"content\"]",
+                    "exists": false
+                },
+                {
+                    "path": "properties[\"week number\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "msi",
+                    "notice to mariners",
+                    "weekly"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"year\"])"
+                ]
+            },
+            "minorVersion": {
+                "add": [
+                    "toInt($path:properties[\"week number\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "notice to mariners"
+                ]
+            },
+            "series": {
+                "add": [
+                    "msi"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"year / week\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "weekly notice to mariners for $path:properties[\"year / week\"] dated $path:properties[\"data date\"]"
+                ]
+            }
+        }
+    }
+}

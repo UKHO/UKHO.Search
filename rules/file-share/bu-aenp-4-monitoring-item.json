@@ -1,0 +1,61 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-aenp-4-monitoring-item",
+        "description": "AENP monitoring item.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "aenp"
+                },
+                {
+                    "path": "properties[\"product id\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"edition\"]",
+                    "exists": false
+                },
+                {
+                    "path": "properties[\"aenp version\"]",
+                    "exists": false
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "aenp",
+                    "monitoring"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "category": {
+                "add": [
+                    "support"
+                ]
+            },
+            "series": {
+                "add": [
+                    "aenp"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"product id\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "aenp monitoring item"
+                ]
+            }
+        }
+    }
+}

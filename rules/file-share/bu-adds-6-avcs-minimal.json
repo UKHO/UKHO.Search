@@ -1,0 +1,35 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-adds-6-avcs-minimal",
+        "description": "ADDS minimal AVCS support item.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "adds"
+                },
+                {
+                    "path": "properties[\"product type\"]",
+                    "eq": "avcs"
+                },
+                {
+                    "path": "properties[\"content\"]",
+                    "exists": false
+                },
+                {
+                    "path": "properties[\"cellname\"]",
+                    "exists": false
+                }
+            ]
+        },
+        "then": {
+            "series": {
+                "add": [
+                    "avcs"
+                ]
+            }
+        }
+    }
+}

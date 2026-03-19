@@ -1,0 +1,62 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-aenp-2-software-media",
+        "description": "AENP software package with media type.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "aenp"
+                },
+                {
+                    "path": "properties[\"aenp version\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"media type\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "aenp",
+                    "software"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "format": {
+                "add": [
+                    "$path:properties[\"media type\"]"
+                ]
+            },
+            "category": {
+                "add": [
+                    "software"
+                ]
+            },
+            "series": {
+                "add": [
+                    "aenp"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"product type\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "aenp software $path:properties[\"aenp version\"] in $path:properties[\"media type\"] format"
+                ]
+            }
+        }
+    }
+}

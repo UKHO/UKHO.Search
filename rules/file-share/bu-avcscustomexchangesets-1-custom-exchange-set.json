@@ -1,0 +1,60 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-avcscustomexchangesets-1-custom-exchange-set",
+        "description": "AVCS custom exchange set.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "avcscustomexchangesets"
+                },
+                {
+                    "path": "properties[\"exchange set type\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "custom",
+                    "exchange set",
+                    "customer",
+                    "avcs"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "format": {
+                "add": [
+                    "$path:properties[\"media type\"]"
+                ]
+            },
+            "category": {
+                "add": [
+                    "exchange set"
+                ]
+            },
+            "series": {
+                "add": [
+                    "avcs"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"exchange set type\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "custom avcs exchange set $path:properties[\"exchange set type\"] in $path:properties[\"media type\"] format"
+                ]
+            }
+        }
+    }
+}

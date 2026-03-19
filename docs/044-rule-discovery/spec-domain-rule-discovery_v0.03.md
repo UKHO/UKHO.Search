@@ -12,6 +12,7 @@ Source discovery document: `docs/044-rule-discovery/spec-domain-rule-discovery_v
   - records domain confirmation that support/readme/startup-pack classes should be indexed
   - records domain confirmation that fixed `s-xxx` values should be indexed in both hyphenated and non-hyphenated forms
   - records domain confirmation that `adsd-viewerupdates` should be searchable for api consumers
+  - records domain confirmation that `aenp` monitoring items should be searchable
   - removes the resolved `printtoorder`, support/readme/startup-pack, fixed `s-xxx`, and `adsd-viewerupdates` questions from the open questions list
 - `v0.02`
   - adds per-business-unit and per-class mapping proposals
@@ -2156,7 +2157,7 @@ Rationale: only `product id` and `product type` exist, making this a lightweight
 
 ##### Notes / risks / questions
 
-- defer pending domain confirmation if monitoring items should not be searchable
+- domain confirmation says monitoring items should be searchable
 
 ### Business Unit: `ARCS` (`Id: 11`)
 

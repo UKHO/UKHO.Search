@@ -1,0 +1,66 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-aenp-1-publication-edition-year",
+        "description": "AENP publication with edition and year.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "aenp"
+                },
+                {
+                    "path": "properties[\"product id\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"edition\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"year\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "aenp",
+                    "publication"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"edition\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "publication"
+                ]
+            },
+            "series": {
+                "add": [
+                    "aenp"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"product id\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "aenp publication $path:properties[\"product id\"] edition $path:properties[\"edition\"] year $path:properties[\"year\"]"
+                ]
+            }
+        }
+    }
+}

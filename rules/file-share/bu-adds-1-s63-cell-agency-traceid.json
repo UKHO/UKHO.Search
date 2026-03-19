@@ -1,0 +1,74 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-adds-1-s63-cell-agency-traceid",
+        "description": "ADDS S63 cell with agency and traceid.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "adds"
+                },
+                {
+                    "path": "properties[\"agency\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"traceid\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"source\"]",
+                    "exists": false
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "adds",
+                    "avcs",
+                    "s63",
+                    "enc",
+                    "cell"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "$path:properties[\"agency\"]"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"editionnumber\"])"
+                ]
+            },
+            "minorVersion": {
+                "add": [
+                    "toInt($path:properties[\"updatenumber\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "enc"
+                ]
+            },
+            "series": {
+                "add": [
+                    "s63"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"cellname\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "s63 enc cell $path:properties[\"cellname\"] from $path:properties[\"agency\"] edition $path:properties[\"editionnumber\"] update $path:properties[\"updatenumber\"]"
+                ]
+            }
+        }
+    }
+}

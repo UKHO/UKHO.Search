@@ -1,0 +1,71 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-printtoorder-5-chart-version-int-plan",
+        "description": "PrintToOrder paper chart with chart version, INT, and plan.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "printtoorder"
+                },
+                {
+                    "path": "properties[\"chart version id\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"int number\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"plan type\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"nm number\"]",
+                    "exists": false
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "paper",
+                    "chart",
+                    "int"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "format": {
+                "add": [
+                    "paper"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"edition number\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "paper chart"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"chart number\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "paper chart $path:properties[\"chart number\"] $path:properties[\"chart title\"] int $path:properties[\"int number\"] edition $path:properties[\"edition number\"]"
+                ]
+            }
+        }
+    }
+}

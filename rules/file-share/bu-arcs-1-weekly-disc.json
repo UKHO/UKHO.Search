@@ -1,0 +1,69 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-arcs-1-weekly-disc",
+        "description": "ARCS weekly disc.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "arcs"
+                },
+                {
+                    "path": "properties[\"disc\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "arcs",
+                    "weekly",
+                    "disc"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "format": {
+                "add": [
+                    "$path:properties[\"media type\"]"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"year\"])"
+                ]
+            },
+            "minorVersion": {
+                "add": [
+                    "toInt($path:properties[\"week number\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "exchange set"
+                ]
+            },
+            "series": {
+                "add": [
+                    "arcs"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"disc\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "weekly arcs disc $path:properties[\"disc\"] for $path:properties[\"year / week\"]"
+                ]
+            }
+        }
+    }
+}

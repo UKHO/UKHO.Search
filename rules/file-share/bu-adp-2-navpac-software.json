@@ -1,0 +1,54 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-adp-2-navpac-software",
+        "description": "NavPac software.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "adp"
+                },
+                {
+                    "path": "properties[\"navpac version\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "software",
+                    "navpac",
+                    "trial"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "category": {
+                "add": [
+                    "software"
+                ]
+            },
+            "series": {
+                "add": [
+                    "navpac"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"product type\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "navpac software $path:properties[\"navpac version\"] for $path:properties[\"product type\"]"
+                ]
+            }
+        }
+    }
+}

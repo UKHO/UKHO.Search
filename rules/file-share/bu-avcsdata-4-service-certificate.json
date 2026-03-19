@@ -1,0 +1,58 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-avcsdata-4-service-certificate",
+        "description": "AVCSData service certificate.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "avcsdata"
+                },
+                {
+                    "path": "properties[\"service\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"content\"]",
+                    "eq": "certificate"
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "certificate",
+                    "service",
+                    "avcs"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "category": {
+                "add": [
+                    "certificate"
+                ]
+            },
+            "series": {
+                "add": [
+                    "avcs"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"service\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "avcs certificate for $path:properties[\"service\"]"
+                ]
+            }
+        }
+    }
+}

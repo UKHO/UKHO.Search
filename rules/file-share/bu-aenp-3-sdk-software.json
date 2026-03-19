@@ -1,0 +1,58 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-aenp-3-sdk-software",
+        "description": "AENP SDK software.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "aenp"
+                },
+                {
+                    "path": "properties[\"aenp version\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"media type\"]",
+                    "exists": false
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "aenp",
+                    "software",
+                    "sdk"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "category": {
+                "add": [
+                    "software"
+                ]
+            },
+            "series": {
+                "add": [
+                    "aenp"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"aenp version\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "aenp sdk software"
+                ]
+            }
+        }
+    }
+}

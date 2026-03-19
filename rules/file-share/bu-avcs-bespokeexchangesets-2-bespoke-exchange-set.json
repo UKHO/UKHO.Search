@@ -1,0 +1,70 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-avcs-bespokeexchangesets-2-bespoke-exchange-set",
+        "description": "AVCS bespoke exchange set.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "avcs-bespokeexchangesets"
+                },
+                {
+                    "path": "properties[\"exchange set type\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "bespoke",
+                    "exchange set",
+                    "avcs",
+                    "hourly"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "format": {
+                "add": [
+                    "$path:properties[\"media type\"]"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"year\"])"
+                ]
+            },
+            "minorVersion": {
+                "add": [
+                    "toInt($path:properties[\"week number\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "exchange set"
+                ]
+            },
+            "series": {
+                "add": [
+                    "avcs"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"audience\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "bespoke avcs $path:properties[\"exchange set type\"] exchange set for $path:properties[\"audience\"] in $path:properties[\"media type\"] format"
+                ]
+            }
+        }
+    }
+}

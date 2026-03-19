@@ -1,0 +1,55 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-adsd-viewerupdates-1-viewer-update",
+        "description": "ADSD viewer update.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "adsd-viewerupdates"
+                },
+                {
+                    "path": "properties[\"publishdatetime\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "adsd",
+                    "viewer",
+                    "update",
+                    "adv"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "category": {
+                "add": [
+                    "viewer update"
+                ]
+            },
+            "series": {
+                "add": [
+                    "adsd"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"publishdatetime\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "adsd viewer update published $path:properties[\"publishdatetime\"]"
+                ]
+            }
+        }
+    }
+}

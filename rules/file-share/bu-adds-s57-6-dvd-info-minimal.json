@@ -1,0 +1,54 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-adds-s57-6-dvd-info-minimal",
+        "description": "ADDS-S57 minimal DVD info support item.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "adds-s57"
+                },
+                {
+                    "path": "properties[\"dvd info\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "dvd",
+                    "info",
+                    "avcs"
+                ]
+            },
+            "format": {
+                "add": [
+                    "dvd"
+                ]
+            },
+            "category": {
+                "add": [
+                    "support"
+                ]
+            },
+            "series": {
+                "add": [
+                    "avcs"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"dvd info\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "adds-s57 avcs dvd info support item"
+                ]
+            }
+        }
+    }
+}

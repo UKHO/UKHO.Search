@@ -1,0 +1,59 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-maritimesafetyinformation-3-cumulative-notices",
+        "description": "Maritime Safety Information cumulative notices.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "maritimesafetyinformation"
+                },
+                {
+                    "path": "properties[\"frequency\"]",
+                    "eq": "cumulative"
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "msi",
+                    "notice to mariners",
+                    "cumulative"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"year\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "notice to mariners"
+                ]
+            },
+            "series": {
+                "add": [
+                    "msi"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"year\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "cumulative notice to mariners for $path:properties[\"year\"] dated $path:properties[\"data date\"]"
+                ]
+            }
+        }
+    }
+}

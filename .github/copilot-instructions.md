@@ -81,6 +81,9 @@ Rules:
 ## RulesWorkbench Specifications
 - When updating specs for RulesWorkbench, editing is mandatory (existing behavior) and implement saving of VALID rules back to Azure App Configuration if it is a simple extension.
 
+## Ingestion Rules
+- When authoring ingestion rules from the mapping spec, only explicitly mapped fixed keywords should be written into rule JSON; copying the remaining batch attribute values into keywords is handled by the ingestion service at runtime.
+
 ## Detailed Topic Guides
 Refer to specialized instruction files for full detail:
 - Architecture: `.github/instructions/architecture.instructions.md`

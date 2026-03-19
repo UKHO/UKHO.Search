@@ -1,0 +1,64 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-adds-5-dvd-info-support",
+        "description": "ADDS DVD info support item.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "adds"
+                },
+                {
+                    "path": "properties[\"content\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"product type\"]",
+                    "eq": "avcs"
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "adds",
+                    "avcs",
+                    "dvd",
+                    "info"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "format": {
+                "add": [
+                    "dvd"
+                ]
+            },
+            "category": {
+                "add": [
+                    "support"
+                ]
+            },
+            "series": {
+                "add": [
+                    "avcs"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"content\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "adds avcs dvd info support item"
+                ]
+            }
+        }
+    }
+}

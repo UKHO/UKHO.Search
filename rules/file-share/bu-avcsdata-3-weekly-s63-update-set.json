@@ -1,0 +1,70 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-avcsdata-3-weekly-s63-update-set",
+        "description": "AVCSData weekly S63 update exchange set.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "avcsdata"
+                },
+                {
+                    "path": "properties[\"s63 version\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "avcs",
+                    "s63",
+                    "update",
+                    "weekly"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "format": {
+                "add": [
+                    "$path:properties[\"media type\"]"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"year\"])"
+                ]
+            },
+            "minorVersion": {
+                "add": [
+                    "toInt($path:properties[\"week number\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "exchange set"
+                ]
+            },
+            "series": {
+                "add": [
+                    "s63"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"year / week\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "weekly s63 avcs update exchange set for $path:properties[\"year / week\"] in $path:properties[\"media type\"] format"
+                ]
+            }
+        }
+    }
+}

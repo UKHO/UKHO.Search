@@ -1,0 +1,64 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-adds-s100-1-data-product-product-code",
+        "description": "ADDS-S100 data product using product code.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "adds-s100"
+                },
+                {
+                    "path": "properties[\"product code\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "s100",
+                    "product",
+                    "cell"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "$path:properties[\"producing agency\"]"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"edition number\"])"
+                ]
+            },
+            "minorVersion": {
+                "add": [
+                    "toInt($path:properties[\"update number\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "data product"
+                ]
+            },
+            "series": {
+                "add": [
+                    "$path:properties[\"product code\"]"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"product name\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "s100 product $path:properties[\"product name\"] from $path:properties[\"producing agency\"] edition $path:properties[\"edition number\"] update $path:properties[\"update number\"]"
+                ]
+            }
+        }
+    }
+}

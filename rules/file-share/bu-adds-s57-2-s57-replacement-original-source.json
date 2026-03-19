@@ -1,0 +1,70 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-adds-s57-2-s57-replacement-original-source",
+        "description": "ADDS-S57 replacement cell with original source.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "adds-s57"
+                },
+                {
+                    "path": "properties[\"original source\"]",
+                    "exists": true
+                },
+                {
+                    "path": "properties[\"s57-crc\"]",
+                    "exists": false
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "adds-s57",
+                    "avcs",
+                    "s57",
+                    "replacement",
+                    "backfill"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "$path:properties[\"agency\"]"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"editionnumber\"])"
+                ]
+            },
+            "minorVersion": {
+                "add": [
+                    "toInt($path:properties[\"updatenumber\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "enc"
+                ]
+            },
+            "series": {
+                "add": [
+                    "s57"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"cellname\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "s57 replacement cell $path:properties[\"cellname\"] from $path:properties[\"agency\"] edition $path:properties[\"editionnumber\"] update $path:properties[\"updatenumber\"]"
+                ]
+            }
+        }
+    }
+}

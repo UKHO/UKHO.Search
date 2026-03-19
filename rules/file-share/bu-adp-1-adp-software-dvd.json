@@ -1,0 +1,64 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-adp-1-adp-software-dvd",
+        "description": "ADP software on DVD.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "adp"
+                },
+                {
+                    "path": "properties[\"adp version\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "adp",
+                    "software",
+                    "dvd"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "format": {
+                "add": [
+                    "$path:properties[\"media type\"]"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"adp version\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "software"
+                ]
+            },
+            "series": {
+                "add": [
+                    "adp"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"product type\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "adp software version $path:properties[\"adp version\"] on $path:properties[\"media type\"]"
+                ]
+            }
+        }
+    }
+}

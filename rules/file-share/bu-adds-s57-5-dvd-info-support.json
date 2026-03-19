@@ -1,0 +1,63 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-adds-s57-5-dvd-info-support",
+        "description": "ADDS-S57 DVD info support item.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "adds-s57"
+                },
+                {
+                    "path": "properties[\"content\"]",
+                    "eq": "dvd info"
+                },
+                {
+                    "path": "properties[\"dvd info\"]",
+                    "exists": false
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "dvd",
+                    "info",
+                    "avcs"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "format": {
+                "add": [
+                    "dvd"
+                ]
+            },
+            "category": {
+                "add": [
+                    "support"
+                ]
+            },
+            "series": {
+                "add": [
+                    "avcs"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"content\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "adds-s57 avcs dvd info support item"
+                ]
+            }
+        }
+    }
+}

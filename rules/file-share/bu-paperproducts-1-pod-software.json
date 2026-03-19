@@ -1,0 +1,53 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-paperproducts-1-pod-software",
+        "description": "PaperProducts POD software.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "paperproducts"
+                },
+                {
+                    "path": "properties[\"pod version\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "pod",
+                    "software"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "category": {
+                "add": [
+                    "software"
+                ]
+            },
+            "series": {
+                "add": [
+                    "pod"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"pod version\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "pod software $path:properties[\"pod version\"]"
+                ]
+            }
+        }
+    }
+}

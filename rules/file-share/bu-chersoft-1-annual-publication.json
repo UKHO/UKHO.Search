@@ -1,0 +1,59 @@
+{
+    "schemaVersion": "1.0",
+    "rule": {
+        "id": "bu-chersoft-1-annual-publication",
+        "description": "Chersoft annual AENP publication.",
+        "enabled": true,
+        "if": {
+            "all": [
+                {
+                    "path": "properties[\"businessunitname\"]",
+                    "eq": "chersoft"
+                },
+                {
+                    "path": "properties[\"product id\"]",
+                    "exists": true
+                }
+            ]
+        },
+        "then": {
+            "keywords": {
+                "add": [
+                    "aenp",
+                    "annual",
+                    "publication"
+                ]
+            },
+            "authority": {
+                "add": [
+                    "ukho"
+                ]
+            },
+            "majorVersion": {
+                "add": [
+                    "toInt($path:properties[\"year\"])"
+                ]
+            },
+            "category": {
+                "add": [
+                    "publication"
+                ]
+            },
+            "series": {
+                "add": [
+                    "aenp"
+                ]
+            },
+            "instance": {
+                "add": [
+                    "$path:properties[\"product id\"]"
+                ]
+            },
+            "searchText": {
+                "add": [
+                    "annual aenp publication $path:properties[\"product id\"] for $path:properties[\"year\"]"
+                ]
+            }
+        }
+    }
+}
