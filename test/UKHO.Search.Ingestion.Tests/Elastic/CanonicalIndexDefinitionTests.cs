@@ -42,6 +42,10 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
                       .GetProperty("enabled")
                       .GetBoolean()
                       .ShouldBeFalse();
+            properties.GetProperty("provider")
+                      .GetProperty("type")
+                      .GetString()
+                      .ShouldBe("keyword");
             properties.GetProperty("keywords")
                       .GetProperty("type")
                       .GetString()

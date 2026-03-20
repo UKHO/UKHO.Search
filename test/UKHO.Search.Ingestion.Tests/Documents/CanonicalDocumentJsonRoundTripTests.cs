@@ -19,7 +19,7 @@ namespace UKHO.Search.Ingestion.Tests.Documents
                 new IngestionProperty { Name = "Category", Type = IngestionPropertyType.String, Value = "A" }
             }, ["t"], timestamp, new IngestionFileList());
 
-            var doc = CanonicalDocument.CreateMinimal("doc-1", source, timestamp);
+            var doc = CanonicalDocument.CreateMinimal("doc-1", "file-share", source, timestamp);
             doc.AddKeyword("Alpha");
             doc.AddKeyword("BETA");
             doc.AddSearchText("Hello WORLD");
@@ -39,6 +39,8 @@ namespace UKHO.Search.Ingestion.Tests.Documents
                   .ValueKind.ShouldBe(JsonValueKind.Object);
             parsed.RootElement.GetProperty("Timestamp")
                   .ValueKind.ShouldBe(JsonValueKind.String);
+            parsed.RootElement.GetProperty("Provider")
+                  .ValueKind.ShouldBe(JsonValueKind.String);
             parsed.RootElement.GetProperty("Keywords")
                   .ValueKind.ShouldBe(JsonValueKind.Array);
             parsed.RootElement.GetProperty("SearchText")
@@ -53,6 +55,7 @@ namespace UKHO.Search.Ingestion.Tests.Documents
             roundTripped.ShouldNotBeNull();
 
             roundTripped!.Id.ShouldBe("doc-1");
+            roundTripped.Provider.ShouldBe("file-share");
             roundTripped.Source.Properties.Count.ShouldBe(1);
             roundTripped.Source.Properties[0]
                         .Name.ShouldBe("category");

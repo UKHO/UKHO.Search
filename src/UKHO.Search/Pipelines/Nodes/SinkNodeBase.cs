@@ -77,7 +77,7 @@ namespace UKHO.Search.Pipelines.Nodes
                 {
                     // If cancellation races with a faulted upstream completion, prefer propagating the
                     // upstream exception so downstream reliably faults rather than completing cleanly.
-                    await TryPropagateUpstreamCompletionAsync(_input.Completion)
+                    await TryPropagateUpstreamCompletionAsync(_input, _input.Completion)
                         .ConfigureAwait(false);
                 }
             }
@@ -120,7 +120,7 @@ namespace UKHO.Search.Pipelines.Nodes
             }
         }
 
-        private static async Task TryPropagateUpstreamCompletionAsync(Task completion)
+        private static async Task TryPropagateUpstreamCompletionAsync(ChannelReader<TIn> input, Task completion)
         {
             if (completion.IsCompleted)
             {
@@ -128,10 +128,27 @@ namespace UKHO.Search.Pipelines.Nodes
                 return;
             }
 
-            var finished = await Task.WhenAny(completion, Task.Delay(TimeSpan.FromSeconds(1)))
-                                     .ConfigureAwait(false);
+            var deadline = DateTime.UtcNow.AddSeconds(1);
 
-            if (finished == completion)
+            while (!completion.IsCompleted && DateTime.UtcNow < deadline)
+            {
+                // If a writer faulted the channel while items remain buffered, the reader completion task will
+                // not observe that fault until the buffered items are drained. Discard them here so downstream
+                // completion preserves the upstream exception instead of completing cleanly on cancellation.
+                while (input.TryRead(out _))
+                {
+                }
+
+                if (completion.IsCompleted)
+                {
+                    break;
+                }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(25))
+                          .ConfigureAwait(false);
+            }
+
+            if (completion.IsCompleted)
             {
                 await completion.ConfigureAwait(false);
             }

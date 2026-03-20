@@ -19,7 +19,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline
     {
         public static FileShareIngestionProcessingGraphHandle Build(ChannelReader<Envelope<IngestionRequest>> ingress, FileShareIngestionProcessingGraphDependencies dependencies, CancellationToken cancellationToken)
         {
-            return Build(ingress, dependencies, null, cancellationToken);
+            return Build(ingress, dependencies, FileShareIngestionDataProviderFactory.ProviderName, cancellationToken);
         }
 
         public static FileShareIngestionProcessingGraphHandle Build(ChannelReader<Envelope<IngestionRequest>> ingress, FileShareIngestionProcessingGraphDependencies dependencies, string? providerName, CancellationToken cancellationToken)

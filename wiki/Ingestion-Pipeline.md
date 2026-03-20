@@ -69,7 +69,7 @@ The provider-facing contract is:
 - `DeserializeIngestionRequestAsync(...)`
 - `ProcessIngestionRequestAsync(Envelope<IngestionRequest> ...)`
 
-By the time a request reaches the provider graph, it is already wrapped in an `Envelope<T>` with key/message metadata and queue-ack context.
+By the time a request reaches the provider graph, it is already wrapped in an `Envelope<T>` with key/message metadata, queue-ack context, and provider-scoped context needed later in the pipeline.
 
 In practice, queue ingress also includes infrastructure concerns that sit just outside the provider graph:
 
@@ -79,6 +79,8 @@ In practice, queue ingress also includes infrastructure concerns that sit just o
 - attaching an acknowledgement/deletion callback into envelope context so successful or dead-lettered terminal outcomes can remove the original queue message
 
 That split is deliberate: infrastructure owns queue mechanics, while the provider owns request processing.
+
+For canonical document construction, the important provider-scoped value is the provider identifier itself. File Share attaches that context at ingress so later generic pipeline nodes can forward it without becoming provider-specific.
 
 ### 2. Validation
 
@@ -110,6 +112,8 @@ Why this matters:
 - `UpdateAcl` -> `AclUpdateOperation`
 
 For upserts it also creates the initial minimal `CanonicalDocument`.
+
+That minimal document now includes the immutable `Provider` field. Dispatch resolves provider-scoped parameters propagated from queue ingress and passes them into `CanonicalDocumentBuilder`, which means `Provider` is always set before enrichment or indexing begins.
 
 ### 5. Enrichment
 
@@ -147,6 +151,8 @@ Infrastructure bulk-index code converts each `IndexOperation` into an Elasticsea
 - ACL update -> partial update of `source.securityTokens`
 
 Before bulk indexing, the client ensures the index exists and validates expected field mappings.
+
+The canonical index projection preserves `Provider` and maps it as a `keyword` so exact-match filtering and diagnostics can distinguish documents by their originating provider.
 
 An important design detail is that retries for indexing are intentionally lane-blocking. If Elasticsearch is slow or rejecting a lane's current batch, later messages for the same key cannot jump ahead. This preserves per-key ordering guarantees all the way through to the index.
 

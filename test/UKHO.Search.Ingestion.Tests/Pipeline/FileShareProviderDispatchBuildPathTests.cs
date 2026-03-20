@@ -30,19 +30,23 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             var add = new IndexRequest("doc-1", properties, new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList());
             var request = new IngestionRequest(IngestionRequestType.IndexItem, add, null, null);
 
-            await input.Writer.WriteAsync(new Envelope<IngestionRequest>("doc-1", request));
+            var envelope = new Envelope<IngestionRequest>("doc-1", request);
+            envelope.Context.SetItem(ProviderEnvelopeContextKeys.ProviderParameters, new ProviderParameters("file-share"));
+
+            await input.Writer.WriteAsync(envelope);
             input.Writer.TryComplete();
 
             await node.Completion.WaitAsync(TimeSpan.FromSeconds(2));
 
-            output.Reader.TryRead(out var envelope)
+            output.Reader.TryRead(out var outputEnvelope)
                   .ShouldBeTrue();
             deadLetter.Reader.TryRead(out var _)
                       .ShouldBeFalse();
 
-            var upsert = envelope.Payload.Operation.ShouldBeOfType<UpsertOperation>();
+            var upsert = outputEnvelope.Payload.Operation.ShouldBeOfType<UpsertOperation>();
             upsert.DocumentId.ShouldBe("doc-1");
             upsert.Document.Id.ShouldBe("doc-1");
+            upsert.Document.Provider.ShouldBe("file-share");
             upsert.Document.Source.Properties.ShouldNotBeSameAs(add.Properties);
             upsert.Document.Source.Properties.Count.ShouldBe(1);
             upsert.Document.Source.Properties[0].Name.ShouldBe("category");

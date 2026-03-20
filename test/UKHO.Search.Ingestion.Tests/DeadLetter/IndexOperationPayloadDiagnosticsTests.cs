@@ -72,7 +72,7 @@ namespace UKHO.Search.Ingestion.Tests.DeadLetter
 
         private static CanonicalDocument CreateCanonicalDocument(string documentId)
         {
-            var document = CanonicalDocument.CreateMinimal(documentId, new IndexRequest(documentId, Array.Empty<IngestionProperty>(), ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList()), DateTimeOffset.UnixEpoch);
+            var document = CanonicalDocument.CreateMinimal(documentId, "file-share", new IndexRequest(documentId, Array.Empty<IngestionProperty>(), ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList()), DateTimeOffset.UnixEpoch);
             document.AddGeoPolygon(GeoPolygon.Create(new[]
             {
                 GeoCoordinate.Create(1d, 2d),

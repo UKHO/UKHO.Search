@@ -9,6 +9,8 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
     {
         public string Id { get; init; } = string.Empty;
 
+        public required string Provider { get; init; }
+
         public IndexRequest Source { get; init; } = new();
 
         public DateTimeOffset Timestamp { get; init; }
@@ -164,14 +166,16 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
             Content = string.Concat(Content, " ", normalized);
         }
 
-        public static CanonicalDocument CreateMinimal(string id, IndexRequest source, DateTimeOffset timestamp)
+        public static CanonicalDocument CreateMinimal(string id, string provider, IndexRequest source, DateTimeOffset timestamp)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(id);
+            ArgumentException.ThrowIfNullOrWhiteSpace(provider);
             ArgumentNullException.ThrowIfNull(source);
 
             return new CanonicalDocument
             {
                 Id = id,
+                Provider = provider.Trim(),
                 Source = source,
                 Timestamp = timestamp
             };

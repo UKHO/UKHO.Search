@@ -58,6 +58,9 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
             payload.ShouldNotContain("\"rings\"");
             payload.ShouldNotContain("\"longitude\"");
             payload.ShouldNotContain("\"latitude\"");
+            operationJson.RootElement.GetProperty("provider")
+                         .GetString()
+                         .ShouldBe("file-share");
         }
 
         [Fact]
@@ -138,7 +141,7 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
 
         private static CanonicalDocument CreateMinimalDocument(string documentId)
         {
-            return CanonicalDocument.CreateMinimal(documentId, new IndexRequest(documentId, Array.Empty<IngestionProperty>(), ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList()), DateTimeOffset.UnixEpoch);
+            return CanonicalDocument.CreateMinimal(documentId, "file-share", new IndexRequest(documentId, Array.Empty<IngestionProperty>(), ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList()), DateTimeOffset.UnixEpoch);
         }
 
         private static string Serialize(ElasticsearchClient client, BulkRequest request)

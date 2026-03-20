@@ -32,7 +32,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             var add = new IndexRequest("doc-1", properties, new[] { "t1" }, addTimestamp, new IngestionFileList());
             var request = new IngestionRequest(IngestionRequestType.IndexItem, add, null, null);
 
-            await input.Writer.WriteAsync(new Envelope<IngestionRequest>("doc-1", request));
+            await input.Writer.WriteAsync(CreateEnvelope("doc-1", request));
             input.Writer.TryComplete();
 
             await node.Completion.WaitAsync(TimeSpan.FromSeconds(2));
@@ -45,6 +45,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             var upsert = envelope.Payload.Operation.ShouldBeOfType<UpsertOperation>();
             upsert.DocumentId.ShouldBe("doc-1");
             upsert.Document.Id.ShouldBe("doc-1");
+            upsert.Document.Provider.ShouldBe("file-share");
 
             upsert.Document.Source.Properties.ShouldNotBeSameAs(add.Properties);
             upsert.Document.Source.Properties.Count.ShouldBe(1);
@@ -73,7 +74,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             var update = new IndexRequest("doc-1", properties, new[] { "t1" }, updateTimestamp, new IngestionFileList());
             var request = new IngestionRequest(IngestionRequestType.IndexItem, update, null, null);
 
-            await input.Writer.WriteAsync(new Envelope<IngestionRequest>("doc-1", request));
+            await input.Writer.WriteAsync(CreateEnvelope("doc-1", request));
             input.Writer.TryComplete();
 
             await node.Completion.WaitAsync(TimeSpan.FromSeconds(2));
@@ -86,6 +87,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             var upsert = envelope.Payload.Operation.ShouldBeOfType<UpsertOperation>();
             upsert.DocumentId.ShouldBe("doc-1");
             upsert.Document.Id.ShouldBe("doc-1");
+            upsert.Document.Provider.ShouldBe("file-share");
 
             upsert.Document.Source.Properties.ShouldNotBeSameAs(update.Properties);
             upsert.Document.Source.Properties.Count.ShouldBe(1);
@@ -93,6 +95,36 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             upsert.Document.Source.Properties[0].Type.ShouldBe(IngestionPropertyType.String);
             upsert.Document.Source.Properties[0].Value.ShouldBe("Hydro");
             upsert.Document.Timestamp.ShouldBe(updateTimestamp);
+        }
+
+        [Fact]
+        public async Task IndexItem_without_provider_context_is_failed_and_routed_to_deadletter()
+        {
+            var input = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
+            var output = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
+            var deadLetter = BoundedChannelFactory.Create<Envelope<IngestionRequest>>(1, true, true);
+
+            var canonicalBuilder = new CanonicalDocumentBuilder();
+
+            var node = new IngestionRequestDispatchNode("dispatch", input.Reader, output.Writer, deadLetter.Writer, canonicalBuilder);
+
+            await node.StartAsync(CancellationToken.None);
+
+            var request = new IngestionRequest(IngestionRequestType.IndexItem, new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList()), null, null);
+
+            await input.Writer.WriteAsync(new Envelope<IngestionRequest>("doc-1", request));
+            input.Writer.TryComplete();
+
+            await node.Completion.WaitAsync(TimeSpan.FromSeconds(2));
+
+            output.Reader.TryRead(out var _)
+                  .ShouldBeFalse();
+
+            deadLetter.Reader.TryRead(out var failed)
+                      .ShouldBeTrue();
+            failed.Status.ShouldBe(MessageStatus.Failed);
+            failed.Error.ShouldNotBeNull();
+            failed.Error!.ExceptionMessage.ShouldContain("Provider context is required");
         }
 
         [Fact]
@@ -204,6 +236,13 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
 
             outEnvelope.Context.Breadcrumbs.ShouldContain("upstream");
             outEnvelope.Context.Breadcrumbs.ShouldContain("dispatch");
+        }
+
+        private static Envelope<IngestionRequest> CreateEnvelope(string key, IngestionRequest request)
+        {
+            var envelope = new Envelope<IngestionRequest>(key, request);
+            envelope.Context.SetItem(ProviderEnvelopeContextKeys.ProviderParameters, new ProviderParameters("file-share"));
+            return envelope;
         }
     }
 }

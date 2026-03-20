@@ -56,6 +56,7 @@ namespace RulesWorkbench.Services
             var document = new CanonicalDocument
             {
                 Id = sourceCopy.Id,
+                Provider = ProviderName,
                 Timestamp = sourceCopy.Timestamp,
                 Source = sourceCopy
             };

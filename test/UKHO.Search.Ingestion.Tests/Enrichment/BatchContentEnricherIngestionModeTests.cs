@@ -20,7 +20,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             var enricher = new BatchContentEnricher(downloader, new[] { handler }, NullLogger<BatchContentEnricher>.Instance, new IngestionModeOptions(IngestionMode.BestEffort));
 
             var request = CreateAddRequest("batch-1");
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             await enricher.TryBuildEnrichmentAsync(request, document, CancellationToken.None);
 
@@ -37,7 +37,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             var enricher = new BatchContentEnricher(downloader, new[] { handler }, NullLogger<BatchContentEnricher>.Instance, new IngestionModeOptions(IngestionMode.BestEffort));
 
             var request = CreateAddRequest("batch-1");
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             await Should.ThrowAsync<InvalidOperationException>(() => enricher.TryBuildEnrichmentAsync(request, document, CancellationToken.None));
 
@@ -54,7 +54,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             var enricher = new BatchContentEnricher(downloader, new[] { handler }, NullLogger<BatchContentEnricher>.Instance, new IngestionModeOptions(IngestionMode.Strict));
 
             var request = CreateAddRequest("batch-1");
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             await Should.ThrowAsync<InvalidOperationException>(() => enricher.TryBuildEnrichmentAsync(request, document, CancellationToken.None));
 

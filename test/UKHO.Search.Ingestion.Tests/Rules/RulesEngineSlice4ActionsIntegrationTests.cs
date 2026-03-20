@@ -97,7 +97,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var engine = provider.GetRequiredService<IIngestionRulesEngine>();
 
             var request = CreateRequest();
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             engine.Apply("file-share", request, document);
 
@@ -144,7 +144,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var engine = provider.GetRequiredService<IIngestionRulesEngine>();
 
             var request = CreateRequest();
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             engine.Apply("file-share", request, document);
 
@@ -182,7 +182,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
             var engine = provider.GetRequiredService<IIngestionRulesEngine>();
 
             var request = CreateRequestWithWeekNumber();
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             engine.Apply("file-share", request, document);
 

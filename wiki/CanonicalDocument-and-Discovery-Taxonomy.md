@@ -15,6 +15,7 @@ A File Share batch, a future provider, or a rules-driven enrichment path can all
 The current model contains:
 
 - `Id`
+- `Provider`
 - `Source` (`IndexRequest`)
 - `Timestamp`
 - `Keywords`
@@ -58,10 +59,13 @@ That means:
 ### 1. Provenance/source half
 
 - `Id`
+- `Provider`
 - `Source`
 - `Timestamp`
 
-These fields preserve the source record identity and original request material.
+These fields preserve the source record identity, the owning provider identity, and the original request material.
+
+`Provider` is system-managed provenance metadata. It is assigned when the canonical document is constructed from provider context already known at queue ingress. It is not intended to be set by users, rules, or later enrichment stages.
 
 ### 2. Discovery half
 
@@ -142,6 +146,7 @@ At indexing time the infrastructure layer maps those to GeoJSON-like `Polygon` o
 The dispatch step creates a minimal document first:
 
 - id
+- provider
 - defensive copy of `Source`
 - timestamp
 
@@ -152,6 +157,8 @@ This is important because it keeps dispatch cheap and pushes source-specific enr
 ## Elasticsearch projection
 
 `CanonicalDocument` is not sent directly as-is to Elasticsearch. Infrastructure creates a `CanonicalIndexDocument` that preserves the canonical fields and maps `GeoPolygons` into GeoJSON-compatible objects.
+
+That projection also preserves `Provider` as a `keyword` field so exact-match filtering and provenance inspection can distinguish which provider produced a document.
 
 That projection lives in:
 
@@ -167,6 +174,8 @@ Do not index provider-native fields directly as the primary search contract. Fir
 - source/provenance only
 - an existing canonical taxonomy/search field
 - a genuinely new canonical field
+
+The provider's stable identifier should also be passed into canonical document construction so `CanonicalDocument.Provider` is always set. Do not expose `Provider` as user-editable metadata to compensate for missing pipeline context.
 
 ### If you add a new enrichment
 

@@ -28,7 +28,7 @@ All documents for this piece of work MUST be created under a single subfolder of
 4. Ask several questions up front (one at a time) to ensure a full understanding before creating and writing any specifications.
 5. Suggest features or considerations I may not have considered.
 6. Help organize requirements logically.
-7. Always show the current state of the spec (snapshot) BEFORE asking the next clarification question.
+7. Do not show the current state of the spec (snapshot) BEFORE asking the next clarification question.
 8. Flag technical challenges or important decisions.
 
 **Output Requirements:**

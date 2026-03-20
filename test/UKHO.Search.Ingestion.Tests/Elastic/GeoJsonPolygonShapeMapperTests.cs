@@ -114,7 +114,7 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
 
         private static CanonicalDocument CreateMinimalDocument(string documentId)
         {
-            return CanonicalDocument.CreateMinimal(documentId, new IndexRequest(documentId, Array.Empty<IngestionProperty>(), ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList()), DateTimeOffset.UnixEpoch);
+            return CanonicalDocument.CreateMinimal(documentId, "file-share", new IndexRequest(documentId, Array.Empty<IngestionProperty>(), ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList()), DateTimeOffset.UnixEpoch);
         }
     }
 }

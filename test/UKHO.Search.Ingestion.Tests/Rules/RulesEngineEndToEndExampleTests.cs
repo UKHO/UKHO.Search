@@ -26,7 +26,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                 new IngestionFile("f1", 1, DateTimeOffset.UtcNow, "app/s63")
             });
 
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
             engine.Apply("file-share", request, document);
 
             document.Keywords.ShouldContain("exchange-set");
@@ -48,7 +48,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                 new IngestionProperty { Name = "abcdef", Type = IngestionPropertyType.String, Value = "a value" }
             }, new IngestionFileList());
 
-            var document = CanonicalDocument.CreateMinimal("doc-2", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-2", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
             engine.Apply("file-share", request, document);
 
             document.Keywords.ShouldContain("key1");

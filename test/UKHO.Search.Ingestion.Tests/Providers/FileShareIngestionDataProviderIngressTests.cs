@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
+using UKHO.Search.Ingestion.Pipeline;
 using UKHO.Search.Ingestion.Providers.FileShare;
 using UKHO.Search.Ingestion.Requests;
 using UKHO.Search.Pipelines.Messaging;
@@ -31,6 +32,11 @@ namespace UKHO.Search.Ingestion.Tests.Providers
             queued.Context.TryGetItem<object>("test", out var queuedContextItem)
                   .ShouldBeTrue();
             queuedContextItem.ShouldBeSameAs(testContextItem);
+
+            queued.Context.TryGetItem<ProviderParameters>(ProviderEnvelopeContextKeys.ProviderParameters, out var providerParameters)
+                  .ShouldBeTrue();
+            providerParameters.ShouldNotBeNull();
+            providerParameters!.Provider.ShouldBe(FileShareIngestionDataProviderFactory.ProviderName);
         }
 
         [Fact]

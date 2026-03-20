@@ -44,7 +44,7 @@ namespace UKHO.Search.Ingestion.Tests.Documents
 
         private static CanonicalDocument CreateDoc()
         {
-            return CanonicalDocument.CreateMinimal("doc-1", new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), ["t"], DateTimeOffset.UnixEpoch, new IngestionFileList()), DateTimeOffset.UnixEpoch);
+            return CanonicalDocument.CreateMinimal("doc-1", "file-share", new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), ["t"], DateTimeOffset.UnixEpoch, new IngestionFileList()), DateTimeOffset.UnixEpoch);
         }
     }
 }

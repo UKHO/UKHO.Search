@@ -178,6 +178,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
         internal static void ValidateExpectedFieldMappings<T>(IReadOnlyDictionary<string, IReadOnlyDictionary<string, T>> fields)
         {
             // These fields should be mapped explicitly (not default dynamic 'text' with '.keyword' multi-fields).
+            EnsureHasType(fields, "provider", "keyword");
             EnsureHasType(fields, "keywords", "keyword");
             EnsureHasType(fields, "authority", "keyword");
             EnsureHasType(fields, "region", "keyword");
@@ -191,6 +192,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
             EnsureHasType(fields, "content", "text");
 
             // If the index was created via default dynamic mapping, these multi-fields will typically exist.
+            EnsureAbsent(fields, "provider.keyword");
             EnsureAbsent(fields, "keywords.keyword");
             EnsureAbsent(fields, "searchText.keyword");
             EnsureAbsent(fields, "content.keyword");

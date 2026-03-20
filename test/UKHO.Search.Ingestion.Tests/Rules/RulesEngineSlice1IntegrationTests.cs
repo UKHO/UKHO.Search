@@ -48,7 +48,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
                 var request = new IngestionRequest(IngestionRequestType.IndexItem, new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList()), null, null);
 
-                var doc = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+                var doc = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
                 await rulesEnricher.TryBuildEnrichmentAsync(request, doc, CancellationToken.None);
 

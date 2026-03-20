@@ -11,6 +11,7 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
         {
             var fields = new Dictionary<string, IReadOnlyDictionary<string, object>>(StringComparer.Ordinal)
             {
+                ["provider"] = CreateTypes("keyword"),
                 ["keywords"] = CreateTypes("keyword"),
                 ["authority"] = CreateTypes("keyword"),
                 ["region"] = CreateTypes("keyword"),

@@ -14,7 +14,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment.Handlers.Enrichers
         {
             var enricher = new BasicS57Enricher(NullLogger<BasicS57Enricher>.Instance);
 
-            var doc = CanonicalDocument.CreateMinimal("doc-1", new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), ["t"], DateTimeOffset.UtcNow, new IngestionFileList()), DateTimeOffset.UtcNow);
+            var doc = CanonicalDocument.CreateMinimal("doc-1", "file-share", new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), ["t"], DateTimeOffset.UtcNow, new IngestionFileList()), DateTimeOffset.UtcNow);
 
             var fixturePath = FindFixturePath("sample.000");
 

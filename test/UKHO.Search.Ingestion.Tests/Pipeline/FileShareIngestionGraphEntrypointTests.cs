@@ -75,6 +75,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
                             .Payload;
             var upsert = op.ShouldBeOfType<UpsertOperation>();
             upsert.Document.Id.ShouldBe("doc-1");
+            upsert.Document.Provider.ShouldBe("file-share");
         }
     }
 }

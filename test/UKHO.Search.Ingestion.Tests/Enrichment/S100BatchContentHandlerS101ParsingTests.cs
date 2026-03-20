@@ -18,7 +18,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
 
             var handler = new S100BatchContentHandler(NullLogger<S100BatchContentHandler>.Instance);
             var request = CreateAddRequest("batch-s101");
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             await handler.HandleFiles(new[] { catalogPath }, request, document, CancellationToken.None);
 
@@ -39,7 +39,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
 
             var handler = new S100BatchContentHandler(NullLogger<S100BatchContentHandler>.Instance);
             var request = CreateAddRequest("batch-not-s101");
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             await handler.HandleFiles(new[] { catalogPath }, request, document, CancellationToken.None);
 
@@ -56,7 +56,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
 
             var handler = new S100BatchContentHandler(NullLogger<S100BatchContentHandler>.Instance);
             var request = CreateAddRequest("batch-invalid-poslist");
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             await handler.HandleFiles(new[] { catalogPath }, request, document, CancellationToken.None);
 

@@ -12,6 +12,9 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
         [JsonPropertyName("source")]
         public required IndexRequest Source { get; init; }
 
+        [JsonPropertyName("provider")]
+        public required string Provider { get; init; }
+
         [JsonPropertyName("timestamp")]
         public required DateTimeOffset Timestamp { get; init; }
 
@@ -60,6 +63,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
             {
                 Id = document.Id,
                 Source = document.Source,
+                Provider = document.Provider,
                 Timestamp = document.Timestamp,
                 Keywords = document.Keywords.ToArray(),
                 Authority = document.Authority.ToArray(),

@@ -27,7 +27,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             ], ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList());
 
             var request = new IngestionRequest(IngestionRequestType.IndexItem, add, null, null);
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             await enricher.TryBuildEnrichmentAsync(request, document);
 
@@ -44,7 +44,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             ], ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList());
 
             var request = new IngestionRequest(IngestionRequestType.IndexItem, update, null, null);
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             await enricher.TryBuildEnrichmentAsync(request, document);
 
@@ -61,7 +61,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             ], ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList());
 
             var request = new IngestionRequest(IngestionRequestType.IndexItem, add, null, null);
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             await enricher.TryBuildEnrichmentAsync(request, document);
 
@@ -78,7 +78,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             ], ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList());
 
             var request = new IngestionRequest(IngestionRequestType.IndexItem, add, null, null);
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             await enricher.TryBuildEnrichmentAsync(request, document);
 
@@ -95,7 +95,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             ], ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList());
 
             var request = new IngestionRequest(IngestionRequestType.IndexItem, add, null, null);
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             await enricher.TryBuildEnrichmentAsync(request, document);
 
@@ -113,7 +113,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             ], ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList());
 
             var request = new IngestionRequest(IngestionRequestType.IndexItem, add, null, null);
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             await enricher.TryBuildEnrichmentAsync(request, document);
 
@@ -130,7 +130,7 @@ namespace UKHO.Search.Ingestion.Tests.Enrichment
             ], ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList());
 
             var request = new IngestionRequest(IngestionRequestType.IndexItem, add, null, null);
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             await enricher.TryBuildEnrichmentAsync(request, document);
 

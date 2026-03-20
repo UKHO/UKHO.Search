@@ -16,6 +16,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes
         private readonly CanonicalDocumentBuilder _canonicalBuilder;
         private readonly ChannelWriter<Envelope<IngestionRequest>> _deadLetterOutput;
         private readonly ILogger? _logger;
+        private readonly ProviderParameters? _providerParameters;
 
         public IngestionRequestDispatchNode(string name, ChannelReader<Envelope<IngestionRequest>> input, ChannelWriter<Envelope<IngestionPipelineContext>> output, ChannelWriter<Envelope<IngestionRequest>> deadLetterOutput, CanonicalDocumentBuilder canonicalBuilder, ILogger? logger = null, IPipelineFatalErrorReporter? fatalErrorReporter = null, string? providerName = null) : base(name, input,
             output, logger, fatalErrorReporter, providerName: providerName)
@@ -23,6 +24,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes
             _deadLetterOutput = deadLetterOutput;
             _canonicalBuilder = canonicalBuilder;
             _logger = logger;
+            _providerParameters = string.IsNullOrWhiteSpace(providerName) ? null : new ProviderParameters(providerName);
         }
 
         protected override async ValueTask HandleItemAsync(Envelope<IngestionRequest> item, CancellationToken cancellationToken)
@@ -98,7 +100,8 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes
                         throw new InvalidOperationException("IndexItem payload missing.");
                     }
 
-                    var doc = _canonicalBuilder.BuildForUpsert(documentId, request);
+                    var providerParameters = ResolveProviderParameters(item.Context);
+                    var doc = _canonicalBuilder.BuildForUpsert(documentId, request, providerParameters);
                     return new UpsertOperation(documentId, doc);
                 }
 
@@ -125,6 +128,24 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes
                 default:
                     throw new InvalidOperationException($"Unsupported request type '{request.RequestType}'.");
             }
+        }
+
+        private ProviderParameters ResolveProviderParameters(MessageContext context)
+        {
+            ArgumentNullException.ThrowIfNull(context);
+
+            if (context.TryGetItem<ProviderParameters>(ProviderEnvelopeContextKeys.ProviderParameters, out var providerParameters) && providerParameters is not null)
+            {
+                return providerParameters;
+            }
+
+            if (_providerParameters is not null)
+            {
+                context.SetItem(ProviderEnvelopeContextKeys.ProviderParameters, _providerParameters);
+                return _providerParameters;
+            }
+
+            throw new InvalidOperationException("Provider context is required before dispatching an index request.");
         }
     }
 }

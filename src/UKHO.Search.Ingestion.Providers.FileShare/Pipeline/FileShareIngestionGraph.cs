@@ -19,7 +19,7 @@ namespace UKHO.Search.Ingestion.Providers.FileShare.Pipeline
     {
         public static FileShareIngestionGraphHandle BuildAzureQueueBacked(FileShareIngestionGraphDependencies dependencies, CancellationToken cancellationToken)
         {
-            return BuildAzureQueueBacked(dependencies, null, cancellationToken);
+            return BuildAzureQueueBacked(dependencies, FileShareIngestionDataProviderFactory.ProviderName, cancellationToken);
         }
 
         public static FileShareIngestionGraphHandle BuildAzureQueueBacked(FileShareIngestionGraphDependencies dependencies, string? providerName, CancellationToken cancellationToken)

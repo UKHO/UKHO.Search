@@ -11,7 +11,7 @@ namespace UKHO.Search.Ingestion.Tests.Documents
         [Fact]
         public void CanonicalDocument_defaults_to_no_geo_polygons()
         {
-            var doc = CanonicalDocument.CreateMinimal("doc-1", new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), ["t"], DateTimeOffset.UtcNow, new IngestionFileList()), DateTimeOffset.UtcNow);
+            var doc = CanonicalDocument.CreateMinimal("doc-1", "file-share", new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), ["t"], DateTimeOffset.UtcNow, new IngestionFileList()), DateTimeOffset.UtcNow);
 
             doc.GeoPolygons.ShouldNotBeNull();
             doc.GeoPolygons.Count.ShouldBe(0);
@@ -20,7 +20,7 @@ namespace UKHO.Search.Ingestion.Tests.Documents
         [Fact]
         public void CanonicalDocument_can_store_multiple_geo_polygons()
         {
-            var doc = CanonicalDocument.CreateMinimal("doc-1", new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), ["t"], DateTimeOffset.UtcNow, new IngestionFileList()), DateTimeOffset.UtcNow);
+            var doc = CanonicalDocument.CreateMinimal("doc-1", "file-share", new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), ["t"], DateTimeOffset.UtcNow, new IngestionFileList()), DateTimeOffset.UtcNow);
 
             var polygonA = GeoPolygon.Create(new[]
             {

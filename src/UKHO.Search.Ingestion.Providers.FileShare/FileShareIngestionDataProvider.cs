@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using UKHO.Search.Ingestion.Pipeline;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline;
 using UKHO.Search.Ingestion.Requests;
 using UKHO.Search.Ingestion.Requests.Serialization;
@@ -114,6 +115,8 @@ namespace UKHO.Search.Ingestion.Providers.FileShare
 
             await EnsureProcessingGraphStartedAsync()
                 .ConfigureAwait(false);
+
+            envelope.Context.SetItem(ProviderEnvelopeContextKeys.ProviderParameters, new ProviderParameters(Name));
 
             _logger.LogDebug("Enqueuing ingestion request. ProviderName={ProviderName} Key={Key} MessageId={MessageId}", Name, envelope.Key, envelope.MessageId);
 

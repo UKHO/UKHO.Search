@@ -109,6 +109,8 @@ The provider contract uses `Envelope<T>` rather than raw payloads because the en
 
 That context is what allows downstream ack/dead-letter nodes to behave correctly without the provider needing to own Azure Queue deletion directly.
 
+For canonical document creation, the envelope context also carries provider-scoped parameters. That is how a generic pipeline can preserve provider identity until `CanonicalDocumentBuilder` sets the immutable `CanonicalDocument.Provider` field.
+
 ## Why provider name matters
 
 Provider name is not just labeling. It is used for:
@@ -117,8 +119,11 @@ Provider name is not just labeling. It is used for:
 - rules scoping
 - diagnostic clarity
 - selecting provider-specific runtime behavior
+- stamping canonical provenance on `CanonicalDocument.Provider`
 
 `ApplyEnrichmentNode` also pushes the provider name into `IIngestionProviderContext` so enrichers and the rules engine can stay provider-aware without hard-coded global state.
+
+Because provider identity is pipeline-owned provenance, developers should not try to model it as user-supplied document metadata. If a canonical document does not have provider context, that is a pipeline contract violation rather than something callers should patch in manually.
 
 ## Benefits of this design
 

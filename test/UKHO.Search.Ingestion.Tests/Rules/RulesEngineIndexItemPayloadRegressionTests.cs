@@ -36,7 +36,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                 IndexItem = new IndexRequest("add-id", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList())
             };
 
-            var document = CanonicalDocument.CreateMinimal("doc-1", new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), ["t"], DateTimeOffset.UnixEpoch, new IngestionFileList()), DateTimeOffset.UnixEpoch);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), ["t"], DateTimeOffset.UnixEpoch, new IngestionFileList()), DateTimeOffset.UnixEpoch);
 
             engine.Apply("file-share", request, document);
 
@@ -82,7 +82,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                     new IngestionFileList())
             };
 
-            var document = CanonicalDocument.CreateMinimal("doc-1", request.IndexItem!, request.IndexItem.Timestamp);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
 
             engine.Apply("file-share", request, document);
 

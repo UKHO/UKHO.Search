@@ -111,6 +111,7 @@ namespace UKHO.Search.Ingestion.Tests.Documents
         {
             return CanonicalDocument.CreateMinimal(
                 "doc-1",
+                "file-share",
                 new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), ["t"], DateTimeOffset.UnixEpoch, new IngestionFileList()),
                 DateTimeOffset.UnixEpoch);
         }
