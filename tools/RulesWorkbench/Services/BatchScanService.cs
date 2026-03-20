@@ -28,6 +28,43 @@ namespace RulesWorkbench.Services
                 return BatchScanResultDto.Failure("Max rows must be greater than zero.");
             }
 
+            return await GetBatchesAsync(
+                businessUnitId,
+                cancellationToken,
+                BatchScanQueries.GetBoundedQuery(),
+                cmd => cmd.Parameters.Add(new SqlParameter("@maxRows", SqlDbType.Int) { Value = maxRows }),
+                isUnboundedScan: false,
+                maxRows)
+                .ConfigureAwait(false);
+        }
+
+        public async Task<BatchScanResultDto> GetAllBatchesForBusinessUnitAsync(int businessUnitId, CancellationToken cancellationToken)
+        {
+            if (businessUnitId <= 0)
+            {
+                return BatchScanResultDto.Failure("Business unit id is required.");
+            }
+
+            return await GetBatchesAsync(
+                businessUnitId,
+                cancellationToken,
+                BatchScanQueries.GetUnboundedQuery(),
+                parameterizeCommand: null,
+                isUnboundedScan: true,
+                maxRows: null)
+                .ConfigureAwait(false);
+        }
+
+        private async Task<BatchScanResultDto> GetBatchesAsync(
+            int businessUnitId,
+            CancellationToken cancellationToken,
+            string commandText,
+            Action<SqlCommand>? parameterizeCommand,
+            bool isUnboundedScan,
+            int? maxRows)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(commandText);
+
             try
             {
                 await using var connection = new SqlConnection(_sqlConnection.ConnectionString);
@@ -36,11 +73,8 @@ namespace RulesWorkbench.Services
                 await using var cmd = connection.CreateCommand();
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 30;
-                cmd.CommandText = @"SELECT TOP (@maxRows) [Id], [CreatedOn]
-FROM [Batch]
-WHERE [BusinessUnitId] = @businessUnitId
-ORDER BY [CreatedOn] ASC, [Id] ASC;";
-                cmd.Parameters.Add(new SqlParameter("@maxRows", SqlDbType.Int) { Value = maxRows });
+                cmd.CommandText = commandText;
+                parameterizeCommand?.Invoke(cmd);
                 cmd.Parameters.Add(new SqlParameter("@businessUnitId", SqlDbType.Int) { Value = businessUnitId });
 
                 var batches = new List<BatchScanBatchDto>();
@@ -67,22 +101,40 @@ ORDER BY [CreatedOn] ASC, [Id] ASC;";
                     });
                 }
 
-                _logger.LogInformation(
-                    "Loaded {BatchCount} batches for checker scan. BusinessUnitId={BusinessUnitId} MaxRows={MaxRows}",
-                    batches.Count,
-                    businessUnitId,
-                    maxRows);
+                if (isUnboundedScan)
+                {
+                    _logger.LogInformation(
+                        "Loaded {BatchCount} batches for unbounded checker scan. BusinessUnitId={BusinessUnitId}",
+                        batches.Count,
+                        businessUnitId);
+                }
+                else
+                {
+                    _logger.LogInformation(
+                        "Loaded {BatchCount} batches for bounded checker scan. BusinessUnitId={BusinessUnitId} MaxRows={MaxRows}",
+                        batches.Count,
+                        businessUnitId,
+                        maxRows);
+                }
 
                 return BatchScanResultDto.Success(batches);
             }
             catch (SqlException ex)
             {
-                _logger.LogError(ex, "DB error while loading batches for checker scan. BusinessUnitId={BusinessUnitId}", businessUnitId);
+                _logger.LogError(
+                    ex,
+                    "DB error while loading batches for {ScanMode} checker scan. BusinessUnitId={BusinessUnitId}",
+                    isUnboundedScan ? "unbounded" : "bounded",
+                    businessUnitId);
                 return BatchScanResultDto.Failure("Database error while loading batches for scan.");
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                _logger.LogError(ex, "Unexpected error while loading batches for checker scan. BusinessUnitId={BusinessUnitId}", businessUnitId);
+                _logger.LogError(
+                    ex,
+                    "Unexpected error while loading batches for {ScanMode} checker scan. BusinessUnitId={BusinessUnitId}",
+                    isUnboundedScan ? "unbounded" : "bounded",
+                    businessUnitId);
                 return BatchScanResultDto.Failure(ex.Message);
             }
         }

@@ -40,7 +40,7 @@
         </p>
 
         <div class="row g-2 align-items-end">
-            <div class="col-12 col-lg-7">
+            <div class="col-12 col-lg-5">
                 <label class="form-label" for="checker-business-unit">Business unit</label>
                 <select id="checker-business-unit" class="form-select" @bind="SelectedBusinessUnitIdText" disabled="@IsRunningScan">
                     <option value="">Select a business unit</option>
@@ -52,10 +52,13 @@
             </div>
             <div class="col-12 col-md-4 col-lg-3">
                 <label class="form-label" for="checker-max-rows">Max rows</label>
-                <input id="checker-max-rows" class="form-control" type="number" min="1" @bind="MaxRows" disabled="@IsRunningScan" />
+                <input id="checker-max-rows" class="form-control" type="number" min="1" @bind="MaxRows" disabled="@CurrentBusinessUnitScanUiState.IsMaxRowsDisabled" />
             </div>
-            <div class="col-12 col-md-8 col-lg-2">
-                <button type="button" class="btn btn-outline-primary w-100" @onclick="StartScanAsync" disabled="@IsScanDisabled">@ScanButtonText</button>
+            <div class="col-6 col-md-4 col-lg-2">
+                <button type="button" class="btn btn-outline-primary w-100" @onclick="RunBoundedScanAsync" disabled="@CurrentBusinessUnitScanUiState.IsScanButtonDisabled">@CurrentBusinessUnitScanUiState.ScanButtonText</button>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <button type="button" class="btn btn-outline-primary w-100" @onclick="RunUnboundedScanAsync" disabled="@CurrentBusinessUnitScanUiState.IsScanAllButtonDisabled">@CurrentBusinessUnitScanUiState.ScanAllButtonText</button>
             </div>
         </div>
 
@@ -335,19 +338,12 @@
 
     private string? SelectedRuleId { get; set; }
 
-    private IReadOnlyList<BatchScanBatchDto> CurrentScanBatches { get; set; } = Array.Empty<BatchScanBatchDto>();
-
-    private int CurrentScanIndex { get; set; }
-
-    private int? CurrentScanBusinessUnitId { get; set; }
-
-    private string CurrentScanBusinessUnitName { get; set; } = string.Empty;
+    private BusinessUnitScanMode? ActiveBusinessUnitScanMode { get; set; }
 
     private string RunButtonText => IsRunning ? "Checking..." : "Check batch";
 
-    private string ScanButtonText => IsRunningScan ? "Scanning..." : "Start scan";
-
-    private bool IsScanDisabled => IsRunning || IsRunningScan || IsLoadingBusinessUnits || string.IsNullOrWhiteSpace(SelectedBusinessUnitIdText);
+    private BusinessUnitScanUiState CurrentBusinessUnitScanUiState =>
+        BusinessUnitScanUiState.Create(SelectedBusinessUnitIdText, IsRunning, IsLoadingBusinessUnits, ActiveBusinessUnitScanMode);
 
     private IReadOnlyList<RuleCheckerCandidateRuleDto> CandidateUnmatchedRules =>
         Report?.CandidateRules.Where(x => !x.IsMatched).ToArray() ?? Array.Empty<RuleCheckerCandidateRuleDto>();
@@ -397,7 +393,17 @@
         }
     }
 
-    private async Task StartScanAsync()
+    private async Task RunBoundedScanAsync()
+    {
+        await RunBusinessUnitScanAsync(isUnboundedScan: false);
+    }
+
+    private async Task RunUnboundedScanAsync()
+    {
+        await RunBusinessUnitScanAsync(isUnboundedScan: true);
+    }
+
+    private async Task RunBusinessUnitScanAsync(bool isUnboundedScan)
     {
         ErrorMessage = null;
         InfoMessage = null;
@@ -418,50 +424,43 @@
         }
 
         IsRunningScan = true;
+        ActiveBusinessUnitScanMode = isUnboundedScan ? BusinessUnitScanMode.Unbounded : BusinessUnitScanMode.Bounded;
 
         try
         {
-            var scanResult = await BatchScanService.GetBatchesForBusinessUnitAsync(businessUnitId, MaxRows, CancellationToken.None);
+            var scanResult = isUnboundedScan
+                ? await BatchScanService.GetAllBatchesForBusinessUnitAsync(businessUnitId, CancellationToken.None)
+                : await BatchScanService.GetBatchesForBusinessUnitAsync(businessUnitId, MaxRows, CancellationToken.None);
+
             if (!scanResult.IsSuccess)
             {
                 ErrorMessage = scanResult.ErrorMessage ?? "Failed to load batches for scan.";
                 return;
             }
 
-            CurrentScanBatches = scanResult.Batches;
-            CurrentScanIndex = 0;
-            CurrentScanBusinessUnitId = businessUnitId;
-            CurrentScanBusinessUnitName = businessUnit.Name;
+            var businessUnitDisplayName = $"{businessUnit.Name} ({businessUnit.Id})";
+            var executionResult = await BusinessUnitScanLoop.ExecuteAsync(
+                scanResult.Batches,
+                businessUnit.Name,
+                businessUnitDisplayName,
+                isUnboundedScan,
+                (batchId, selectedBusinessUnitName, cancellationToken) => RuleCheckerService.CheckBatchAsync(batchId, selectedBusinessUnitName, cancellationToken),
+                CancellationToken.None);
 
-            if (CurrentScanBatches.Count == 0)
+            if (!executionResult.IsSuccess)
             {
-                InfoMessage = $"No batches were found for business unit {businessUnit.Name} ({businessUnit.Id}).";
+                ErrorMessage = executionResult.ErrorMessage ?? "Checker failed while scanning the selected business unit.";
                 return;
             }
 
-            while (CurrentScanIndex < CurrentScanBatches.Count)
+            Report = executionResult.Report;
+            if (Report is not null)
             {
-                var batch = CurrentScanBatches[CurrentScanIndex];
-                var result = await RuleCheckerService.CheckBatchAsync(batch.BatchId.ToString("D"), businessUnit.Name, CancellationToken.None);
-                if (!result.IsSuccess || result.Report is null)
-                {
-                    ErrorMessage = result.ErrorMessage ?? $"Checker failed while scanning batch '{batch.BatchId:D}'.";
-                    return;
-                }
-
-                if (result.Report.Status is not RuleCheckerStatus.Ok)
-                {
-                    Report = result.Report;
-                    BatchId = batch.BatchId.ToString("D");
-                    SelectedRuleId = CandidateUnmatchedRules.FirstOrDefault()?.RuleId;
-                    InfoMessage = $"Scan stopped at batch {CurrentScanIndex + 1} of {CurrentScanBatches.Count} for business unit {businessUnit.Name} ({businessUnit.Id}).";
-                    return;
-                }
-
-                CurrentScanIndex++;
+                BatchId = Report.Batch.BatchId;
+                SelectedRuleId = CandidateUnmatchedRules.FirstOrDefault()?.RuleId;
             }
 
-            InfoMessage = $"Checked {CurrentScanBatches.Count} batch(es) for business unit {businessUnit.Name} ({businessUnit.Id}). No failing batches were found.";
+            InfoMessage = executionResult.InfoMessage;
         }
         catch (Exception ex)
         {
@@ -470,6 +469,7 @@
         finally
         {
             IsRunningScan = false;
+            ActiveBusinessUnitScanMode = null;
         }
     }
 

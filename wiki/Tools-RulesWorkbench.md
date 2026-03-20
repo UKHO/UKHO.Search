@@ -196,7 +196,17 @@ You can enter a single `batchId` and run the checker for that batch.
 
 You can select a business unit and scan batches for that unit, bounded by a max row count.
 
-The current scan behavior is focused on finding the first non-OK result quickly rather than processing the entire database at once.
+The page now exposes two business-unit scan actions:
+
+- `Scan`
+  - uses the current `Max rows` limit
+  - checks batches in deterministic order
+  - stops at the first non-`OK` result
+- `Scan All`
+  - ignores `Max rows` and loads the full batch set for the selected business unit
+  - still stops at the first non-`OK` result
+
+That means `Scan All` differs only in the size of the candidate batch set. It does **not** introduce aggregate reporting or scan every batch after a failure is found.
 
 ## How the `Checker` works
 
@@ -220,7 +230,7 @@ sequenceDiagram
 The checker uses local SQL-backed services to load batch information:
 
 - `BatchPayloadLoader` loads one batch and constructs the evaluation payload
-- `BatchScanService` gets a deterministic ordered set of candidate batches for a selected business unit
+- `BatchScanService` gets a deterministic ordered set of candidate batches for a selected business unit, either bounded by `Max rows` or unbounded for `Scan All`
 
 The payload includes:
 
