@@ -51,7 +51,7 @@
     <Project Path="test/FileShareEmulator.Common.Tests/FileShareEmulator.Common.Tests.csproj" />
     <Project Path="test/RulesWorkbench.Tests/RulesWorkbench.Tests.csproj" Id="d1ac88b4-3302-4f83-be76-49c835c2eb2c" />
   </Folder>
-  <Folder Name="/configuration/" />
+  <Folder Name="/@test/@configuration/" />
   <Folder Name="/test/">
     <Project Path="test/UKHO.Aspire.Configuration.Seeder.Tests/UKHO.Aspire.Configuration.Seeder.Tests.csproj" />
   </Folder>
