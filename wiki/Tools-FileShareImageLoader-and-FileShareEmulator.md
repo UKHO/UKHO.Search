@@ -179,7 +179,7 @@ That reduces surprising 404s when seeded content casing differs from expectation
 
 ## Related pages
 
-- [Project setup](Project-Setup.md)
-- [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder.md)
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [File Share provider](FileShare-Provider.md)
+- [Project setup](Project-Setup)
+- [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [File Share provider](FileShare-Provider)

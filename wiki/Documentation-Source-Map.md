@@ -183,12 +183,12 @@ Use the historical `docs/` work packages for the **why, when, and how the design
 
 ## Main wiki pages
 
-- [Home](Home.md)
-- [Solution architecture](Solution-Architecture.md)
-- [Project setup](Project-Setup.md)
-- [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md)
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [Ingestion rules](Ingestion-Rules.md)
-- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md)
-- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism.md)
-- [File Share provider](FileShare-Provider.md)
+- [Home](Home)
+- [Solution architecture](Solution-Architecture)
+- [Project setup](Project-Setup)
+- [Tools: `RulesWorkbench`](Tools-RulesWorkbench)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [Ingestion rules](Ingestion-Rules)
+- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy)
+- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism)
+- [File Share provider](FileShare-Provider)

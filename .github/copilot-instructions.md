@@ -16,6 +16,15 @@ Be concise but complete. Prefer current research (Microsoft Learn) for Microsoft
 - Do not run Stryker again in this workspace, and remove all Stryker-related configuration/setup files when asked.
 - Ask clarification questions one at a time rather than batching multiple questions together.
 
+## Documentation Workflow (Summary)
+- For each new Work Package/piece of work: create a new numbered folder under `./docs/` named `xxx-<descriptor>` (e.g. `001-Initial-Shell`).
+- Store ALL related documents (specs, plans, architecture notes, etc.) together inside that Work Package folder.
+- Do not overwrite prior work packages; create the next incremental folder (e.g. `002-...`).
+- When asked to create specification documents for a work package, create only one document containing everything needed; do not split across multiple documents. If multiple were created, merge into one and delete the extras.
+- Use appropriate prompt family & phase from `.github/prompts/`.
+- When asking open questions from a spec, record each answer directly in that same spec file and do not create a new version.
+- When documentation references repository wiki pages, prefer proper markdown links rather than inline code-formatted URLs or plain page names.
+
 ## Blazor Server Guidelines
 - For Blazor Server (Razor Components) pages, explicitly add `@rendermode InteractiveServer` on pages that must handle input/click events; otherwise, pages may render non-interactively even when other pages (e.g., Counter) are interactive.
 
@@ -55,14 +64,6 @@ Rules:
 - Azure DevOps intent: use Azure DevOps tools.
 - GitHub intent: use GitHub tools.
 - Microsoft tech (Blazor, ASP.NET Core, Azure, .NET): use Microsoft Learn tools.
-
-## Documentation Workflow (Summary)
-- For each new Work Package/piece of work: create a new numbered folder under `./docs/` named `xxx-<descriptor>` (e.g. `001-Initial-Shell`).
-- Store ALL related documents (specs, plans, architecture notes, etc.) together inside that Work Package folder.
-- Do not overwrite prior work packages; create the next incremental folder (e.g. `002-...`).
-- When asked to create specification documents for a work package, create only one document containing everything needed; do not split across multiple documents. If multiple were created, merge into one and delete the extras.
-- Use appropriate prompt family & phase from `.github/prompts/`.
-- When asking open questions from a spec, record each answer directly in that same spec file and do not create a new version.
 
 ## Emulator Constraints
 - All emulator code must reside within the existing emulator project; do not add new projects due to Docker constraints.

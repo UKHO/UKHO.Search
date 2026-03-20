@@ -309,8 +309,8 @@ That makes it much faster to answer questions such as:
 
 ## Related pages
 
-- [Home](Home.md)
-- [Project setup](Project-Setup.md)
-- [Ingestion rules](Ingestion-Rules.md)
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [Solution architecture](Solution-Architecture.md)
+- [Home](Home)
+- [Project setup](Project-Setup)
+- [Ingestion rules](Ingestion-Rules)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [Solution architecture](Solution-Architecture)

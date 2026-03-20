@@ -192,7 +192,7 @@ Three design choices explain most of the repository:
 
 For the provider and ingestion runtime details, continue to:
 
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism.md)
-- [File Share provider](FileShare-Provider.md)
-- [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism)
+- [File Share provider](FileShare-Provider)
+- [Tools: `RulesWorkbench`](Tools-RulesWorkbench)

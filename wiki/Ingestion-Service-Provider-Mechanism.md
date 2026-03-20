@@ -146,7 +146,7 @@ The File Share provider is the canonical example today because it exercises most
 - S-57 and S-101 geo/text enrichment
 - best-effort ZIP skipping
 
-See [File Share provider](FileShare-Provider.md) for the concrete implementation.
+See [File Share provider](FileShare-Provider) for the concrete implementation.
 
 ## Conceptual lifecycle
 
@@ -167,6 +167,6 @@ sequenceDiagram
 
 ## Related pages
 
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md)
-- [File Share provider](FileShare-Provider.md)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy)
+- [File Share provider](FileShare-Provider)

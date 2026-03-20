@@ -264,7 +264,7 @@ If you understand this provider, you understand most of the repository's ingesti
 
 ## Related pages
 
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism.md)
-- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md)
-- [Ingestion rules](Ingestion-Rules.md)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism)
+- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy)
+- [Ingestion rules](Ingestion-Rules)

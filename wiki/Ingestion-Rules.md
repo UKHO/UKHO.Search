@@ -215,7 +215,7 @@ It:
 
 This is the best local feedback loop when authoring or refining rules.
 
-For the stable documented parts of that tool, see [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md). That page intentionally covers only the `Rules` and `Checker` pages.
+For the stable documented parts of that tool, see [Tools: `RulesWorkbench`](Tools-RulesWorkbench). That page intentionally covers only the `Rules` and `Checker` pages.
 
 ## Practical local workflow
 
@@ -237,8 +237,8 @@ For the stable documented parts of that tool, see [Tools: `RulesWorkbench`](Tool
 
 ## Related pages
 
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md)
-- [File Share provider](FileShare-Provider.md)
-- [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md)
-- [Documentation source map](Documentation-Source-Map.md)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy)
+- [File Share provider](FileShare-Provider)
+- [Tools: `RulesWorkbench`](Tools-RulesWorkbench)
+- [Documentation source map](Documentation-Source-Map)

@@ -83,7 +83,7 @@ Starts the advanced data-image build workflow:
 - SQL Server
 - `FileShareImageBuilder` as an explicit-start resource
 
-Use this only when creating a new data image from a remote File Share environment. See [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder.md).
+Use this only when creating a new data image from a remote File Share environment. See [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder).
 
 ## Getting the shared data image from ACR
 
@@ -124,7 +124,7 @@ So if `environment` is `vnext-e2e`, the loader expects:
 8. Start `AppHost` again.
 9. Open `FileShareEmulator`, `RulesWorkbench`, and the Aspire dashboard.
 
-For rule authoring and rule diagnostics after startup, use [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md).
+For rule authoring and rule diagnostics after startup, use [Tools: `RulesWorkbench`](Tools-RulesWorkbench).
 
 ### Why import and services are separate
 
@@ -208,7 +208,7 @@ If SQL/blob storage has not been seeded, the emulator may start but have no mean
 
 ## Related pages
 
-- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator.md)
-- [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder.md)
-- [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md)
-- [Ingestion pipeline](Ingestion-Pipeline.md)
+- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator)
+- [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder)
+- [Tools: `RulesWorkbench`](Tools-RulesWorkbench)
+- [Ingestion pipeline](Ingestion-Pipeline)

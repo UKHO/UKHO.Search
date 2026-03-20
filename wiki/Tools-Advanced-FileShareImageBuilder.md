@@ -170,5 +170,5 @@ Do not use `FileShareImageBuilder` for normal day-to-day development if the shar
 
 ## Related pages
 
-- [Project setup](Project-Setup.md)
-- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator.md)
+- [Project setup](Project-Setup)
+- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator)

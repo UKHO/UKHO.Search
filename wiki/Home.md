@@ -30,17 +30,17 @@ flowchart LR
 
 ## Start here
 
-- [Solution architecture](Solution-Architecture.md)
-- [Project setup](Project-Setup.md)
-- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator.md)
-- [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder.md)
-- [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md)
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [How to write ingestion rules](Ingestion-Rules.md)
-- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md)
-- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism.md)
-- [File Share provider deep dive](FileShare-Provider.md)
-- [Documentation source map](Documentation-Source-Map.md)
+- [Solution architecture](Solution-Architecture)
+- [Project setup](Project-Setup)
+- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator)
+- [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder)
+- [Tools: `RulesWorkbench`](Tools-RulesWorkbench)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [How to write ingestion rules](Ingestion-Rules)
+- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy)
+- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism)
+- [File Share provider deep dive](FileShare-Provider)
+- [Documentation source map](Documentation-Source-Map)
 
 ## Quick orientation
 
@@ -67,7 +67,7 @@ flowchart LR
 4. Use `FileShareEmulator` to inspect data and enqueue batches.
 5. Watch ingestion metrics/logs in Aspire and inspect Elasticsearch/query behavior.
 
-If your task is rule authoring or rule diagnosis, open [`RulesWorkbench`](Tools-RulesWorkbench.md) as part of that loop.
+If your task is rule authoring or rule diagnosis, open [`RulesWorkbench`](Tools-RulesWorkbench) as part of that loop.
 
 ## Design themes carried through the repo
 
@@ -79,4 +79,4 @@ If your task is rule authoring or rule diagnosis, open [`RulesWorkbench`](Tools-
 
 ## Historical design lineage
 
-The repository contains a substantial design history in `docs/`. This wiki is intentionally derived from that corpus rather than replacing it. Use the [documentation source map](Documentation-Source-Map.md) when you want to trace a topic back to the originating work packages, plans, or architecture notes.
+The repository contains a substantial design history in `docs/`. This wiki is intentionally derived from that corpus rather than replacing it. Use the [documentation source map](Documentation-Source-Map) when you want to trace a topic back to the originating work packages, plans, or architecture notes.

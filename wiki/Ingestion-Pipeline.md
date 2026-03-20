@@ -282,7 +282,7 @@ This architecture intentionally separates concerns:
 
 ## Related pages
 
-- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism.md)
-- [File Share provider](FileShare-Provider.md)
-- [Ingestion rules](Ingestion-Rules.md)
-- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md)
+- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism)
+- [File Share provider](FileShare-Provider)
+- [Ingestion rules](Ingestion-Rules)
+- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy)
