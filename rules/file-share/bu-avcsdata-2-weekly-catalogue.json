@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-avcsdata-2-weekly-catalogue",
         "context": "avcsdata",
+        "title": "AVCSData weekly catalogue $path:properties[\"year / week\"]",
         "description": "AVCSData weekly catalogue.",
         "enabled": true,
         "if": {

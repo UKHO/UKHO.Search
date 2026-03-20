@@ -117,8 +117,12 @@ namespace UKHO.Search.Ingestion.Pipeline.Nodes
 
             if (enrichers.Length == 0)
             {
-                await WriteAsync(item.MapPayload(context.Operation), cancellationToken)
-                    .ConfigureAwait(false);
+                if (!await TryWriteValidatedUpsertAsync(item, context.Operation, upsert, cancellationToken)
+                    .ConfigureAwait(false))
+                {
+                    return;
+                }
+
                 return;
             }
 
@@ -221,7 +225,7 @@ namespace UKHO.Search.Ingestion.Pipeline.Nodes
 
             _logger?.LogInformation("Enrichment finished. NodeName={NodeName} Key={Key} MessageId={MessageId} Attempt={Attempt}", Name, item.Key, item.MessageId, item.Attempt);
 
-            await WriteAsync(item.MapPayload(context.Operation), cancellationToken)
+            _ = await TryWriteValidatedUpsertAsync(item, context.Operation, upsert, cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -280,6 +284,39 @@ namespace UKHO.Search.Ingestion.Pipeline.Nodes
             }
 
             return jittered;
+        }
+
+        private async ValueTask<bool> TryWriteValidatedUpsertAsync(Envelope<IngestionPipelineContext> item, IndexOperation operation, UpsertOperation upsert, CancellationToken cancellationToken)
+        {
+            if (upsert.Document.Title.Count == 0)
+            {
+                item.MarkFailed(new PipelineError
+                {
+                    Category = PipelineErrorCategory.Validation,
+                    Code = "CANONICAL_TITLE_REQUIRED",
+                    Message = "Canonical document is missing a required title after enrichment.",
+                    IsTransient = false,
+                    OccurredAtUtc = DateTimeOffset.UtcNow,
+                    NodeName = Name,
+                    Details = new Dictionary<string, string>
+                    {
+                        ["DocumentId"] = upsert.Document.Id,
+                        ["Provider"] = upsert.Document.Provider
+                    }
+                });
+
+                _logger?.LogWarning("Canonical document rejected because no title was produced. NodeName={NodeName} Key={Key} MessageId={MessageId} DocumentId={DocumentId} Provider={Provider}", Name, item.Key, item.MessageId, upsert.Document.Id, upsert.Document.Provider);
+
+                var failedEnvelope = item.MapPayload(operation);
+                await _deadLetterOutput.WriteAsync(failedEnvelope, cancellationToken)
+                                       .ConfigureAwait(false);
+                Metrics.RecordOut(failedEnvelope);
+                return false;
+            }
+
+            await WriteAsync(item.MapPayload(operation), cancellationToken)
+                .ConfigureAwait(false);
+            return true;
         }
 
         protected override void CompleteOutputs(Exception? error = null)

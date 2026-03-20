@@ -49,6 +49,7 @@ A rule file contains:
   "rule": {
     "id": "example-rule",
     "context": "example",
+    "title": "Example exchange set",
     "if": {
       "properties[\"product\"]": "AVCS"
     },
@@ -64,6 +65,7 @@ Key points:
 - `schemaVersion` is required and must be `1.0`
 - each file contains exactly one rule
 - `rule.id` must be unique within a provider scope
+- `rule.title` is required, must be non-empty, and should be concise display-oriented text
 - for `file-share`, `context` has special validation rules once the ruleset is uplifted to require it consistently
 
 ## Predicate model
@@ -98,6 +100,19 @@ Leaf conditions use:
 - `path`
 - one operator such as `eq`, `exists`, `contains`, `startsWith`, `endsWith`, or `in`
 
+### `exists` semantics
+
+`exists` is a boolean operator.
+
+- `exists: true` matches when the path resolves to at least one retained value
+- `exists: false` matches when the path resolves to no retained values
+
+For this operator, a retained value means a resolved value that is not `null`, empty, or whitespace-only.
+
+That means `exists: false` matches not only when a path is missing, but also when it resolves only to empty or whitespace-only values.
+
+For the same payload and path, `exists: false` is equivalent in match outcome to wrapping the same leaf predicate in `not { ... exists: true }`, but the direct boolean form is supported explicitly and is usually clearer to read.
+
 ## Path model
 
 Rules evaluate against the active payload.
@@ -120,6 +135,8 @@ Examples:
 
 Rules are additive enrichments over `CanonicalDocument`.
 
+After a rule matches, the engine also evaluates the top-level `rule.title` value through the same templating/path-resolution pipeline used by rule actions. That means `rule.title` can use literals, `$val`, and `$path:` expressions.
+
 Supported actions include:
 
 - `keywords.add`
@@ -130,6 +147,8 @@ Supported actions include:
 - discovery taxonomy fields such as `authority.add`, `region.add`, `format.add`, `category.add`, `series.add`, `instance.add`, `majorVersion.add`, `minorVersion.add`
 
 String outputs are normalized to trimmed lower-case. Empty results are skipped.
+
+`rule.title` is different from those additive string actions: it is trimmed and deduplicated but preserves display casing when written into `CanonicalDocument.Title`.
 
 ## Variables and templating
 
@@ -180,6 +199,10 @@ That distinction matters:
 - **invalid JSON/schema/path syntax** -> startup/configuration failure
 - **missing data in a specific payload** -> rule does not match; outputs are skipped
 
+`rule.title` is part of the fail-fast contract. Missing or blank titles are treated as rule-definition errors and fail startup/configuration loading.
+
+Separately, after enrichment completes, the pipeline validates that the final `CanonicalDocument` retained at least one title value. If no title was produced, the upsert is rejected and routed to the existing dead-letter path instead of being indexed.
+
 ## Authoring guidance
 
 ### Prefer small focused rules
@@ -193,6 +216,14 @@ For simple equality conditions, shorthand rules are easier to read and maintain.
 ### Use explicit boolean predicates for branching logic
 
 Use `all`, `any`, and `not` when the rule truly needs boolean structure.
+
+When the primary intent is simply to assert that a property is absent, prefer the direct form:
+
+```json
+{ "path": "properties[\"agency\"]", "exists": false }
+```
+
+rather than the more verbose equivalent `not { path: ..., exists: true }` form.
 
 ### Be careful with wildcard paths
 
@@ -217,6 +248,15 @@ It:
 - shows matched rules and the final document JSON
 - includes rule-checker and batch-scan tooling for finding candidate rule coverage
 
+The `Checker` page also validates that the evaluated `CanonicalDocument` retained the required local-workflow fields:
+
+- `Title`
+- `Category`
+- `Series`
+- `Instance`
+
+That keeps local rule-diagnosis feedback aligned with the runtime title contract, even though the checker remains intentionally scoped to the rules path rather than the full ZIP-dependent enrichment chain.
+
 This is the best local feedback loop when authoring or refining rules.
 
 For the stable documented parts of that tool, see [Tools: `RulesWorkbench`](Tools-RulesWorkbench). That page intentionally covers only the `Rules` and `Checker` pages.
@@ -232,6 +272,7 @@ For the stable documented parts of that tool, see [Tools: `RulesWorkbench`](Tool
 ## Example authoring checklist
 
 - unique `id`
+- non-empty display-oriented `title`
 - valid `schemaVersion`
 - valid provider placement
 - consistent `context` for `file-share`

@@ -55,6 +55,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             };
 
             var services = new ServiceCollection();
+            services.AddScoped<IIngestionEnricher>(_ => new TitleSettingEnricher("Graph Title", 0));
             services.AddScoped<IIngestionEnricher>(_ => new FailingEnricher(10, 1, _ => new TimeoutException("timeout")));
             await using var provider = services.BuildServiceProvider();
 
@@ -131,6 +132,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             };
 
             var services = new ServiceCollection();
+            services.AddScoped<IIngestionEnricher>(_ => new TitleSettingEnricher("Graph Title"));
             await using var provider = services.BuildServiceProvider();
 
             var graph = FileShareIngestionProcessingGraph.Build(ingress.Reader, new FileShareIngestionProcessingGraphDependencies
@@ -199,6 +201,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             };
 
             var services = new ServiceCollection();
+            services.AddScoped<IIngestionEnricher>(_ => new TitleSettingEnricher("Graph Title"));
             await using var provider = services.BuildServiceProvider();
 
             var graph = FileShareIngestionProcessingGraph.Build(ingress.Reader, new FileShareIngestionProcessingGraphDependencies
@@ -261,6 +264,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             };
 
             var services = new ServiceCollection();
+            services.AddScoped<IIngestionEnricher>(_ => new TitleSettingEnricher("Graph Title"));
             await using var root = services.BuildServiceProvider();
 
             var dependencies = new FileShareIngestionProcessingGraphDependencies

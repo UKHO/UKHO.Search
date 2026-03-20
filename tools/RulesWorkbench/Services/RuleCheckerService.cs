@@ -183,7 +183,7 @@ namespace RulesWorkbench.Services
         {
             if (string.IsNullOrWhiteSpace(finalDocumentJson))
             {
-                return new[] { "Category", "Series", "Instance" };
+                return new[] { "Title", "Category", "Series", "Instance" };
             }
 
             JsonNode? node;
@@ -193,10 +193,15 @@ namespace RulesWorkbench.Services
             }
             catch (JsonException)
             {
-                return new[] { "Category", "Series", "Instance" };
+                return new[] { "Title", "Category", "Series", "Instance" };
             }
 
             var missing = new List<string>();
+            if (!HasValues(node, "title"))
+            {
+                missing.Add("Title");
+            }
+
             if (!HasValues(node, "category"))
             {
                 missing.Add("Category");

@@ -46,6 +46,10 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
                       .GetProperty("type")
                       .GetString()
                       .ShouldBe("keyword");
+            properties.GetProperty("title")
+                      .GetProperty("type")
+                      .GetString()
+                      .ShouldBe("keyword");
             properties.GetProperty("keywords")
                       .GetProperty("type")
                       .GetString()

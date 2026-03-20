@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-adds-6-avcs-minimal",
         "context": "adds",
+        "title": "ADDS $path:properties[\"product type\"] support item",
         "description": "ADDS minimal AVCS support item.",
         "enabled": true,
         "if": {

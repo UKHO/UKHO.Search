@@ -43,6 +43,9 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
         public SortedSet<string> Instance { get; private set; } = new(StringComparer.Ordinal);
 
         [JsonInclude]
+        public SortedSet<string> Title { get; private set; } = new(StringComparer.Ordinal);
+
+        [JsonInclude]
         public string SearchText { get; private set; } = string.Empty;
 
         [JsonInclude]
@@ -102,6 +105,17 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
             AddNormalizedStringValue(Instance, instance);
         }
 
+        public void AddTitle(string? title)
+        {
+            var normalized = NormalizeTitleValue(title);
+            if (normalized is null)
+            {
+                return;
+            }
+
+            Title.Add(normalized);
+        }
+
         public void AddKeywords(IEnumerable<string?>? keywords)
         {
             if (keywords is null)
@@ -112,6 +126,19 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
             foreach (var keyword in keywords)
             {
                 AddKeyword(keyword);
+            }
+        }
+
+        public void AddTitles(IEnumerable<string?>? titles)
+        {
+            if (titles is null)
+            {
+                return;
+            }
+
+            foreach (var title in titles)
+            {
+                AddTitle(title);
             }
         }
 
@@ -253,6 +280,16 @@ namespace UKHO.Search.Ingestion.Pipeline.Documents
             }
 
             target.Add(normalized);
+        }
+
+        private static string? NormalizeTitleValue(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            return value.Trim();
         }
 
         private static void AddIntValue(SortedSet<int> target, int? value)

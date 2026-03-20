@@ -75,6 +75,42 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
         }
 
         [Fact]
+        public async Task Upsert_without_title_is_dead_lettered_and_not_forwarded_to_indexing()
+        {
+            var input = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
+            var output = BoundedChannelFactory.Create<Envelope<IndexOperation>>(1, true, true);
+            var deadLetter = BoundedChannelFactory.Create<Envelope<IndexOperation>>(1, true, true);
+
+            await using var provider = CreateProvider();
+            var node = new ApplyEnrichmentNode("enrich", input.Reader, output.Writer, deadLetter.Writer, provider.GetRequiredService<IServiceScopeFactory>());
+
+            await node.StartAsync(CancellationToken.None);
+
+            var request = new IngestionRequest(IngestionRequestType.IndexItem, new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList()), null, null);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
+
+            await input.Writer.WriteAsync(new Envelope<IngestionPipelineContext>("doc-1", new IngestionPipelineContext
+            {
+                Request = request,
+                Operation = new UpsertOperation("doc-1", document)
+            }));
+            input.Writer.TryComplete();
+
+            await node.Completion.WaitAsync(TimeSpan.FromSeconds(2));
+
+            output.Reader.TryRead(out var _)
+                  .ShouldBeFalse();
+
+            deadLetter.Reader.TryRead(out var failed)
+                      .ShouldBeTrue();
+            failed.Status.ShouldBe(MessageStatus.Failed);
+            failed.Error.ShouldNotBeNull();
+            failed.Error!.Category.ShouldBe(UKHO.Search.Pipelines.Errors.PipelineErrorCategory.Validation);
+            failed.Error.Code.ShouldBe("CANONICAL_TITLE_REQUIRED");
+            failed.Error.Message.ShouldContain("title", Case.Insensitive);
+        }
+
+        [Fact]
         public async Task Provider_name_is_set_in_ingestion_provider_context_for_enrichers()
         {
             var input = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
@@ -405,6 +441,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             var enrichers = new IIngestionEnricher[]
             {
                 new BatchContentEnricher(new ThrowingZipDownloader(notFoundException), Array.Empty<IBatchContentHandler>(), NullLogger<BatchContentEnricher>.Instance, new IngestionModeOptions(IngestionMode.BestEffort)),
+                new TitleSettingEnricher("Best effort title", 150),
                 new RecordingEnricherA(calls, 200)
             };
 
@@ -444,6 +481,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
                                                   "schemaVersion": "1.0",
                                                   "rule": {
                                                     "id": "r1",
+                                                    "title": "Rule 1 Title",
                                                     "if": { "id": "doc-1" },
                                                     "then": {
                                                       "keywords": { "add": [ "Rule1" ] },
@@ -458,6 +496,7 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
                                                   "schemaVersion": "1.0",
                                                   "rule": {
                                                     "id": "r2",
+                                                    "title": "Rule 2 Title",
                                                     "if": { "id": "doc-1" },
                                                     "then": {
                                                       "keywords": { "add": [ "Rule2" ] },

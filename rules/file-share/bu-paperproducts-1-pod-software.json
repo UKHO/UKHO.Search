@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-paperproducts-1-pod-software",
         "context": "paperproducts",
+        "title": "PaperProducts POD $path:properties[\"pod version\"]",
         "description": "PaperProducts POD software.",
         "enabled": true,
         "if": {

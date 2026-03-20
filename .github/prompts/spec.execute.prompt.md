@@ -51,5 +51,6 @@ Then: "User instructions: Please do the following" + any manual steps (e.g., run
 Finalization (after last item):
 - Provide a final summary of all work items completed.
 - Indicate any follow-up recommendations.
+- Ensure that the wiki (if present) at ./wiki is updated with any relevant documentation changes or new pages created during implementation.
 
 Operate until all plan items are complete.

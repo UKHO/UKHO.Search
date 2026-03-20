@@ -50,7 +50,7 @@ namespace RulesWorkbench.Tests
 			var store = new RulesSnapshotStore(new NullLogger<RulesSnapshotStore>(), env, new SystemTextJsonRuleJsonValidator());
 			store.LoadFileShareRules();
 
-			var updateResult = store.UpdateFileShareRuleJson(0, "{\"id\":\"a\",\"description\":\"updated\"}");
+          var updateResult = store.UpdateFileShareRuleJson(0, "{\"id\":\"a\",\"title\":\"Updated title\",\"description\":\"updated\"}");
 
 			updateResult.IsValid.ShouldBeTrue();
 			var rules = store.GetFileShareRuleSummaries(null);
@@ -131,8 +131,8 @@ namespace RulesWorkbench.Tests
 			var filePath = Path.Combine(providerRoot, $"{id}.json");
 
 			var rule = description is null
-				? $"{{\"id\":\"{id}\"}}"
-				: $"{{\"id\":\"{id}\",\"description\":\"{description}\"}}";
+                ? $"{{\"id\":\"{id}\",\"title\":\"{id}\"}}"
+				: $"{{\"id\":\"{id}\",\"title\":\"{id}\",\"description\":\"{description}\"}}";
 
          var doc = $"{{\"schemaVersion\":\"1.0\",\"rule\":{rule}}}";
 			File.WriteAllText(filePath, doc);

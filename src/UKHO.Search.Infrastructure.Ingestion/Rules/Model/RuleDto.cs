@@ -8,6 +8,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Model
 
         public string? Context { get; set; }
 
+        public string? Title { get; set; }
+
         public string? Description { get; set; }
 
         public bool? Enabled { get; set; }

@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-adp-1-adp-software-dvd",
         "context": "adp",
+        "title": "ADP $path:properties[\"product type\"] $path:properties[\"adp version\"]",
         "description": "ADP software on DVD.",
         "enabled": true,
         "if": {

@@ -37,6 +37,7 @@ namespace UKHO.Search.Ingestion.Tests.TestEnrichers
                 throw _exceptionFactory(CallCount);
             }
 
+            document.AddTitle(nameof(FailingEnricher));
             return Task.CompletedTask;
         }
     }

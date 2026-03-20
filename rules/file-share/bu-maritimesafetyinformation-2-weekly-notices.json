@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-maritimesafetyinformation-2-weekly-notices",
         "context": "maritimesafetyinformation",
+        "title": "Weekly notices $path:properties[\"year / week\"]",
         "description": "Maritime Safety Information weekly notices.",
         "enabled": true,
         "if": {

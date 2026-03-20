@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-aenp-1-publication-edition-year",
         "context": "aenp",
+        "title": "AENP publication $path:properties[\"product id\"] $path:properties[\"year\"]",
         "description": "AENP publication with edition and year.",
         "enabled": true,
         "if": {

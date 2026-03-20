@@ -5,6 +5,7 @@ using Shouldly;
 using UKHO.Search.Ingestion.Pipeline.Operations;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline;
 using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Tests.TestEnrichers;
 using UKHO.Search.Ingestion.Tests.TestNodes;
 using UKHO.Search.Pipelines.Channels;
 using UKHO.Search.Pipelines.Messaging;
@@ -50,7 +51,8 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
                 CreateAckNode = (name, lane, input, supervisor) => ackSink = new BlockingEnvelopeSinkNode<IndexOperation>(name, input, 0)
             };
 
-            using var provider = new ServiceCollection().BuildServiceProvider();
+            using var provider = new ServiceCollection().AddScoped<IIngestionEnricher>(_ => new TitleSettingEnricher("Entrypoint Title"))
+                                                     .BuildServiceProvider();
 
             var graph = FileShareIngestionProcessingGraph.Build(ingress.Reader, new FileShareIngestionProcessingGraphDependencies
             {

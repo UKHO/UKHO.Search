@@ -12,6 +12,7 @@ namespace UKHO.Search.Ingestion.Tests.TestEnrichers
             ArgumentNullException.ThrowIfNull(request);
             ArgumentNullException.ThrowIfNull(document);
 
+            document.AddTitle(nameof(RequestEchoEnricher));
             return Task.CompletedTask;
         }
     }

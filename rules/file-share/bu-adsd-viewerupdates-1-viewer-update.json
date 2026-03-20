@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-adsd-viewerupdates-1-viewer-update",
         "context": "adsd-viewerupdates",
+        "title": "ADSD viewer update $path:properties[\"publishdatetime\"]",
         "description": "ADSD viewer update.",
         "enabled": true,
         "if": {

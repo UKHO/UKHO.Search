@@ -22,6 +22,7 @@ namespace UKHO.Search.Ingestion.Tests.TestEnrichers
             ArgumentNullException.ThrowIfNull(document);
 
             _calls.Add(nameof(RecordingEnricherB));
+            document.AddTitle(nameof(RecordingEnricherB));
             return Task.CompletedTask;
         }
     }

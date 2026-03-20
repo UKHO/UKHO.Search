@@ -18,9 +18,14 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Actions
             _templateExpander = templateExpander;
         }
 
-        public ActionApplySummary Apply(ThenDto then, object payload, CanonicalDocument document, IReadOnlyList<string> matchedValues)
+        public ActionApplySummary Apply(ThenDto? then, object payload, CanonicalDocument document, IReadOnlyList<string> matchedValues)
         {
             var summary = new ActionApplySummary();
+            if (then is null)
+            {
+                return summary;
+            }
+
             var context = new TemplateContext(payload, _pathResolver, matchedValues);
 
             ApplyKeywords(then, document, context, summary);
@@ -29,6 +34,36 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Actions
             ApplyContent(then, document, context, summary);
 
             return summary;
+        }
+
+        public int ApplyTitle(string? titleTemplate, object payload, CanonicalDocument document, IReadOnlyList<string> matchedValues)
+        {
+            if (string.IsNullOrWhiteSpace(titleTemplate))
+            {
+                return 0;
+            }
+
+            var context = new TemplateContext(payload, _pathResolver, matchedValues);
+            var titlesAdded = 0;
+
+            foreach (var title in _templateExpander.Expand(titleTemplate, context))
+            {
+                var normalized = NormalizeDisplayValue(title);
+                if (normalized is null)
+                {
+                    continue;
+                }
+
+                if (document.Title.Contains(normalized))
+                {
+                    continue;
+                }
+
+                document.AddTitle(normalized);
+                titlesAdded++;
+            }
+
+            return titlesAdded;
         }
 
         private void ApplyAdditionalFields(ThenDto then, CanonicalDocument document, TemplateContext context, ActionApplySummary summary)
@@ -237,6 +272,16 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Actions
 
             return value.Trim()
                         .ToLowerInvariant();
+        }
+
+        private static string? NormalizeDisplayValue(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            return value.Trim();
         }
     }
 }

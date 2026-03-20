@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-adds-s100-1-data-product-product-code",
         "context": "adds-s100",
+        "title": "ADDS-S100 data product $path:properties[\"product name\"]",
         "description": "ADDS-S100 data product using product code.",
         "enabled": true,
         "if": {

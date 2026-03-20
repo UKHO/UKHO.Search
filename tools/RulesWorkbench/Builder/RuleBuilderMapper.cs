@@ -31,6 +31,7 @@ namespace RulesWorkbench.Builder
 			return new JsonObject
 			{
 				["id"] = rule.Id,
+             ["title"] = rule.Title,
 				["description"] = rule.Description,
 				["if"] = ifObject,
 				["then"] = thenObject,

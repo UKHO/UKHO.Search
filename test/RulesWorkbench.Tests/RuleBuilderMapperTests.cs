@@ -12,6 +12,7 @@ namespace RulesWorkbench.Tests
 			var mapper = new RuleBuilderMapper();
 			var rule = new BuilderRule(
 				"my-rule",
+             "My rule title",
 				"desc",
 				new BuilderPredicate(CompositionType.All, new[]
 				{
@@ -25,6 +26,7 @@ namespace RulesWorkbench.Tests
 			var json = mapper.ToJson(rule).ToJsonString();
 
 			json.ShouldContain("\"id\":\"my-rule\"");
+           json.ShouldContain("\"title\":\"My rule title\"");
 			json.ShouldContain("\"if\"");
 			json.ShouldContain("\"all\"");
 			json.ShouldContain("edition number");

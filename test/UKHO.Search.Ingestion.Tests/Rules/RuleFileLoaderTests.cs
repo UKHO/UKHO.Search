@@ -80,6 +80,53 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         }
 
         [Fact]
+        public void LoadProviderRules_WhenTitleMissing_Throws()
+        {
+            var contentRoot = CreateTempDir();
+            var providerRoot = Directory.CreateDirectory(Path.Combine(contentRoot, "Rules", "file-share"));
+
+            File.WriteAllText(Path.Combine(providerRoot.FullName, "a.json"),
+                """
+                {
+                  "SchemaVersion": "1.0",
+                  "Rule": {
+                    "Id": "r1",
+                    "If": { "path": "id", "exists": true },
+                    "Then": { "keywords": { "add": [ "k" ] } }
+                  }
+                }
+                """);
+
+            var ex = Assert.Throws<IngestionRulesValidationException>(() => _loader.LoadProviderRules(contentRoot, "file-share"));
+            Assert.Contains("title", ex.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("a.json", ex.Message, StringComparison.OrdinalIgnoreCase);
+        }
+
+        [Fact]
+        public void LoadProviderRules_WhenTitleBlank_Throws()
+        {
+            var contentRoot = CreateTempDir();
+            var providerRoot = Directory.CreateDirectory(Path.Combine(contentRoot, "Rules", "file-share"));
+
+            File.WriteAllText(Path.Combine(providerRoot.FullName, "a.json"),
+                """
+                {
+                  "SchemaVersion": "1.0",
+                  "Rule": {
+                    "Id": "r1",
+                    "Title": "   ",
+                    "If": { "path": "id", "exists": true },
+                    "Then": { "keywords": { "add": [ "k" ] } }
+                  }
+                }
+                """);
+
+            var ex = Assert.Throws<IngestionRulesValidationException>(() => _loader.LoadProviderRules(contentRoot, "file-share"));
+            Assert.Contains("title", ex.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("a.json", ex.Message, StringComparison.OrdinalIgnoreCase);
+        }
+
+        [Fact]
         public void LoadProviderRules_WhenContextPresent_LoadsContextIntoRuleDto()
         {
             var contentRoot = CreateTempDir();
@@ -92,6 +139,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                   "Rule": {
                     "Id": "r1",
                     "Context": "adds-s100",
+                    "Title": "Rule title",
                     "If": { "path": "id", "exists": true },
                     "Then": { "keywords": { "add": [ "k" ] } }
                   }
@@ -107,7 +155,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         private static void WriteRule(string path, string id)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-            File.WriteAllText(path, $"{{\"SchemaVersion\":\"{RuleFileLoader.SupportedSchemaVersion}\",\"Rule\":{{\"Id\":\"{id}\"}}}}");
+            File.WriteAllText(path, $"{{\"SchemaVersion\":\"{RuleFileLoader.SupportedSchemaVersion}\",\"Rule\":{{\"Id\":\"{id}\",\"Title\":\"Title for {id}\"}}}}");
         }
 
         private static string CreateTempDir()

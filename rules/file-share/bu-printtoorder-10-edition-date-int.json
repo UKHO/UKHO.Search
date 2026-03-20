@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-printtoorder-10-edition-date-int",
         "context": "printtoorder",
+        "title": "Paper chart $path:properties[\"chart number\"] $path:properties[\"chart title\"]",
         "description": "PrintToOrder paper chart with edition date and INT.",
         "enabled": true,
         "if": {

@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-avcsdata-1-weekly-aio-data-set",
         "context": "avcsdata",
+        "title": "AVCSData weekly AIO data set $path:properties[\"year / week\"]",
         "description": "AVCSData weekly AIO data set.",
         "enabled": true,
         "if": {

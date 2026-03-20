@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-adds-s57-6-dvd-info-minimal",
         "context": "adds-s57",
+        "title": "ADDS-S57 DVD info $path:properties[\"dvd info\"]",
         "description": "ADDS-S57 minimal DVD info support item.",
         "enabled": true,
         "if": {

@@ -18,6 +18,7 @@ The current model contains:
 - `Provider`
 - `Source` (`IndexRequest`)
 - `Timestamp`
+- `Title`
 - `Keywords`
 - `Authority`
 - `Region`
@@ -88,6 +89,8 @@ String discovery values are normalized inside the mutator methods:
 
 This is why `CanonicalDocument` is more than a DTO. It embeds index-shape discipline.
 
+`Title` is the main exception to lowercase normalization. It is still trimmed, deduplicated, and deterministically ordered, but it preserves authored display casing because it is intended for user-facing display rather than normalized discovery matching.
+
 ## Search surfaces
 
 ### `Keywords`
@@ -100,6 +103,18 @@ It is populated by:
 - rule outputs
 - file-name-derived content extraction keywords
 - provider-specific enrichers such as S-101 classification
+
+### `Title`
+
+`Title` is a multi-valued display surface populated primarily by ingestion rules.
+
+It is used to carry concise display-ready labels such as:
+
+- exchange-set names
+- publication labels
+- rule-derived document titles
+
+Unlike `Keywords`, `SearchText`, and taxonomy strings, `Title` preserves casing so downstream query/UI code can choose an appropriate display title without reconstructing it from normalized search fields.
 
 ### `SearchText`
 
@@ -185,7 +200,7 @@ Favor mutating the canonical discovery surface rather than embedding provider-sp
 
 Think in terms of canonical outcomes:
 
-- what keyword/search text/content/taxonomy should this rule add?
+- what title/keyword/search text/content/taxonomy should this rule add?
 
 ## Conceptual model
 

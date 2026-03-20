@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-arcs-1-weekly-disc",
         "context": "arcs",
+        "title": "ARCS disc $path:properties[\"disc\"] for $path:properties[\"year / week\"]",
         "description": "ARCS weekly disc.",
         "enabled": true,
         "if": {

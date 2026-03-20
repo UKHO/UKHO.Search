@@ -319,13 +319,39 @@ Leaf shape:
 { "path": "properties[\"abcdef\"]", "exists": true }
 ```
 
+```json
+{ "path": "properties[\"abcdef\"]", "exists": false }
+```
+
 Meaning:
 
-- Matches if any resolved value is non-empty.
+- `exists: true` matches if any resolved value is non-empty.
+- `exists: false` matches if no resolved value is non-empty.
+
+For `exists`, a retained value means a resolved value that is not null, empty, or whitespace-only.
+
+That means `exists: false` matches when:
+
+- the path is missing at runtime
+- the path resolves only to null values
+- the path resolves only to empty strings
+- the path resolves only to whitespace-only strings
 
 `$val` binding:
 
-- Includes all resolved non-empty values.
+- For `exists: true`, includes all resolved non-empty values.
+- For `exists: false`, includes no values.
+
+`exists: false` is semantically equivalent in match outcome to:
+
+```json
+{
+  "not": {
+    "path": "properties[\"abcdef\"]",
+    "exists": true
+  }
+}
+```
 
 #### 10.3.2 `eq`
 

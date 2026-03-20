@@ -20,6 +20,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                                   "schemaVersion": "1.0",
                                   "rule": {
                                     "id": "tax1",
+                                    "title": "Taxonomy rule",
                                     "if": { "id": "doc-1" },
                                     "then": {
                                       "authority": { "add": [ "UKHO", "Admiralty", "ukho" ] },

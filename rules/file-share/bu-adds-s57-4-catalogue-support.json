@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-adds-s57-4-catalogue-support",
         "context": "adds-s57",
+        "title": "ADDS-S57 catalogue $path:properties[\"catalogue type\"]",
         "description": "ADDS-S57 catalogue support item.",
         "enabled": true,
         "if": {

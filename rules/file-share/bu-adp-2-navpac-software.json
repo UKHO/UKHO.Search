@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-adp-2-navpac-software",
         "context": "adp",
+        "title": "NavPac $path:properties[\"product type\"] $path:properties[\"navpac version\"]",
         "description": "NavPac software.",
         "enabled": true,
         "if": {

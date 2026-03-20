@@ -21,6 +21,30 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         }
 
         [Fact]
+        public void Leaf_exists_false_matches_when_runtime_path_is_missing()
+        {
+            var payload = CreateIndexRequest();
+            var evaluator = CreateEvaluator();
+
+            using var doc = JsonDocument.Parse("""{ "path": "does.not.exist", "exists": false }""");
+
+            evaluator.Evaluate("r1", doc.RootElement, payload)
+                     .IsMatch.ShouldBeTrue();
+        }
+
+        [Fact]
+        public void Leaf_exists_false_matches_when_value_is_only_whitespace()
+        {
+            var payload = CreateIndexRequest();
+            var evaluator = CreateEvaluator();
+
+            using var doc = JsonDocument.Parse("""{ "path": "properties[\"spaces\"]", "exists": false }""");
+
+            evaluator.Evaluate("r1", doc.RootElement, payload)
+                     .IsMatch.ShouldBeTrue();
+        }
+
+        [Fact]
         public void Leaf_startsWith_and_endsWith_match_any_wildcard_value()
         {
             var payload = CreateIndexRequest();
@@ -45,6 +69,63 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
             evaluator.Evaluate("r1", doc.RootElement, payload)
                      .IsMatch.ShouldBeTrue();
+        }
+
+        [Fact]
+        public void Boolean_all_matches_when_exists_false_child_matches()
+        {
+            var payload = CreateIndexRequest();
+            var evaluator = CreateEvaluator();
+
+            using var doc = JsonDocument.Parse("""
+                                               {
+                                                 "all": [
+                                                   { "path": "id", "exists": true },
+                                                   { "path": "does.not.exist", "exists": false }
+                                                 ]
+                                               }
+                                               """);
+
+            evaluator.Evaluate("r1", doc.RootElement, payload)
+                     .IsMatch.ShouldBeTrue();
+        }
+
+        [Fact]
+        public void Boolean_any_matches_exists_false_child_for_missing_wildcard_path()
+        {
+            var payload = CreateIndexRequest();
+            var evaluator = CreateEvaluator();
+
+            using var doc = JsonDocument.Parse("""
+                                               {
+                                                 "any": [
+                                                   { "path": "id", "eq": "nope" },
+                                                   { "path": "files[*].doesNotExist", "exists": false }
+                                                 ]
+                                               }
+                                               """);
+
+            evaluator.Evaluate("r1", doc.RootElement, payload)
+                     .IsMatch.ShouldBeTrue();
+        }
+
+        [Fact]
+        public void Boolean_not_over_exists_false_inverts_match()
+        {
+            var payload = CreateIndexRequest();
+            var evaluator = CreateEvaluator();
+
+            using var doc = JsonDocument.Parse("""
+                                               {
+                                                 "not": {
+                                                   "path": "does.not.exist",
+                                                   "exists": false
+                                                 }
+                                               }
+                                               """);
+
+            evaluator.Evaluate("r1", doc.RootElement, payload)
+                     .IsMatch.ShouldBeFalse();
         }
 
         [Fact]
@@ -145,7 +226,8 @@ namespace UKHO.Search.Ingestion.Tests.Rules
         private static IndexRequest CreateIndexRequest()
         {
             return new IndexRequest("doc-1", [
-                new IngestionProperty { Name = "abcdef", Type = IngestionPropertyType.String, Value = "a value" }
+                new IngestionProperty { Name = "abcdef", Type = IngestionPropertyType.String, Value = "a value" },
+                new IngestionProperty { Name = "spaces", Type = IngestionPropertyType.String, Value = "   " }
             ], ["token"], DateTimeOffset.UtcNow, new IngestionFileList
             {
                 new IngestionFile("f1", 1, DateTimeOffset.UtcNow, "app/s63"),

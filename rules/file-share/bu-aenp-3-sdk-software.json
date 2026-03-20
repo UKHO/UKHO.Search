@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-aenp-3-sdk-software",
         "context": "aenp",
+        "title": "AENP SDK $path:properties[\"aenp version\"]",
         "description": "AENP SDK software.",
         "enabled": true,
         "if": {

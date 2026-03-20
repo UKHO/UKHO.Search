@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-adds-5-dvd-info-support",
         "context": "adds",
+        "title": "ADDS DVD info $path:properties[\"content\"]",
         "description": "ADDS DVD info support item.",
         "enabled": true,
         "if": {

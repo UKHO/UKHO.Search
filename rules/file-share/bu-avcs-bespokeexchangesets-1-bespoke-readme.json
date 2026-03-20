@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-avcs-bespokeexchangesets-1-bespoke-readme",
         "context": "avcs-bespokeexchangesets",
+        "title": "AVCS bespoke readme for $path:properties[\"audience\"]",
         "description": "AVCS bespoke exchange set readme.",
         "enabled": true,
         "if": {

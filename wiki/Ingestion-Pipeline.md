@@ -123,6 +123,7 @@ Important characteristics:
 
 - enrichers run inside a scoped DI scope
 - provider name is exposed through `IIngestionProviderContext`
+- after enrichers finish, successful upserts are validated to ensure the canonical document retained at least one title
 - transient enrichment failures (`TimeoutException`, `HttpRequestException`, `IOException`, non-cancelled `TaskCanceledException`) are retried with exponential backoff + jitter
 - exhausted retries or non-transient errors dead-letter the index operation
 
@@ -166,6 +167,8 @@ There are two main dead-letter flows:
 
 - **request dead-letter** for invalid or dispatch-failed `IngestionRequest` envelopes
 - **index dead-letter** for failed enrichment or indexing `IndexOperation` envelopes
+
+Missing-title validation now uses the index-operation dead-letter path. If the final canonical upsert document has no retained title after enrichment/rules processing, the message is marked failed with `CANONICAL_TITLE_REQUIRED`, persisted through the existing dead-letter flow, and withheld from normal indexing output.
 
 Blob persistence is handled by:
 

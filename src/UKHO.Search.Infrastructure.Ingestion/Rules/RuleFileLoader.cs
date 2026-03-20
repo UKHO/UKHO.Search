@@ -85,6 +85,11 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
                     throw new IngestionRulesValidationException($"Rule file '{filePath}' contains a rule with missing Id.");
                 }
 
+                if (string.IsNullOrWhiteSpace(doc.Rule.Title))
+                {
+                    throw new IngestionRulesValidationException($"Rule file '{filePath}' contains a rule with missing required Title.");
+                }
+
                 loaded.Add((filePath, doc.Rule));
             }
 

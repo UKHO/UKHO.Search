@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-avcscustomexchangesets-1-custom-exchange-set",
         "context": "avcscustomexchangesets",
+        "title": "AVCS custom exchange set $path:properties[\"exchange set type\"]",
         "description": "AVCS custom exchange set.",
         "enabled": true,
         "if": {

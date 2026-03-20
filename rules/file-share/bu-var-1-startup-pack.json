@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-var-1-startup-pack",
         "context": "var",
+        "title": "VAR startup pack $path:properties[\"content\"]",
         "description": "VAR startup pack.",
         "enabled": true,
         "if": {

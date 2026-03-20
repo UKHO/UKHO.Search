@@ -131,8 +131,11 @@ JSON mode allows direct editing of the rule JSON.
 The page validates the JSON using `IRuleJsonValidator` and:
 
 - shows whether the JSON is valid
+- rejects rules that are missing a non-empty `title`
 - blocks apply/save flows when invalid
 - prevents switching into builder mode until the JSON is valid again
+
+`title` is now treated as required authoring metadata. It should be concise display-oriented text that describes the matched rule outcome rather than an internal id.
 
 #### 5. Builder mode
 
@@ -146,6 +149,8 @@ Current builder support includes:
 - common `then` actions such as `keywords.add`, `searchText.add`, `content.add`, and taxonomy fields
 
 The builder patches the JSON representation rather than using a separate rule model at runtime.
+
+The builder also emits a required display `title`, so rules authored through the page remain valid under the runtime title contract.
 
 #### 6. Save to Azure App Configuration
 
@@ -243,15 +248,21 @@ This gives the page a useful distinction between:
 
 That distinction is one of the most useful debugging views in the tool.
 
+Because both the `Evaluate` and `Checker` flows use the shared ingestion rules engine, they inherit the same completed `exists` semantics as runtime ingestion. That includes direct support for both `exists: true` and `exists: false` rule predicates.
+
 ### Success heuristic
 
-The checker currently uses a simple v1 heuristic for the final `CanonicalDocument`:
+The checker uses a simple required-field heuristic for the final `CanonicalDocument`.
 
 A batch is considered `OK` when the final document contains values for:
 
+- `Title`
 - `Category`
 - `Series`
 - `Instance`
+
+This now aligns with the runtime title contract enforced by the ingestion pipeline.
+If rules match but no retained canonical title is produced, the checker reports the batch as non-OK instead of passing it.
 
 From that, the page returns a status such as:
 
@@ -264,6 +275,10 @@ Warnings are also used when:
 - business-unit candidate selection is incomplete
 - rules matched but the required fields are still missing
 - candidate rules exist but none matched
+
+Because the page is intentionally scoped to the rules path only, it should be read as a rule-diagnosis tool rather than a full end-to-end ingestion simulator. The checker mirrors the mandatory title contract, but it still does not execute ZIP-dependent enrichment.
+
+In practice, this means the checker is now reliable for diagnosing repository rules that depend on missing-property logic such as `exists: false`. If such a rule matches in the workbench, it is using the same shared evaluator semantics as the ingestion runtime.
 
 ### What the page shows
 

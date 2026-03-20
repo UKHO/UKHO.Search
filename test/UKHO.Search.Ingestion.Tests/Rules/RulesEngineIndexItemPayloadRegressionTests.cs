@@ -20,6 +20,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                                   "schemaVersion": "1.0",
                                   "rule": {
                                     "id": "payload-selection",
+                                    "title": "Payload selection rule",
                                     "enabled": true,
                                     "if": { "id": "add-id" },
                                     "then": { "keywords": { "add": [ "matched" ] } }
@@ -52,6 +53,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                                   "schemaVersion": "1.0",
                                   "rule": {
                                     "id": "additional-fields",
+                                    "title": "Document Title $path:properties[\"region\"]",
                                     "enabled": true,
                                     "if": { "id": "doc-1" },
                                     "then": {
@@ -86,6 +88,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
             engine.Apply("file-share", request, document);
 
+            document.Title.ShouldBe(new[] { "Document Title Europe" });
             document.Authority.ShouldBe(new[] { "ukho" });
             document.Region.ShouldBe(new[] { "europe" });
             document.Format.ShouldBe(new[] { "pdf" });

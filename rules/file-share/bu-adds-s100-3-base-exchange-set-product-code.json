@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-adds-s100-3-base-exchange-set-product-code",
         "context": "adds-s100",
+        "title": "ADDS-S100 $path:properties[\"exchange set type\"] base exchange set",
         "description": "ADDS-S100 base exchange set using product code.",
         "enabled": true,
         "if": {

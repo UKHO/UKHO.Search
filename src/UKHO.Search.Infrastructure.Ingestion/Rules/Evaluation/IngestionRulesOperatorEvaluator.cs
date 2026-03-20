@@ -8,17 +8,29 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation
         {
             matchedValues = Array.Empty<string>();
 
+            if (@operator.Equals("exists", StringComparison.OrdinalIgnoreCase))
+            {
+                if (operatorValue.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+                {
+                    return false;
+                }
+
+                var retainedValues = (resolvedValues ?? Array.Empty<string>()).Where(v => !string.IsNullOrWhiteSpace(v))
+                                             .ToArray();
+                var shouldExist = operatorValue.GetBoolean();
+
+                if (shouldExist)
+                {
+                    matchedValues = retainedValues;
+                    return retainedValues.Length > 0;
+                }
+
+                return retainedValues.Length == 0;
+            }
+
             if (resolvedValues is null || resolvedValues.Count == 0)
             {
                 return false;
-            }
-
-            if (@operator.Equals("exists", StringComparison.OrdinalIgnoreCase))
-            {
-                var nonEmpty = resolvedValues.Where(v => !string.IsNullOrWhiteSpace(v))
-                                             .ToArray();
-                matchedValues = nonEmpty;
-                return nonEmpty.Length > 0;
             }
 
             if (@operator.Equals("in", StringComparison.OrdinalIgnoreCase))

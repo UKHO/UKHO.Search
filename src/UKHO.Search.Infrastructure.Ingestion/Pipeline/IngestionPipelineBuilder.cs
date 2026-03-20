@@ -7,6 +7,7 @@ using UKHO.Search.Infrastructure.Ingestion.Pipeline.Channels;
 using UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes;
 using UKHO.Search.Infrastructure.Ingestion.Pipeline.Terminal;
 using UKHO.Search.Infrastructure.Ingestion.Queue;
+using UKHO.Search.Ingestion;
 using UKHO.Search.Ingestion.Pipeline;
 using UKHO.Search.Ingestion.Pipeline.Nodes;
 using UKHO.Search.Ingestion.Pipeline.Operations;
@@ -68,7 +69,8 @@ namespace UKHO.Search.Infrastructure.Ingestion.Pipeline
                 throw new InvalidOperationException("ingestion:laneCount must be > 0.");
             }
 
-            var emptyEnricherProvider = new ServiceCollection().BuildServiceProvider();
+            var emptyEnricherProvider = new ServiceCollection().AddScoped<IIngestionEnricher, SyntheticTitleEnricher>()
+                                                            .BuildServiceProvider();
             var scopeFactory = emptyEnricherProvider.GetRequiredService<IServiceScopeFactory>();
 
             var supervisor = new PipelineSupervisor(cancellationToken);

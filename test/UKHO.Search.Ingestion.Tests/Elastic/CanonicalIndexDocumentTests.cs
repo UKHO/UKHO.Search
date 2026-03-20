@@ -21,5 +21,26 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
 
             indexDocument.Provider.ShouldBe("file-share");
         }
+
+        [Fact]
+        public void Create_preserves_title_values_and_casing_from_canonical_document()
+        {
+            var document = CanonicalDocument.CreateMinimal(
+                "doc-1",
+                "file-share",
+                new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), ["t1"], DateTimeOffset.UnixEpoch, new IngestionFileList()),
+                DateTimeOffset.UnixEpoch);
+
+            document.AddTitle("Zulu Notice");
+            document.AddTitle("Alpha Notice");
+
+            var indexDocument = CanonicalIndexDocument.Create(document);
+
+            indexDocument.Title.ShouldBe(new[]
+            {
+                "Alpha Notice",
+                "Zulu Notice"
+            });
+        }
     }
 }

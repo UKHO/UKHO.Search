@@ -65,5 +65,60 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
             matched.ShouldBe(new[] { "x" });
         }
+
+        [Fact]
+        public void Exists_true_does_not_match_when_values_are_missing()
+        {
+            using var doc = JsonDocument.Parse("true");
+
+            IngestionRulesOperatorEvaluator.Evaluate("exists", Array.Empty<string>(), doc.RootElement, out var matched)
+                                           .ShouldBeFalse();
+
+            matched.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public void Exists_true_does_not_match_when_values_are_only_whitespace()
+        {
+            using var doc = JsonDocument.Parse("true");
+
+            IngestionRulesOperatorEvaluator.Evaluate("exists", new[] { string.Empty, "  " }, doc.RootElement, out var matched)
+                                           .ShouldBeFalse();
+
+            matched.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public void Exists_false_matches_when_values_are_missing()
+        {
+            using var doc = JsonDocument.Parse("false");
+
+            IngestionRulesOperatorEvaluator.Evaluate("exists", Array.Empty<string>(), doc.RootElement, out var matched)
+                                           .ShouldBeTrue();
+
+            matched.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public void Exists_false_matches_when_values_are_only_whitespace()
+        {
+            using var doc = JsonDocument.Parse("false");
+
+            IngestionRulesOperatorEvaluator.Evaluate("exists", new[] { string.Empty, "  " }, doc.RootElement, out var matched)
+                                           .ShouldBeTrue();
+
+            matched.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public void Exists_false_does_not_match_when_non_empty_value_is_present()
+        {
+            using var doc = JsonDocument.Parse("false");
+
+            IngestionRulesOperatorEvaluator.Evaluate("exists", new[] { string.Empty, "x" }, doc.RootElement, out var matched)
+                                           .ShouldBeFalse();
+
+            matched.ShouldBeEmpty();
+        }
     }
 }

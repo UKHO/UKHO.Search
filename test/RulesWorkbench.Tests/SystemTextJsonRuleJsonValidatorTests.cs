@@ -22,10 +22,43 @@ namespace RulesWorkbench.Tests
 		{
 			var validator = new SystemTextJsonRuleJsonValidator();
 
-			var result = validator.Validate("{\"id\":\"x\"}");
+          var result = validator.Validate("{\"id\":\"x\",\"title\":\"Display title\"}");
 
 			result.IsValid.ShouldBeTrue();
 			result.ErrorMessage.ShouldBeNull();
+		}
+
+		[Fact]
+		public void Validate_WhenWrappedRuleJsonHasTitle_ReturnsValid()
+		{
+			var validator = new SystemTextJsonRuleJsonValidator();
+
+			var result = validator.Validate("{\"schemaVersion\":\"1.0\",\"rule\":{\"id\":\"x\",\"title\":\"Display title\"}}");
+
+			result.IsValid.ShouldBeTrue();
+			result.ErrorMessage.ShouldBeNull();
+		}
+
+		[Fact]
+		public void Validate_WhenTitleMissing_ReturnsInvalid()
+		{
+			var validator = new SystemTextJsonRuleJsonValidator();
+
+			var result = validator.Validate("{\"id\":\"x\"}");
+
+			result.IsValid.ShouldBeFalse();
+			result.ErrorMessage.ShouldContain("title");
+		}
+
+		[Fact]
+		public void Validate_WhenTitleBlank_ReturnsInvalid()
+		{
+			var validator = new SystemTextJsonRuleJsonValidator();
+
+			var result = validator.Validate("{\"id\":\"x\",\"title\":\"   \"}");
+
+			result.IsValid.ShouldBeFalse();
+			result.ErrorMessage.ShouldContain("title");
 		}
 	}
 }

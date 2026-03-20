@@ -139,6 +139,9 @@ Token normalization and canonical mutator rationalization.
 ### `docs/046-rule-checker`
 RulesWorkbench checker, candidate-rule identification, and rule-definition uplift.
 
+### `docs/054-rule-title`
+Canonical document title, mandatory `rule.title`, post-enrichment title validation, and repository/tooling alignment work.
+
 ## Emulator and local-tooling history
 
 ### `docs/005-emulator-security`

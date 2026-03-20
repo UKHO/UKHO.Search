@@ -51,7 +51,7 @@ namespace RulesWorkbench.Tests
             result.Report.ShouldNotBeNull();
             result.Report!.Status.ShouldBe(RuleCheckerStatus.Fail);
             result.Report.Batch.BusinessUnitName.ShouldBe("Admiralty");
-            result.Report.MissingRequiredFields.ShouldBe(new[] { "Series", "Instance" });
+            result.Report.MissingRequiredFields.ShouldBe(new[] { "Title", "Series", "Instance" });
             result.Report.MatchedRules.Select(x => x.RuleId).ShouldBe(new[] { "bu-admiralty-rule-1" });
             result.Report.CandidateRules.Select(x => x.RuleId).ShouldBe(new[] { "bu-admiralty-rule-1", "bu-admiralty-rule-2" });
             result.Report.CandidateRules.Count(x => x.IsMatched).ShouldBe(1);
@@ -67,6 +67,7 @@ namespace RulesWorkbench.Tests
                 ProviderName = "file-share",
                 FinalDocumentJson = """
                 {
+                  "title": [ "Admiralty Week 10" ],
                   "category": [ "charts" ],
                   "series": [ "series-a" ],
                   "instance": [ "week-10" ]
@@ -93,6 +94,42 @@ namespace RulesWorkbench.Tests
             result.Report.ShouldNotBeNull();
             result.Report!.Status.ShouldBe(RuleCheckerStatus.Ok);
             result.Report.MissingRequiredFields.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public async Task CheckPayloadAsync_returns_fail_when_title_is_missing_even_if_other_required_fields_are_present()
+        {
+            var service = CreateService(new StubIngestionRulesEngine(new RuleEvaluationReportDto
+            {
+                ProviderName = "file-share",
+                FinalDocumentJson = """
+                {
+                  "category": [ "charts" ],
+                  "series": [ "series-a" ],
+                  "instance": [ "week-10" ]
+                }
+                """,
+                MatchedRules = new List<RuleEvaluationMatchedRuleDto>()
+            }));
+
+            var payload = new EvaluationPayloadDto
+            {
+                Id = "batch-2a",
+                Timestamp = DateTimeOffset.Parse("2026-01-01T00:00:00Z"),
+                SecurityTokens = new List<string> { "public" },
+                Properties = new List<EvaluationPayloadPropertyDto>
+                {
+                    new() { Name = "BusinessUnitName", Type = "String", Value = "Admiralty" }
+                },
+                Files = new List<EvaluationPayloadFileDto>()
+            };
+
+            var result = await service.CheckPayloadAsync(payload, CancellationToken.None);
+
+            result.IsSuccess.ShouldBeTrue();
+            result.Report.ShouldNotBeNull();
+            result.Report!.Status.ShouldBe(RuleCheckerStatus.Fail);
+            result.Report.MissingRequiredFields.ShouldBe(new[] { "Title" });
         }
 
         [Fact]
@@ -266,6 +303,11 @@ namespace RulesWorkbench.Tests
                 if (!string.IsNullOrWhiteSpace(_report.FinalDocumentJson))
                 {
                     var node = JsonNode.Parse(_report.FinalDocumentJson)!.AsObject();
+                    foreach (var value in node["title"]?.AsArray().Select(x => x?.GetValue<string>()) ?? Enumerable.Empty<string?>())
+                    {
+                        document.AddTitle(value);
+                    }
+
                     foreach (var value in node["category"]?.AsArray().Select(x => x?.GetValue<string>()) ?? Enumerable.Empty<string?>())
                     {
                         document.AddCategory(value);

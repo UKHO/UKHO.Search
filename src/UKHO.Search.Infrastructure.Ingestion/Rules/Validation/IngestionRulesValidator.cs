@@ -78,6 +78,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
                         {
                             Id = rule.Id,
                             Context = NormalizeContext(rule.Context),
+                            Title = rule.Title,
                             Description = rule.Description,
                             Enabled = enabled,
                             Predicate = predicate.Value,
@@ -151,6 +152,11 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
                     else
                     {
                         ValidateThen(rule.Then, rule.Id, providerName, errors, predicate);
+                    }
+
+                    if (string.IsNullOrWhiteSpace(rule.Title))
+                    {
+                        errors.Add($"Rule '{rule.Id ?? "<missing id>"}' in provider '{providerName}' is missing required 'title'.");
                     }
                 }
             }

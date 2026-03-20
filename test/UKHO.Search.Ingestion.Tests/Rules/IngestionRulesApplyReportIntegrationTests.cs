@@ -20,6 +20,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                                                   "schemaVersion": "1.0",
                                                   "rule": {
                                                     "id": "r1",
+                                                    "title": "First rule title",
                                                     "description": "First rule",
                                                     "if": { "id": "doc-1" },
                                                     "then": {
@@ -34,6 +35,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                                                   "schemaVersion": "1.0",
                                                   "rule": {
                                                     "id": "r2",
+                                                    "title": "Second rule title",
                                                     "description": "Second rule",
                                                     "if": { "id": "doc-1" },
                                                     "then": {

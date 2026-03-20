@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-maritimesafetyinformation-3-cumulative-notices",
         "context": "maritimesafetyinformation",
+        "title": "Cumulative notices $path:properties[\"year\"]",
         "description": "Maritime Safety Information cumulative notices.",
         "enabled": true,
         "if": {

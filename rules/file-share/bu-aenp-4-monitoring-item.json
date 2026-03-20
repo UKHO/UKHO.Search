@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-aenp-4-monitoring-item",
         "context": "aenp",
+        "title": "AENP monitoring item $path:properties[\"product id\"]",
         "description": "AENP monitoring item.",
         "enabled": true,
         "if": {

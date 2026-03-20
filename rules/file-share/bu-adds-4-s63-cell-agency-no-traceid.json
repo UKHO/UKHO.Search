@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-adds-4-s63-cell-agency-no-traceid",
         "context": "adds",
+        "title": "ADDS S63 cell $path:properties[\"cellname\"] from $path:properties[\"agency\"]",
         "description": "ADDS S63 cell with agency and no traceid.",
         "enabled": true,
         "if": {

@@ -9,6 +9,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
         {
             return descriptor.Mappings(m => m.Properties(p => p.Object("source", o => o.Enabled(false))
                                                                .Keyword("provider")
+                                                               .Keyword("title")
                                                                .Date("timestamp")
                                                                .Keyword("keywords")
                                                                .Keyword("authority")

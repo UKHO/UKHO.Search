@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-avcsdata-3-weekly-s63-update-set",
         "context": "avcsdata",
+        "title": "AVCSData weekly S63 update set $path:properties[\"year / week\"]",
         "description": "AVCSData weekly S63 update exchange set.",
         "enabled": true,
         "if": {

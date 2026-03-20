@@ -27,6 +27,7 @@ namespace UKHO.Search.Ingestion.Tests.Rules
                                                           "schemaVersion": "1.0",
                                                           "rule": {
                                                             "id": "slice1-test-rule",
+                                                            "title": "Slice 1 test rule",
                                                             "if": { "any": [ { "path": "id", "exists": true } ] },
                                                             "then": { "keywords": { "add": [ "slice1-keyword" ] } }
                                                           }

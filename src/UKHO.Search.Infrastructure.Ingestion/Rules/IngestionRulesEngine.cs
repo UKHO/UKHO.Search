@@ -63,7 +63,9 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
                 }
 
                 matchedRuleIds.Add(rule.Id);
+                var titleValuesAdded = _actionApplier.ApplyTitle(rule.Title, payload, document, match.MatchedValues);
                 var ruleSummary = _actionApplier.Apply(rule.Then, payload, document, match.MatchedValues);
+                ruleSummary.AdditionalFieldValuesAdded += titleValuesAdded;
                 summary.Add(ruleSummary);
                 matchedRules.Add(new IngestionRulesMatchedRule
                 {

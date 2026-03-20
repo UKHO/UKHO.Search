@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-chersoft-1-annual-publication",
         "context": "chersoft",
+        "title": "Chersoft AENP publication $path:properties[\"product id\"] $path:properties[\"year\"]",
         "description": "Chersoft annual AENP publication.",
         "enabled": true,
         "if": {

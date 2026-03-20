@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-adds-s57-3-s57-crc-replacement",
         "context": "adds-s57",
+        "title": "ADDS-S57 CRC replacement cell $path:properties[\"cellname\"]",
         "description": "ADDS-S57 CRC replacement cell.",
         "enabled": true,
         "if": {

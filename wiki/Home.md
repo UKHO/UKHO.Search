@@ -79,6 +79,7 @@ If your task is rule authoring or rule diagnosis, open [`RulesWorkbench`](Tools-
 - **Channels + supervised nodes** provide the ingestion runtime.
 - **Provider-specific enrichment** feeds a **provider-agnostic search model**.
 - **Rules** provide additive enrichment without hard-coding every mapping into C#.
+- **Rule titles** now provide the canonical display title contract for indexed documents, and missing titles are treated as ingestion failures.
 - **Developer tooling** is first-class, especially for local File Share workflows.
 
 ## Historical design lineage

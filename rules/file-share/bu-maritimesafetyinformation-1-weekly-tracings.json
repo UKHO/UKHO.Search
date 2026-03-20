@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-maritimesafetyinformation-1-weekly-tracings",
         "context": "maritimesafetyinformation",
+        "title": "Weekly tracings $path:properties[\"year / week\"]",
         "description": "Maritime Safety Information weekly tracings.",
         "enabled": true,
         "if": {

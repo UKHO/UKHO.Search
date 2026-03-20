@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-avcs-bespokeexchangesets-2-bespoke-exchange-set",
         "context": "avcs-bespokeexchangesets",
+        "title": "AVCS bespoke $path:properties[\"exchange set type\"] for $path:properties[\"audience\"]",
         "description": "AVCS bespoke exchange set.",
         "enabled": true,
         "if": {

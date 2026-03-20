@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-aenp-2-software-media",
         "context": "aenp",
+        "title": "AENP $path:properties[\"product type\"] software",
         "description": "AENP software package with media type.",
         "enabled": true,
         "if": {

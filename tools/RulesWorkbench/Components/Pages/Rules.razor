@@ -19,14 +19,14 @@
 
 <h1>Rules</h1>
 
-<div class="alert alert-warning">
-	<div><strong>Debug:</strong> Query='@Query' | RulesCount=@_rules.Count | SelectedIndex=@(_selectedRule?.Index.ToString() ?? "(none)")</div>
-</div>
-
 <div class="mb-3">
 	<label class="form-label" for="rule-search">Search</label>
    <input id="rule-search" class="form-control" @bind="Query" @bind:event="oninput" placeholder="Filter by id or text..." />
  <div class="form-text">Filters by id or description. Preserves ruleset order.</div>
+</div>
+
+<div class="alert alert-info">
+	<div><strong>Authoring note:</strong> every rule must include a display-oriented <code>title</code>. Rules without a non-empty title are invalid and cannot be applied or saved.</div>
 </div>
 
 @if (_snapshot.Count == 0)
@@ -108,12 +108,13 @@ else
 						<div>
 							@if (_jsonValidation is null || _jsonValidation.IsValid)
 							{
-								<span class="text-success">JSON is valid</span>
+                             <span class="text-success">JSON is valid</span>
 							}
 							else
 							{
 								<span class="text-danger">@_jsonValidation.ErrorMessage</span>
 							}
+                          <div class="form-text">A non-empty <code>title</code> is required and should be a concise display label for the rule outcome.</div>
 						</div>
 						<div class="d-flex gap-2">
 							<button class="btn btn-sm btn-outline-secondary" @onclick="CancelJsonEdit">Cancel</button>
@@ -140,13 +141,19 @@ else
 					</div>
 
 					<div class="mb-3">
+						<label class="form-label">Display title</label>
+                      <input class="form-control" @bind="_builderTitle" @bind:event="oninput" @bind:after="UpdateBuilderJsonDraft" />
+						<div class="form-text">Required. Use concise display text that describes what the matched rule represents.</div>
+					</div>
+
+					<div class="mb-3">
 						<label class="form-label">Description</label>
-						<input class="form-control" @bind="_builderDescription" @bind:event="oninput" />
+                        <input class="form-control" @bind="_builderDescription" @bind:event="oninput" @bind:after="UpdateBuilderJsonDraft" />
 					</div>
 
 					<div class="mb-3">
 						<label class="form-label">IF composition</label>
-						<select class="form-select" @bind="_builderComposition">
+                        <select class="form-select" @bind="_builderComposition" @bind:after="UpdateBuilderJsonDraft">
 							<option value="All">all</option>
 							<option value="Any">any</option>
 						</select>
@@ -154,7 +161,7 @@ else
 
 					<div class="mb-3">
 						<label class="form-label">Condition</label>
-						<select class="form-select" @bind="_builderConditionType">
+                      <select class="form-select" @bind="_builderConditionType" @bind:after="UpdateBuilderJsonDraft">
 							<option value="PropertiesEqualsString">properties[\"x\"] == \"value\"</option>
 							<option value="PropertiesExists">properties[\"x\"] exists</option>
 							<option value="FilesMimeTypeEquals">files[*].mimeType == \"...\"</option>
@@ -164,17 +171,17 @@ else
 					<div class="row g-2 mb-3">
 						<div class="col-12 col-lg-6">
 							<label class="form-label">Property / Value</label>
-							<input class="form-control" @bind="_builderConditionPropertyName" @bind:event="oninput" placeholder="property name or value" />
+                     <input class="form-control" @bind="_builderConditionPropertyName" @bind:event="oninput" @bind:after="UpdateBuilderJsonDraft" placeholder="property name or value" />
 						</div>
 						<div class="col-12 col-lg-6">
 							<label class="form-label">Value (if applicable)</label>
-							<input class="form-control" @bind="_builderConditionValue" @bind:event="oninput" placeholder="value" />
+                     <input class="form-control" @bind="_builderConditionValue" @bind:event="oninput" @bind:after="UpdateBuilderJsonDraft" placeholder="value" />
 						</div>
 					</div>
 
 					<div class="mb-3">
 						<label class="form-label">THEN action</label>
-						<select class="form-select" @bind="_builderThenActionType">
+                     <select class="form-select" @bind="_builderThenActionType" @bind:after="UpdateBuilderJsonDraft">
 							<option value="KeywordsAdd">keywords.add</option>
 							<option value="SearchTextAdd">searchText.add</option>
 							<option value="ContentAdd">content.add</option>
@@ -190,7 +197,7 @@ else
 
 					<div class="mb-3">
 						<label class="form-label">THEN values (one per line)</label>
-						<textarea class="form-control" rows="4" @bind="_builderThenValuesText" @bind:event="oninput"></textarea>
+                        <textarea class="form-control" rows="4" @bind="_builderThenValuesText" @bind:event="oninput" @bind:after="UpdateBuilderJsonDraft"></textarea>
 					</div>
 
 					<div class="d-flex gap-2">
@@ -222,6 +229,7 @@ else
 	private bool _canApplyJson;
    private bool _canEnterBuilderMode;
 	private string _builderId = string.Empty;
+  private string _builderTitle = string.Empty;
 	private string _builderDescription = string.Empty;
 	private CompositionType _builderComposition = CompositionType.All;
 	private ConditionType _builderConditionType = ConditionType.PropertiesEqualsString;
@@ -263,6 +271,7 @@ else
 		_canApplyJson = false;
      _canEnterBuilderMode = true;
 		_builderId = string.Empty;
+     _builderTitle = string.Empty;
 		_builderIdError = null;
 		_canApplyBuilder = false;
        _canSave = false;
@@ -338,6 +347,7 @@ else
 		_isBuilderMode = true;
 		_isEditingJson = false;
 		_builderId = string.Empty;
+        _builderTitle = TryGetTitle(_selectedRule?.RuleJson) ?? TryGetDescription(_selectedRule?.RuleJson) ?? string.Empty;
        _builderDescription = TryGetDescription(_selectedRule?.RuleJson) ?? string.Empty;
 		_builderComposition = CompositionType.All;
 		_builderConditionType = ConditionType.PropertiesEqualsString;
@@ -359,10 +369,21 @@ else
 		return obj["description"]?.GetValue<string?>() ?? obj["Description"]?.GetValue<string?>();
 	}
 
+	private static string? TryGetTitle(JsonNode? node)
+	{
+		if (node is not JsonObject obj)
+		{
+			return null;
+		}
+
+		return obj["title"]?.GetValue<string?>() ?? obj["Title"]?.GetValue<string?>();
+	}
+
 	private void CancelBuilderMode()
 	{
 		_isBuilderMode = false;
 		_builderId = string.Empty;
+     _builderTitle = string.Empty;
 		_builderIdError = null;
 		_canApplyBuilder = false;
 	}
@@ -388,6 +409,7 @@ else
 
 		var builderRule = new BuilderRule(
 			_builderId,
+            string.IsNullOrWhiteSpace(_builderTitle) ? _builderId : _builderTitle.Trim(),
 			string.IsNullOrWhiteSpace(_builderDescription) ? null : _builderDescription,
 			new BuilderPredicate(_builderComposition, new[] { condition }),
 			new[] { new BuilderThenAction(_builderThenActionType, values) });

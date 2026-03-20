@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-adds-7-weekly-catalogue",
         "context": "adds",
+        "title": "ADDS weekly catalogue $path:properties[\"year / week\"]",
         "description": "ADDS weekly catalogue.",
         "enabled": true,
         "if": {

@@ -3,6 +3,7 @@
     "rule": {
         "id": "bu-avcsdata-5-annual-catalogue",
         "context": "avcsdata",
+        "title": "AVCSData annual catalogue $path:properties[\"year\"]",
         "description": "AVCSData annual catalogue.",
         "enabled": true,
         "if": {

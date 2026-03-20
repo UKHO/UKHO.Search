@@ -4,7 +4,6 @@ using UKHO.ADDS.Clients.FileShareService.ReadOnly;
 using UKHO.Aspire.Configuration;
 using UKHO.Aspire.Configuration.Remote;
 using UKHO.Search.Configuration;
-using UKHO.Search.Infrastructure.Ingestion.Bootstrap;
 using UKHO.Search.Infrastructure.Ingestion.Injection;
 using UKHO.Search.ServiceDefaults;
 
@@ -60,13 +59,8 @@ namespace IngestionServiceHost
 
             app.Logger.LogInformation("Ingestion mode resolved as '{IngestionMode}'.", ingestionMode);
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var bootstrapService = scope.ServiceProvider.GetRequiredService<IBootstrapService>();
-                bootstrapService.BootstrapAsync()
-                                .GetAwaiter()
-                                .GetResult();
-            }
+            // The ingestion bootstrap/startup path is owned by IngestionPipelineHostedService.
+            // Do not eagerly call IBootstrapService here, otherwise startup work and logs run twice.
 
             app.MapDefaultEndpoints();
 
