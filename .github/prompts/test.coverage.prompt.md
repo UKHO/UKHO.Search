@@ -75,18 +75,26 @@ For each test project, prefer a repository-safe approach in this order:
 
 3. **If the project references neither `coverlet.msbuild` nor `coverlet.collector`**
    - Do **not** edit the project.
-   - Use a **non-repository-changing fallback** only, such as an already-available or globally installed `coverlet.console` tool, if that can be done without modifying repository files.
-   - If no such fallback is available, record the project as a **coverage tooling blocker** and continue.
+   - Do **not** use `coverlet.console` or any other fallback approach.
+   - Treat this as a **hard blocker** and do **not** proceed with coverage execution for the repository.
+   - Stop and instruct the user exactly which test project or projects must be updated so they become Coverlet-compatible.
+   - Tell the user to add Coverlet support to each blocked project by adding either:
+     - `coverlet.msbuild`, or
+     - `coverlet.collector`
+   - Tell the user the project must remain a standard `dotnet test`-compatible test project and should also include `Microsoft.NET.Test.Sdk` if it is missing.
+   - Report the affected project paths and the minimum package changes required, but do not make those changes.
 
 ### Important rule
 For **every** discovered test project, do one of the following:
 - successfully collect Coverlet coverage, or
-- explicitly record why coverage could not be collected without changing repository code.
+- stop and explicitly report that repository coverage execution cannot proceed until the incompatible project or projects are updated.
 
 Do not silently skip projects.
 
 ## Full test-suite execution requirement
 You must execute the full automated test suite for all discovered test projects.
+
+If any discovered test project is not Coverlet-compatible under the rules above, do **not** run partial repository coverage. Stop before execution and return the required user instructions for remediation.
 
 Guidance:
 - Run test projects individually so coverage and failures are isolated.
@@ -115,6 +123,8 @@ The summary should include, at minimum:
 - explicit blockers and failed projects
 
 If some projects only emit Cobertura XML, parse that into the summary JSON rather than changing the repository to force a different output format.
+
+If execution is blocked because one or more projects are not Coverlet-compatible, no coverage summary should be fabricated. Instead, report the blocking projects and the required package updates.
 
 ## Documentation / Work Package requirement
 After collecting coverage data, create a **new Work Package** in `./docs/` using the numbering and folder naming strategy from `./.github/prompts/spec.research.prompt.md`.
@@ -200,10 +210,16 @@ At the end, provide a concise summary containing:
 - the path to the single spec markdown file
 - key blockers, if any
 
+If execution was blocked by incompatible test projects, the response must instead clearly list:
+- each blocked test project path
+- whether `coverlet.msbuild` or `coverlet.collector` should be added
+- whether `Microsoft.NET.Test.Sdk` also appears to be required
+- that no coverage run was performed because repository-wide compatibility was not satisfied
+
 ## Success criteria
 This prompt is successful only if all of the following are true:
 - all test projects were inspected
-- the full test suite was attempted across all discovered test projects
+- the full test suite was attempted across all discovered test projects, unless execution was correctly halted due to a non-Coverlet-compatible test project
 - Coverlet coverage was collected wherever possible without repository code changes
 - a consolidated machine-readable coverage summary exists
 - a new Work Package folder was created under `./docs/`
