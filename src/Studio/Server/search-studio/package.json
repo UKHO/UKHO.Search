@@ -24,7 +24,8 @@
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/search-studio-frontend-module"
+      "frontend": "lib/browser/search-studio-frontend-module",
+      "backend": "lib/node/search-studio-backend-module"
     }
   ]
 }

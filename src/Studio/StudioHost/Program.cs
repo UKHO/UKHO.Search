@@ -6,9 +6,19 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        var studioShellOrigin = "http://localhost:3000";
 
         // Add services to the container.
         builder.Services.AddAuthorization();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("StudioShell", policy =>
+            {
+                policy.WithOrigins(studioShellOrigin)
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+            });
+        });
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
@@ -21,8 +31,7 @@ public class Program
             app.MapOpenApi();
         }
 
-        app.UseHttpsRedirection();
-
+        app.UseCors("StudioShell");
         app.UseAuthorization();
 
         var summaries = new[]
@@ -43,6 +52,9 @@ public class Program
             return forecast;
         })
         .WithName("GetWeatherForecast");
+
+        app.MapGet("/echo", () => TypedResults.Text("Hello from StudioHost echo."))
+           .WithName("GetEcho");
 
         app.Run();
     }
