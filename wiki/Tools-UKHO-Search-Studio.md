@@ -162,6 +162,22 @@ The shell is designed to run as part of the wider local Aspire stack.
 
 If you build the solution in Visual Studio first, the Theia shell should already have been prepared by the `StudioHost` pre-build target.
 
+### About the installer resource
+
+When Aspire starts the JavaScript application resource, you may also see a companion installer resource:
+
+- `tools-studio-shell-installer`
+
+That installer is responsible for JavaScript dependency restore when Aspire determines the workspace may need it.
+
+Practical guidance:
+
+- on a fresh clone, expect the installer step to run and take noticeable time
+- after the workspace has already been restored and built, startup should usually be faster
+- if `package.json`, `yarn.lock`, or other key workspace inputs change, Aspire may run the installer again
+
+The separate Visual Studio pre-build integration exists so the shell is usually prepared before normal local debugging starts.
+
 ## Current build caveats
 
 The current generated Theia stack has a few practical constraints in this repository:
@@ -172,6 +188,7 @@ The current generated Theia stack has a few practical constraints in this reposi
 - native module compilation may depend on Visual Studio 2022 C++ build tooling being available
 - if you run builds inside a Visual Studio developer shell, inherited Visual Studio 2026 VC toolset environment variables can interfere with native Node builds
 - the current Aspire integration exposes the shell on plain HTTP, so browsing to `https://localhost:3000` will fail even when the shell process is healthy
+- Aspire may show a separate installer resource for the JavaScript app; the first startup or dependency changes can therefore add noticeable startup time
 
 If native dependency restore fails, retry from a clean PowerShell session with the validated Node version selected.
 

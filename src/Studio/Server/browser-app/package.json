@@ -29,7 +29,11 @@
     "target": "browser",
     "frontend": {
       "config": {
-        "applicationName": "UKHO Search Studio"
+        "applicationName": "UKHO Search Studio",
+        "defaultTheme": "dark",
+        "preferences": {
+          "workbench.colorTheme": "dark"
+        }
       }
     }
   }

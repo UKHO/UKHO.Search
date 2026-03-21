@@ -222,6 +222,8 @@ If you build the solution in Visual Studio, `src/Studio/StudioHost/StudioHost.cs
 
 That integration is incremental, so the script is intended to run only when relevant Theia workspace inputs have changed or when the shell has not yet been built on a fresh clone.
 
+When `AppHost` starts the JavaScript shell resource, Aspire may still show a separate installer resource for the Theia workspace. On a fresh clone or after dependency changes, that installer step can noticeably increase startup time.
+
 ## Configuration behavior in local Aspire
 
 ### Repository rules
@@ -288,6 +290,18 @@ and not:
 - `https://localhost:3000`
 
 The current Theia shell endpoint is HTTP-only.
+
+### `UKHO Search Studio` startup is slow because of the installer step
+
+The Aspire JavaScript integration may run a companion installer resource for the Theia workspace.
+
+This is most noticeable:
+
+- on a fresh clone
+- after changes to `package.json` or `yarn.lock`
+- when the local JavaScript dependency restore state is missing
+
+If the workspace has already been restored and built, subsequent startups should normally be faster.
 
 ## Related pages
 
