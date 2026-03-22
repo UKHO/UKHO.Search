@@ -1,3 +1,4 @@
+using Scalar.AspNetCore;
 using UKHO.Search.Ingestion.Providers.FileShare.Injection;
 using UKHO.Search.ProviderModel;
 using UKHO.Search.Studio;
@@ -7,6 +8,9 @@ namespace StudioApiHost
 {
     public static class StudioApiHostApplication
     {
+        private const string OpenApiDocumentName = "v1";
+        private const string OpenApiRoutePattern = "/openapi/{documentName}.json";
+
         public static WebApplication BuildApp(string[] args, Action<WebApplicationBuilder>? configureBuilder = null)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +28,7 @@ namespace StudioApiHost
                           .AllowAnyMethod();
                 });
             });
-            builder.Services.AddOpenApi();
+            builder.Services.AddOpenApi(OpenApiDocumentName);
             builder.Services.AddFileShareProviderMetadata();
             builder.Services.AddFileShareStudioProvider();
 
@@ -33,38 +37,23 @@ namespace StudioApiHost
             app.Services.GetRequiredService<IStudioProviderRegistrationValidator>()
                .Validate();
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-            }
-
             app.UseCors("StudioShell");
             app.UseAuthorization();
 
-            var summaries = new[]
-            {
-                "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-            };
+            app.MapOpenApi(OpenApiRoutePattern);
+            app.MapScalarApiReference(
+                "/scalar/v1",
+                options =>
+                {
+                    options.WithOpenApiRoutePattern(OpenApiRoutePattern);
+                    options.Servers = [];
+                });
 
             app.MapGet("/providers", (IProviderCatalog providerCatalog) =>
             {
                 return TypedResults.Ok(providerCatalog.GetAllProviders());
             })
             .WithName("GetProviders");
-
-            app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-            {
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                    new WeatherForecast
-                    {
-                        Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        TemperatureC = Random.Shared.Next(-20, 55),
-                        Summary = summaries[Random.Shared.Next(summaries.Length)]
-                    })
-                    .ToArray();
-                return forecast;
-            })
-            .WithName("GetWeatherForecast");
 
             app.MapGet("/echo", () => TypedResults.Text("Hello from StudioApiHost echo."))
                .WithName("GetEcho");

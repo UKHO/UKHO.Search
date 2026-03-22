@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.13.13" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,14 +33,9 @@
     <ProjectReference Include="..\..\Providers\UKHO.Search.Studio.Providers.FileShare\UKHO.Search.Studio.Providers.FileShare.csproj" />
   </ItemGroup>
 
-  <Target Name="BuildTheiaStudioShell"
-          BeforeTargets="Build"
-          Condition="'$(DesignTimeBuild)' != 'true' and Exists('$(TheiaBuildScript)')"
-          Inputs="@(TheiaBuildInput)"
-          Outputs="$(TheiaBuildStamp)">
+  <Target Name="BuildTheiaStudioShell" BeforeTargets="Build" Condition="'$(DesignTimeBuild)' != 'true' and Exists('$(TheiaBuildScript)')" Inputs="@(TheiaBuildInput)" Outputs="$(TheiaBuildStamp)">
     <Message Importance="high" Text="Building UKHO Search Studio Theia shell..." />
-    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(TheiaBuildScript)&quot; -StampFile &quot;$(TheiaBuildStamp)&quot;"
-          WorkingDirectory="$(TheiaWorkspaceRoot)" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(TheiaBuildScript)&quot; -StampFile &quot;$(TheiaBuildStamp)&quot;" WorkingDirectory="$(TheiaWorkspaceRoot)" />
   </Target>
 
 </Project>

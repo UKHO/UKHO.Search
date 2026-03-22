@@ -113,7 +113,8 @@ namespace AppHost
                                                 .WithReference(sqlServer)
                                                 .WithReference(storageBlob)
                                                 .WaitFor(sqlServer)
-                                                .WaitFor(storageBlob);
+                                                .WaitFor(storageBlob)
+                                                .WithScalar("Studio API");
 
                     var studioShell = builder.AddJavaScriptApp(ServiceNames.StudioShell, "../../Studio/Server", "start:browser")
                                              .WithBuildScript("build:browser")
