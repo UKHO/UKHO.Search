@@ -3,7 +3,7 @@ using UKHO.Search.Infrastructure.Ingestion.Rules.Validation;
 
 namespace UKHO.Search.Infrastructure.Ingestion.Rules
 {
-    internal sealed class IngestionRulesCatalog : IIngestionRulesCatalog
+    internal sealed class IngestionRulesCatalog : IIngestionRulesCatalog, IProviderRulesReader
     {
         private readonly IngestionRulesLoader _loader;
         private readonly ILogger<IngestionRulesCatalog> _logger;
@@ -36,7 +36,42 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
                                                                                                  .ToArray(), StringComparer.OrdinalIgnoreCase);
         }
 
-        internal bool TryGetProviderRules(string providerName, out IReadOnlyList<ValidatedRule> rules)
+        public ProviderRulesSnapshot GetSnapshot()
+        {
+            var ruleset = GetOrLoadRuleset();
+
+            return new ProviderRulesSnapshot
+            {
+                SchemaVersion = ruleset.SchemaVersion,
+                RulesByProvider = ruleset.RulesByProvider.ToDictionary(
+                    x => x.Key,
+                    x => (IReadOnlyList<ProviderRuleDefinition>)x.Value.Select(MapRuleDefinition)
+                                                                       .ToArray(),
+                    StringComparer.OrdinalIgnoreCase)
+            };
+        }
+
+        public bool TryGetProviderRules(string providerName, out IReadOnlyList<ProviderRuleDefinition> rules)
+        {
+            if (string.IsNullOrWhiteSpace(providerName))
+            {
+                rules = Array.Empty<ProviderRuleDefinition>();
+                return false;
+            }
+
+            var ruleset = GetOrLoadRuleset();
+            if (!ruleset.RulesByProvider.TryGetValue(providerName, out var validatedRules))
+            {
+                rules = Array.Empty<ProviderRuleDefinition>();
+                return false;
+            }
+
+            rules = validatedRules.Select(MapRuleDefinition)
+                                  .ToArray();
+            return true;
+        }
+
+        internal bool TryGetValidatedProviderRules(string providerName, out IReadOnlyList<ValidatedRule> rules)
         {
             if (string.IsNullOrWhiteSpace(providerName))
             {
@@ -67,6 +102,18 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
 
             _logger.LogInformation("Loaded ingestion rules. ProviderCount={ProviderCount}", ruleset.RulesByProvider.Count);
             return ruleset;
+        }
+
+        private static ProviderRuleDefinition MapRuleDefinition(ValidatedRule rule)
+        {
+            return new ProviderRuleDefinition
+            {
+                Id = rule.Id,
+                Context = rule.Context,
+                Title = rule.Title,
+                Description = rule.Description,
+                Enabled = rule.Enabled
+            };
         }
     }
 }

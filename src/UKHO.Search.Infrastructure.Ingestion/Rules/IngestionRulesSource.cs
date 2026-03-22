@@ -1,6 +1,7 @@
 using System.Text.Json;
 
 using Microsoft.Extensions.Logging;
+using UKHO.Search.ProviderModel;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Model;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Validation;
 
@@ -8,12 +9,14 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
 {
     internal sealed class IngestionRulesSource
     {
+        private readonly IProviderCatalog _providerCatalog;
         private readonly IRulesSource _rulesSource;
         private readonly IngestionRulesValidator _validator;
         private readonly ILogger<IngestionRulesSource> _logger;
 
-        public IngestionRulesSource(IRulesSource rulesSource, IngestionRulesValidator validator, ILogger<IngestionRulesSource> logger)
+        public IngestionRulesSource(IProviderCatalog providerCatalog, IRulesSource rulesSource, IngestionRulesValidator validator, ILogger<IngestionRulesSource> logger)
         {
+            _providerCatalog = providerCatalog;
             _rulesSource = rulesSource;
             _validator = validator;
             _logger = logger;
@@ -60,8 +63,13 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
 
                 rule.Id = entry.RuleId;
 
-                providerRules.TryAdd(entry.Provider, new List<RuleDto>());
-                providerRules[entry.Provider].Add(rule);
+                if (!_providerCatalog.TryGetProvider(entry.Provider, out var descriptor))
+                {
+                    throw new IngestionRulesValidationException($"Rule '{entry.Key}' references unknown provider '{entry.Provider}' which is not registered in provider metadata.");
+                }
+
+                providerRules.TryAdd(descriptor!.Name, new List<RuleDto>());
+                providerRules[descriptor.Name].Add(rule);
             }
 
             var dto = new RulesetDto

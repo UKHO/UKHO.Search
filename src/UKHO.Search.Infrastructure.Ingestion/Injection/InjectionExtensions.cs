@@ -27,6 +27,7 @@ using UKHO.Search.Ingestion.Providers.FileShare.Pipeline;
 using UKHO.Search.Ingestion.Requests;
 using UKHO.Search.Ingestion.Rules;
 using UKHO.Search.Pipelines.Nodes;
+using UKHO.Search.ProviderModel;
 using UKHO.Search.Services.Ingestion.Providers;
 
 namespace UKHO.Search.Infrastructure.Ingestion.Injection
@@ -44,6 +45,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Injection
         public static IServiceCollection AddIngestionRulesEngine(this IServiceCollection collection)
         {
             // RulesWorkbench uses this to reuse the existing ingestion rules engine in an isolated way.
+             collection.AddFileShareProviderMetadata();
              collection.AddSingleton<IRulesSource, AppConfigRulesSource>();
              collection.AddSingleton<AppConfigEndpointResolver>();
              collection.AddSingleton<IRuleConfigurationWriter, AppConfigRuleConfigurationWriter>();
@@ -53,6 +55,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Injection
             collection.AddSingleton<IngestionRulesValidator>();
             collection.AddSingleton<IngestionRulesCatalog>();
             collection.AddSingleton<IIngestionRulesCatalog>(sp => sp.GetRequiredService<IngestionRulesCatalog>());
+             collection.AddSingleton<IProviderRulesReader>(sp => sp.GetRequiredService<IngestionRulesCatalog>());
              collection.TryAddSingleton<Microsoft.Extensions.Configuration.AzureAppConfiguration.IConfigurationRefresherProvider>(sp => null!);
              collection.AddHostedService<AppConfigIngestionRulesRefreshService>();
             collection.AddSingleton<IPathResolver, IngestionRulesPathResolver>();
@@ -132,6 +135,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Injection
             collection.AddSingleton<IngestionRulesValidator>();
             collection.AddSingleton<IngestionRulesCatalog>();
             collection.AddSingleton<IIngestionRulesCatalog>(sp => sp.GetRequiredService<IngestionRulesCatalog>());
+             collection.AddSingleton<IProviderRulesReader>(sp => sp.GetRequiredService<IngestionRulesCatalog>());
              collection.TryAddSingleton<Microsoft.Extensions.Configuration.AzureAppConfiguration.IConfigurationRefresherProvider>(sp => null!);
              collection.AddHostedService<AppConfigIngestionRulesRefreshService>();
             collection.AddSingleton<IPathResolver, IngestionRulesPathResolver>();

@@ -5,6 +5,8 @@ using UKHO.Search.Infrastructure.Ingestion.Rules;
 using UKHO.Search.Ingestion.Pipeline.Documents;
 using UKHO.Search.Ingestion.Requests;
 using UKHO.Search.Ingestion.Tests.TestSupport;
+using UKHO.Search.ProviderModel;
+using UKHO.Search.ProviderModel.Injection;
 using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests.Rules
@@ -396,7 +398,10 @@ namespace UKHO.Search.Ingestion.Tests.Rules
 
         private static ServiceProvider CreateProvider(string contentRootPath)
         {
-            return IngestionRulesTestServiceProviderFactory.Create(contentRootPath);
+            return IngestionRulesTestServiceProviderFactory.Create(
+                contentRootPath,
+                configureServices: services => services.AddProviderDescriptor<OtherProviderRegistrationMarker>(
+                    new ProviderDescriptor("other-provider", "Other Provider")));
         }
 
         private static (CanonicalDocument Document, IngestionRulesApplyReport Report) EvaluateSingleRule(string ruleJson, IngestionRequest request)

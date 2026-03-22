@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Shouldly;
 using UKHO.Search.ProviderModel;
 using UKHO.Search.ProviderModel.Injection;
@@ -16,7 +17,11 @@ namespace StudioApiHost.Tests
         {
             var app = StudioApiHostApplication.BuildApp(
                 Array.Empty<string>(),
-                builder => builder.WebHost.UseTestServer());
+                builder =>
+                {
+                    builder.WebHost.UseTestServer();
+                    builder.Configuration.AddInMemoryCollection(CreateDefaultRulesConfiguration());
+                });
 
             await app.StartAsync();
 
@@ -45,6 +50,7 @@ namespace StudioApiHost.Tests
                 builder =>
                 {
                     builder.WebHost.UseTestServer();
+                    builder.Configuration.AddInMemoryCollection(CreateDefaultRulesConfiguration());
                     builder.Services.AddProviderDescriptor<AdditionalProviderRegistrationMarker>(new ProviderDescriptor("a-provider", "Alpha", "Additional provider for ordering tests."));
                 });
 
@@ -66,6 +72,24 @@ namespace StudioApiHost.Tests
                 await app.StopAsync();
                 await app.DisposeAsync();
             }
+        }
+
+        private static Dictionary<string, string?> CreateDefaultRulesConfiguration()
+        {
+            return new Dictionary<string, string?>
+            {
+                ["rules:file-share:rule-1"] = """
+                    {
+                      "schemaVersion": "1.0",
+                      "rule": {
+                        "id": "rule-1",
+                        "title": "Studio API host test rule",
+                        "if": { "path": "id", "exists": true },
+                        "then": { "keywords": { "add": [ "k" ] } }
+                      }
+                    }
+                    """
+            };
         }
     }
 }

@@ -26,7 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\configuration\UKHO.Aspire.Configuration\UKHO.Aspire.Configuration.csproj" />
     <ProjectReference Include="..\..\UKHO.Search.ProviderModel\UKHO.Search.ProviderModel.csproj" />
+    <ProjectReference Include="..\..\UKHO.Search.Infrastructure.Ingestion\UKHO.Search.Infrastructure.Ingestion.csproj" />
     <ProjectReference Include="..\..\Hosts\UKHO.Search.ServiceDefaults\UKHO.Search.ServiceDefaults.csproj" />
     <ProjectReference Include="..\..\Providers\UKHO.Search.Ingestion.Providers.FileShare\UKHO.Search.Ingestion.Providers.FileShare.csproj" />
     <ProjectReference Include="..\UKHO.Search.Studio\UKHO.Search.Studio.csproj" />

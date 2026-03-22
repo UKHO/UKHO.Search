@@ -328,13 +328,16 @@ That makes it much faster to answer questions such as:
 ## Suggested local workflow
 
 1. Start the stack in Aspire services mode.
-2. Open `RulesWorkbench`.
-3. Use the `Rules` page to inspect or update a rule.
-4. Save the valid rule to App Configuration.
-5. Open `Checker`.
-6. Run a single-batch check or business-unit scan.
-7. Inspect candidate-but-unmatched rules and the final `CanonicalDocument`.
-8. Iterate until the rule behaves as expected.
+2. If you only need provider-level rule discovery, call `StudioApiHost` `GET /rules` to inspect canonical provider names and current rule summaries across known providers.
+3. Open `RulesWorkbench`.
+4. Use the `Rules` page to inspect or update a rule.
+5. Save the valid rule to App Configuration.
+6. Open `Checker`.
+7. Run a single-batch check or business-unit scan.
+8. Inspect candidate-but-unmatched rules and the final `CanonicalDocument`.
+9. Iterate until the rule behaves as expected.
+
+`StudioApiHost` rule discovery is intentionally read-only in this work package. Continue to use `RulesWorkbench` for editing and saving validated rules.
 
 ## Related pages
 

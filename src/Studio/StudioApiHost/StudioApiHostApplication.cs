@@ -1,4 +1,8 @@
 using Scalar.AspNetCore;
+using UKHO.Aspire.Configuration;
+using UKHO.Search.Configuration;
+using UKHO.Search.Infrastructure.Ingestion.Injection;
+using UKHO.Search.Infrastructure.Ingestion.Rules;
 using UKHO.Search.Ingestion.Providers.FileShare.Injection;
 using UKHO.Search.ProviderModel;
 using UKHO.Search.Studio;
@@ -18,6 +22,8 @@ namespace StudioApiHost
 
             configureBuilder?.Invoke(builder);
 
+            builder.AddConfiguration(ServiceConfiguration.ServiceGroupName, ServiceNames.Configuration);
+
             builder.Services.AddAuthorization();
             builder.Services.AddCors(options =>
             {
@@ -29,6 +35,7 @@ namespace StudioApiHost
                 });
             });
             builder.Services.AddOpenApi(OpenApiDocumentName);
+            builder.Services.AddIngestionRulesEngine();
             builder.Services.AddFileShareProviderMetadata();
             builder.Services.AddFileShareStudioProvider();
 
@@ -36,6 +43,8 @@ namespace StudioApiHost
 
             app.Services.GetRequiredService<IStudioProviderRegistrationValidator>()
                .Validate();
+            app.Services.GetRequiredService<IProviderRulesReader>()
+               .EnsureLoaded();
 
             app.UseCors("StudioShell");
             app.UseAuthorization();
@@ -54,6 +63,41 @@ namespace StudioApiHost
                 return TypedResults.Ok(providerCatalog.GetAllProviders());
             })
             .WithName("GetProviders");
+
+            app.MapGet("/rules", (IProviderCatalog providerCatalog, IProviderRulesReader rulesReader) =>
+            {
+                var snapshot = rulesReader.GetSnapshot();
+                var response = new StudioRuleDiscoveryResponse
+                {
+                    SchemaVersion = snapshot.SchemaVersion,
+                    Providers = providerCatalog.GetAllProviders()
+                                               .Select(provider =>
+                                               {
+                                                   snapshot.RulesByProvider.TryGetValue(provider.Name, out var rules);
+
+                                                   return new StudioProviderRulesResponse
+                                                   {
+                                                       ProviderName = provider.Name,
+                                                       DisplayName = provider.DisplayName,
+                                                       Description = provider.Description,
+                                                       Rules = (rules ?? Array.Empty<ProviderRuleDefinition>())
+                                                           .Select(rule => new StudioRuleSummaryResponse
+                                                           {
+                                                               Id = rule.Id,
+                                                               Context = rule.Context,
+                                                               Title = rule.Title,
+                                                               Description = rule.Description,
+                                                               Enabled = rule.Enabled
+                                                           })
+                                                           .ToArray()
+                                                   };
+                                               })
+                                               .ToArray()
+                };
+
+                return TypedResults.Ok(response);
+            })
+            .WithName("GetRules");
 
             app.MapGet("/echo", () => TypedResults.Text("Hello from StudioApiHost echo."))
                .WithName("GetEcho");

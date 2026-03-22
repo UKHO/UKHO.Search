@@ -32,7 +32,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Rules
             ArgumentNullException.ThrowIfNull(request);
             ArgumentNullException.ThrowIfNull(document);
 
-            if (!_catalog.TryGetProviderRules(providerName, out var rules))
+            if (!_catalog.TryGetValidatedProviderRules(providerName, out var rules))
             {
                 return IngestionRulesApplyReport.Empty;
             }

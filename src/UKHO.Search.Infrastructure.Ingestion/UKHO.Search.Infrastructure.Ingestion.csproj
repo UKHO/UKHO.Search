@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Providers\UKHO.Search.Ingestion.Providers.FileShare\UKHO.Search.Ingestion.Providers.FileShare.csproj" />
     <ProjectReference Include="..\UKHO.Search.Infrastructure\UKHO.Search.Infrastructure.csproj" />
+    <ProjectReference Include="..\UKHO.Search.ProviderModel\UKHO.Search.ProviderModel.csproj" />
     <ProjectReference Include="..\UKHO.Search.Services.Ingestion\UKHO.Search.Services.Ingestion.csproj" />
   </ItemGroup>
 
