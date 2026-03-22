@@ -1,0 +1,392 @@
+# Implementation Plan
+
+Target output path: `docs/059-test-refactor/plan-test-refactor-implementation_v0.01.md`
+
+Based on: `docs/059-test-refactor/spec-domain-test-refactor_v0.01.md`
+
+## Overall Approach
+
+This plan delivers the test refactor as a sequence of runnable refactoring slices. Each Work Item leaves the solution in a buildable and testable state while progressively:
+
+- consolidating test data into `test/sample-data`
+- introducing shared helper infrastructure in `test/UKHO.Search.Tests.Common`
+- moving misowned tests into matching test projects
+- preserving all existing test scenarios and functional coverage
+- adding new test projects to `Search.slnx` without reorganizing solution grouping
+
+The implementation must preserve every existing test scenario. A test may be moved, split, duplicated, or reshaped, but the represented functionality must still be covered after each slice.
+
+## Slice 1 - Shared fixture and baseline preservation
+- [x] Work Item 1: Establish the shared test-data path and common helper foundation - Completed
+  - **Purpose**: Create the minimum shared infrastructure needed to move tests safely without dropping coverage or leaving fixture resolution inconsistent.
+  - **Acceptance Criteria**:
+    - `test/TestData` usage is identified and replaced with a shared resolution approach targeting `test/sample-data`.
+    - A new helper-only project exists for broadly reusable test infrastructure.
+    - The existing S-57 fixture used by tests is preserved and available from `test/sample-data`.
+    - `s101-CATALOG.XML` remains in `test/sample-data`.
+    - The solution still builds and the affected existing tests remain runnable.
+  - **Definition of Done**:
+    - Shared helper project created and added to the solution
+    - Fixture resolution helper implemented
+    - No code path still intentionally targets `test/TestData`
+    - Affected tests updated and passing
+    - Documentation updated
+    - Can execute end-to-end via: targeted test runs for fixture-dependent tests
+  - [x] Task 1: Create the shared helper project for test-only infrastructure - Completed
+    - Summary: Added `test/UKHO.Search.Tests.Common` as a helper-only class library and added it to `Search.slnx`.
+    - [x] Step 1: Create `test/UKHO.Search.Tests.Common/UKHO.Search.Tests.Common.csproj`. - Completed
+      - Summary: Created the new helper-only project targeting `net10.0`.
+    - [x] Step 2: Add only test-infrastructure dependencies needed for helper code. - Completed
+      - Summary: Kept the project dependency-free because the shared locator only needs base class library APIs.
+    - [x] Step 3: Ensure the project contains helper code only and no tests. - Completed
+      - Summary: Added only `SampleDataFileLocator` and no test classes.
+    - [x] Step 4: Add the project to `Search.slnx`. - Completed
+      - Summary: Added the new project to the solution.
+  - [x] Task 2: Consolidate the fixture path model - Completed
+    - Summary: Moved `sample.000` into `test/sample-data`, preserved `s101-CATALOG.XML`, and removed the old `test/TestData` folder.
+    - [x] Step 1: Move the existing S-57 fixture currently under `test/TestData` into `test/sample-data` without changing the underlying represented scenario. - Completed
+      - Summary: Moved `sample.000` into `test/sample-data`.
+    - [x] Step 2: Preserve `test/sample-data/s101-CATALOG.XML` unchanged as shared canonical sample data. - Completed
+      - Summary: Left the shared S-101 sample untouched in `test/sample-data`.
+    - [x] Step 3: Keep `test/sample-data` flat; do not introduce subfolders. - Completed
+      - Summary: Kept all shared fixtures in the existing flat folder.
+    - [x] Step 4: Remove all project-file and code references that intentionally depend on `test/TestData`. - Completed
+      - Summary: Removed `TestData` usage from the ingestion test project file and the known fixture-dependent tests.
+  - [x] Task 3: Implement shared fixture resolution - Completed
+    - Summary: Added a reusable sample-data locator in the new helper project and referenced it only from the ingestion test project.
+    - [x] Step 1: Add a broadly reusable fixture-resolution helper to `test/UKHO.Search.Tests.Common`. - Completed
+      - Summary: Implemented `SampleDataFileLocator.GetPath(...)`.
+    - [x] Step 2: Keep the helper free of production-project references. - Completed
+      - Summary: The helper project remains pure test infrastructure with no production project references.
+    - [x] Step 3: Design the helper so tests can resolve assets from `test/sample-data` consistently from output/runtime locations. - Completed
+      - Summary: The helper walks upward from `AppContext.BaseDirectory` until it finds `test/sample-data`.
+    - [x] Step 4: Reference the shared helper project only from test projects that actually need it. - Completed
+      - Summary: Added the helper project reference only to `test/UKHO.Search.Ingestion.Tests` for this slice.
+  - [x] Task 4: Update the currently known fixture-dependent tests - Completed
+    - Summary: Updated the known S-57 and S-101 fixture-dependent tests to use the shared locator and preserved their existing assertions.
+    - [x] Step 1: Update `S57EnricherTests` to use the shared resolution approach. - Completed
+      - Summary: Replaced the local `TestData` lookup with `SampleDataFileLocator`.
+    - [x] Step 2: Update `S57BatchContentHandlerTests` to use the shared resolution approach. - Completed
+      - Summary: Replaced the local `TestData` lookup with `SampleDataFileLocator`.
+    - [x] Step 3: Update the affected test project content rules so the moved fixtures remain available to tests. - Completed
+      - Summary: Removed the old `TestData` copy rules because tests now resolve fixtures directly from `test/sample-data`.
+    - [x] Step 4: Confirm the functional intent and assertions of those tests remain unchanged. - Completed
+      - Summary: Ran the updated fixture-dependent tests and confirmed the existing assertions still pass.
+  - **Files**:
+    - `test/UKHO.Search.Tests.Common/UKHO.Search.Tests.Common.csproj`: new shared helper-only project
+    - `test/UKHO.Search.Tests.Common/SampleDataFileLocator.cs`: shared fixture helper implementation
+    - `test/sample-data/sample.000`: canonical moved S-57 fixture
+    - `test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`: remove old `TestData` copy rules and reference shared helper project
+    - `test/UKHO.Search.Ingestion.Tests/Enrichment/Handlers/Enrichers/S57EnricherTests.cs`: use shared sample-data locator
+    - `test/UKHO.Search.Ingestion.Tests/Enrichment/S57BatchContentHandlerTests.cs`: use shared sample-data locator
+    - `test/UKHO.Search.Ingestion.Tests/Enrichment/S100BatchContentHandlerS101ParsingTests.cs`: use shared sample-data locator
+    - `Search.slnx`: add the new helper project
+  - **Work Item Dependencies**: None
+  - **Run / Verification Instructions**:
+    - Build `test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`.
+    - Run the updated fixture-dependent tests in `S57EnricherTests`, `S57BatchContentHandlerTests`, and `S100BatchContentHandlerS101ParsingTests`.
+    - Verify `test/TestData` no longer exists and shared fixtures resolve from `test/sample-data`.
+  - **User Instructions**: None
+
+## Slice 2 - File-share provider ownership correction
+- [x] Work Item 2: Move file-share provider tests into the matching provider test project - Completed
+  - **Purpose**: Remove provider-specific tests from the ingestion test project while preserving their coverage and keeping provider behavior runnable in its own project.
+  - **Acceptance Criteria**:
+    - A dedicated provider test project exists for the file-share provider project.
+    - Provider-specific enrichment, handler, and provider-pipeline tests are moved out of the ingestion test project.
+    - Tests involving provider-specific components no longer remain in the ingestion test project merely because they exercise ingestion flow.
+    - All moved or split provider scenarios still exist and pass.
+  - **Definition of Done**:
+    - Provider test project created and added to the solution
+    - Provider-owned tests moved or split as required
+    - Provider test project references are correct
+    - Ingestion test project no longer contains provider-owned tests
+    - Tests passing
+    - Documentation updated
+    - Can execute end-to-end via: provider test project run
+  - [x] Task 1: Create the provider-specific test project - Completed
+    - Summary: Added `test/UKHO.Search.Ingestion.Providers.FileShare.Tests` with the standard test package set, a reference to the provider production project, a reference to the shared helper project, a README, and a solution entry.
+    - [x] Step 1: Create `test/UKHO.Search.Ingestion.Providers.FileShare.Tests/UKHO.Search.Ingestion.Providers.FileShare.Tests.csproj`. - Completed
+      - Summary: Created the new provider test project targeting `net10.0`.
+    - [x] Step 2: Reference the matching provider production project. - Completed
+      - Summary: Added the provider project reference to `UKHO.Search.Ingestion.Providers.FileShare.Tests.csproj`.
+    - [x] Step 3: Add references only as needed, including the shared helper project when required. - Completed
+      - Summary: Added only the shared helper project reference required by the moved fixture-dependent tests.
+    - [x] Step 4: Add the project to `Search.slnx`. - Completed
+      - Summary: Added the new provider test project to `Search.slnx`.
+  - [x] Task 2: Re-home provider-owned tests - Completed
+    - Summary: Moved provider-specific enricher, handler, ingress, and provider-pipeline tests out of `test/UKHO.Search.Ingestion.Tests` into the new provider test project.
+    - [x] Step 1: Inventory file-share-specific tests currently under the ingestion test project. - Completed
+      - Summary: Identified the provider-owned enrichment, ingress, and provider-pipeline test set to move.
+    - [x] Step 2: Move enrichment and handler tests into the new provider test project. - Completed
+      - Summary: Moved the file-share enrichment and handler test files into the new provider test project.
+    - [x] Step 3: Move provider-pipeline tests that involve provider-specific behavior into the new provider test project. - Completed
+      - Summary: Moved the provider graph, dispatch, validation, and ingress pipeline tests into the new provider test project.
+    - [x] Step 4: If a test currently covers both provider and other concerns, split or duplicate it so provider behavior remains covered in the provider test project. - Completed
+      - Summary: Preserved mixed scenario coverage by keeping adjacent ingestion-owned tests in place while moving provider-owned coverage into the new project.
+  - [x] Task 3: Re-home provider-specific helper code - Completed
+    - Summary: Copied the provider-facing test enrichers and required pipeline test nodes into the provider test project, and updated the provider assembly internals visibility for the new test assembly.
+    - [x] Step 1: Keep helpers with production-type dependencies inside the provider test project. - Completed
+      - Summary: Copied the provider-facing test enricher helpers into the new provider test project.
+    - [x] Step 2: Move only broadly reusable pure test helpers into the shared helper project when appropriate. - Completed
+      - Summary: Continued using only the shared sample-data locator from the helper project; no production-dependent helper was moved there.
+    - [x] Step 3: Confirm no production-dependent helper is incorrectly moved into the shared helper project. - Completed
+      - Summary: Verified provider-specific helper types remain outside `UKHO.Search.Tests.Common`.
+  - [x] Task 4: Validate no coverage is lost - Completed
+    - Summary: Built and ran the new provider test project successfully, then verified adjacent ingestion-owned tests still build and pass.
+    - [x] Step 1: Compare the pre-move provider test scenarios with the post-move set. - Completed
+      - Summary: Verified the identified provider-owned test files now exist only in the new provider test project.
+    - [x] Step 2: Restore any missing scenario by moving, splitting, or duplicating tests as needed. - Completed
+      - Summary: Preserved all provider-owned scenarios by moving the full identified provider test set and copying the needed test support types.
+    - [x] Step 3: Run the provider test project and confirm all scenarios remain represented. - Completed
+      - Summary: Ran the new provider test project and confirmed all 49 tests passed.
+  - **Files**:
+    - `test/UKHO.Search.Ingestion.Providers.FileShare.Tests/UKHO.Search.Ingestion.Providers.FileShare.Tests.csproj`: new provider test project
+    - `test/UKHO.Search.Ingestion.Providers.FileShare.Tests/README.md`: project scope and execution notes
+    - `test/UKHO.Search.Ingestion.Providers.FileShare.Tests/Enrichment/*`: moved provider enrichment and handler tests
+    - `test/UKHO.Search.Ingestion.Providers.FileShare.Tests/Providers/*`: moved provider ingress tests
+    - `test/UKHO.Search.Ingestion.Providers.FileShare.Tests/Pipeline/*`: moved provider-pipeline tests
+    - `test/UKHO.Search.Ingestion.Providers.FileShare.Tests/TestEnrichers/*`: copied provider-facing helper enrichers
+    - `test/UKHO.Search.Ingestion.Providers.FileShare.Tests/TestNodes/*`: copied required pipeline test node helpers
+    - `test/UKHO.Search.Ingestion.Tests/*`: provider-owned test files removed from the ingestion test project
+    - `src/Providers/UKHO.Search.Ingestion.Providers.FileShare/AssemblyInfo.cs`: grant internals visibility to the new provider test assembly
+    - `Search.slnx`: add the provider test project
+  - **Work Item Dependencies**: Work Item 1
+  - **Run / Verification Instructions**:
+    - Build `test/UKHO.Search.Ingestion.Providers.FileShare.Tests/UKHO.Search.Ingestion.Providers.FileShare.Tests.csproj`.
+    - Run `dotnet test test/UKHO.Search.Ingestion.Providers.FileShare.Tests/UKHO.Search.Ingestion.Providers.FileShare.Tests.csproj --no-build`.
+    - Build `test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`.
+    - Run representative adjacent ingestion-owned tests such as `ApplyEnrichmentNodeTests` and `CanonicalDocumentBuilderTests`.
+  - **User Instructions**: None
+
+## Slice 3 - Infrastructure ownership correction
+- [x] Work Item 3: Move infrastructure-ingestion tests into the matching infrastructure test project - Completed
+  - **Purpose**: Separate infrastructure behavior from ingestion-domain behavior while preserving infrastructure coverage and documented exceptions.
+  - **Acceptance Criteria**:
+    - A dedicated test project exists for the infrastructure-ingestion production project.
+    - Infrastructure-focused tests no longer sit in the ingestion test project unless they are strictly required exceptions and documented.
+    - Tests that verify infrastructure behavior through ingestion-facing APIs are split or repeated as needed so both ownership boundaries remain clear.
+    - All infrastructure scenarios continue to be covered.
+  - **Definition of Done**:
+    - Infrastructure test project created and added to the solution
+    - Infrastructure-owned tests moved or split
+    - Any exception documented in the specification if needed
+    - Tests passing
+    - Documentation updated
+    - Can execute end-to-end via: infrastructure test project run
+  - [x] Task 1: Create the infrastructure test project - Completed
+    - Summary: Added `test/UKHO.Search.Infrastructure.Ingestion.Tests` with the standard test package set, the infrastructure production project reference, the shared helper project reference, a README, and a solution entry.
+    - [x] Step 1: Create `test/UKHO.Search.Infrastructure.Ingestion.Tests/UKHO.Search.Infrastructure.Ingestion.Tests.csproj`. - Completed
+      - Summary: Created the new infrastructure test project targeting `net10.0`.
+    - [x] Step 2: Reference the matching infrastructure production project. - Completed
+      - Summary: Added the infrastructure production project reference to the new test project.
+    - [x] Step 3: Add only required additional test project references. - Completed
+      - Summary: Added only the shared helper project reference plus a package needed by the copied test host helper.
+    - [x] Step 4: Add the project to `Search.slnx`. - Completed
+      - Summary: Added the infrastructure test project to the solution.
+  - [x] Task 2: Classify infrastructure-focused tests - Completed
+    - Summary: Identified and moved the clearly infrastructure-owned dead-letter, elastic, rules, queue, and infrastructure-pipeline tests out of the ingestion test project.
+    - [x] Step 1: Inventory infrastructure-focused tests currently in the ingestion test project. - Completed
+      - Summary: Classified the DeadLetter, Elastic, Rules, Queue, `InOrderBulkIndexNodeTests`, and `PipelineOrderingTests` coverage as infrastructure-owned.
+    - [x] Step 2: Identify tests whose main assertions concern persistence, transport, dead-lettering, queueing, or other infrastructure behavior. - Completed
+      - Summary: Selected tests whose assertions target queue transport, rules loading/evaluation, dead-letter persistence/diagnostics, elastic mapping/indexing, and infrastructure pipeline ordering.
+    - [x] Step 3: Move clearly infrastructure-owned tests to the infrastructure test project. - Completed
+      - Summary: Moved those tests into `test/UKHO.Search.Infrastructure.Ingestion.Tests`.
+  - [x] Task 3: Split mixed ingestion/infrastructure coverage where needed - Completed
+    - Summary: Preserved ingestion-owned coverage in the ingestion test project while moving the clearly infrastructure-owned scenarios and copying only the support helpers needed by the moved tests.
+    - [x] Step 1: For tests that verify infrastructure through ingestion-facing APIs, preserve ingestion coverage in the ingestion test project where needed. - Completed
+      - Summary: Kept ingestion-facing pipeline enrichment tests in the ingestion test project.
+    - [x] Step 2: Add corresponding infrastructure-owned tests to the infrastructure test project. - Completed
+      - Summary: Moved the infrastructure-owned queue, rules, dead-letter, elastic, and infrastructure-pipeline tests into the new project with copied support helpers.
+    - [x] Step 3: Document any unavoidable exception explicitly in the specification. - Completed
+      - Summary: No additional explicit exception was required for this slice.
+  - [x] Task 4: Validate retained ingestion coverage - Completed
+    - Summary: Built and ran the new infrastructure test project successfully, then verified representative remaining ingestion tests still build and pass.
+    - [x] Step 1: Confirm ingestion tests still cover ingestion-owned behavior after infrastructure extraction. - Completed
+      - Summary: Verified representative remaining ingestion-owned tests continue to pass after the move.
+    - [x] Step 2: Confirm infrastructure tests cover the extracted infrastructure scenarios. - Completed
+      - Summary: Ran the full infrastructure test project and confirmed the extracted scenarios are covered there.
+    - [x] Step 3: Run both projects to verify no scenario has been lost. - Completed
+      - Summary: Built both projects and ran the full infrastructure test suite plus representative remaining ingestion tests successfully.
+  - **Files**:
+    - `test/UKHO.Search.Infrastructure.Ingestion.Tests/UKHO.Search.Infrastructure.Ingestion.Tests.csproj`: new infrastructure test project
+    - `test/UKHO.Search.Infrastructure.Ingestion.Tests/README.md`: project scope and execution notes
+    - `test/UKHO.Search.Infrastructure.Ingestion.Tests/DeadLetter/*`: moved dead-letter infrastructure tests and helpers
+    - `test/UKHO.Search.Infrastructure.Ingestion.Tests/Elastic/*`: moved elastic infrastructure tests
+    - `test/UKHO.Search.Infrastructure.Ingestion.Tests/Rules/*`: moved rules infrastructure tests
+    - `test/UKHO.Search.Infrastructure.Ingestion.Tests/Queue/*`: moved queue infrastructure tests
+    - `test/UKHO.Search.Infrastructure.Ingestion.Tests/Pipeline/InOrderBulkIndexNodeTests.cs`: moved infrastructure pipeline node tests
+    - `test/UKHO.Search.Infrastructure.Ingestion.Tests/PipelineOrderingTests.cs`: moved infrastructure pipeline builder ordering test
+    - `test/UKHO.Search.Infrastructure.Ingestion.Tests/TestSupport/*`: copied required rules and zip test helpers
+    - `test/UKHO.Search.Infrastructure.Ingestion.Tests/TestQueues/*`: copied queue test helpers
+    - `test/UKHO.Search.Infrastructure.Ingestion.Tests/TestProviders/*`: copied provider service test doubles used by queue tests
+    - `test/UKHO.Search.Ingestion.Tests/*`: infrastructure-owned test files removed from the ingestion test project
+    - `src/UKHO.Search.Infrastructure.Ingestion/Properties/AssemblyInfo.cs`: grant internals visibility to the new infrastructure test assembly
+    - `Search.slnx`: add the infrastructure test project
+  - **Work Item Dependencies**: Work Item 1
+  - **Run / Verification Instructions**:
+    - Build `test/UKHO.Search.Infrastructure.Ingestion.Tests/UKHO.Search.Infrastructure.Ingestion.Tests.csproj`.
+    - Run `dotnet test test/UKHO.Search.Infrastructure.Ingestion.Tests/UKHO.Search.Infrastructure.Ingestion.Tests.csproj --no-build`.
+    - Build `test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj`.
+    - Run representative remaining ingestion tests such as `ApplyEnrichmentNodeTests` and `CanonicalDocumentTaxonomyFieldsTests`.
+  - **User Instructions**: None
+
+## Slice 4 - Integration boundary and emulator cleanup
+- [x] Work Item 4: Establish the outer integration test project and complete emulator-area ownership cleanup - Completed
+  - **Purpose**: Create the agreed integration boundary and ensure emulator-related tests live in the correct projects without confusing project-specific tests with shared helper infrastructure.
+  - **Acceptance Criteria**:
+    - An outer integration test project exists.
+    - Cross-project integration tests are moved there.
+    - Borderline higher-level tests may also move there when that simplifies ownership.
+    - Emulator tests remain in their matching emulator test projects.
+    - The test project matching the production project named `FileShareEmulator.Common` remains a normal project-specific test project.
+  - **Definition of Done**:
+    - Integration test project created and added to the solution
+    - Cross-project integration tests moved
+    - Emulator test ownership clarified and preserved
+    - Tests passing
+    - Documentation updated
+    - Can execute end-to-end via: integration test project run
+  - [x] Task 1: Create the integration test project - Completed
+    - Summary: Added `test/UKHO.Search.IntegrationTests` with the standard test package set, the required production project references, a README, and a solution entry.
+    - [x] Step 1: Create `test/UKHO.Search.IntegrationTests/UKHO.Search.IntegrationTests.csproj`. - Completed
+      - Summary: Created the new integration test project targeting `net10.0`.
+    - [x] Step 2: Reference production and test projects only as needed for genuine integration coverage. - Completed
+      - Summary: Referenced the ingestion, provider, and infrastructure production projects, and copied the few support helpers needed by the moved integration tests.
+    - [x] Step 3: Add the project to `Search.slnx`. - Completed
+      - Summary: Added the integration test project to the solution.
+  - [x] Task 2: Move cross-project integration tests - Completed
+    - Summary: Moved the explicit cross-project rules integration and end-to-end tests plus the higher-level provider graph integration tests into the new integration test project.
+    - [x] Step 1: Identify tests that intentionally span multiple production projects. - Completed
+      - Summary: Identified the rules integration/end-to-end tests and provider graph integration tests as intentionally spanning ingestion, provider, and infrastructure behavior.
+    - [x] Step 2: Move those tests into the integration test project. - Completed
+      - Summary: Moved the cross-project integration tests into `test/UKHO.Search.IntegrationTests`.
+    - [x] Step 3: Move borderline higher-level tests there when it simplifies ownership. - Completed
+      - Summary: Moved the higher-level provider graph regression and failure-routing tests into the integration project to keep project-specific ownership clearer.
+    - [x] Step 4: Keep purely project-owned tests in their matching project-specific test projects. - Completed
+      - Summary: Left project-specific emulator, provider, infrastructure, and ingestion unit-style tests in their matching projects.
+  - [x] Task 3: Complete emulator-area cleanup - Completed
+    - Summary: Verified emulator tests remain in their matching projects and confirmed no incorrect emulator-behavior spillover required code moves in this slice.
+    - [x] Step 1: Verify tests for the emulator production project remain in its matching emulator test project. - Completed
+      - Summary: Verified and ran `test/FileShareEmulator.Tests` successfully.
+    - [x] Step 2: Verify tests for the production project named `FileShareEmulator.Common` remain in its matching test project. - Completed
+      - Summary: Verified and ran `test/FileShareEmulator.Common.Tests` successfully.
+    - [x] Step 3: Remove any incorrect emulator-area spillover from other projects. - Completed
+      - Summary: No incorrect emulator-behavior spillover required removal during this slice.
+  - [x] Task 4: Re-verify scenario survival - Completed
+    - Summary: Built and ran the new integration test project successfully, re-verified emulator test projects, and confirmed the moved cross-project test files now reside in the integration project.
+    - [x] Step 1: Confirm that no cross-project scenario disappeared during the move. - Completed
+      - Summary: Verified the moved integration and graph test files now exist in the integration project and execute successfully there.
+    - [x] Step 2: Restore any lost scenario through moved, duplicated, or split tests as needed. - Completed
+      - Summary: No restoration was needed because the full selected cross-project scenario set moved cleanly and passed.
+  - **Files**:
+    - `test/UKHO.Search.IntegrationTests/UKHO.Search.IntegrationTests.csproj`: new integration project
+    - `test/UKHO.Search.IntegrationTests/README.md`: project scope and execution notes
+    - `test/UKHO.Search.IntegrationTests/Rules/*`: moved cross-project rules integration and end-to-end tests
+    - `test/UKHO.Search.IntegrationTests/Pipeline/*`: moved cross-project provider graph integration tests
+    - `test/UKHO.Search.IntegrationTests/TestSupport/*`: copied required rules integration support helpers
+    - `test/UKHO.Search.IntegrationTests/TestEnrichers/*`: copied required graph integration helper enrichers
+    - `test/UKHO.Search.IntegrationTests/TestNodes/*`: copied required graph integration node helpers
+    - `test/FileShareEmulator.Tests/*`: retained emulator tests
+    - `test/FileShareEmulator.Common.Tests/*`: retained project-specific tests
+    - `src/Providers/UKHO.Search.Ingestion.Providers.FileShare/AssemblyInfo.cs`: grant internals visibility to the new integration test assembly
+    - `src/UKHO.Search.Infrastructure.Ingestion/Properties/AssemblyInfo.cs`: grant internals visibility to the new integration test assembly
+    - `Search.slnx`: add the integration test project
+  - **Work Item Dependencies**: Work Item 2, Work Item 3
+  - **Run / Verification Instructions**:
+    - Build `test/UKHO.Search.IntegrationTests/UKHO.Search.IntegrationTests.csproj`.
+    - Run `dotnet test test/UKHO.Search.IntegrationTests/UKHO.Search.IntegrationTests.csproj --no-build`.
+    - Run `dotnet test test/FileShareEmulator.Tests/FileShareEmulator.Tests.csproj`.
+    - Run `dotnet test test/FileShareEmulator.Common.Tests/FileShareEmulator.Common.Tests.csproj`.
+    - Confirm the moved integration and graph test files now live under `test/UKHO.Search.IntegrationTests`.
+  - **User Instructions**: None
+
+## Slice 5 - Whole-solution audit and final alignment
+- [x] Work Item 5: Complete the whole-solution audit and add any remaining matching test projects - Completed
+  - **Purpose**: Finish the solution-wide alignment so each production project has a matching test project, while leaving solution grouping for manual follow-up.
+  - **Acceptance Criteria**:
+    - The whole solution has been audited for missing matching test projects.
+    - Any additional missing matching test projects are created under `test`.
+    - Empty matching test projects are clearly marked with trivial placeholder smoke tests and explanatory comments.
+    - Existing matching test projects contain only their own tests unless a documented exception applies.
+    - No existing test scenario has been dropped.
+  - **Definition of Done**:
+    - Whole-solution audit completed
+    - Additional matching projects created as required
+    - Placeholder projects clearly marked
+    - Final ownership cleanup completed
+    - Tests passing at relevant project scope
+    - Documentation updated
+    - Can execute end-to-end via: solution build plus representative project test runs
+  - [x] Task 1: Audit the remaining production projects - Completed
+    - Summary: Audited the remaining solution projects and verified that every production project now has a matching test project path under `test/`.
+    - [x] Step 1: Enumerate all production projects in the solution. - Completed
+      - Summary: Enumerated the domain, services, provider, infrastructure, host, tool, and configuration production projects in `Search.slnx`.
+    - [x] Step 2: Compare them with existing matching test projects. - Completed
+      - Summary: Compared the production project list against the existing test project estate and identified the remaining matching-project gaps.
+    - [x] Step 3: Identify any remaining gaps. - Completed
+      - Summary: Identified missing matching test projects for services, shared infrastructure/query, hosts, File Share image tools, and non-seeder configuration projects, and noted that `FileShareEmulator.Tests` also needed adding to `Search.slnx`.
+  - [x] Task 2: Create additional matching test projects where required - Completed
+    - Summary: Created the remaining missing matching test projects under `test/`, added placeholder smoke tests and per-project README files, and added those projects to `Search.slnx`.
+    - [x] Step 1: Create each missing matching test project under `test`. - Completed
+      - Summary: Created `UKHO.Search.Services.Ingestion.Tests`, `UKHO.Search.Services.Query.Tests`, `UKHO.Search.Services.Tests`, `UKHO.Search.Infrastructure.Query.Tests`, `UKHO.Search.Infrastructure.Tests`, `IngestionServiceHost.Tests`, `QueryServiceHost.Tests`, `UKHO.Search.ServiceDefaults.Tests`, `StudioHost.Tests`, `AppHost.Tests`, `FileShareImageBuilder.Tests`, `FileShareImageLoader.Tests`, `UKHO.Aspire.Configuration.Emulator.Tests`, `UKHO.Aspire.Configuration.Hosting.Tests`, and `UKHO.Aspire.Configuration.Tests`.
+    - [x] Step 2: Add each new project to `Search.slnx`. - Completed
+      - Summary: Added all newly created matching test projects and the existing `FileShareEmulator.Tests` project to `Search.slnx`.
+    - [x] Step 3: Add standard test package references and the matching production project reference. - Completed
+      - Summary: Added the standard xUnit test package set and the direct matching production project reference to each newly created placeholder project.
+    - [x] Step 4: Add a clearly named placeholder smoke test with an explanatory comment where the project would otherwise be empty. - Completed
+      - Summary: Added `PlaceholderSmokeTests` with explanatory comments to each newly created empty matching test project.
+  - [x] Task 3: Final test ownership cleanup - Completed
+    - Summary: Verified the final matching-project ownership layout, confirmed the shared helper project is used only where required, and left the agreed integration and shared-helper exceptions as the only non-matching-project exceptions.
+    - [x] Step 1: Verify each matching test project contains only tests for its own production project, except the agreed integration/shared-helper exceptions and any documented necessity exceptions. - Completed
+      - Summary: Verified the remaining project-specific test projects are aligned to their matching production projects, with only `UKHO.Search.IntegrationTests` and `UKHO.Search.Tests.Common` acting as the agreed exceptions.
+    - [x] Step 2: Remove any remaining misowned tests from the ingestion test project and other matching projects. - Completed
+      - Summary: No further misowned test moves were required after the earlier slices; the remaining ingestion, provider, infrastructure, emulator, and integration projects are ownership-aligned.
+    - [x] Step 3: Ensure the shared helper project is referenced only where needed. - Completed
+      - Summary: Confirmed the shared helper project remains limited to the projects that actually use shared test helpers.
+  - [x] Task 4: Final coverage preservation check - Completed
+    - Summary: Verified that all audited production projects now have matching test projects, the moved project-specific and integration test suites continue to pass, the new placeholder projects build, and the repository wiki now documents the aligned test layout.
+    - [x] Step 1: Compare the pre-refactor and post-refactor scenario inventory. - Completed
+      - Summary: Compared the audited pre-refactor project/test layout with the final project-aligned structure and confirmed the previously moved provider, infrastructure, and integration scenarios remain represented.
+    - [x] Step 2: Confirm every existing test scenario remains represented. - Completed
+      - Summary: Confirmed the previously moved real test suites still pass in their new projects and that the remaining matching projects now exist explicitly, using placeholders only where no real tests existed yet.
+    - [x] Step 3: Update the specification if any strict exception had to be used. - Completed
+      - Summary: No new strict exception was needed, so the specification required no further update.
+  - **Files**:
+    - `test/UKHO.Search.Services.Ingestion.Tests/*`: new matching placeholder test project and smoke test
+    - `test/UKHO.Search.Services.Query.Tests/*`: new matching placeholder test project and smoke test
+    - `test/UKHO.Search.Services.Tests/*`: new matching placeholder test project and smoke test
+    - `test/UKHO.Search.Infrastructure.Query.Tests/*`: new matching placeholder test project and smoke test
+    - `test/UKHO.Search.Infrastructure.Tests/*`: new matching placeholder test project and smoke test
+    - `test/IngestionServiceHost.Tests/*`: new matching placeholder test project and smoke test
+    - `test/QueryServiceHost.Tests/*`: new matching placeholder test project and smoke test
+    - `test/UKHO.Search.ServiceDefaults.Tests/*`: new matching placeholder test project and smoke test
+    - `test/StudioHost.Tests/*`: new matching placeholder test project and smoke test
+    - `test/AppHost.Tests/*`: new matching placeholder test project and smoke test
+    - `test/FileShareImageBuilder.Tests/*`: new matching placeholder test project and smoke test
+    - `test/FileShareImageLoader.Tests/*`: new matching placeholder test project and smoke test
+    - `test/UKHO.Aspire.Configuration.Emulator.Tests/*`: new matching placeholder test project and smoke test
+    - `test/UKHO.Aspire.Configuration.Hosting.Tests/*`: new matching placeholder test project and smoke test
+    - `test/UKHO.Aspire.Configuration.Tests/*`: new matching placeholder test project and smoke test
+    - `Search.slnx`: add the remaining matching projects, including `FileShareEmulator.Tests`
+    - `wiki/Solution-Architecture.md`: document the aligned test-project structure
+  - **Work Item Dependencies**: Work Item 2, Work Item 3, Work Item 4
+  - **Run / Verification Instructions**:
+    - Build the solution.
+    - Run representative test projects for integration, emulator, service placeholder, host placeholder, tool placeholder, and configuration placeholder coverage.
+    - Verify all production projects now have matching test projects under `test/`.
+    - Verify placeholder smoke tests exist only in projects that still have no real project-specific tests.
+  - **User Instructions**:
+    - Manual solution grouping and folder organization in `Search.slnx` can be performed after the refactor if desired.
+
+## Summary
+
+This implementation plan treats the refactor as a sequence of ownership-correction slices, each leaving the solution buildable and testable. The plan starts with the minimum shared fixture infrastructure, then separates provider and infrastructure concerns, establishes an explicit integration boundary, and finishes with a whole-solution audit.
+
+Key considerations:
+
+- no existing test scenario may be lost
+- shared test helpers must remain pure test infrastructure
+- project-specific helpers that depend on production types stay with their owning test project
+- project-specific test projects retain ownership clarity
+- solution file grouping changes are intentionally deferred for manual follow-up

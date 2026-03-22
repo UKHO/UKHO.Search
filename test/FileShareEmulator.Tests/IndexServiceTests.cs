@@ -139,7 +139,7 @@ namespace FileShareEmulator.Tests
                 static (_, _) => Task.CompletedTask,
                 static (_, _) => Task.CompletedTask,
                 NullLogger<IndexService>.Instance,
-                new Progress<IndexBusinessUnitProgress>(progress => progressUpdates.Add(progress)),
+                new SynchronousProgress<IndexBusinessUnitProgress>(progress => progressUpdates.Add(progress)),
                 progressInterval: 2,
                 cancellationToken: CancellationToken.None);
 
@@ -151,6 +151,21 @@ namespace FileShareEmulator.Tests
             progressUpdates[0].Message.ShouldContain("42");
             progressUpdates[1].SubmittedCount.ShouldBe(2);
             progressUpdates[2].SubmittedCount.ShouldBe(4);
+        }
+
+        private sealed class SynchronousProgress<T> : IProgress<T>
+        {
+            private readonly Action<T> _report;
+
+            public SynchronousProgress(Action<T> report)
+            {
+                _report = report;
+            }
+
+            public void Report(T value)
+            {
+                _report(value);
+            }
         }
     }
 }

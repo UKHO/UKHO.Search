@@ -16,7 +16,7 @@ All documents for this piece of work MUST be created under a single subfolder of
 **Process:**
 - Start by asking me a number of questions to clarify and expand on the initial concept.
 - Keep asking until you have a full understanding of the requirements.
-- Before posing each new clarification question, output the current state snapshot of the specification (overview draft plus any component/service draft sections gathered so far) in markdown.
+- Maintain the current state snapshot of the specification in the work package spec file as the source of truth, but do not repeat the full snapshot in chat before each clarification question.
 - Generate an overview document with only high-level system and component descriptions (sections 1, 2 and 3).
 - For each service or component, create a separate specification document.
 - In the overview, reference each individual service/component spec.
@@ -28,7 +28,7 @@ All documents for this piece of work MUST be created under a single subfolder of
 4. Ask several questions up front (one at a time) to ensure a full understanding before creating and writing any specifications.
 5. Suggest features or considerations I may not have considered.
 6. Help organize requirements logically.
-7. Do not show the current state of the spec (snapshot) BEFORE asking the next clarification question.
+7. Do not show or repeat the current state of the spec (snapshot) in chat before asking the next clarification question.
 8. Flag technical challenges or important decisions.
 
 **Output Requirements:**

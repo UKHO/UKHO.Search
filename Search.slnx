@@ -39,17 +39,46 @@
     <Project Path="configuration/UKHO.Aspire.Configuration.Seeder/UKHO.Aspire.Configuration.Seeder.csproj" />
     <Project Path="configuration/UKHO.Aspire.Configuration/UKHO.Aspire.Configuration.csproj" />
   </Folder>
-  <Folder Name="/@test/" />
+  <Folder Name="/@test/">
+    <Project Path="test/UKHO.Search.IntegrationTests/UKHO.Search.IntegrationTests.csproj" />
+    <Project Path="test/UKHO.Search.Tests.Common/UKHO.Search.Tests.Common.csproj" />
+  </Folder>
   <Folder Name="/@test/00 Domain/">
     <Project Path="test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj" />
     <Project Path="test/UKHO.Search.Query.Tests/UKHO.Search.Query.Tests.csproj" />
     <Project Path="test/UKHO.Search.Tests/UKHO.Search.Tests.csproj" Id="be8fa9d3-90f0-449f-9ad0-795a833a3b38" />
   </Folder>
+  <Folder Name="/@test/01 Services/">
+    <Project Path="test/UKHO.Search.Services.Ingestion.Tests/UKHO.Search.Services.Ingestion.Tests.csproj" />
+    <Project Path="test/UKHO.Search.Services.Query.Tests/UKHO.Search.Services.Query.Tests.csproj" />
+    <Project Path="test/UKHO.Search.Services.Tests/UKHO.Search.Services.Tests.csproj" />
+  </Folder>
+  <Folder Name="/@test/02 Providers/">
+    <Project Path="test/UKHO.Search.Ingestion.Providers.FileShare.Tests/UKHO.Search.Ingestion.Providers.FileShare.Tests.csproj" />
+  </Folder>
+  <Folder Name="/@test/03 Infrastructure/">
+    <Project Path="test/UKHO.Search.Infrastructure.Ingestion.Tests/UKHO.Search.Infrastructure.Ingestion.Tests.csproj" />
+    <Project Path="test/UKHO.Search.Infrastructure.Query.Tests/UKHO.Search.Infrastructure.Query.Tests.csproj" />
+    <Project Path="test/UKHO.Search.Infrastructure.Tests/UKHO.Search.Infrastructure.Tests.csproj" />
+  </Folder>
+  <Folder Name="/@test/04 Hosts/">
+    <Project Path="test/AppHost.Tests/AppHost.Tests.csproj" />
+    <Project Path="test/IngestionServiceHost.Tests/IngestionServiceHost.Tests.csproj" />
+    <Project Path="test/QueryServiceHost.Tests/QueryServiceHost.Tests.csproj" />
+    <Project Path="test/StudioHost.Tests/StudioHost.Tests.csproj" />
+    <Project Path="test/UKHO.Search.ServiceDefaults.Tests/UKHO.Search.ServiceDefaults.Tests.csproj" />
+  </Folder>
   <Folder Name="/@test/98 Tools/">
     <Project Path="test/FileShareEmulator.Common.Tests/FileShareEmulator.Common.Tests.csproj" />
+    <Project Path="test/FileShareEmulator.Tests/FileShareEmulator.Tests.csproj" />
+    <Project Path="test/FileShareImageBuilder.Tests/FileShareImageBuilder.Tests.csproj" />
+    <Project Path="test/FileShareImageLoader.Tests/FileShareImageLoader.Tests.csproj" />
     <Project Path="test/RulesWorkbench.Tests/RulesWorkbench.Tests.csproj" Id="d1ac88b4-3302-4f83-be76-49c835c2eb2c" />
   </Folder>
   <Folder Name="/@test/@configuration/">
+    <Project Path="test/UKHO.Aspire.Configuration.Emulator.Tests/UKHO.Aspire.Configuration.Emulator.Tests.csproj" />
+    <Project Path="test/UKHO.Aspire.Configuration.Hosting.Tests/UKHO.Aspire.Configuration.Hosting.Tests.csproj" />
     <Project Path="test/UKHO.Aspire.Configuration.Seeder.Tests/UKHO.Aspire.Configuration.Seeder.Tests.csproj" />
+    <Project Path="test/UKHO.Aspire.Configuration.Tests/UKHO.Aspire.Configuration.Tests.csproj" />
   </Folder>
 </Solution>

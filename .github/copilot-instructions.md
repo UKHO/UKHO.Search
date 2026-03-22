@@ -23,6 +23,7 @@ Be concise but complete. Prefer current research (Microsoft Learn) for Microsoft
 - When asked to create specification documents for a work package, create only one document containing everything needed; do not split across multiple documents. If multiple were created, merge into one and delete the extras.
 - Use appropriate prompt family & phase from `.github/prompts/`.
 - When asking open questions from a spec, record each answer directly in that same spec file and do not create a new version.
+- When collaborating on specifications in this repository, do not repeat the draft spec in chat before clarification questions; ask the next question directly and keep the evolving draft in the spec file instead.
 - When documentation references repository wiki pages, prefer proper markdown links rather than inline code-formatted URLs or plain page names.
 
 ## Blazor Server Guidelines
@@ -71,6 +72,7 @@ Rules:
 
 ## Testing Guidelines
 - Prefer Playwright end-to-end tests over bUnit/component tests for Blazor UI verification in this repository.
+- For test refactor work, it is acceptable for test projects to reference other test projects when that preserves Onion Architecture direction; broad shared test-wide helpers, such as fixture resolution helpers, should live in `UKHO.Search.Tests.Common` when they are reused throughout the test estate.
 
 ## .csproj File Editing Guidelines
 - When editing `.csproj` files, keep `PackageReference` entries in `ItemGroup` blocks that contain only `PackageReference` entries (do not mix `ProjectReference` and `PackageReference` in the same `ItemGroup`).

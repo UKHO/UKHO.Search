@@ -113,15 +113,28 @@ flowchart TB
 
 ### Tests
 
-Tests are grouped by concern:
+The repository now uses a project-aligned test layout under `test/`.
+
+General rule:
+
+- each production project has a matching `<ProductionProjectName>.Tests` project
+- broad helper-only test infrastructure lives in `test/UKHO.Search.Tests.Common`
+- intentionally cross-project integration coverage lives in `test/UKHO.Search.IntegrationTests`
+
+Examples of the aligned structure include:
 
 - `test/UKHO.Search.Tests`
 - `test/UKHO.Search.Ingestion.Tests`
 - `test/UKHO.Search.Query.Tests`
+- `test/UKHO.Search.Ingestion.Providers.FileShare.Tests`
+- `test/UKHO.Search.Infrastructure.Ingestion.Tests`
+- `test/UKHO.Search.IntegrationTests`
 - `test/FileShareEmulator.Tests`
 - `test/FileShareEmulator.Common.Tests`
 - `test/RulesWorkbench.Tests`
-- configuration seeder tests under `test/UKHO.Aspire.Configuration.Seeder.Tests`
+- configuration test projects under `test/UKHO.Aspire.Configuration.*.Tests`
+
+Some audited projects currently contain placeholder smoke tests so the matching test-project structure is explicit even before real project-specific tests are added.
 
 ## Runtime architecture
 

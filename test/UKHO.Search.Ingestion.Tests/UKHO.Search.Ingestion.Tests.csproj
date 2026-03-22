@@ -31,22 +31,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\UKHO.Search.Tests.Common\UKHO.Search.Tests.Common.csproj" />
 		<ProjectReference Include="..\..\src\Providers\UKHO.Search.Ingestion.Providers.FileShare\UKHO.Search.Ingestion.Providers.FileShare.csproj" />
 		<ProjectReference Include="..\..\src\UKHO.Search.Ingestion\UKHO.Search.Ingestion.csproj" />
 		<ProjectReference Include="..\..\src\UKHO.Search.Infrastructure.Ingestion\UKHO.Search.Infrastructure.Ingestion.csproj" />
 		<ProjectReference Include="..\..\tools\FileShareEmulator\FileShareEmulator.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Content Include="TestData\s101-CATALOG.XML">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Update="TestData\sample.000">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
 	</ItemGroup>
 
 </Project>
