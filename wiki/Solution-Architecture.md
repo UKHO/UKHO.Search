@@ -60,6 +60,7 @@ flowchart TB
 | `src/Hosts/AppHost` | Aspire orchestration, container/resource definitions, and run-mode switching for local workflows. |
 | `src/Hosts/IngestionServiceHost` | Ingestion host, DI/bootstrap, Elasticsearch/blob/queue client wiring, operational UI. |
 | `src/Hosts/QueryServiceHost` | Query-side host and external endpoint surface. |
+| `src/Studio/StudioApiHost` | Studio-facing minimal API host used by the Theia shell for local proof and future studio API integration. |
 | `src/Hosts/UKHO.Search.ServiceDefaults` | Shared Aspire/OpenTelemetry/health-check defaults for hosts. |
 
 ### Domain
@@ -120,21 +121,28 @@ General rule:
 - each production project has a matching `<ProductionProjectName>.Tests` project
 - broad helper-only test infrastructure lives in `test/UKHO.Search.Tests.Common`
 - intentionally cross-project integration coverage lives in `test/UKHO.Search.IntegrationTests`
+- canonical shared fixtures live in `test/sample-data`
 
-Examples of the aligned structure include:
+Current aligned structure:
 
-- `test/UKHO.Search.Tests`
-- `test/UKHO.Search.Ingestion.Tests`
-- `test/UKHO.Search.Query.Tests`
-- `test/UKHO.Search.Ingestion.Providers.FileShare.Tests`
-- `test/UKHO.Search.Infrastructure.Ingestion.Tests`
-- `test/UKHO.Search.IntegrationTests`
-- `test/FileShareEmulator.Tests`
-- `test/FileShareEmulator.Common.Tests`
-- `test/RulesWorkbench.Tests`
-- configuration test projects under `test/UKHO.Aspire.Configuration.*.Tests`
+| Area | Matching test projects |
+|---|---|
+| Domain | `test/UKHO.Search.Tests`, `test/UKHO.Search.Ingestion.Tests`, `test/UKHO.Search.Query.Tests` |
+| Services | `test/UKHO.Search.Services.Tests`, `test/UKHO.Search.Services.Ingestion.Tests`, `test/UKHO.Search.Services.Query.Tests` |
+| Provider | `test/UKHO.Search.Ingestion.Providers.FileShare.Tests` |
+| Infrastructure | `test/UKHO.Search.Infrastructure.Tests`, `test/UKHO.Search.Infrastructure.Ingestion.Tests`, `test/UKHO.Search.Infrastructure.Query.Tests` |
+| Hosts / UI | `test/AppHost.Tests`, `test/IngestionServiceHost.Tests`, `test/QueryServiceHost.Tests`, `test/StudioApiHost.Tests`, `test/UKHO.Search.ServiceDefaults.Tests` |
+| Tools | `test/FileShareEmulator.Tests`, `test/FileShareEmulator.Common.Tests`, `test/FileShareImageBuilder.Tests`, `test/FileShareImageLoader.Tests`, `test/RulesWorkbench.Tests` |
+| Configuration | `test/UKHO.Aspire.Configuration.Tests`, `test/UKHO.Aspire.Configuration.Hosting.Tests`, `test/UKHO.Aspire.Configuration.Seeder.Tests`, `test/UKHO.Aspire.Configuration.Emulator.Tests` |
+| Shared / integration exceptions | `test/UKHO.Search.Tests.Common`, `test/UKHO.Search.IntegrationTests` |
 
 Some audited projects currently contain placeholder smoke tests so the matching test-project structure is explicit even before real project-specific tests are added.
+
+Shared test-asset conventions:
+
+- `test/sample-data` is the canonical shared fixture folder
+- keep `test/sample-data` flat rather than introducing per-feature subfolders
+- use `SampleDataFileLocator` from `test/UKHO.Search.Tests.Common` when tests need to resolve those shared assets from build output locations
 
 ## Runtime architecture
 

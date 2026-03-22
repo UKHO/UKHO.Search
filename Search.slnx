@@ -21,7 +21,7 @@
     <Project Path="src/Hosts/IngestionServiceHost/IngestionServiceHost.csproj" />
     <Project Path="src/Hosts/QueryServiceHost/QueryServiceHost.csproj" />
     <Project Path="src/Hosts/UKHO.Search.ServiceDefaults/UKHO.Search.ServiceDefaults.csproj" />
-    <Project Path="src/Studio/StudioHost/StudioHost.csproj" />
+    <Project Path="src/Studio/StudioApiHost/StudioApiHost.csproj" />
   </Folder>
   <Folder Name="/04 Hosts/@local/">
     <Project Path="src/Hosts/AppHost/AppHost.csproj" />
@@ -65,7 +65,7 @@
     <Project Path="test/AppHost.Tests/AppHost.Tests.csproj" />
     <Project Path="test/IngestionServiceHost.Tests/IngestionServiceHost.Tests.csproj" />
     <Project Path="test/QueryServiceHost.Tests/QueryServiceHost.Tests.csproj" />
-    <Project Path="test/StudioHost.Tests/StudioHost.Tests.csproj" />
+    <Project Path="test/StudioApiHost.Tests/StudioApiHost.Tests.csproj" />
     <Project Path="test/UKHO.Search.ServiceDefaults.Tests/UKHO.Search.ServiceDefaults.Tests.csproj" />
   </Folder>
   <Folder Name="/@test/98 Tools/">

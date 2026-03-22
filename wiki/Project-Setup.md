@@ -30,7 +30,7 @@ If you are building the Theia shell in `src/Studio/Server`, also ensure the foll
 
 The current generated Theia stack in this repository was validated with that toolchain combination.
 
-When building from Visual Studio, the `StudioHost` project now triggers the Theia workspace build script before build so a fresh clone can prepare the shell as part of the normal solution build.
+When building from Visual Studio, the `StudioApiHost` project now triggers the Theia workspace build script before build so a fresh clone can prepare the shell as part of the normal solution build.
 
 ## Local orchestration entry point
 
@@ -108,6 +108,22 @@ Starts the advanced data-image build workflow:
 - `FileShareImageBuilder` as an explicit-start resource
 
 Use this only when creating a new data image from a remote File Share environment. See [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder).
+
+## Test estate conventions
+
+The repository now uses a project-aligned test layout under `test/`.
+
+- use the matching `<ProductionProjectName>.Tests` project when you are working on a single production project
+- use `test/UKHO.Search.IntegrationTests` for intentionally cross-project verification
+- use `test/UKHO.Search.Tests.Common` only for helper-only shared test infrastructure
+
+Shared fixtures now resolve from `test/sample-data`.
+
+- keep that folder as the canonical shared sample-data location
+- keep it flat unless there is a separately agreed repository-wide change
+- prefer the shared locator in `test/UKHO.Search.Tests.Common` when tests need to find those assets from output directories
+
+Some newer matching test projects currently contain placeholder smoke tests so that the intended ownership boundary is explicit even before project-specific tests are added.
 
 ## Getting the shared data image from ACR
 
@@ -218,7 +234,7 @@ For more detail, see [Tools: `UKHO Search Studio`](Tools-UKHO-Search-Studio).
 
 ### Automatic build from Visual Studio
 
-If you build the solution in Visual Studio, `src/Studio/StudioHost/StudioHost.csproj` runs `src/Studio/Server/build.ps1` before build.
+If you build the solution in Visual Studio, `src/Studio/StudioApiHost/StudioApiHost.csproj` runs `src/Studio/Server/build.ps1` before build.
 
 That integration is incremental, so the script is intended to run only when relevant Theia workspace inputs have changed or when the shell has not yet been built on a fresh clone.
 

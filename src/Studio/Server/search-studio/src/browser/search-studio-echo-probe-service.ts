@@ -38,7 +38,7 @@ export class SearchStudioEchoProbeService {
             });
 
             if (!response.ok) {
-                throw new Error(`Failed to load StudioHost echo probe: ${response.status} ${response.statusText}`);
+                throw new Error(`Failed to load StudioApiHost echo probe: ${response.status} ${response.statusText}`);
             }
 
             this.probeResult = await response.json() as SearchStudioEchoProbeResult;
@@ -46,7 +46,7 @@ export class SearchStudioEchoProbeService {
         } catch (error) {
             const errorMessage = error instanceof Error
                 ? error.message
-                : 'StudioHost echo probe request failed.';
+                : 'StudioApiHost echo probe request failed.';
 
             this.probeResult = {
                 transport: 'theia-backend-proxy',

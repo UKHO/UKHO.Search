@@ -108,7 +108,7 @@ namespace AppHost
                                                 .WaitFor(sqlServer)
                                                 .WaitFor(storageBlob);
 
-                    var studioApi = builder.AddProject<StudioHost>(ServiceNames.StudioApi)
+                    var studioApi = builder.AddProject<StudioApiHost>(ServiceNames.StudioApi)
                                                 .WithExternalHttpEndpoints()
                                                 .WithReference(sqlServer)
                                                 .WithReference(storageBlob)
@@ -117,7 +117,7 @@ namespace AppHost
 
                     var studioShell = builder.AddJavaScriptApp(ServiceNames.StudioShell, "../../Studio/Server", "start:browser")
                                              .WithBuildScript("build:browser")
-                                             .WithEnvironment("STUDIO_HOST_API_BASE_URL", studioApi.GetEndpoint("https"))
+                                             .WithEnvironment("STUDIO_API_HOST_API_BASE_URL", studioApi.GetEndpoint("https"))
                                              .WithArgs("--", "--hostname", "0.0.0.0", "--port", studioShellPort.ToString())
                                              .WithHttpEndpoint(targetPort: studioShellPort, port: studioShellPort, env: "PORT", isProxied: false);
 

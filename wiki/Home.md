@@ -55,6 +55,7 @@ flowchart LR
 - `src/Hosts/AppHost` — Aspire orchestration and `runmode` switching
 - `src/Hosts/IngestionServiceHost` — ingestion host and bootstrap/runtime wiring
 - `src/Hosts/QueryServiceHost` — query-side host
+- `src/Studio/StudioApiHost` — studio-facing minimal API host used by the Theia shell proof/integration path
 - `tools/FileShareEmulator` — local File Share emulator UI/API
 - `tools/RulesWorkbench` — rule inspection, evaluation, and checker tooling
 - `src/Studio/Server` — browser-hosted Eclipse Theia studio shell
@@ -65,6 +66,13 @@ flowchart LR
 - `src/UKHO.Search.Ingestion` — ingestion contracts and `CanonicalDocument`
 - `src/Providers/UKHO.Search.Ingestion.Providers.FileShare` — File Share provider processing graph and enrichers
 - `src/UKHO.Search.Infrastructure.Ingestion` — queue, blob dead-letter, bootstrap, and Elasticsearch integration
+
+### Test estate
+
+- `test/<ProductionProjectName>.Tests` — the default project-specific test layout used across domain, services, infrastructure, hosts, tools, and configuration projects
+- `test/UKHO.Search.Tests.Common` — shared helper-only test infrastructure, including sample-data resolution helpers
+- `test/UKHO.Search.IntegrationTests` — intentionally cross-project integration coverage at the outer test layer
+- `test/sample-data` — canonical shared fixture location for repository-wide test assets
 
 ### Local workflow at a glance
 

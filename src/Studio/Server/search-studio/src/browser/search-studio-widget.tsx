@@ -12,7 +12,7 @@ export class SearchStudioWidget extends ReactWidget {
 
     protected echoStatus: 'loading' | 'ready' | 'error' = 'loading';
     protected echoValue?: string;
-    protected echoStatusMessage = 'Loading StudioHost echo value...';
+    protected echoStatusMessage = 'Loading StudioApiHost echo value...';
     protected echoRequest?: Promise<void>;
     protected echoProbeResult?: SearchStudioEchoProbeResult;
     protected studioConfiguration?: SearchStudioFutureApiConfiguration;
@@ -49,19 +49,19 @@ export class SearchStudioWidget extends ReactWidget {
 
             if (!this.echoProbeResult.echoValue) {
                 this.echoStatus = 'error';
-                this.echoStatusMessage = this.echoProbeResult.error ?? 'StudioHost echo value could not be loaded.';
+                this.echoStatusMessage = this.echoProbeResult.error ?? 'StudioApiHost echo value could not be loaded.';
                 return;
             }
 
             this.echoValue = this.echoProbeResult.echoValue;
             this.echoStatus = 'ready';
-            this.echoStatusMessage = 'StudioHost echo value loaded.';
+            this.echoStatusMessage = 'StudioApiHost echo value loaded.';
         } catch (error) {
-            console.error('Failed to load the StudioHost echo value.', error);
+            console.error('Failed to load the StudioApiHost echo value.', error);
             this.echoStatus = 'error';
             this.echoStatusMessage = error instanceof Error
                 ? error.message
-                : 'StudioHost echo value could not be loaded.';
+                : 'StudioApiHost echo value could not be loaded.';
         } finally {
             this.update();
         }
@@ -98,7 +98,7 @@ export class SearchStudioWidget extends ReactWidget {
         if (this.echoStatus === 'ready') {
             return (
                 <div style={{ padding: '12px', border: '1px solid var(--theia-panel-border)', borderRadius: '4px' }}>
-                    <strong>StudioHost echo:</strong>
+                    <strong>StudioApiHost echo:</strong>
                     <div>{this.echoValue}</div>
                     {this.renderDebugInfo()}
                 </div>
@@ -108,7 +108,7 @@ export class SearchStudioWidget extends ReactWidget {
         if (this.echoStatus === 'error') {
             return (
                 <div style={{ padding: '12px', border: '1px solid var(--theia-errorForeground)', borderRadius: '4px' }}>
-                    <strong>StudioHost echo unavailable</strong>
+                    <strong>StudioApiHost echo unavailable</strong>
                     <div>{this.echoStatusMessage}</div>
                     {this.renderDebugInfo()}
                 </div>
@@ -117,7 +117,7 @@ export class SearchStudioWidget extends ReactWidget {
 
         return (
             <div style={{ padding: '12px', border: '1px solid var(--theia-panel-border)', borderRadius: '4px' }}>
-                <strong>StudioHost echo</strong>
+                <strong>StudioApiHost echo</strong>
                 <div>{this.echoStatusMessage}</div>
                 {this.renderDebugInfo()}
             </div>
@@ -135,10 +135,10 @@ export class SearchStudioWidget extends ReactWidget {
                 <div><strong>Probe transport:</strong> {probeResult?.transport ?? 'theia-backend-proxy'}</div>
                 <div><strong>Theia probe endpoint:</strong> {probeResult?.probeEndpointUrl ?? `${browserOrigin ?? ''}/search-studio/api/echo`}</div>
                 <div><strong>Theia config endpoint:</strong> {probeResult?.configurationEndpointUrl ?? `${browserOrigin ?? ''}/search-studio/api/configuration`}</div>
-                <div><strong>StudioHost env var:</strong> {probeResult?.environmentVariableName ?? configuration?.environmentVariableName ?? 'Unavailable'}</div>
-                <div><strong>Raw StudioHost env value:</strong> {probeResult?.rawStudioHostBaseUrl ?? configuration?.rawStudioHostBaseUrl ?? 'Unavailable'}</div>
-                <div><strong>Configured StudioHost base URL:</strong> {probeResult?.studioHostBaseUrl ?? configuration?.studioHostBaseUrl ?? 'Unavailable'}</div>
-                <div><strong>Attempted StudioHost echo URL:</strong> {probeResult?.studioHostEchoUrl ?? 'Unavailable'}</div>
+                <div><strong>StudioApiHost env var:</strong> {probeResult?.environmentVariableName ?? configuration?.environmentVariableName ?? 'Unavailable'}</div>
+                <div><strong>Raw StudioApiHost env value:</strong> {probeResult?.rawStudioApiHostBaseUrl ?? configuration?.rawStudioApiHostBaseUrl ?? 'Unavailable'}</div>
+                <div><strong>Configured StudioApiHost base URL:</strong> {probeResult?.studioApiHostBaseUrl ?? configuration?.studioApiHostBaseUrl ?? 'Unavailable'}</div>
+                <div><strong>Attempted StudioApiHost echo URL:</strong> {probeResult?.studioApiHostEchoUrl ?? 'Unavailable'}</div>
                 <div><strong>Probe HTTP status:</strong> {probeResult?.statusCode ? `${probeResult.statusCode} ${probeResult.statusText ?? ''}` : 'Unavailable'}</div>
                 {probeResult?.error ? <div><strong>Probe error:</strong> {probeResult.error}</div> : undefined}
             </div>

@@ -1,16 +1,16 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Shouldly;
-using StudioHost;
+using StudioApiHost;
 using Xunit;
 
 namespace UKHO.Search.Tests.Studio
 {
-    public class StudioHostEchoEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+    public class StudioApiHostEchoEndpointTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
 
-        public StudioHostEchoEndpointTests(WebApplicationFactory<Program> factory)
+        public StudioApiHostEchoEndpointTests(WebApplicationFactory<Program> factory)
         {
             _client = factory.CreateClient(new WebApplicationFactoryClientOptions
             {
@@ -19,7 +19,7 @@ namespace UKHO.Search.Tests.Studio
         }
 
         [Fact]
-        public async Task GetEcho_WhenRequested_ShouldReturnStudioHostMessage()
+        public async Task GetEcho_WhenRequested_ShouldReturnStudioApiHostMessage()
         {
             var response = await _client.GetAsync("/echo");
 
@@ -27,7 +27,7 @@ namespace UKHO.Search.Tests.Studio
 
             var content = await response.Content.ReadAsStringAsync();
 
-            content.ShouldBe("Hello from StudioHost echo.");
+            content.ShouldBe("Hello from StudioApiHost echo.");
         }
     }
 }

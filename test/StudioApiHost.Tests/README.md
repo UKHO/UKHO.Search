@@ -1,10 +1,10 @@
-# StudioHost.Tests
+# StudioApiHost.Tests
 
 Placeholder matching test project created by the test refactor audit.
 
 ## Scope
 
-- Placeholder smoke coverage for the matching production project until real tests are added.
+- Placeholder smoke coverage for the matching `src/Studio/StudioApiHost` production project until real tests are added.
 
 ## Execution
 

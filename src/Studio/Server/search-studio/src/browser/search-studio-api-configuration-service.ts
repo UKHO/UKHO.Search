@@ -1,6 +1,6 @@
 import { injectable } from '@theia/core/shared/inversify';
 import {
-    normalizeStudioHostBaseUrl,
+    normalizeStudioApiHostBaseUrl,
     SearchStudioFutureApiConfiguration,
     SearchStudioFutureApiConfigurationEndpointPath
 } from './search-studio-future-api-configuration';
@@ -38,8 +38,8 @@ export class SearchStudioApiConfigurationService {
         const configuration = await response.json() as SearchStudioFutureApiConfiguration;
 
         this.configuration = {
-            studioHostBaseUrl: normalizeStudioHostBaseUrl(configuration.studioHostBaseUrl),
-            rawStudioHostBaseUrl: configuration.rawStudioHostBaseUrl,
+            studioApiHostBaseUrl: normalizeStudioApiHostBaseUrl(configuration.studioApiHostBaseUrl),
+            rawStudioApiHostBaseUrl: configuration.rawStudioApiHostBaseUrl,
             environmentVariableName: configuration.environmentVariableName
         };
 

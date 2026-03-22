@@ -4,7 +4,7 @@ import * as express from 'express';
 import { BackendApplicationContribution } from '@theia/core/lib/node';
 import { injectable } from '@theia/core/shared/inversify';
 import {
-    normalizeStudioHostBaseUrl,
+    normalizeStudioApiHostBaseUrl,
     SearchStudioEchoProbeEndpointPath,
     SearchStudioEchoProbeResult,
     SearchStudioFutureApiConfiguration,
@@ -18,13 +18,13 @@ export class SearchStudioBackendApplicationContribution implements BackendApplic
 
     configure(app: express.Application): void {
         app.get(SearchStudioFutureApiConfigurationEndpointPath, (_request, response) => {
-            const rawStudioHostBaseUrl = process.env[SearchStudioFutureApiEnvironmentVariableName];
+            const rawStudioApiHostBaseUrl = process.env[SearchStudioFutureApiEnvironmentVariableName];
 
             // The browser cannot read the Node.js process environment directly.
-            // Expose only the normalized StudioHost base URL needed by the welcome proof.
+            // Expose only the normalized StudioApiHost base URL needed by the welcome proof.
             const configuration: SearchStudioFutureApiConfiguration = {
-                studioHostBaseUrl: normalizeStudioHostBaseUrl(rawStudioHostBaseUrl),
-                rawStudioHostBaseUrl,
+                studioApiHostBaseUrl: normalizeStudioApiHostBaseUrl(rawStudioApiHostBaseUrl),
+                rawStudioApiHostBaseUrl,
                 environmentVariableName: SearchStudioFutureApiEnvironmentVariableName
             };
 
@@ -32,51 +32,51 @@ export class SearchStudioBackendApplicationContribution implements BackendApplic
         });
 
         app.get(SearchStudioEchoProbeEndpointPath, async (request, response) => {
-            const rawStudioHostBaseUrl = process.env[SearchStudioFutureApiEnvironmentVariableName];
-            const studioHostBaseUrl = normalizeStudioHostBaseUrl(rawStudioHostBaseUrl);
+            const rawStudioApiHostBaseUrl = process.env[SearchStudioFutureApiEnvironmentVariableName];
+            const studioApiHostBaseUrl = normalizeStudioApiHostBaseUrl(rawStudioApiHostBaseUrl);
             const requestOrigin = `${request.protocol}://${request.get('host')}`;
             const probeResult: SearchStudioEchoProbeResult = {
                 transport: 'theia-backend-proxy',
                 configurationEndpointUrl: `${requestOrigin}${SearchStudioFutureApiConfigurationEndpointPath}`,
                 probeEndpointUrl: `${requestOrigin}${SearchStudioEchoProbeEndpointPath}`,
-                studioHostBaseUrl,
-                rawStudioHostBaseUrl,
+                studioApiHostBaseUrl,
+                rawStudioApiHostBaseUrl,
                 environmentVariableName: SearchStudioFutureApiEnvironmentVariableName,
-                studioHostEchoUrl: studioHostBaseUrl
-                    ? new URL('/echo', `${studioHostBaseUrl}/`).toString()
+                studioApiHostEchoUrl: studioApiHostBaseUrl
+                    ? new URL('/echo', `${studioApiHostBaseUrl}/`).toString()
                     : undefined
             };
 
-            if (!probeResult.studioHostBaseUrl || !probeResult.studioHostEchoUrl) {
+            if (!probeResult.studioApiHostBaseUrl || !probeResult.studioApiHostEchoUrl) {
                 response.json({
                     ...probeResult,
-                    error: 'StudioHost base URL is not configured for the studio shell.'
+                    error: 'StudioApiHost base URL is not configured for the studio shell.'
                 });
                 return;
             }
 
             try {
-                console.info('Running StudioHost echo probe.', probeResult);
+                console.info('Running StudioApiHost echo probe.', probeResult);
 
-                const studioHostResponse = await this.getStudioHostEchoResponse(
-                    probeResult.studioHostEchoUrl,
+                const studioApiHostResponse = await this.getStudioApiHostEchoResponse(
+                    probeResult.studioApiHostEchoUrl,
                     SearchStudioBackendRequestTimeoutMilliseconds);
 
                 response.json({
                     ...probeResult,
-                    statusCode: studioHostResponse.status,
-                    statusText: studioHostResponse.statusText,
-                    echoValue: studioHostResponse.ok ? studioHostResponse.body : undefined,
-                    error: studioHostResponse.ok
+                    statusCode: studioApiHostResponse.status,
+                    statusText: studioApiHostResponse.statusText,
+                    echoValue: studioApiHostResponse.ok ? studioApiHostResponse.body : undefined,
+                    error: studioApiHostResponse.ok
                         ? undefined
-                        : `StudioHost echo request failed: ${studioHostResponse.status} ${studioHostResponse.statusText}${studioHostResponse.body ? ` - ${studioHostResponse.body}` : ''}`
+                        : `StudioApiHost echo request failed: ${studioApiHostResponse.status} ${studioApiHostResponse.statusText}${studioApiHostResponse.body ? ` - ${studioApiHostResponse.body}` : ''}`
                 });
             } catch (error) {
                 const errorMessage = error instanceof Error
                     ? error.message
-                    : 'StudioHost echo request failed.';
+                    : 'StudioApiHost echo request failed.';
 
-                console.error('Failed to run the StudioHost echo probe.', error);
+                console.error('Failed to run the StudioApiHost echo probe.', error);
 
                 response.json({
                     ...probeResult,
@@ -86,12 +86,12 @@ export class SearchStudioBackendApplicationContribution implements BackendApplic
         });
     }
 
-    protected async getStudioHostEchoResponse(
-        studioHostEchoUrl: string,
+    protected async getStudioApiHostEchoResponse(
+        studioApiHostEchoUrl: string,
         timeoutMilliseconds: number
     ): Promise<{ ok: boolean; status: number; statusText: string; body: string; }>
     {
-        const requestUrl = new URL(studioHostEchoUrl);
+        const requestUrl = new URL(studioApiHostEchoUrl);
         const isHttpsRequest = requestUrl.protocol === 'https:';
         const requestFactory = isHttpsRequest ? https.request : http.request;
 
@@ -125,7 +125,7 @@ export class SearchStudioBackendApplicationContribution implements BackendApplic
             });
 
             request.setTimeout(timeoutMilliseconds, () => {
-                request.destroy(new Error(`StudioHost echo request timed out after ${timeoutMilliseconds}ms.`));
+                request.destroy(new Error(`StudioApiHost echo request timed out after ${timeoutMilliseconds}ms.`));
             });
 
             request.on('error', reject);

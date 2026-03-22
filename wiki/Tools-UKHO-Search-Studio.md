@@ -14,8 +14,8 @@ It currently provides:
 - a native Theia extension named `search-studio`
 - a lightweight welcome panel in the standard Theia workbench
 - a simple greeting action proving the custom extension wiring is active
-- runtime configuration for the local `StudioHost` API base URL
-- a temporary welcome-page proof that calls `StudioHost` `GET /echo` and displays the returned value
+- runtime configuration for the local `StudioApiHost` API base URL
+- a temporary welcome-page proof that calls `StudioApiHost` `GET /echo` and displays the returned value
 
 This work package does **not** migrate existing repository tooling into the shell yet.
 
@@ -51,7 +51,7 @@ The repository now includes a Theia build script at:
 
 - `src/Studio/Server/build.ps1`
 
-`src/Studio/StudioHost/StudioHost.csproj` invokes that script before build.
+`src/Studio/StudioApiHost/StudioApiHost.csproj` invokes that script before build.
 
 This was chosen so that, on a fresh clone, building the local Aspire solution in Visual Studio also prepares the Theia shell before the studio API host is built.
 
@@ -160,13 +160,13 @@ The shell is designed to run as part of the wider local Aspire stack.
 5. In the Aspire dashboard, verify the `tools-studio-shell` resource is healthy
 6. Open the shell with `http://localhost:3000`
 
-`StudioHost` remains a separate API host, but the shell now consumes a temporary runtime configuration path so the welcome page can prove connectivity.
+`StudioApiHost` remains a separate API host, but the shell now consumes a temporary runtime configuration path so the welcome page can prove connectivity.
 
-## Temporary `StudioHost` proof integration
+## Temporary `StudioApiHost` proof integration
 
 For work package `058-studio-config`, the shell now proves the local API callback mechanism end to end.
 
-This section describes the implemented mechanism in detail, including why it uses a Theia backend proxy and how Aspire, Theia, and `StudioHost` each participate.
+This section describes the implemented mechanism in detail, including why it uses a Theia backend proxy and how Aspire, Theia, and `StudioApiHost` each participate.
 
 ### Why this mechanism exists
 
@@ -174,7 +174,7 @@ The studio shell runs in a browser-hosted Theia application on:
 
 - `http://localhost:3000`
 
-`StudioHost` is orchestrated separately by Aspire and exposes developer-facing endpoints that can vary by machine and session.
+`StudioApiHost` is orchestrated separately by Aspire and exposes developer-facing endpoints that can vary by machine and session.
 
 The shell therefore must **not** hard-code:
 
@@ -183,13 +183,13 @@ The shell therefore must **not** hard-code:
 - protocol (`http` / `https`)
 - launch-profile URLs
 
-Instead, Aspire remains the source of truth for the effective `StudioHost` endpoint and passes that value into the shell at startup.
+Instead, Aspire remains the source of truth for the effective `StudioApiHost` endpoint and passes that value into the shell at startup.
 
 ### Runtime configuration bridge
 
-`AppHost` resolves the `StudioHost` **HTTPS** endpoint and passes it into the Theia JavaScript application as the environment variable:
+`AppHost` resolves the `StudioApiHost` **HTTPS** endpoint and passes it into the Theia JavaScript application as the environment variable:
 
-- `STUDIO_HOST_API_BASE_URL`
+- `STUDIO_API_HOST_API_BASE_URL`
 
 The `search-studio` backend contribution exposes that runtime value to the browser through:
 
@@ -197,7 +197,7 @@ The `search-studio` backend contribution exposes that runtime value to the brows
 
 That configuration payload currently includes:
 
-- the normalized `studioHostBaseUrl`
+- the normalized `studioApiHostBaseUrl`
 - the raw environment value received by the Theia backend
 - the environment variable name used for the handoff
 
@@ -214,16 +214,16 @@ The browser does **not** read Node.js process environment directly.
 The current proof flow is:
 
 1. `AppHost` starts in `runmode=services`
-2. Aspire allocates the effective `StudioHost` endpoints
-3. `AppHost` injects `STUDIO_HOST_API_BASE_URL` into the Theia JavaScript app using the resolved `StudioHost` **HTTPS** endpoint
+2. Aspire allocates the effective `StudioApiHost` endpoints
+3. `AppHost` injects `STUDIO_API_HOST_API_BASE_URL` into the Theia JavaScript app using the resolved `StudioApiHost` **HTTPS** endpoint
 4. The Theia backend starts on `http://localhost:3000`
 5. The browser loads the welcome widget
 6. The welcome widget calls the Theia same-origin configuration endpoint:
    - `/search-studio/api/configuration`
 7. The welcome widget calls the Theia same-origin probe endpoint:
    - `/search-studio/api/echo`
-8. The Theia backend probe reads the configured `StudioHost` URL from process environment
-9. The Theia backend probe performs the server-side request to `StudioHost` `GET /echo`
+8. The Theia backend probe reads the configured `StudioApiHost` URL from process environment
+9. The Theia backend probe performs the server-side request to `StudioApiHost` `GET /echo`
 10. The probe returns structured diagnostics plus the echo result to the browser
 11. The welcome widget renders:
    - success state with the returned echo value, or
@@ -231,19 +231,19 @@ The current proof flow is:
 
 ### Why the welcome page uses a Theia backend probe instead of a direct browser call
 
-The first implementation attempted to have the browser call `StudioHost` directly.
+The first implementation attempted to have the browser call `StudioApiHost` directly.
 
 That approach is fragile in local development because it depends on:
 
 - browser CORS rules
 - certificate trust for the browser-facing shell
-- certificate trust for the browser-to-`StudioHost` HTTPS call
+- certificate trust for the browser-to-`StudioApiHost` HTTPS call
 - protocol mismatches between shell and API endpoints
 
 The current implementation uses a **same-origin Theia backend proxy/probe** instead:
 
 - browser -> `http://localhost:3000/search-studio/api/echo`
-- Theia backend -> `https://localhost:<studiohost-port>/echo`
+- Theia backend -> `https://localhost:<studioapihost-port>/echo`
 
 Advantages of this approach:
 
@@ -264,11 +264,11 @@ It exposes two local endpoints:
 
 1. configuration endpoint
    - `/search-studio/api/configuration`
-   - returns the configured `StudioHost` base URL and related environment diagnostics
+   - returns the configured `StudioApiHost` base URL and related environment diagnostics
 
 2. echo probe endpoint
    - `/search-studio/api/echo`
-   - performs the server-side request to `StudioHost`
+   - performs the server-side request to `StudioApiHost`
    - returns:
      - configured base URL
      - raw environment value
@@ -281,21 +281,21 @@ The probe uses Node.js `http` / `https` request handling rather than browser `fe
 
 ### Temporary proof endpoint
 
-`StudioHost` now exposes:
+`StudioApiHost` now exposes:
 
 - `GET /echo`
 
 Current temporary response:
 
-- `Hello from StudioHost echo.`
+- `Hello from StudioApiHost echo.`
 
 This endpoint is only a lightweight proof mechanism and is intended to be replaced by real studio APIs in later work.
 
 ### HTTPS selection
 
-For `StudioHost` integration, the configured base URL should prefer the Aspire-resolved **HTTPS** endpoint.
+For `StudioApiHost` integration, the configured base URL should prefer the Aspire-resolved **HTTPS** endpoint.
 
-In practice this means the environment handoff uses the HTTPS `StudioHost` address, for example:
+In practice this means the environment handoff uses the HTTPS `StudioApiHost` address, for example:
 
 - `https://localhost:7073`
 
@@ -311,9 +311,9 @@ The shell itself still runs on plain HTTP:
 
 - `http://localhost:3000`
 
-`StudioHost` is probed over HTTPS.
+`StudioApiHost` is probed over HTTPS.
 
-The current `StudioHost` CORS policy still allows the local shell origin:
+The current `StudioApiHost` CORS policy still allows the local shell origin:
 
 - `http://localhost:3000`
 
@@ -329,10 +329,10 @@ Current fields include:
 - `Probe transport`
 - `Theia probe endpoint`
 - `Theia config endpoint`
-- `StudioHost env var`
-- `Raw StudioHost env value`
-- `Configured StudioHost base URL`
-- `Attempted StudioHost echo URL`
+- `StudioApiHost env var`
+- `Raw StudioApiHost env value`
+- `Configured StudioApiHost base URL`
+- `Attempted StudioApiHost echo URL`
 - `Probe HTTP status`
 - `Probe error`
 
@@ -343,16 +343,16 @@ This information is intended for local diagnosis and should make it obvious whet
 - wrong host or port
 - backend timeout
 - TLS / certificate issues
-- `StudioHost` not responding on the expected endpoint
+- `StudioApiHost` not responding on the expected endpoint
 
 ### Main code locations for the mechanism
 
 The current proof path is spread across the following files:
 
 - `src/Hosts/AppHost/AppHost.cs`
-  - resolves the Aspire `StudioHost` endpoint
-  - passes it into the Theia JavaScript app as `STUDIO_HOST_API_BASE_URL`
-- `src/Studio/StudioHost/Program.cs`
+  - resolves the Aspire `StudioApiHost` endpoint
+  - passes it into the Theia JavaScript app as `STUDIO_API_HOST_API_BASE_URL`
+- `src/Studio/StudioApiHost/Program.cs`
   - exposes `GET /echo`
 - `src/Studio/Server/search-studio/src/node/search-studio-backend-application-contribution.ts`
   - exposes the Theia config and probe endpoints
@@ -363,7 +363,7 @@ The current proof path is spread across the following files:
 - `src/Studio/Server/search-studio/src/browser/search-studio-widget.tsx`
   - renders the echo result and diagnostics
 
-If you build the solution in Visual Studio first, the Theia shell should already have been prepared by the `StudioHost` pre-build target.
+If you build the solution in Visual Studio first, the Theia shell should already have been prepared by the `StudioApiHost` pre-build target.
 
 ### About the installer resource
 
@@ -400,7 +400,7 @@ If native dependency restore fails, retry from a clean PowerShell session with t
 The initial shell intentionally remains lightweight:
 
 - no bundled VS Code extensions
-- no active `StudioHost` API integration
+- no active `StudioApiHost` API integration beyond the temporary proof path
 - no migrated `RulesWorkbench`, `FileShareEmulator`, or other tooling workflows
 
 Later work packages can expand the shell into a fuller studio experience.
@@ -410,10 +410,10 @@ Later work packages can expand the shell into a fuller studio experience.
 1. Run `yarn build:browser` from `src/Studio/Server`
 2. Run `dotnet build src/Hosts/AppHost/AppHost.csproj`
 3. Start `AppHost` in `runmode=services`
-4. In the Aspire dashboard, prefer the `StudioHost` **HTTPS** URL
-5. Verify `StudioHost` responds on `/echo` via HTTPS
+4. In the Aspire dashboard, prefer the `StudioApiHost` **HTTPS** URL
+5. Verify `StudioApiHost` responds on `/echo` via HTTPS
 6. Open `http://localhost:3000`
-7. Confirm the welcome page shows the `StudioHost echo` value
+7. Confirm the welcome page shows the `StudioApiHost echo` value
 8. If the proof fails, inspect the welcome-page debug panel for:
    - raw environment value
    - configured base URL

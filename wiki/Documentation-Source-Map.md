@@ -184,6 +184,15 @@ Developer wiki creation and consolidation of the historical `docs/` corpus into 
 ### `docs/053-test-coverage-gaps`
 Repository-wide test coverage baseline assessment and identification of important subsystem and behavior coverage gaps.
 
+### `docs/059-test-refactor`
+Implementation planning and delivery tracking for the project-aligned test-estate refactor, including shared sample-data consolidation, matching test-project creation, provider/infrastructure/integration ownership cleanup, and the final solution-wide test audit.
+
+### `docs/058-studio-config`
+Historical design package for propagating the studio API endpoint into the Theia shell. This package predates the `StudioApiHost` rename and therefore documents the earlier `StudioHost` project identity.
+
+### `docs/060-studio-host-rename`
+Current work package for renaming the studio API host and its matching test project from `StudioHost` / `StudioHost.Tests` to `StudioApiHost` / `StudioApiHost.Tests`, including Theia contract and wiki alignment.
+
 ### Top-level operational docs
 
 | Path | Topic |

@@ -1,6 +1,6 @@
 # UKHO.Search.IntegrationTests
 
-Cross-project integration tests for the ingestion test refactor.
+Cross-project integration tests for repository behaviors that intentionally span multiple production projects.
 
 ## Scope
 
@@ -9,4 +9,4 @@ Cross-project integration tests for the ingestion test refactor.
 
 ## Execution
 
-Run this project when verifying cross-project integration behavior across ingestion, provider, and infrastructure components.
+Run this project when verifying cross-project integration behavior across ingestion, provider, infrastructure, and related outer-layer interactions.

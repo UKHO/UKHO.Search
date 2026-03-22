@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace StudioHost.Tests
+namespace StudioApiHost.Tests
 {
     public sealed class PlaceholderSmokeTests
     {
