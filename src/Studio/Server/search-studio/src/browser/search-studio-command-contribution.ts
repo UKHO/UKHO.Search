@@ -3,6 +3,7 @@ import { CommandContribution, CommandRegistry, MessageService } from '@theia/cor
 import { SearchStudioProviderCatalogService } from './api/search-studio-provider-catalog-service';
 import { SearchStudioRulesCatalogService } from './api/search-studio-rules-catalog-service';
 import { SearchStudioDocumentService } from './common/search-studio-document-service';
+import { SearchStudioHomeService } from './home/search-studio-home-service';
 import { SearchStudioOutputService } from './common/search-studio-output-service';
 import { SearchStudioProviderSelectionService } from './common/search-studio-provider-selection-service';
 import { resolvePreferredProvider } from './common/search-studio-provider-resolution';
@@ -16,7 +17,8 @@ import {
     SearchStudioOpenRulesOverviewCommand,
     SearchStudioRefreshProvidersCommand,
     SearchStudioRefreshRulesCommand,
-    SearchStudioResetIngestionStatusCommand
+    SearchStudioResetIngestionStatusCommand,
+    SearchStudioShowHomeCommand
 } from './search-studio-constants';
 import { SearchStudioApiProviderDescriptor } from './api/search-studio-api-types';
 import { SearchStudioIngestionNodeKind } from './ingestion/search-studio-ingestion-types';
@@ -43,7 +45,16 @@ export class SearchStudioCommandContribution implements CommandContribution {
     @inject(SearchStudioDocumentService)
     protected readonly _documentService!: SearchStudioDocumentService;
 
+    @inject(SearchStudioHomeService)
+    protected readonly _homeService!: SearchStudioHomeService;
+
     registerCommands(registry: CommandRegistry): void {
+        registry.registerCommand(SearchStudioShowHomeCommand, {
+            execute: async () => {
+                await this._homeService.openHome();
+            }
+        });
+
         registry.registerCommand(SearchStudioRefreshProvidersCommand, {
             execute: async () => {
                 await this._providerCatalogService.refresh();

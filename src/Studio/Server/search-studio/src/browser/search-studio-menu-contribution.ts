@@ -13,7 +13,8 @@ import {
     SearchStudioIngestionRootContextMenuPath,
     SearchStudioIngestionModeContextMenuPath,
     SearchStudioRefreshProvidersCommand,
-    SearchStudioRefreshRulesCommand
+    SearchStudioRefreshRulesCommand,
+    SearchStudioShowHomeCommand
 } from './search-studio-constants';
 
 @injectable()
@@ -23,6 +24,11 @@ export class SearchStudioMenuContribution implements MenuContribution {
         menus.registerMenuAction(CommonMenus.FILE_NEW, {
             commandId: SearchStudioNewRuleCommand.id,
             label: 'New Rule'
+        });
+
+        menus.registerMenuAction(CommonMenus.VIEW, {
+            commandId: SearchStudioShowHomeCommand.id,
+            label: 'Home'
         });
 
         menus.registerMenuAction(CommonMenus.VIEW, {

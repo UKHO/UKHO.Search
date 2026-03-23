@@ -22,7 +22,7 @@
   "scripts": {
     "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib",
-    "build": "node ../node_modules/typescript/bin/tsc",
+    "build": "node ../node_modules/typescript/bin/tsc && node ./scripts/copy-assets.js",
     "watch": "node ../node_modules/typescript/bin/tsc -w",
     "test": "yarn run build && node --test test"
   },

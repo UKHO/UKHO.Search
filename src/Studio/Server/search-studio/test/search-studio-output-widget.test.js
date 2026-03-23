@@ -195,7 +195,7 @@ test('SearchStudioOutputWidget initializes a read-only terminal host and renders
     assert.equal(terminalInstances[0].options.fontSize, 14);
     assert.equal(terminalInstances[0].options.theme.background, 'rgb(37, 37, 38)');
     assert.equal(terminalInstances[0].options.theme.foreground, 'rgb(255, 255, 255)');
-    assert.equal(terminalInstances[0].writes[0], '10:03:37 \u001b[38;2;169;199;255mINFO\u001b[39m providers Loaded providers.\r\n');
+    assert.equal(terminalInstances[0].writes[0], '10:03:37 \u001b[38;2;169;199;255mINFO\u001b[39m [providers] Loaded providers.\r\n');
     assert.deepEqual(terminalInstances[0].lastRefresh, { start: 0, end: 0 });
     assert.equal(terminalInstances[0].scrollToBottomCount, 1);
     assert.equal(widget._hasPendingRevealLatest, false);
@@ -266,8 +266,8 @@ test('SearchStudioOutputWidget clear followed by append writes only the new outp
     widget.revealLatestIfNeeded();
 
     assert.deepEqual(terminalInstances[0].writes, [
-        '10:03:37 \u001b[38;2;169;199;255mINFO\u001b[39m providers Loaded providers.\r\n',
-        '10:03:38 \u001b[38;2;255;179;186mERROR\u001b[39m rules Rule validation failed.\r\n'
+        '10:03:37 \u001b[38;2;169;199;255mINFO\u001b[39m [providers] Loaded providers.\r\n',
+        '10:03:38 \u001b[38;2;255;179;186mERROR\u001b[39m [rules] Rule validation failed.\r\n'
     ]);
     assert.equal(terminalInstances[0].resetCount, 3);
     assert.equal(terminalInstances[0].scrollToBottomCount, 2);

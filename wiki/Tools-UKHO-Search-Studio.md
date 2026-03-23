@@ -14,8 +14,11 @@ See also:
 
 It currently provides:
 
+- a default `Home` tab document that opens on Studio startup and can be reopened from the Theia `View` menu
+- task-focused `Home` jump points for `Start ingestion`, `Manage rules`, and `Browse providers`, each reusing the normal Studio destination-opening behavior for the current or first available provider
 - a branded Theia shell with dedicated `Providers`, `Rules`, and `Ingestion` activity-bar work areas
 - a native Theia extension named `search-studio`
+- a reduced-size UKHO logo rendered from a copied runtime asset within the `search-studio` package rather than from the repository `docs/` folder
 - provider-backed native Theia navigation trees for `Providers` and `Ingestion` using live `StudioApiHost` `GET /providers` data
 - first-root-only default expansion in `Providers`, `Rules`, and `Ingestion` so the first visible provider root opens automatically while other top-level roots remain collapsed
 - placeholder editor surfaces for provider overview, queue inspection, and dead-letter inspection
@@ -172,6 +175,7 @@ This is particularly important for `Studio Output` work because stale browser bu
 - `src/Studio/Server/browser-app/package.json` — browser application build/start scripts
 - `src/Studio/Server/search-studio/package.json` — native Theia extension package metadata and scripts
 - `src/Studio/Server/search-studio/src/browser/` — Studio shell browser-side services, views, trees, commands, and document surfaces
+- `src/Studio/Server/search-studio/src/browser/assets/` — source assets copied into the extension build output for runtime use, including the `Home` logo
 
 ## Workspace structure
 

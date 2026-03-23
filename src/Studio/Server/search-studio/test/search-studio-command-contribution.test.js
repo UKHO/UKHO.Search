@@ -32,8 +32,50 @@ const {
     SearchStudioCommandContribution
 } = require('../lib/browser/search-studio-command-contribution.js');
 const {
-    SearchStudioCopyAllOutputCommand
+    SearchStudioCopyAllOutputCommand,
+    SearchStudioShowHomeCommand
 } = require('../lib/browser/search-studio-constants.js');
+
+test('SearchStudioCommandContribution opens Home from the registered Show Home command', async () => {
+    const contribution = new SearchStudioCommandContribution();
+    const registeredCommands = new Map();
+    let openHomeCalls = 0;
+
+    contribution._messageService = {
+        info() {},
+        warn() {},
+        error() {}
+    };
+    contribution._outputService = { entries: [] };
+    contribution._providerCatalogService = {
+        refresh: async () => {},
+        ensureLoaded: async () => {},
+        snapshot: { providers: [] }
+    };
+    contribution._rulesCatalogService = {
+        refresh: async () => {}
+    };
+    contribution._providerSelectionService = {
+        selectedProviderName: undefined,
+        selectProvider() {}
+    };
+    contribution._documentService = {};
+    contribution._homeService = {
+        async openHome() {
+            openHomeCalls += 1;
+        }
+    };
+
+    contribution.registerCommands({
+        registerCommand: (command, handler) => {
+            registeredCommands.set(command.id, handler);
+        }
+    });
+
+    await registeredCommands.get(SearchStudioShowHomeCommand.id).execute();
+
+    assert.equal(openHomeCalls, 1);
+});
 
 test('SearchStudioCommandContribution copies the full merged output stream to the clipboard', async () => {
     const originalNavigator = global.navigator;
@@ -87,6 +129,9 @@ test('SearchStudioCommandContribution copies the full merged output stream to th
             selectProvider() {}
         };
         contribution._documentService = {};
+        contribution._homeService = {
+            async openHome() {}
+        };
 
         contribution.registerCommands({
             registerCommand: (command, handler) => {
@@ -97,7 +142,7 @@ test('SearchStudioCommandContribution copies the full merged output stream to th
         await registeredCommands.get(SearchStudioCopyAllOutputCommand.id).execute();
 
         assert.deepEqual(clipboardWrites, [
-            '10:03:37 INFO providers Loaded provider metadata.\r\n10:03:38 ERROR rules Rule validation failed.'
+            '10:03:37 INFO [providers] Loaded provider metadata.\r\n10:03:38 ERROR [rules] Rule validation failed.'
         ]);
         assert.deepEqual(infoMessages, ['Studio output copied to the clipboard.']);
     } finally {
@@ -133,6 +178,9 @@ test('SearchStudioCommandContribution warns when clipboard copy is unavailable',
             selectProvider() {}
         };
         contribution._documentService = {};
+        contribution._homeService = {
+            async openHome() {}
+        };
 
         contribution.registerCommands({
             registerCommand: (command, handler) => {

@@ -15,6 +15,9 @@ import { SearchStudioDocumentWidget } from './common/search-studio-document-widg
 import { SearchStudioOutputService } from './common/search-studio-output-service';
 import { SearchStudioProviderSelectionService } from './common/search-studio-provider-selection-service';
 import { SearchStudioDocumentOptions } from './common/search-studio-shell-types';
+import { SearchStudioHomeService } from './home/search-studio-home-service';
+import { SearchStudioHomeNavigationService } from './home/search-studio-home-navigation-service';
+import { SearchStudioHomeWidget } from './home/search-studio-home-widget';
 import { SearchStudioIngestionToolbarContribution } from './ingestion/search-studio-ingestion-toolbar-contribution';
 import { SearchStudioIngestionTreeModel } from './ingestion/search-studio-ingestion-tree-model';
 import { SearchStudioIngestionViewContainerFactory } from './ingestion/search-studio-ingestion-view-container-factory';
@@ -35,6 +38,8 @@ import { SearchStudioCommandContribution } from './search-studio-command-contrib
 import { SearchStudioShellLayoutContribution } from './search-studio-shell-layout-contribution';
 import {
     SearchStudioDocumentWidgetFactoryId,
+    SearchStudioHomeWidgetFactoryId,
+    SearchStudioHomeWidgetId,
     SearchStudioIngestionWidgetId,
     SearchStudioOutputWidgetId,
     SearchStudioProvidersContextMenuPath,
@@ -56,7 +61,10 @@ export default new ContainerModule(bind => {
     bind(SearchStudioProviderSelectionService).toSelf().inSingletonScope();
     bind(SearchStudioOutputService).toSelf().inSingletonScope();
     bind(SearchStudioDocumentService).toSelf().inSingletonScope();
+    bind(SearchStudioHomeService).toSelf().inSingletonScope();
+    bind(SearchStudioHomeNavigationService).toSelf().inSingletonScope();
     bind(SearchStudioProviderTreeModel).toSelf().inSingletonScope();
+    bind(SearchStudioHomeWidget).toSelf();
     bind(SearchStudioWidget).toSelf();
     bind(SearchStudioRulesTreeModel).toSelf().inSingletonScope();
     bind(SearchStudioRulesWidget).toSelf();
@@ -124,6 +132,14 @@ export default new ContainerModule(bind => {
     bind(WidgetFactory).toDynamicValue(context => ({
         id: SearchStudioOutputWidgetId,
         createWidget: () => context.container.get<SearchStudioOutputWidget>(SearchStudioOutputWidget)
+    }));
+    bind(WidgetFactory).toDynamicValue(context => ({
+        id: SearchStudioHomeWidgetFactoryId,
+        createWidget: () => {
+            const widget = context.container.get<SearchStudioHomeWidget>(SearchStudioHomeWidget);
+            widget.id = SearchStudioHomeWidgetId;
+            return widget;
+        }
     }));
     bind(WidgetFactory).toDynamicValue(context => ({
         id: SearchStudioDocumentWidgetFactoryId,

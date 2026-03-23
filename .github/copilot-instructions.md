@@ -97,6 +97,7 @@ Rules:
 - On a fresh clone building the Aspire solution in Visual Studio, ensure the shell builds before it runs, and the shell build should be incremental so it only runs when inputs change.
 - Prefer using HTTPS endpoints instead of HTTP whenever possible for StudioHost/Theia integration.
 - For Theia Studio specification work, provider root nodes should open an operational dashboard rather than acting as purely structural nodes. Additionally, ensure that the editor opening behavior in the first skeleton follows the normal default Theia interaction model rather than a custom one.
+- After completing a work item for Theia Studio shell work, always run `yarn --cwd .\src\Studio\Server build:browser` to ensure the user does not run stale frontend code.
 
 ## Provider Model Guidelines
 - Use `UKHO.Search.ProviderModel` as the mandatory shared home for generic provider registration and metadata concerns, located at `src/UKHO.Search.ProviderModel`. Ensure specifications reflect required refactoring and test migration.

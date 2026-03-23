@@ -45,7 +45,7 @@ test('formatOutputEntryText preserves merged-stream line ordering and source met
             source: 'providers',
             message: 'Loaded provider metadata.'
         }),
-        '10:03:37 INFO providers Loaded provider metadata.'
+        '10:03:37 INFO [providers] Loaded provider metadata.'
     );
 });
 
@@ -58,7 +58,7 @@ test('formatOutputEntryTextForTerminal styles the severity token while preservin
             source: 'rules',
             message: 'Rule validation failed.'
         }),
-        '10:03:37 \u001b[38;2;255;179;186mERROR\u001b[39m rules Rule validation failed.'
+        '10:03:37 \u001b[38;2;255;179;186mERROR\u001b[39m [rules] Rule validation failed.'
     );
 });
 
@@ -80,7 +80,7 @@ test('serializeOutputEntriesForTerminal preserves ordering with styled severity 
                 message: 'Rule validation failed.'
             }
         ]),
-        '10:03:37 \u001b[38;2;169;199;255mINFO\u001b[39m providers Loaded provider metadata.\r\n10:03:38 \u001b[38;2;255;179;186mERROR\u001b[39m rules Rule validation failed.'
+        '10:03:37 \u001b[38;2;169;199;255mINFO\u001b[39m [providers] Loaded provider metadata.\r\n10:03:38 \u001b[38;2;255;179;186mERROR\u001b[39m [rules] Rule validation failed.'
     );
 });
 
@@ -102,7 +102,7 @@ test('serializeOutputEntries preserves chronological terminal line serialization
                 message: 'Rule validation failed.'
             }
         ]),
-        '10:03:37 INFO providers Loaded provider metadata.\r\n10:03:38 ERROR rules Rule validation failed.'
+        '10:03:37 INFO [providers] Loaded provider metadata.\r\n10:03:38 ERROR [rules] Rule validation failed.'
     );
 });
 

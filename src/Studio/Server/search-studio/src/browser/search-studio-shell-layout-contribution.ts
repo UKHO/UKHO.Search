@@ -1,5 +1,6 @@
 import { FrontendApplication, FrontendApplicationContribution } from '@theia/core/lib/browser';
 import { inject, injectable } from '@theia/core/shared/inversify';
+import { SearchStudioHomeService } from './home/search-studio-home-service';
 import { SearchStudioIngestionViewContribution } from './ingestion/search-studio-ingestion-view-contribution';
 import { SearchStudioOutputViewContribution } from './panel/search-studio-output-view-contribution';
 import { SearchStudioRulesViewContribution } from './rules/search-studio-rules-view-contribution';
@@ -22,6 +23,9 @@ export class SearchStudioShellLayoutContribution implements FrontendApplicationC
     @inject(SearchStudioOutputViewContribution)
     protected readonly _outputViewContribution!: SearchStudioOutputViewContribution;
 
+    @inject(SearchStudioHomeService)
+    protected readonly _homeService!: SearchStudioHomeService;
+
     async initializeLayout(_app: FrontendApplication): Promise<void> {
         await this.ensureStudioShellViews();
     }
@@ -40,6 +44,6 @@ export class SearchStudioShellLayoutContribution implements FrontendApplicationC
         await this._rulesViewContribution.openView({ activate: false, reveal: true });
         await this._ingestionViewContribution.openView({ activate: false, reveal: true });
         await this._outputViewContribution.openView({ activate: false, reveal: true });
-        await this._providersViewContribution.openView({ activate: true, reveal: true });
+        await this._homeService.openHome();
     }
 }

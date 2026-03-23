@@ -24,12 +24,23 @@ export const SearchStudioOutputWidgetLabel = 'Studio Output';
 export const SearchStudioOutputWidgetIconClass = 'codicon codicon-output';
 export const SearchStudioOutputToggleCommandId = 'search-studio.toggleOutput';
 
+export const SearchStudioHomeWidgetId = 'search-studio.home';
+export const SearchStudioHomeWidgetFactoryId = 'search-studio.home';
+export const SearchStudioHomeWidgetLabel = 'Home';
+export const SearchStudioHomeWidgetIconClass = 'codicon codicon-home';
+
 export const SearchStudioDocumentWidgetFactoryId = 'search-studio.document';
 export const SearchStudioProviderOverviewDocumentIconClass = 'codicon codicon-dashboard';
 export const SearchStudioProviderQueueDocumentIconClass = 'codicon codicon-list-unordered';
 export const SearchStudioProviderDeadLettersDocumentIconClass = 'codicon codicon-archive';
 export const SearchStudioRulesDocumentIconClass = 'codicon codicon-symbol-field';
 export const SearchStudioIngestionDocumentIconClass = 'codicon codicon-cloud-upload';
+
+export const SearchStudioShowHomeCommand: Command = {
+    id: 'search-studio.home.show',
+    category: 'UKHO Search Studio',
+    label: 'Home'
+};
 
 export const SearchStudioRefreshProvidersCommand: Command = {
     id: 'search-studio.providers.refresh',

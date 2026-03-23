@@ -40,7 +40,7 @@ export function formatOutputEntryText(entry: SearchStudioOutputEntry): string {
     return [
         formatOutputTimestamp(entry.timestamp),
         formatOutputSeverity(entry.level),
-        entry.source,
+        `[${entry.source}]`,
         entry.message
     ].join(' ');
 }
@@ -59,7 +59,7 @@ export function formatOutputEntryTextForTerminal(entry: SearchStudioOutputEntry)
     return [
         formatOutputTimestamp(entry.timestamp),
         `${getOutputSeverityAnsiSequence(entry.level)}${formatOutputSeverity(entry.level)}${outputTerminalForegroundResetSequence}`,
-        entry.source,
+        `[${entry.source}]`,
         entry.message
     ].join(' ');
 }
