@@ -12,8 +12,8 @@
     "@theia/navigator": "1.69.0",
     "@theia/preferences": "1.69.0",
     "@theia/process": "1.69.0",
-    "@theia/terminal": "1.69.0",
     "@theia/workspace": "1.69.0",
+    "bindings": "^1.5.0",
     "search-studio": "0.0.0"
   },
   "devDependencies": {

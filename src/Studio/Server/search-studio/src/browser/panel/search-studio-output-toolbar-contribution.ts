@@ -3,6 +3,7 @@ import { TabBarToolbarContribution, TabBarToolbarRegistry } from '@theia/core/li
 import { injectable } from '@theia/core/shared/inversify';
 import {
     SearchStudioClearOutputCommand,
+    SearchStudioCopyAllOutputCommand,
     SearchStudioOutputWidgetId
 } from '../search-studio-constants';
 
@@ -11,12 +12,22 @@ export class SearchStudioOutputToolbarContribution implements TabBarToolbarContr
 
     registerToolbarItems(registry: TabBarToolbarRegistry): void {
         registry.registerItem({
+            id: 'search-studio.output.copy-all.toolbar',
+            command: SearchStudioCopyAllOutputCommand.id,
+            icon: 'codicon codicon-copy',
+            tooltip: 'Copy all',
+            group: 'navigation',
+            priority: 0,
+            isVisible: widget => this.isOutputWidget(widget)
+        });
+
+        registry.registerItem({
             id: 'search-studio.output.clear.toolbar',
             command: SearchStudioClearOutputCommand.id,
             icon: 'codicon codicon-clear-all',
             tooltip: 'Clear output',
             group: 'navigation',
-            priority: 0,
+            priority: 1,
             isVisible: widget => this.isOutputWidget(widget)
         });
     }

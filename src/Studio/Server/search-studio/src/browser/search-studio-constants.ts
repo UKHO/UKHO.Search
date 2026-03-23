@@ -43,6 +43,12 @@ export const SearchStudioClearOutputCommand: Command = {
     label: 'Clear Studio Output'
 };
 
+export const SearchStudioCopyAllOutputCommand: Command = {
+    id: 'search-studio.output.copyAll',
+    category: 'UKHO Search Studio',
+    label: 'Copy All Studio Output'
+};
+
 export const SearchStudioRefreshRulesCommand: Command = {
     id: 'search-studio.rules.refresh',
     category: 'UKHO Search Studio',

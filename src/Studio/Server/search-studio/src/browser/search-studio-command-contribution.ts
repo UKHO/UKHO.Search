@@ -8,6 +8,7 @@ import { SearchStudioProviderSelectionService } from './common/search-studio-pro
 import { resolvePreferredProvider } from './common/search-studio-provider-resolution';
 import {
     SearchStudioClearOutputCommand,
+    SearchStudioCopyAllOutputCommand,
     SearchStudioNewRuleCommand,
     SearchStudioOpenIngestionModeCommand,
     SearchStudioOpenIngestionOverviewCommand,
@@ -19,6 +20,7 @@ import {
 } from './search-studio-constants';
 import { SearchStudioApiProviderDescriptor } from './api/search-studio-api-types';
 import { SearchStudioIngestionNodeKind } from './ingestion/search-studio-ingestion-types';
+import { serializeOutputEntries } from './panel/search-studio-output-format';
 
 @injectable()
 export class SearchStudioCommandContribution implements CommandContribution {
@@ -53,6 +55,24 @@ export class SearchStudioCommandContribution implements CommandContribution {
             execute: () => {
                 this._outputService.clear();
                 this._messageService.info('Studio output cleared.');
+            }
+        });
+
+        registry.registerCommand(SearchStudioCopyAllOutputCommand, {
+            execute: async () => {
+                const clipboard = globalThis.navigator?.clipboard;
+
+                if (!clipboard?.writeText) {
+                    this._messageService.warn('Clipboard access is unavailable for Studio Output.');
+                    return;
+                }
+
+                try {
+                    await clipboard.writeText(serializeOutputEntries(this._outputService.entries));
+                    this._messageService.info('Studio output copied to the clipboard.');
+                } catch {
+                    this._messageService.error('Unable to copy Studio output to the clipboard.');
+                }
             }
         });
 

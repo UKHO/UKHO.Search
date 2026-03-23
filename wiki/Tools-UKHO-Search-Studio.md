@@ -24,8 +24,7 @@ It currently provides:
 - an ingestion work area with provider overview plus explicit `By id`, `All unindexed`, and `By context` mode nodes beneath provider roots
 - placeholder ingestion overview and mode-specific editor surfaces driven by live provider metadata
 - native Theia view-toolbar actions for `New Rule`, `Refresh Rules`, and `Refresh Providers` where those actions remain visible
-- a lower `Studio Output` panel for shell diagnostics and placeholder action feedback, now rendered in a denser log-style layout with a native toolbar `Clear output` action
-- a planned `Studio Output` baseline under work package `067-studio-output-enhancements` that keeps the panel non-terminal while adding a toolbar-based `Copy all` action for the merged stream alongside the existing `Clear output` action
+- a lower `Studio Output` panel for shell diagnostics and placeholder action feedback, now rendered through a read-only `xterm.js` surface with reveal-latest behavior, pastel `INFO` / `ERROR` severity styling, and native toolbar `Copy all` and `Clear output` actions
 - runtime configuration for the local `StudioApiHost` API base URL
 - access to `StudioApiHost` read-only rule discovery through `GET /rules`
 
@@ -152,6 +151,21 @@ This builds:
 - the native Theia extension `search-studio`
 - the browser application bundle under `browser-app`
 
+### 5. Restart or refresh after frontend changes
+
+When `search-studio` frontend code changes, rebuild the browser bundle and then restart the shell or hard-refresh the browser page so the latest Theia assets are loaded:
+
+```powershell
+yarn build:browser
+```
+
+Then:
+
+- restart the Aspire-managed `tools-studio-shell` resource, or
+- hard refresh the open Studio browser page with `Ctrl+F5`
+
+This is particularly important for `Studio Output` work because stale browser bundles can make the panel appear to ignore xterm-related styling or behavior changes.
+
 ## Key workspace files
 
 - `src/Studio/Server/package.json` — root workspace scripts
@@ -254,6 +268,33 @@ The current shell flow is:
 9. the first visible provider root in each work area is expanded automatically on first render while later top-level roots remain collapsed until the user changes them
 10. selecting provider nodes opens placeholder editor surfaces in the main workbench area
 11. shell loading and placeholder actions are written to the lower `Studio Output` panel
+
+## `Studio Output` baseline
+
+Work package [`067-studio-output-enhancements`](../docs/067-studio-output-enhancements/plan-studio-output-enhancements_v0.03.md) established the current `Studio Output` baseline.
+
+The panel is intentionally:
+
+- Studio-owned
+- read-only
+- non-terminal in semantics
+- rendered through `xterm.js` for dense output presentation
+
+Current baseline behaviors:
+
+- a single merged chronological stream
+- explicit visible `time`, `severity`, `source`, and `message` text on each line
+- reveal-latest behavior for newly appended output
+- pastel blue `INFO` and pastel red `ERROR` severity tokens
+- direct text selection from the output surface
+- toolbar `Copy all` and `Clear output` actions
+
+The panel deliberately does **not** expose:
+
+- shell prompts
+- command entry
+- stdin-driven interaction
+- explicit output-channel switching
 
 ## Reviewing the Studio skeleton
 

@@ -1,6 +1,7 @@
 /**
  * Generated using theia-extension-generator
  */
+import '@xterm/xterm/css/xterm.css';
 import { FrontendApplicationContribution, WidgetFactory, bindViewContribution } from '@theia/core/lib/browser';
 import { TabBarToolbarContribution } from '@theia/core/lib/browser/shell/tab-bar-toolbar/tab-bar-toolbar-registry';
 import { createTreeContainer } from '@theia/core/lib/browser/tree/tree-container';

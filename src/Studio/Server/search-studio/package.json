@@ -10,7 +10,10 @@
     "src"
   ],
   "dependencies": {
-    "@theia/core": "1.69.0"
+    "@theia/core": "1.69.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-webgl": "^0.18.0",
+    "@xterm/xterm": "^5.5.0"
   },
   "devDependencies": {
     "rimraf": "^5.0.0",
@@ -19,8 +22,8 @@
   "scripts": {
     "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib",
-    "build": "tsc",
-    "watch": "tsc -w",
+    "build": "node ../node_modules/typescript/bin/tsc",
+    "watch": "node ../node_modules/typescript/bin/tsc -w",
     "test": "yarn run build && node --test test"
   },
   "theiaExtensions": [

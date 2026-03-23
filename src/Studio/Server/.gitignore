@@ -13,4 +13,5 @@ browser-app/webpack.config.js
 
 # Generated extension build artifacts
 search-studio/node_modules/
+search-studio/.tmp-packages/
 search-studio/lib/
