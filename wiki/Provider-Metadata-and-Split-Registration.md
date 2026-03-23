@@ -3,7 +3,7 @@
 Provider identity in `UKHO.Search` needs to be available in more than one place:
 
 - ingestion runtime needs it for queue-backed processing, diagnostics, and fail-fast validation
-- development-time tooling needs it for provider discovery in `StudioApiHost` and Theia
+- development-time tooling needs it for provider discovery and read-only rule discovery in `StudioApiHost` and Theia
 
 In the current implementation, generic provider identity, metadata, catalogs, and registration helpers now live in the shared `src/UKHO.Search.ProviderModel` project so both ingestion and studio composition can use the same source of truth.
 
@@ -120,9 +120,10 @@ In the current implementation this validation is performed by `IngestionProvider
 `StudioApiHost` should compose:
 
 - provider metadata registrations only
+- read-oriented rules loading
 - studio provider registrations
 
-The implemented host composes File Share metadata through `AddFileShareProviderMetadata()`, composes the tandem File Share Studio provider through `AddFileShareStudioProvider()`, validates Studio provider registration against shared provider metadata, and exposes a development-time `/providers` API for Theia and related tooling.
+The implemented host composes File Share metadata through `AddFileShareProviderMetadata()`, composes the shared read-oriented rules path through `AddIngestionRulesEngine()`, composes the tandem File Share Studio provider through `AddFileShareStudioProvider()`, validates Studio provider registration against shared provider metadata, and eagerly loads the shared rules reader so invalid provider-backed rules fail startup early.
 
 The current `/providers` response returns the full shared `ProviderDescriptor` metadata shape for each provider, including:
 
@@ -130,7 +131,17 @@ The current `/providers` response returns the full shared `ProviderDescriptor` m
 - `displayName`
 - `description`
 
-The endpoint currently returns known provider metadata only. It does not currently return enabled-state annotations or runtime-only details.
+`StudioApiHost` also exposes a read-only `/rules` response backed by the same provider-aware rules-loading path used by ingestion.
+
+Current `/rules` behavior:
+
+- returns canonical provider names from `ProviderDescriptor.Name`
+- returns the shared rules `schemaVersion`
+- returns all known providers, including providers with no rules as empty `rules` arrays
+- returns rule summaries rather than write/edit contracts
+- fails startup clearly when configured rules reference an unknown provider
+
+These endpoints currently return known provider metadata and read-only rule summaries only. They do not currently return enabled-state annotations, runtime-only details, or write operations.
 
 It must not:
 

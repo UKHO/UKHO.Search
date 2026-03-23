@@ -16,8 +16,12 @@ It currently provides:
 - a simple greeting action proving the custom extension wiring is active
 - runtime configuration for the local `StudioApiHost` API base URL
 - a temporary welcome-page proof that calls `StudioApiHost` `GET /echo` and displays the returned value
+- access to `StudioApiHost` provider metadata discovery through `GET /providers`
+- access to `StudioApiHost` read-only rule discovery through `GET /rules`
 
 This work package does **not** migrate existing repository tooling into the shell yet.
+
+The Theia UI currently surfaces only the echo connectivity proof directly. The provider and rules discovery endpoints are available from `StudioApiHost` for follow-on studio workflows and manual local inspection.
 
 ## How it is hosted locally
 
@@ -162,9 +166,11 @@ The shell is designed to run as part of the wider local Aspire stack.
 
 `StudioApiHost` remains a separate API host, but the shell now consumes a temporary runtime configuration path so the welcome page can prove connectivity.
 
-## Temporary `StudioApiHost` proof integration
+## Current `StudioApiHost` integration
 
-For work package `058-studio-config`, the shell now proves the local API callback mechanism end to end.
+For work package `058-studio-config`, the shell proves the local API callback mechanism end to end.
+
+Later work packages extended `StudioApiHost` so that, alongside the temporary echo proof, it now also exposes read-only provider and rules discovery APIs for studio tooling.
 
 This section describes the implemented mechanism in detail, including why it uses a Theia backend proxy and how Aspire, Theia, and `StudioApiHost` each participate.
 
@@ -279,6 +285,24 @@ It exposes two local endpoints:
 
 The probe uses Node.js `http` / `https` request handling rather than browser `fetch` so it can better manage local HTTPS behavior and provide clearer error reporting.
 
+### Current `StudioApiHost` endpoints
+
+`StudioApiHost` currently exposes:
+
+- `GET /providers`
+  - returns the shared `ProviderDescriptor` metadata for all known providers
+  - uses canonical provider names from `UKHO.Search.ProviderModel`
+- `GET /rules`
+  - returns a read-only rule discovery response for all known providers
+  - includes the shared rules `schemaVersion`
+  - returns canonical provider names plus rule summaries (`id`, `context`, `title`, `description`, `enabled`)
+  - includes known providers with no rules as empty `rules` arrays
+  - fails startup clearly if configured rules reference an unknown provider
+- `GET /echo`
+  - temporary connectivity proof used by the current welcome page
+
+The Theia welcome flow still uses only `GET /echo` today. The `/providers` and `/rules` endpoints are available for later studio features and for manual API inspection.
+
 ### Temporary proof endpoint
 
 `StudioApiHost` now exposes:
@@ -352,8 +376,9 @@ The current proof path is spread across the following files:
 - `src/Hosts/AppHost/AppHost.cs`
   - resolves the Aspire `StudioApiHost` endpoint
   - passes it into the Theia JavaScript app as `STUDIO_API_HOST_API_BASE_URL`
-- `src/Studio/StudioApiHost/Program.cs`
-  - exposes `GET /echo`
+- `src/Studio/StudioApiHost/StudioApiHostApplication.cs`
+  - exposes `GET /providers`, `GET /rules`, and `GET /echo`
+  - forces shared provider-aware rules loading during startup so invalid rule-provider identities fail early
 - `src/Studio/Server/search-studio/src/node/search-studio-backend-application-contribution.ts`
   - exposes the Theia config and probe endpoints
 - `src/Studio/Server/search-studio/src/browser/search-studio-api-configuration-service.ts`
@@ -400,7 +425,7 @@ If native dependency restore fails, retry from a clean PowerShell session with t
 The initial shell intentionally remains lightweight:
 
 - no bundled VS Code extensions
-- no active `StudioApiHost` API integration beyond the temporary proof path
+- the Theia UI itself still only surfaces the temporary echo proof, even though `StudioApiHost` now also exposes `/providers` and read-only `/rules`
 - no migrated `RulesWorkbench`, `FileShareEmulator`, or other tooling workflows
 
 Later work packages can expand the shell into a fuller studio experience.
@@ -411,10 +436,11 @@ Later work packages can expand the shell into a fuller studio experience.
 2. Run `dotnet build src/Hosts/AppHost/AppHost.csproj`
 3. Start `AppHost` in `runmode=services`
 4. In the Aspire dashboard, prefer the `StudioApiHost` **HTTPS** URL
-5. Verify `StudioApiHost` responds on `/echo` via HTTPS
+5. Verify `StudioApiHost` responds on `/providers`, `/rules`, and `/echo` via HTTPS
 6. Open `http://localhost:3000`
 7. Confirm the welcome page shows the `StudioApiHost echo` value
-8. If the proof fails, inspect the welcome-page debug panel for:
+8. Optionally inspect `StudioApiHost` `/rules` and confirm canonical provider names and rule summaries are returned
+9. If the proof fails, inspect the welcome-page debug panel for:
    - raw environment value
    - configured base URL
    - attempted echo URL

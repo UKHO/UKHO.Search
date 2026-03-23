@@ -16,6 +16,7 @@ flowchart TB
         AppHost[AppHost]
         IngestionHost[IngestionServiceHost]
         QueryHost[QueryServiceHost]
+        StudioApiHost[StudioApiHost]
         ServiceDefaults[UKHO.Search.ServiceDefaults]
     end
 
@@ -39,8 +40,10 @@ flowchart TB
 
     AppHost --> IngestionHost
     AppHost --> QueryHost
+    AppHost --> StudioApiHost
     IngestionHost --> InfraIngestion
     QueryHost --> InfraQuery
+    StudioApiHost --> InfraIngestion
     InfraIngestion --> ServicesIngestion
     InfraQuery --> ServicesQuery
     ServicesIngestion --> Ingestion
@@ -60,8 +63,15 @@ flowchart TB
 | `src/Hosts/AppHost` | Aspire orchestration, container/resource definitions, and run-mode switching for local workflows. |
 | `src/Hosts/IngestionServiceHost` | Ingestion host, DI/bootstrap, Elasticsearch/blob/queue client wiring, operational UI. |
 | `src/Hosts/QueryServiceHost` | Query-side host and external endpoint surface. |
-| `src/Studio/StudioApiHost` | Studio-facing minimal API host used by the Theia shell for local proof and future studio API integration. |
+| `src/Studio/StudioApiHost` | Studio-facing minimal API host for development-time tooling, including provider metadata discovery and read-only rules discovery. |
 | `src/Hosts/UKHO.Search.ServiceDefaults` | Shared Aspire/OpenTelemetry/health-check defaults for hosts. |
+
+### Shared provider and studio support
+
+| Project | Purpose |
+|---|---|
+| `src/UKHO.Search.ProviderModel` | Shared provider descriptors, catalogs, and registration helpers used by ingestion and studio composition. |
+| `src/Studio/UKHO.Search.Studio` | Studio provider contracts, catalogs, and registration validation for development-time tooling. |
 
 ### Domain
 
@@ -92,6 +102,7 @@ flowchart TB
 | Project | Purpose |
 |---|---|
 | `src/Providers/UKHO.Search.Ingestion.Providers.FileShare` | The current concrete ingestion provider. Owns the File Share processing graph, request dispatch, ZIP/content enrichers, and provider-specific parsing. |
+| `src/Providers/UKHO.Search.Studio.Providers.FileShare` | Tandem File Share Studio provider registration used for development-time provider discovery/composition without ingestion runtime services. |
 
 ### Configuration projects
 
@@ -159,6 +170,8 @@ flowchart LR
         KC[Keycloak]
         ING[IngestionServiceHost]
         QRY[QueryServiceHost]
+        STAPI[StudioApiHost]
+        STSHELL[Studio shell / Theia]
         FSE[FileShareEmulator]
         RWB[RulesWorkbench]
     end
@@ -169,6 +182,8 @@ flowchart LR
     AH --> KC
     AH --> ING
     AH --> QRY
+    AH --> STAPI
+    AH --> STSHELL
     AH --> FSE
     AH --> RWB
 
@@ -178,6 +193,7 @@ flowchart LR
     ING --> AZ
     ING --> ES
     QRY --> ES
+    STSHELL --> STAPI
     RWB --> SQL
     RWB --> AZ
     RWB --> PAD[ ]
@@ -205,6 +221,7 @@ flowchart LR
 
 - emulator UI/API: `tools/FileShareEmulator`
 - rule tooling: `tools/RulesWorkbench`
+- studio shell/API: `src/Studio/Server`, `src/Studio/StudioApiHost`
 - data-image import/export: `tools/FileShareImageLoader`, `tools/FileShareImageBuilder`
 
 ## Architectural intent

@@ -56,7 +56,7 @@ flowchart LR
 - `src/Hosts/AppHost` — Aspire orchestration and `runmode` switching
 - `src/Hosts/IngestionServiceHost` — ingestion host and bootstrap/runtime wiring
 - `src/Hosts/QueryServiceHost` — query-side host
-- `src/Studio/StudioApiHost` — studio-facing minimal API host used by the Theia shell proof/integration path, including the development-time `/providers` endpoint that now returns full shared provider metadata
+- `src/Studio/StudioApiHost` — studio-facing minimal API host for development-time tooling, exposing `/providers`, read-only `/rules`, and the temporary `/echo` proof endpoint while validating provider-backed rules at startup
 - `tools/FileShareEmulator` — local File Share emulator UI/API
 - `tools/RulesWorkbench` — rule inspection, evaluation, and checker tooling
 - `src/Studio/Server` — browser-hosted Eclipse Theia studio shell
@@ -89,6 +89,8 @@ flowchart LR
 
 If your task is rule authoring or rule diagnosis, open [`RulesWorkbench`](Tools-RulesWorkbench) as part of that loop.
 
+If you only need a read-only view of canonical providers and currently loaded rules, query `StudioApiHost` first via [`/providers` and `/rules`](Tools-UKHO-Search-Studio).
+
 ## Design themes carried through the repo
 
 - **Onion architecture** keeps domain logic inward and infrastructure outward.
@@ -97,7 +99,7 @@ If your task is rule authoring or rule diagnosis, open [`RulesWorkbench`](Tools-
 - **Rules** provide additive enrichment without hard-coding every mapping into C#.
 - **Rule titles** now provide the canonical display title contract for indexed documents, and missing titles are treated as ingestion failures.
 - **Developer tooling** is first-class, especially for local File Share workflows.
-- **Provider metadata** is shared across hosts through `UKHO.Search.ProviderModel`, with mandatory split registration for provider packages and tandem Studio provider composition for development-time studio tooling.
+- **Provider metadata** is shared across hosts through `UKHO.Search.ProviderModel`, with mandatory split registration for provider packages, provider-aware rule loading, and tandem Studio provider composition for development-time studio tooling.
 
 ## Historical design lineage
 

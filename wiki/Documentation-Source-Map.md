@@ -199,6 +199,9 @@ Provider metadata model and split-registration design for provider packages, inc
 ### `docs/062-studio-provider`
 Shared Provider Model extraction plus Studio provider contracts, tandem Studio provider registration, and the amended `StudioApiHost` `/providers` contract that returns full provider metadata for development-time tooling.
 
+### `docs/063-provider-metadata-rule-loading`
+Provider Model-backed rule loading, canonical provider-name validation for rules, reusable read-oriented rules loading, and the `StudioApiHost` read-only `/rules` discovery endpoint.
+
 ### Top-level operational docs
 
 | Path | Topic |
