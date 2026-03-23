@@ -6,24 +6,28 @@ export const SearchStudioWidgetLabel = 'Providers';
 export const SearchStudioWidgetIconClass = 'codicon codicon-database';
 export const SearchStudioToggleCommandId = 'search-studio.toggleProviders';
 export const SearchStudioProvidersViewContainerId = 'search-studio.providers.container';
+export const SearchStudioProvidersViewRank = 10;
 
 export const SearchStudioRulesWidgetId = 'search-studio.rules.view';
 export const SearchStudioRulesWidgetLabel = 'Rules';
 export const SearchStudioRulesWidgetIconClass = 'codicon codicon-symbol-field';
 export const SearchStudioRulesToggleCommandId = 'search-studio.toggleRules';
 export const SearchStudioRulesViewContainerId = 'search-studio.rules.container';
+export const SearchStudioRulesViewRank = 20;
 
 export const SearchStudioIngestionWidgetId = 'search-studio.ingestion.view';
 export const SearchStudioIngestionWidgetLabel = 'Ingestion';
 export const SearchStudioIngestionWidgetIconClass = 'codicon codicon-cloud-upload';
 export const SearchStudioIngestionToggleCommandId = 'search-studio.toggleIngestion';
 export const SearchStudioIngestionViewContainerId = 'search-studio.ingestion.container';
+export const SearchStudioIngestionViewRank = 30;
 
 export const SearchStudioSearchWidgetId = 'search-studio.search.view';
 export const SearchStudioSearchWidgetLabel = 'Search';
 export const SearchStudioSearchWidgetIconClass = 'codicon codicon-search';
 export const SearchStudioSearchToggleCommandId = 'search-studio.toggleSearch';
 export const SearchStudioSearchViewContainerId = 'search-studio.search.container';
+export const SearchStudioSearchViewRank = 40;
 
 export const SearchStudioSearchResultsWidgetId = 'search-studio.search-results';
 export const SearchStudioSearchResultsWidgetFactoryId = 'search-studio.search-results';

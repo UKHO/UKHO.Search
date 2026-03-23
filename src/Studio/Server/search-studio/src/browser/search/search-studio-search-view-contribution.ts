@@ -2,6 +2,7 @@ import { injectable } from '@theia/core/shared/inversify';
 import { AbstractViewContribution } from '@theia/core/lib/browser/shell/view-contribution';
 import {
     SearchStudioSearchToggleCommandId,
+    SearchStudioSearchViewRank,
     SearchStudioSearchViewContainerId,
     SearchStudioSearchWidgetId,
     SearchStudioSearchWidgetLabel
@@ -17,7 +18,8 @@ export class SearchStudioSearchViewContribution extends AbstractViewContribution
             viewContainerId: SearchStudioSearchViewContainerId,
             widgetName: SearchStudioSearchWidgetLabel,
             defaultWidgetOptions: {
-                area: 'left'
+                area: 'left',
+                rank: SearchStudioSearchViewRank
             },
             toggleCommandId: SearchStudioSearchToggleCommandId
         });

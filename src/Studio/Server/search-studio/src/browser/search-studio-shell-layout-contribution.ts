@@ -11,6 +11,7 @@ import { SearchStudioViewContribution } from './search-studio-view-contribution'
 export class SearchStudioShellLayoutContribution implements FrontendApplicationContribution {
 
     protected _layoutInitialized = false;
+    protected _startupViewsFinalized = false;
 
     @inject(SearchStudioViewContribution)
     protected readonly _providersViewContribution!: SearchStudioViewContribution;
@@ -36,6 +37,7 @@ export class SearchStudioShellLayoutContribution implements FrontendApplicationC
 
     async onDidInitializeLayout(_app: FrontendApplication): Promise<void> {
         await this.ensureStudioShellViews();
+        await this.finalizeStartupViews();
     }
 
     protected async ensureStudioShellViews(): Promise<void> {
@@ -50,5 +52,14 @@ export class SearchStudioShellLayoutContribution implements FrontendApplicationC
         await this._searchViewContribution.openView({ activate: false, reveal: true });
         await this._outputViewContribution.openView({ activate: false, reveal: true });
         await this._homeService.openHome();
+    }
+
+    protected async finalizeStartupViews(): Promise<void> {
+        if (this._startupViewsFinalized) {
+            return;
+        }
+
+        this._startupViewsFinalized = true;
+        await this._providersViewContribution.openView({ activate: true, reveal: true });
     }
 }

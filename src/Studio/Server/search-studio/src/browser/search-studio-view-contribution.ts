@@ -3,6 +3,7 @@ import { AbstractViewContribution } from '@theia/core/lib/browser/shell/view-con
 import {
     SearchStudioProvidersViewContainerId,
     SearchStudioToggleCommandId,
+    SearchStudioProvidersViewRank,
     SearchStudioWidgetId,
     SearchStudioWidgetLabel
 } from './search-studio-constants';
@@ -17,7 +18,8 @@ export class SearchStudioViewContribution extends AbstractViewContribution<Searc
             viewContainerId: SearchStudioProvidersViewContainerId,
             widgetName: SearchStudioWidgetLabel,
             defaultWidgetOptions: {
-                area: 'left'
+                area: 'left',
+                rank: SearchStudioProvidersViewRank
             },
             toggleCommandId: SearchStudioToggleCommandId
         });
