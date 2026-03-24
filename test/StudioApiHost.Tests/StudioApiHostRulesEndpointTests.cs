@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using StudioApiHost.Tests.TestDoubles;
+using UKHO.Search.Studio;
 using UKHO.Search.Infrastructure.Ingestion.Rules;
 using UKHO.Search.Ingestion.Providers;
 using UKHO.Search.ProviderModel;

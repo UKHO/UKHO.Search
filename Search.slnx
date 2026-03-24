@@ -12,19 +12,23 @@
   </Folder>
   <Folder Name="/02 Providers/">
     <Project Path="src/Providers/UKHO.Search.Ingestion.Providers.FileShare/UKHO.Search.Ingestion.Providers.FileShare.csproj" />
+    <Project Path="src/Providers/UKHO.Search.Studio.Providers.FileShare/UKHO.Search.Studio.Providers.FileShare.csproj" />
   </Folder>
   <Folder Name="/03 Infrastructure/">
     <Project Path="src/UKHO.Search.Infrastructure.Ingestion/UKHO.Search.Infrastructure.Ingestion.csproj" Id="cdb73126-6bb7-4d74-bf3e-8bec3f75a48c" />
     <Project Path="src/UKHO.Search.Infrastructure.Query/UKHO.Search.Infrastructure.Query.csproj" Id="38339a3b-8fbc-453c-877e-8dcfc1ce184a" />
     <Project Path="src/UKHO.Search.Infrastructure/UKHO.Search.Infrastructure.csproj" Id="b73eb1ec-a022-4467-a0bc-b72565a7bb3e" />
   </Folder>
-  <Folder Name="/04 Hosts/">
+  <Folder Name="/04 Studio/">
+    <Project Path="src/Studio/UKHO.Search.Studio/UKHO.Search.Studio.csproj" />
+  </Folder>
+  <Folder Name="/05 Hosts/">
     <Project Path="src/Hosts/IngestionServiceHost/IngestionServiceHost.csproj" />
     <Project Path="src/Hosts/QueryServiceHost/QueryServiceHost.csproj" />
     <Project Path="src/Hosts/UKHO.Search.ServiceDefaults/UKHO.Search.ServiceDefaults.csproj" />
     <Project Path="src/Studio/StudioApiHost/StudioApiHost.csproj" />
   </Folder>
-  <Folder Name="/04 Hosts/@local/">
+  <Folder Name="/05 Hosts/@local/">
     <Project Path="src/Hosts/AppHost/AppHost.csproj" />
   </Folder>
   <Folder Name="/98 Tools/">
@@ -57,13 +61,17 @@
   </Folder>
   <Folder Name="/@test/02 Providers/">
     <Project Path="test/UKHO.Search.Ingestion.Providers.FileShare.Tests/UKHO.Search.Ingestion.Providers.FileShare.Tests.csproj" />
+    <Project Path="test/UKHO.Search.Studio.Providers.FileShare.Tests/UKHO.Search.Studio.Providers.FileShare.Tests.csproj" />
   </Folder>
   <Folder Name="/@test/03 Infrastructure/">
     <Project Path="test/UKHO.Search.Infrastructure.Ingestion.Tests/UKHO.Search.Infrastructure.Ingestion.Tests.csproj" />
     <Project Path="test/UKHO.Search.Infrastructure.Query.Tests/UKHO.Search.Infrastructure.Query.Tests.csproj" />
     <Project Path="test/UKHO.Search.Infrastructure.Tests/UKHO.Search.Infrastructure.Tests.csproj" />
   </Folder>
-  <Folder Name="/@test/04 Hosts/">
+  <Folder Name="/@test/04 Studio/">
+    <Project Path="test/UKHO.Search.Studio.Tests/UKHO.Search.Studio.Tests.csproj" />
+  </Folder>
+  <Folder Name="/@test/05 Hosts/">
     <Project Path="test/AppHost.Tests/AppHost.Tests.csproj" />
     <Project Path="test/IngestionServiceHost.Tests/IngestionServiceHost.Tests.csproj" />
     <Project Path="test/QueryServiceHost.Tests/QueryServiceHost.Tests.csproj" />
@@ -82,17 +90,6 @@
     <Project Path="test/UKHO.Aspire.Configuration.Hosting.Tests/UKHO.Aspire.Configuration.Hosting.Tests.csproj" />
     <Project Path="test/UKHO.Aspire.Configuration.Seeder.Tests/UKHO.Aspire.Configuration.Seeder.Tests.csproj" />
     <Project Path="test/UKHO.Aspire.Configuration.Tests/UKHO.Aspire.Configuration.Tests.csproj" />
-  </Folder>
-  <Folder Name="/src/" />
-  <Folder Name="/src/Providers/">
-    <Project Path="src/Providers/UKHO.Search.Studio.Providers.FileShare/UKHO.Search.Studio.Providers.FileShare.csproj" />
-  </Folder>
-  <Folder Name="/src/Studio/">
-    <Project Path="src/Studio/UKHO.Search.Studio/UKHO.Search.Studio.csproj" />
-  </Folder>
-  <Folder Name="/test/">
-    <Project Path="test/UKHO.Search.Studio.Providers.FileShare.Tests/UKHO.Search.Studio.Providers.FileShare.Tests.csproj" />
-    <Project Path="test/UKHO.Search.Studio.Tests/UKHO.Search.Studio.Tests.csproj" />
   </Folder>
 </Solution>
 

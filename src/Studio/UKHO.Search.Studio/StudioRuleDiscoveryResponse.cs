@@ -1,4 +1,4 @@
-namespace StudioApiHost
+namespace UKHO.Search.Studio
 {
     public sealed class StudioRuleDiscoveryResponse
     {
