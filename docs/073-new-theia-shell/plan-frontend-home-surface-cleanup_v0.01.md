@@ -29,8 +29,9 @@
 
 ## Slice 1 — Studio `Home` becomes the sole landing surface
 
-- [ ] Work Item 1: Remove the default Theia `Welcome` experience and simplify the Studio `Home` page
+- [x] Work Item 1: Remove the default Theia `Welcome` experience and simplify the Studio `Home` page - Completed
   - **Purpose**: Deliver a single runnable end-to-end landing experience in which the Studio shell starts directly into the Studio-owned `Home` document, no default Theia `Welcome` surface remains active, and the Home page no longer contains the lower Theia-oriented explanatory box.
+  - **Completion Summary**: Removed `@theia/getting-started` from `src/Studio/Server/browser-app/package.json`, simplified `search-studio-home-widget` and its CSS, added focused frontend tests for browser-app composition and Home rendering, refreshed `wiki/Tools-UKHO-Search-Studio.md`, and validated with `yarn --cwd .\src\Studio\Server\search-studio test`, `yarn --cwd .\src\Studio\Server build:browser`, and a successful workspace build.
   - **Acceptance Criteria**:
     - The Studio shell no longer opens the default Theia `Welcome` page during startup.
     - The active shell composition no longer includes the default Theia `Welcome` experience where practical, including package, menu, command, or other scaffold-only exposure required for that surface.
@@ -47,29 +48,33 @@
     - Frontend tests updated or added to cover the cleaned landing experience
     - Wiki or work-package documentation updated so it no longer describes generated welcome-surface coexistence as acceptable
     - Can execute end to end via: launching the shell, seeing only Studio `Home`, confirming the lower explanatory box is absent, closing `Home`, and reopening it from `View -> Home`
-  - [ ] Task 1.1: Remove the scaffold-owned Theia `Welcome` surface from active frontend composition
-    - [ ] Step 1: Identify the current active source of the default Theia `Welcome` experience in the fresh scaffold, including package dependencies and any startup or menu exposure that keeps it available.
-    - [ ] Step 2: Remove the default Theia `Welcome` surface from the active browser-app composition where practical, preferring a clean composition change rather than a runtime-only hide/ignore approach.
-    - [ ] Step 3: Preserve the rest of the required shell composition so the Studio shell still builds and starts correctly after the cleanup.
-    - [ ] Step 4: Confirm the Studio-owned `Home` startup behavior remains the landing path after the Theia `Welcome` removal.
-    - [ ] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every source file created or updated.
-  - [ ] Task 1.2: Remove the lower explanatory box from the Studio `Home` page
-    - [ ] Step 1: Update the `Home` widget rendering so the lower explanatory box is no longer produced.
-    - [ ] Step 2: Remove any now-unused styling that existed only to support the removed explanatory box.
-    - [ ] Step 3: Preserve the logo, title, and primary Studio orientation content without replacing the removed box with alternate filler content.
-    - [ ] Step 4: Keep the Home page intentionally lightweight and Studio-owned in tone.
-    - [ ] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every source file created or updated.
-  - [ ] Task 1.3: Protect the landing-surface cleanup with focused verification
-    - [ ] Step 1: Add or update frontend tests covering the absence of the default Theia `Welcome` surface from active shell behavior where practical to verify.
-    - [ ] Step 2: Add or update frontend tests covering the absence of the removed lower explanatory box from the rendered Studio `Home` content.
-    - [ ] Step 3: Preserve or update frontend tests proving that automatic Studio `Home` opening still occurs and that `View -> Home` still works after the cleanup.
-    - [ ] Step 4: Run the relevant frontend test suite and the required shell build so stale browser output is not left behind.
-    - [ ] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every source file created or updated.
-  - [ ] Task 1.4: Update supporting documentation and manual verification guidance
-    - [ ] Step 1: Update the Studio wiki page so it no longer describes the generated Theia welcome surface as an accepted concurrent landing experience.
-    - [ ] Step 2: Add or update the manual smoke path so it explicitly verifies that only Studio `Home` appears and that the lower explanatory box is gone.
-    - [ ] Step 3: Ensure the work-package documentation remains aligned with the cleaned Studio-first landing experience.
-    - [ ] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to any code-writing task touched during documentation-support work.
+  - [x] Task 1.1: Remove the scaffold-owned Theia `Welcome` surface from active frontend composition - Completed
+    - **Summary**: Identified `@theia/getting-started` in `src/Studio/Server/browser-app/package.json` as the active scaffold-owned welcome source, removed it from the browser-app composition, preserved the remaining shell dependencies, confirmed the Studio-owned Home startup path still relies on the existing `search-studio` contribution, and kept updated source comments aligned with the mandatory documentation pass requirements.
+    - [x] Step 1: Identify the current active source of the default Theia `Welcome` experience in the fresh scaffold, including package dependencies and any startup or menu exposure that keeps it available. - Completed
+    - [x] Step 2: Remove the default Theia `Welcome` surface from the active browser-app composition where practical, preferring a clean composition change rather than a runtime-only hide/ignore approach. - Completed
+    - [x] Step 3: Preserve the rest of the required shell composition so the Studio shell still builds and starts correctly after the cleanup. - Completed
+    - [x] Step 4: Confirm the Studio-owned `Home` startup behavior remains the landing path after the Theia `Welcome` removal. - Completed
+    - [x] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every source file created or updated. - Completed
+  - [x] Task 1.2: Remove the lower explanatory box from the Studio `Home` page - Completed
+    - **Summary**: Removed the lower explanatory box from `src/Studio/Server/search-studio/src/browser/home/search-studio-home-widget.tsx`, deleted the unused note-panel styles from `search-studio-home-widget.css`, preserved the logo, title, and primary orientation copy, and kept the Home surface intentionally lightweight and Studio-owned in tone.
+    - [x] Step 1: Update the `Home` widget rendering so the lower explanatory box is no longer produced. - Completed
+    - [x] Step 2: Remove any now-unused styling that existed only to support the removed explanatory box. - Completed
+    - [x] Step 3: Preserve the logo, title, and primary Studio orientation content without replacing the removed box with alternate filler content. - Completed
+    - [x] Step 4: Keep the Home page intentionally lightweight and Studio-owned in tone. - Completed
+    - [x] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every source file created or updated. - Completed
+  - [x] Task 1.3: Protect the landing-surface cleanup with focused verification - Completed
+    - **Summary**: Added `src/Studio/Server/search-studio/test/search-studio-browser-app-composition.test.js`, expanded `search-studio-home-widget.test.js` to verify the lower explanatory box stays absent, preserved the existing Home startup and `View -> Home` reopen tests, and validated the cleanup with `yarn --cwd .\src\Studio\Server\search-studio test`, `yarn --cwd .\src\Studio\Server build:browser`, and a successful workspace build.
+    - [x] Step 1: Add or update frontend tests covering the absence of the default Theia `Welcome` surface from active shell behavior where practical to verify. - Completed
+    - [x] Step 2: Add or update frontend tests covering the absence of the removed lower explanatory box from the rendered Studio `Home` content. - Completed
+    - [x] Step 3: Preserve or update frontend tests proving that automatic Studio `Home` opening still occurs and that `View -> Home` still works after the cleanup. - Completed
+    - [x] Step 4: Run the relevant frontend test suite and the required shell build so stale browser output is not left behind. - Completed
+    - [x] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every source file created or updated. - Completed
+  - [x] Task 1.4: Update supporting documentation and manual verification guidance - Completed
+    - **Summary**: Updated `wiki/Tools-UKHO-Search-Studio.md` so it no longer treats the generated welcome surface as an accepted concurrent landing experience and refreshed the manual smoke guidance to verify that only Studio Home appears and that the lower explanatory box is gone.
+    - [x] Step 1: Update the Studio wiki page so it no longer describes the generated Theia welcome surface as an accepted concurrent landing experience. - Completed
+    - [x] Step 2: Add or update the manual smoke path so it explicitly verifies that only Studio `Home` appears and that the lower explanatory box is gone. - Completed
+    - [x] Step 3: Ensure the work-package documentation remains aligned with the cleaned Studio-first landing experience. - Completed
+    - [x] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to any code-writing task touched during documentation-support work. - Completed
   - **Files**:
     - `src/Studio/Server/browser-app/package.json`: remove the default Theia welcome/getting-started composition input if it is the active source of the unwanted landing surface
     - `src/Studio/Server/search-studio/src/browser/home/search-studio-home-widget.tsx`: remove the lower explanatory box from the Home render tree

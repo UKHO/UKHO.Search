@@ -90,14 +90,14 @@ The tracked inputs currently include:
 
 ## Current startup shell behavior
 
-The current shell intentionally keeps the generated Theia workbench structure while restoring the first Studio-owned landing surface:
+The current shell intentionally keeps the generated Theia workbench structure while making the Studio-owned `Home` document the sole landing surface:
 
 - the `Home` document opens automatically in the main workbench area as a normal closable tab
 - `View -> Home` reopens the same Home document after it is closed
-- the default Theia browser shell still coexists without the previous custom Studio activity layout
+- the active browser-app composition no longer includes the scaffold-owned Theia `Welcome` / getting-started surface
 - the `search-studio` extension preloads the same-origin runtime configuration bridge during startup
 - startup logs report whether the Studio API base URL handoff was resolved successfully
-- the Home surface uses the copied runtime-served UKHO logo plus lightweight orientation text only
+- the Home surface uses the copied runtime-served UKHO logo plus lightweight orientation text only, without the previous lower explanatory box
 - later work items build on the restored Home document with follow-on Studio UI surfaces
 
 ## Prerequisite tooling
@@ -204,8 +204,9 @@ The shell is designed to run as part of the wider local Aspire stack.
 4. Start `AppHost`
 5. In the Aspire dashboard, verify the `tools-studio-shell` resource is healthy
 6. Open the shell with `http://localhost:3000`
-7. Confirm the `Home` tab opens automatically with the UKHO logo and Studio orientation text
-8. Close the `Home` tab and reopen it from `View -> Home`
+7. Confirm only the `Home` tab opens automatically, the default Theia `Welcome` page does not appear, and the lower explanatory box is absent
+8. Confirm the `Home` tab still shows the UKHO logo and Studio orientation text
+9. Close the `Home` tab and reopen it from `View -> Home`
 
 `StudioApiHost` remains a separate API host, and the shell consumes a runtime configuration bridge so its browser-side services can discover the correct API base URL at startup.
 

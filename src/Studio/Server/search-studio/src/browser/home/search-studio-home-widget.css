@@ -36,8 +36,7 @@
     font-size: 2rem;
 }
 
-.search-studio-home-widget__summary,
-.search-studio-home-widget__note {
+.search-studio-home-widget__summary {
     margin: 0;
     line-height: 1.6;
     color: var(--theia-descriptionForeground);
@@ -59,14 +58,4 @@
 .search-studio-home-widget__section-title {
     margin: 0;
     font-size: 1.1rem;
-}
-
-/* Reuse the current Theia theme variables so the placeholder Home surface remains legible in the dark default theme. */
-.search-studio-home-widget__note-panel {
-    display: grid;
-    gap: 0.5rem;
-    padding: 1rem 1.25rem;
-    border: 1px solid var(--theia-panel-border);
-    border-radius: 0.75rem;
-    background: var(--theia-editor-inactiveSelectionBackground);
 }

@@ -1377,32 +1377,6 @@
     tslib "^2.6.2"
     vscode-languageserver-textdocument "^1.0.1"
 
-"@theia/getting-started@1.69.0":
-  version "1.69.0"
-  resolved "https://registry.npmjs.org/@theia/getting-started/-/getting-started-1.69.0.tgz"
-  integrity sha512-loqVpGLoYgeqygCYHzu2A4tdE9m1Z74iU0nrB3ljjz/0ThmwH28iWuhLnxxSD9bRAZnThcaHqidHZyVi4wgCVw==
-  dependencies:
-    "@theia/core" "1.69.0"
-    "@theia/editor" "1.69.0"
-    "@theia/filesystem" "1.69.0"
-    "@theia/keymaps" "1.69.0"
-    "@theia/preview" "1.69.0"
-    "@theia/workspace" "1.69.0"
-    tslib "^2.6.2"
-
-"@theia/keymaps@1.69.0":
-  version "1.69.0"
-  resolved "https://registry.npmjs.org/@theia/keymaps/-/keymaps-1.69.0.tgz"
-  integrity sha512-NxPt3sTQf5ojYKvWxGg3DXXMh6sNzyIai8UBKer0bQ0ALO70wEMNPo55IcP5CRXrorY8AmbGWf3jUrSUNvwvyw==
-  dependencies:
-    "@theia/core" "1.69.0"
-    "@theia/monaco" "1.69.0"
-    "@theia/monaco-editor-core" "1.96.302"
-    "@theia/preferences" "1.69.0"
-    "@theia/userstorage" "1.69.0"
-    jsonc-parser "^2.2.0"
-    tslib "^2.6.2"
-
 "@theia/localization-manager@1.69.0":
   version "1.69.0"
   resolved "https://registry.npmjs.org/@theia/localization-manager/-/localization-manager-1.69.0.tgz"
@@ -1438,19 +1412,6 @@
     react-perfect-scrollbar "^1.5.3"
     ts-md5 "^1.2.2"
     tslib "^2.6.2"
-
-"@theia/mini-browser@1.69.0":
-  version "1.69.0"
-  resolved "https://registry.npmjs.org/@theia/mini-browser/-/mini-browser-1.69.0.tgz"
-  integrity sha512-gOtMi0lKzVWheCKaF/btUuKecsNTO4lQ8YGnE2TMIYPQW2+XzgZUyXL6srmb/XFbU832AX9fFCyGi1voPrYumA==
-  dependencies:
-    "@theia/core" "1.69.0"
-    "@theia/filesystem" "1.69.0"
-    "@types/mime-types" "^2.1.0"
-    mime-types "^2.1.18"
-    pdfobject "^2.0.201604172"
-    tslib "^2.6.2"
-    vhost "^3.0.2"
 
 "@theia/monaco-editor-core@1.96.302":
   version "1.96.302"
@@ -1530,19 +1491,6 @@
     fast-deep-equal "^3.1.3"
     jsonc-parser "^2.2.0"
     p-debounce "^2.1.0"
-    tslib "^2.6.2"
-
-"@theia/preview@1.69.0":
-  version "1.69.0"
-  resolved "https://registry.npmjs.org/@theia/preview/-/preview-1.69.0.tgz"
-  integrity sha512-7ebb69E8BOcrFWAPNtcXS4WVXHcqtTLJJoI+Z+UgBYrQppA2q35TqvcLWRlhR9tCPlBG133+/5ErZGObKNu78Q==
-  dependencies:
-    "@theia/core" "1.69.0"
-    "@theia/editor" "1.69.0"
-    "@theia/mini-browser" "1.69.0"
-    "@theia/monaco" "1.69.0"
-    "@types/highlight.js" "^10.1.0"
-    highlight.js "10.4.1"
     tslib "^2.6.2"
 
 "@theia/process@1.69.0":
@@ -1714,13 +1662,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/highlight.js@^10.1.0":
-  version "10.1.0"
-  resolved "https://registry.npmjs.org/@types/highlight.js/-/highlight.js-10.1.0.tgz"
-  integrity sha512-77hF2dGBsOgnvZll1vymYiNUtqJ8cJfXPD6GG/2M0aLRc29PkvB7Au6sIDjIEFcSICBhCh2+Pyq6WSRS7LUm6A==
-  dependencies:
-    highlight.js "*"
-
 "@types/http-cache-semantics@*":
   version "4.2.0"
   resolved "https://registry.npmjs.org/@types/http-cache-semantics/-/http-cache-semantics-4.2.0.tgz"
@@ -1786,11 +1727,6 @@
   version "2.0.0"
   resolved "https://registry.npmjs.org/@types/mdurl/-/mdurl-2.0.0.tgz"
   integrity sha512-RGdgjQUZba5p6QEFAVx2OGb8rQDL/cPRG7GiedRzMcJ1tYnUANBncjbSB1NRGwbvjcPeikRABz2nshyPk1bhWg==
-
-"@types/mime-types@^2.1.0":
-  version "2.1.4"
-  resolved "https://registry.npmjs.org/@types/mime-types/-/mime-types-2.1.4.tgz"
-  integrity sha512-lfU4b34HOri+kAY5UheuFMWPDOI+OPceBSHZKp69gEyTL/mmJ4cnU6Y/rlme3UL3GyOn6Y42hyIEw0/q8sWx5w==
 
 "@types/mime@^1":
   version "1.3.5"
@@ -4846,16 +4782,6 @@ he@^1.2.0:
   resolved "https://registry.npmjs.org/he/-/he-1.2.0.tgz"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
-highlight.js@*:
-  version "11.11.1"
-  resolved "https://registry.npmjs.org/highlight.js/-/highlight.js-11.11.1.tgz"
-  integrity sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==
-
-highlight.js@10.4.1:
-  version "10.4.1"
-  resolved "https://registry.npmjs.org/highlight.js/-/highlight.js-10.4.1.tgz"
-  integrity sha512-yR5lWvNz7c85OhVAEAeFhVCc/GV4C30Fjzc/rCP0aCWzc1UUOPUk55dK/qdwTZHBvMZo+eZ2jpk62ndX/xMFlg==
-
 hosted-git-info@^2.1.4, hosted-git-info@^2.5.0:
   version "2.8.9"
   resolved "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.8.9.tgz"
@@ -5969,7 +5895,7 @@ mime-db@1.52.0:
   resolved "https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz"
   integrity sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==
 
-mime-types@^2.1.12, mime-types@^2.1.18, mime-types@^2.1.27, mime-types@~2.1.24, mime-types@~2.1.34:
+mime-types@^2.1.12, mime-types@^2.1.27, mime-types@~2.1.24, mime-types@~2.1.34:
   version "2.1.35"
   resolved "https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz"
   integrity sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==
@@ -6809,11 +6735,6 @@ pathval@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/pathval/-/pathval-1.1.1.tgz"
   integrity sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==
-
-pdfobject@^2.0.201604172:
-  version "2.3.1"
-  resolved "https://registry.npmjs.org/pdfobject/-/pdfobject-2.3.1.tgz"
-  integrity sha512-vluuGiSDmMGpOvWFGiUY4trNB8aGKLDVxIXuuGHjX0kK3bMxCANUVtLivctE7uejLBScWCnbVarKatFVvdwXaQ==
 
 pend@~1.2.0:
   version "1.2.0"
@@ -8791,11 +8712,6 @@ vary@^1, vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
-
-vhost@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.npmjs.org/vhost/-/vhost-3.0.2.tgz"
-  integrity sha512-S3pJdWrpFWrKMboRU4dLYgMrTgoPALsmYwOvyebK2M6X95b9kQrjZy5rwl3uzzpfpENe/XrNYu/2U+e7/bmT5g==
 
 vscode-jsonrpc@8.2.0:
   version "8.2.0"

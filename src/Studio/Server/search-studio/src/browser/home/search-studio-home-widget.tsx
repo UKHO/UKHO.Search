@@ -34,12 +34,12 @@ export class SearchStudioHomeWidget extends ReactWidget {
     }
 
     /**
-     * Renders the Home placeholder layout using the copied runtime-served UKHO logo asset and short orientation text.
+     * Renders the cleaned Studio Home layout using the copied runtime-served UKHO logo asset and short orientation text.
      *
      * @returns The React node tree for the Home document tab.
      */
     protected render(): React.ReactNode {
-        // Keep the presentation intentionally lightweight for this slice by restoring only the key branding and orientation surface.
+        // Keep the presentation intentionally lightweight for this slice by rendering only the Studio-owned branding and orientation surface.
         return (
             <div className="search-studio-home-widget__content">
                 <header className="search-studio-home-widget__hero">
@@ -47,7 +47,7 @@ export class SearchStudioHomeWidget extends ReactWidget {
                         <h1 className="search-studio-home-widget__title">Search Studio</h1>
                         <p className="search-studio-home-widget__summary">
                             Welcome to the Studio shell for provider operations, rules exploration, and ingestion workflow review.
-                            Use the activity bar to move between the current work areas, and use the Theia View menu whenever you want to reopen this Home tab.
+                            Use the activity bar to move between the current work areas, and use View -&gt; Home whenever you want to reopen this Home tab.
                         </p>
                     </div>
                     <img
@@ -60,12 +60,6 @@ export class SearchStudioHomeWidget extends ReactWidget {
                     <h2 className="search-studio-home-widget__section-title">Current scope</h2>
                     <p className="search-studio-home-widget__summary">
                         This restored Home page stays intentionally lightweight for now. It provides branding and orientation while later work items bring back deeper Studio-specific workflows.
-                    </p>
-                </section>
-                <section className="search-studio-home-widget__note-panel">
-                    <strong>What to expect</strong>
-                    <p className="search-studio-home-widget__note">
-                        Generated Theia welcome surfaces may still appear alongside this tab while the new shell is rebuilt incrementally.
                     </p>
                 </section>
             </div>

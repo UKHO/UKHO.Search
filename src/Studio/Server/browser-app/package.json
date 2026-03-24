@@ -6,7 +6,6 @@
     "@theia/core": "1.69.0",
     "@theia/editor": "1.69.0",
     "@theia/filesystem": "1.69.0",
-    "@theia/getting-started": "1.69.0",
     "@theia/markers": "1.69.0",
     "@theia/messages": "1.69.0",
     "@theia/monaco": "1.69.0",
