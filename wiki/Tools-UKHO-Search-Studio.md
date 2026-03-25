@@ -94,11 +94,40 @@ The current shell intentionally keeps the generated Theia workbench structure wh
 
 - the `Home` document opens automatically in the main workbench area as a normal closable tab
 - `View -> Home` reopens the same Home document after it is closed
+- `View -> PrimeReact Demo` opens a temporary research page that is not shown by default
 - the active browser-app composition no longer includes the scaffold-owned Theia `Welcome` / getting-started surface
 - the `search-studio` extension preloads the same-origin runtime configuration bridge during startup
 - startup logs report whether the Studio API base URL handoff was resolved successfully
 - the Home surface uses the copied runtime-served UKHO logo plus lightweight orientation text only, without the previous lower explanatory box
 - later work items build on the restored Home document with follow-on Studio UI surfaces
+
+## Temporary PrimeReact evaluation pages
+
+Work package `074-primereact-research` adds the temporary PrimeReact research surfaces under:
+
+- `src/Studio/Server/search-studio/src/browser/primereact-demo`
+
+Current behavior:
+
+- the demo pages are exposed only from `View -> PrimeReact Demo`, `View -> PrimeReact Data Table Demo`, `View -> PrimeReact Forms Demo`, `View -> PrimeReact Data View Demo`, `View -> PrimeReact Layout Demo`, `View -> PrimeReact Showcase Demo`, `View -> PrimeReact Tree Demo`, and `View -> PrimeReact Tree Table Demo`
+- the demo pages do **not** open by default on startup
+- every page now assumes full styled PrimeReact only
+- every page follows the active Theia `light` / `dark` theme by switching between the stock PrimeReact Lara light and dark themes
+- the temporary demo surfaces use in-memory datasets only and keep all actions mock-only for look-and-feel review
+- the temporary demo command and menu registrations are kept inside the isolated `primereact-demo` contribution area so the research package remains easy to remove later as one focused change set
+
+Manual review steps:
+
+1. Start `AppHost` and open the Studio shell.
+2. Open `View -> PrimeReact Demo` and confirm the bootstrap page shows the initial controlled input, lane selector, status tags, buttons, and progress bars.
+3. Open `View -> PrimeReact Data Table Demo` and confirm sorting, filtering, pagination, selection, inline editing, loading, empty, and disabled states are all visible.
+4. Open `View -> PrimeReact Forms Demo` and confirm controlled inputs, inline validation, grouped selection controls, disabled controls, and the mock loading save action are all visible.
+5. Open `View -> PrimeReact Data View Demo` and confirm card/list layout switching, density changes, selection state, pagination, and empty-state presentation are all visible.
+6. Open `View -> PrimeReact Layout Demo` and confirm `TabView`, `Splitter`, `Panel`, and `Divider` composition plus draggable resizing interactions are all visible.
+7. Open `View -> PrimeReact Showcase Demo` and confirm the combined page shows tree, grid, and edit/detail form surfaces together, including selection, filtering, mock editing, and styled-theme following.
+8. Open `View -> PrimeReact Tree Demo` and confirm expand/collapse, checkbox selection, filter, mock toolbar actions, loading, and empty states are all visible.
+9. Open `View -> PrimeReact Tree Table Demo` and confirm hierarchical rows, columns, checkbox selection, loading, empty, and expansion states are all visible.
+10. Switch Theia between light and dark themes and confirm each demo updates to the matching stock PrimeReact theme.
 
 ## Prerequisite tooling
 

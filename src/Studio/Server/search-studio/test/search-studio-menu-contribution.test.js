@@ -32,6 +32,16 @@ require.extensions['.css'] = () => {};
 const { CommonMenus } = require('@theia/core/lib/browser');
 const { SearchStudioMenuContribution } = require('../lib/browser/search-studio-menu-contribution.js');
 const { SearchStudioShowHomeCommand } = require('../lib/browser/search-studio-home-constants.js');
+const {
+    SearchStudioShowPrimeReactDataTableDemoCommand,
+    SearchStudioShowPrimeReactDataViewDemoCommand,
+    SearchStudioShowPrimeReactDemoCommand,
+    SearchStudioShowPrimeReactFormsDemoCommand,
+    SearchStudioShowPrimeReactLayoutDemoCommand,
+    SearchStudioShowPrimeReactShowcaseDemoCommand,
+    SearchStudioShowPrimeReactTreeDemoCommand,
+    SearchStudioShowPrimeReactTreeTableDemoCommand
+} = require('../lib/browser/primereact-demo/search-studio-primereact-demo-constants.js');
 
 /**
  * Verifies that the View menu exposes the legacy-named Home reopen action.
@@ -52,6 +62,62 @@ test('SearchStudioMenuContribution registers Home in the View menu', () => {
             action: {
                 commandId: SearchStudioShowHomeCommand.id,
                 label: 'Home'
+            }
+        },
+        {
+            menuPath: CommonMenus.VIEW,
+            action: {
+                commandId: SearchStudioShowPrimeReactDemoCommand.id,
+                label: 'PrimeReact Demo'
+            }
+        },
+        {
+            menuPath: CommonMenus.VIEW,
+            action: {
+                commandId: SearchStudioShowPrimeReactDataTableDemoCommand.id,
+                label: 'PrimeReact Data Table Demo'
+            }
+        },
+        {
+            menuPath: CommonMenus.VIEW,
+            action: {
+                commandId: SearchStudioShowPrimeReactFormsDemoCommand.id,
+                label: 'PrimeReact Forms Demo'
+            }
+        },
+        {
+            menuPath: CommonMenus.VIEW,
+            action: {
+                commandId: SearchStudioShowPrimeReactDataViewDemoCommand.id,
+                label: 'PrimeReact Data View Demo'
+            }
+        },
+        {
+            menuPath: CommonMenus.VIEW,
+            action: {
+                commandId: SearchStudioShowPrimeReactLayoutDemoCommand.id,
+                label: 'PrimeReact Layout Demo'
+            }
+        },
+        {
+            menuPath: CommonMenus.VIEW,
+            action: {
+                commandId: SearchStudioShowPrimeReactShowcaseDemoCommand.id,
+                label: 'PrimeReact Showcase Demo'
+            }
+        },
+        {
+            menuPath: CommonMenus.VIEW,
+            action: {
+                commandId: SearchStudioShowPrimeReactTreeDemoCommand.id,
+                label: 'PrimeReact Tree Demo'
+            }
+        },
+        {
+            menuPath: CommonMenus.VIEW,
+            action: {
+                commandId: SearchStudioShowPrimeReactTreeTableDemoCommand.id,
+                label: 'PrimeReact Tree Table Demo'
             }
         }
     ]);

@@ -104,6 +104,9 @@ Rules:
 ## Provider Model Guidelines
 - Use `UKHO.Search.ProviderModel` as the mandatory shared home for generic provider registration and metadata concerns, located at `src/UKHO.Search.ProviderModel`. Ensure specifications reflect required refactoring and test migration.
 
+## PrimeReact Theia Research Demos
+- For the PrimeReact Theia research demos, use full styled PrimeReact only; remove unstyled mode and its toggle because the styled mode is preferred.
+
 ## Detailed Topic Guides
 Refer to specialized instruction files for full detail:
 - Architecture: `.github/instructions/architecture.instructions.md`

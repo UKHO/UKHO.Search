@@ -1,0 +1,513 @@
+/* Keep the widget itself flush so the page-level layout controls its own spacing like other Studio document surfaces. */
+.search-studio-primereact-demo-widget {
+    padding: 0;
+}
+
+/* Use CSS custom properties so the temporary unstyled demo remains lightly aligned with the active Theia theme. */
+.search-studio-primereact-demo-page {
+    --search-studio-primereact-surface: color-mix(in srgb, var(--theia-editor-background, #111827) 92%, white 8%);
+    --search-studio-primereact-surface-muted: color-mix(in srgb, var(--theia-editor-background, #111827) 86%, white 14%);
+    --search-studio-primereact-border: color-mix(in srgb, var(--theia-panel-border, #334155) 72%, transparent 28%);
+    --search-studio-primereact-border-strong: color-mix(in srgb, var(--theia-panel-border, #334155) 88%, white 12%);
+    --search-studio-primereact-text: var(--theia-editor-foreground, #e5e7eb);
+    --search-studio-primereact-text-muted: var(--theia-descriptionForeground, #cbd5e1);
+    --search-studio-primereact-accent: #4f8cff;
+    --search-studio-primereact-accent-strong: #2563eb;
+    --search-studio-primereact-success: #16a34a;
+    --search-studio-primereact-warning: #d97706;
+    display: grid;
+    gap: 1.5rem;
+    padding: 2rem;
+    color: var(--search-studio-primereact-text);
+    background: var(--theia-editor-background, #111827);
+}
+
+/* Light mode needs a brighter surface mix so the unstyled presentation stays clean and understated rather than flat white. */
+.theia-light .search-studio-primereact-demo-page {
+    --search-studio-primereact-surface: color-mix(in srgb, var(--theia-editor-background, #ffffff) 94%, #f3f7ff 6%);
+    --search-studio-primereact-surface-muted: color-mix(in srgb, var(--theia-editor-background, #ffffff) 88%, #eef3fb 12%);
+    --search-studio-primereact-border: color-mix(in srgb, var(--theia-panel-border, #d4d4d8) 86%, transparent 14%);
+    --search-studio-primereact-border-strong: color-mix(in srgb, var(--theia-panel-border, #d4d4d8) 90%, #cbd5e1 10%);
+    --search-studio-primereact-text: var(--theia-editor-foreground, #0f172a);
+    --search-studio-primereact-text-muted: var(--theia-descriptionForeground, #475569);
+}
+
+/* Keep the temporary unstyled hero spacious so the first page reads like an embedded content surface rather than a boxed admin form. */
+.search-studio-primereact-demo-page__hero {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.search-studio-primereact-demo-page__hero-copy,
+.search-studio-primereact-demo-page__mode-card,
+.search-studio-primereact-demo-page__metric-card,
+.search-studio-primereact-demo-page__surface {
+    display: grid;
+    gap: 0.85rem;
+    padding: 1.25rem;
+    border: 1px solid var(--search-studio-primereact-border);
+    border-radius: 1rem;
+    background: var(--search-studio-primereact-surface);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+.search-studio-primereact-demo-page__hero-heading-row,
+.search-studio-primereact-demo-page__section-heading-row,
+.search-studio-primereact-demo-page__activity-item,
+.search-studio-primereact-demo-page__theme-row,
+.search-studio-primereact-demo-page__action-row,
+.search-studio-primereact-demo-page__toggle-row,
+.search-studio-primereact-demo-page__checkbox-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.search-studio-primereact-demo-page__section-heading-row,
+.search-studio-primereact-demo-page__activity-item,
+.search-studio-primereact-demo-page__theme-row,
+.search-studio-primereact-demo-page__action-row {
+    justify-content: space-between;
+}
+
+.search-studio-primereact-demo-page__title,
+.search-studio-primereact-demo-page__section-title,
+.search-studio-primereact-demo-page__metric-value,
+.search-studio-primereact-demo-page__activity-title {
+    margin: 0;
+}
+
+.search-studio-primereact-demo-page__title {
+    font-size: 2rem;
+}
+
+.search-studio-primereact-demo-page__summary,
+.search-studio-primereact-demo-page__toggle-help,
+.search-studio-primereact-demo-page__section-summary,
+.search-studio-primereact-demo-page__activity-summary {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--search-studio-primereact-text-muted);
+}
+
+.search-studio-primereact-demo-page__theme-label,
+.search-studio-primereact-demo-page__metric-label,
+.search-studio-primereact-demo-page__field-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--search-studio-primereact-text-muted);
+}
+
+.search-studio-primereact-demo-page__theme-value {
+    font-size: 0.95rem;
+}
+
+.search-studio-primereact-demo-page__metrics-grid,
+.search-studio-primereact-demo-page__content-grid,
+.search-studio-primereact-demo-page__field-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.search-studio-primereact-demo-page__metrics-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.search-studio-primereact-demo-page__content-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.search-studio-primereact-demo-page__field-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.search-studio-primereact-demo-page__field-grid--wide {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.search-studio-primereact-demo-page__field-group {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.search-studio-primereact-demo-page__field-group--full-width {
+    grid-column: 1 / -1;
+}
+
+.search-studio-primereact-demo-page__checkbox-row {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+}
+
+.search-studio-primereact-demo-page__input,
+.search-studio-primereact-demo-page__select-button {
+    width: 100%;
+}
+
+.search-studio-primereact-demo-page__activity-list {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.search-studio-primereact-demo-page__activity-item {
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--search-studio-primereact-border);
+}
+
+.search-studio-primereact-demo-page__activity-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.search-studio-primereact-demo-page__activity-copy {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.search-studio-primereact-demo-page__content-grid--stacked {
+    grid-template-columns: 1fr;
+}
+
+.search-studio-primereact-demo-page__surface--flush {
+    gap: 1rem;
+}
+
+.search-studio-primereact-demo-page__toolbar,
+.search-studio-primereact-demo-page__toolbar-group,
+.search-studio-primereact-demo-page__callout-row,
+.search-studio-primereact-demo-page__tree-node,
+.search-studio-primereact-demo-page__choice-grid,
+.search-studio-primereact-demo-page__mini-metrics-grid,
+.search-studio-primereact-demo-page__action-row--start {
+    display: flex;
+    gap: 0.85rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-studio-primereact-demo-page__toolbar,
+.search-studio-primereact-demo-page__tree-node {
+    justify-content: space-between;
+}
+
+.search-studio-primereact-demo-page__action-row--start {
+    justify-content: flex-start;
+}
+
+.search-studio-primereact-demo-page__toolbar-group--actions {
+    justify-content: flex-end;
+}
+
+.search-studio-primereact-demo-page__toolbar-group--wide {
+    flex: 1 1 20rem;
+    min-width: 18rem;
+}
+
+.search-studio-primereact-demo-page__field-grid--filters {
+    grid-template-columns: minmax(0, 2fr) minmax(14rem, 1fr);
+}
+
+.search-studio-primereact-demo-page__callout-row {
+    padding: 0.85rem 1rem;
+    border-radius: 0.85rem;
+    border: 1px solid var(--search-studio-primereact-border);
+    background: var(--search-studio-primereact-surface-muted);
+}
+
+.search-studio-primereact-demo-page__callout-row--inline {
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+.search-studio-primereact-demo-page__table-copy,
+.search-studio-primereact-demo-page__tree-node-copy,
+.search-studio-primereact-demo-page__checkbox-copy,
+.search-studio-primereact-demo-page__toggle-copy,
+.search-studio-primereact-demo-page__dataview-copy,
+.search-studio-primereact-demo-page__detail-stack {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.search-studio-primereact-demo-page__detail-stack--tight {
+    gap: 0.5rem;
+}
+
+.search-studio-primereact-demo-page__table-secondary,
+.search-studio-primereact-demo-page__tree-node-summary,
+.search-studio-primereact-demo-page__helper-text {
+    font-size: 0.85rem;
+    color: var(--search-studio-primereact-text-muted);
+}
+
+.search-studio-primereact-demo-page__validation-text {
+    font-size: 0.85rem;
+    color: #ef4444;
+}
+
+.search-studio-primereact-demo-page__cell-editor,
+.search-studio-primereact-demo-page__tree,
+.search-studio-primereact-demo-page__datatable,
+.search-studio-primereact-demo-page__treetable,
+.search-studio-primereact-demo-page__dataview,
+.search-studio-primereact-demo-page__layout-splitter {
+    width: 100%;
+}
+
+.search-studio-primereact-demo-page__choice-stack {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.search-studio-primereact-demo-page__choice-card,
+.search-studio-primereact-demo-page__checkbox-card,
+.search-studio-primereact-demo-page__toggle-row--surface,
+.search-studio-primereact-demo-page__dataview-item,
+.search-studio-primereact-demo-page__layout-pane {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid var(--search-studio-primereact-border);
+    border-radius: 0.85rem;
+    background: var(--search-studio-primereact-surface-muted);
+}
+
+.search-studio-primereact-demo-page__choice-card,
+.search-studio-primereact-demo-page__checkbox-card,
+.search-studio-primereact-demo-page__toggle-row--surface {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+}
+
+.search-studio-primereact-demo-page__checkbox-card--disabled {
+    opacity: 0.65;
+}
+
+.search-studio-primereact-demo-page__mini-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.search-studio-primereact-demo-page__metric-chip {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.85rem;
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--search-studio-primereact-surface) 82%, white 18%);
+}
+
+.search-studio-primereact-demo-page__dataview .p-dataview-content,
+.search-studio-primereact-demo-page__dataview .p-dataview-header {
+    border: none;
+    background: transparent;
+    padding: 0;
+}
+
+.search-studio-primereact-demo-page__dataview .p-paginator {
+    margin-top: 1rem;
+    border-radius: 0.85rem;
+}
+
+.search-studio-primereact-demo-page__dataview--grid .p-dataview-content > .p-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: 1rem;
+}
+
+.search-studio-primereact-demo-page__dataview-item--selected {
+    border-color: color-mix(in srgb, var(--search-studio-primereact-accent) 50%, var(--search-studio-primereact-border) 50%);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--search-studio-primereact-accent) 30%, transparent 70%);
+}
+
+.search-studio-primereact-demo-page__dataview-item--compact {
+    gap: 0.5rem;
+    padding: 0.85rem;
+}
+
+.search-studio-primereact-demo-page__dataview-item--list {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+}
+
+.search-studio-primereact-demo-page__dataview-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.search-studio-primereact-demo-page__layout-splitter {
+    min-height: 36rem;
+}
+
+.search-studio-primereact-demo-page__layout-splitter--inner {
+    min-height: 26rem;
+}
+
+.search-studio-primereact-demo-page__layout-splitter--showcase {
+    min-height: 44rem;
+}
+
+.search-studio-primereact-demo-page__layout-pane {
+    height: 100%;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+}
+
+.search-studio-primereact-demo-page__activity-list--tight .search-studio-primereact-demo-page__activity-item {
+    justify-content: flex-start;
+}
+
+.search-studio-primereact-demo-page__tree {
+    min-height: 32rem;
+}
+
+.search-studio-primereact-demo-page__datatable .p-datatable-header,
+.search-studio-primereact-demo-page__treetable .p-treetable-header {
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+.search-studio-primereact-demo-page__datatable .p-datatable-tbody > tr > td,
+.search-studio-primereact-demo-page__treetable .p-treetable-tbody > tr > td {
+    vertical-align: top;
+}
+
+.search-studio-primereact-demo-page__treetable .p-treetable-wrapper,
+.search-studio-primereact-demo-page__datatable .p-datatable-wrapper {
+    border-radius: 0.85rem;
+}
+
+/* Give the unstyled PrimeReact controls a light shell-aligned skin without introducing heavy boxes or custom component wrappers. */
+.search-studio-primereact-demo-page--unstyled .search-studio-primereact-demo-page__mode-tag,
+.search-studio-primereact-demo-page--unstyled .search-studio-primereact-demo-page__section-tag,
+.search-studio-primereact-demo-page--unstyled .search-studio-primereact-demo-page__activity-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid var(--search-studio-primereact-border-strong);
+    background: var(--search-studio-primereact-surface-muted);
+    color: var(--search-studio-primereact-text);
+}
+
+.search-studio-primereact-demo-page--unstyled .search-studio-primereact-demo-page__primary-button,
+.search-studio-primereact-demo-page--unstyled .search-studio-primereact-demo-page__secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    border-radius: 0.85rem;
+    border: 1px solid transparent;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.search-studio-primereact-demo-page--unstyled .search-studio-primereact-demo-page__primary-button {
+    background: linear-gradient(135deg, var(--search-studio-primereact-accent) 0%, var(--search-studio-primereact-accent-strong) 100%);
+    color: white;
+}
+
+.search-studio-primereact-demo-page--unstyled .search-studio-primereact-demo-page__secondary-button {
+    background: transparent;
+    color: var(--search-studio-primereact-text);
+    border-color: var(--search-studio-primereact-border-strong);
+}
+
+.search-studio-primereact-demo-page--unstyled .search-studio-primereact-demo-page__input {
+    min-height: 2.75rem;
+    padding: 0 0.9rem;
+    border: 1px solid var(--search-studio-primereact-border-strong);
+    border-radius: 0.85rem;
+    background: var(--search-studio-primereact-surface-muted);
+    color: var(--search-studio-primereact-text);
+}
+
+.search-studio-primereact-demo-page--unstyled .search-studio-primereact-demo-page__select-button {
+    display: inline-flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+
+.search-studio-primereact-demo-page--unstyled .search-studio-primereact-demo-page__select-button .p-button {
+    min-height: 2.5rem;
+    padding: 0 0.9rem;
+    border-radius: 9999px;
+    border: 1px solid var(--search-studio-primereact-border-strong);
+    background: var(--search-studio-primereact-surface-muted);
+    color: var(--search-studio-primereact-text);
+}
+
+.search-studio-primereact-demo-page--unstyled .search-studio-primereact-demo-page__select-button .p-highlight {
+    background: rgba(79, 140, 255, 0.14);
+    color: var(--search-studio-primereact-accent);
+    border-color: rgba(79, 140, 255, 0.36);
+}
+
+.search-studio-primereact-demo-page__native-checkbox {
+    width: 1.1rem;
+    height: 1.1rem;
+    margin: 0;
+    accent-color: var(--search-studio-primereact-accent);
+}
+
+.search-studio-primereact-demo-page--unstyled .search-studio-primereact-demo-page__progress {
+    width: 100%;
+    height: 0.55rem;
+    overflow: hidden;
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--search-studio-primereact-accent) 12%, var(--search-studio-primereact-surface-muted) 88%);
+}
+
+.search-studio-primereact-demo-page--unstyled .search-studio-primereact-demo-page__progress .p-progressbar-value {
+    height: 100%;
+    background: linear-gradient(135deg, var(--search-studio-primereact-accent) 0%, var(--search-studio-primereact-accent-strong) 100%);
+}
+
+/* When styled mode is active, only trim the page chrome lightly so stock PrimeReact themes remain the main comparison surface. */
+.search-studio-primereact-demo-page--styled .search-studio-primereact-demo-page__hero-copy,
+.search-studio-primereact-demo-page--styled .search-studio-primereact-demo-page__mode-card,
+.search-studio-primereact-demo-page--styled .search-studio-primereact-demo-page__metric-card,
+.search-studio-primereact-demo-page--styled .search-studio-primereact-demo-page__surface {
+    border-color: color-mix(in srgb, var(--search-studio-primereact-border-strong) 70%, transparent 30%);
+}
+
+.search-studio-primereact-demo-page--styled .search-studio-primereact-demo-page__progress {
+    overflow: hidden;
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--theia-editorWidget-border, #475569) 45%, var(--theia-editor-background, #111827) 55%);
+}
+
+.search-studio-primereact-demo-page--styled .search-studio-primereact-demo-page__progress .p-progressbar-value {
+    background: linear-gradient(135deg, var(--search-studio-primereact-accent) 0%, var(--search-studio-primereact-accent-strong) 100%);
+}
+
+@media (max-width: 1100px) {
+    .search-studio-primereact-demo-page__hero,
+    .search-studio-primereact-demo-page__content-grid,
+    .search-studio-primereact-demo-page__metrics-grid,
+    .search-studio-primereact-demo-page__field-grid,
+    .search-studio-primereact-demo-page__field-grid--filters {
+        grid-template-columns: 1fr;
+    }
+
+    .search-studio-primereact-demo-page__toolbar,
+    .search-studio-primereact-demo-page__toolbar-group,
+    .search-studio-primereact-demo-page__callout-row,
+    .search-studio-primereact-demo-page__tree-node {
+        align-items: flex-start;
+    }
+}

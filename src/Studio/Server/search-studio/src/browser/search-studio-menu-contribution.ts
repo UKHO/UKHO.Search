@@ -1,16 +1,19 @@
 import { CommonMenus } from '@theia/core/lib/browser';
 import { MenuContribution, MenuModelRegistry } from '@theia/core/lib/common';
 import { injectable } from '@theia/core/shared/inversify';
+import {
+    getSearchStudioPrimeReactDemoCommandDefinitions
+} from './primereact-demo/search-studio-primereact-demo-constants';
 import { SearchStudioShowHomeCommand } from './search-studio-home-constants';
 
 /**
- * Adds the Studio Home reopen action to the standard Theia View menu.
+ * Adds the Studio Home and temporary PrimeReact demo reopen actions to the standard Theia View menu.
  */
 @injectable()
 export class SearchStudioMenuContribution implements MenuContribution {
 
     /**
-     * Registers the Home reopen action in the View menu.
+     * Registers the Home reopen action plus temporary PrimeReact demo entries in the View menu.
      *
      * @param menus Stores menu actions contributed by the Studio frontend extension.
      */
@@ -20,5 +23,13 @@ export class SearchStudioMenuContribution implements MenuContribution {
             commandId: SearchStudioShowHomeCommand.id,
             label: 'Home'
         });
+
+        // Add every temporary PrimeReact evaluation entry from one ordered definition list so the disposable research menu stays easy to review and remove.
+        for (const demoCommandDefinition of getSearchStudioPrimeReactDemoCommandDefinitions()) {
+            menus.registerMenuAction(CommonMenus.VIEW, {
+                commandId: demoCommandDefinition.command.id,
+                label: demoCommandDefinition.menuLabel
+            });
+        }
     }
 }
