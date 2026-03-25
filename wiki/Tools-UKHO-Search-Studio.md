@@ -114,6 +114,8 @@ Current behavior:
 - every page now assumes full styled PrimeReact only
 - every page follows the active Theia `light` / `dark` theme by switching between the stock PrimeReact Lara light and dark themes
 - the temporary demo surfaces use in-memory datasets only and keep all actions mock-only for look-and-feel review
+- the `PrimeReact Showcase Demo` now uses a showcase-scoped compact density pass so the page reads more like a desktop workbench surface than a long-form web page
+- the `PrimeReact Showcase Demo` now configures its widget root, splitters, and pane wrappers for pane-owned scrolling so the hierarchy and grid can scroll internally instead of pushing the outer page downward
 - the temporary demo command and menu registrations are kept inside the isolated `primereact-demo` contribution area so the research package remains easy to remove later as one focused change set
 
 Manual review steps:
@@ -124,10 +126,12 @@ Manual review steps:
 4. Open `View -> PrimeReact Forms Demo` and confirm controlled inputs, inline validation, grouped selection controls, disabled controls, and the mock loading save action are all visible.
 5. Open `View -> PrimeReact Data View Demo` and confirm card/list layout switching, density changes, selection state, pagination, and empty-state presentation are all visible.
 6. Open `View -> PrimeReact Layout Demo` and confirm `TabView`, `Splitter`, `Panel`, and `Divider` composition plus draggable resizing interactions are all visible.
-7. Open `View -> PrimeReact Showcase Demo` and confirm the combined page shows tree, grid, and edit/detail form surfaces together, including selection, filtering, mock editing, and styled-theme following.
-8. Open `View -> PrimeReact Tree Demo` and confirm expand/collapse, checkbox selection, filter, mock toolbar actions, loading, and empty states are all visible.
-9. Open `View -> PrimeReact Tree Table Demo` and confirm hierarchical rows, columns, checkbox selection, loading, empty, and expansion states are all visible.
-10. Switch Theia between light and dark themes and confirm each demo updates to the matching stock PrimeReact theme.
+7. Open `View -> PrimeReact Showcase Demo` and confirm the combined page shows tree, grid, and edit/detail form surfaces together with compact density, flatter chrome, smaller action controls, tighter row spacing, pane-owned grid scrolling, selection, filtering, mock editing, and styled-theme following.
+8. Resize the Studio content area vertically and confirm the outer page remains stable while the hierarchy pane and grid pane keep their own scrollbars.
+9. Narrow the content area moderately and confirm horizontal overflow stays with the grid region rather than introducing duplicate outer scrollbars.
+10. Open `View -> PrimeReact Tree Demo` and confirm expand/collapse, checkbox selection, filter, mock toolbar actions, loading, and empty states are all visible.
+11. Open `View -> PrimeReact Tree Table Demo` and confirm hierarchical rows, columns, checkbox selection, loading, empty, and expansion states are all visible.
+12. Switch Theia between light and dark themes and confirm each demo updates to the matching stock PrimeReact theme.
 
 ## Prerequisite tooling
 

@@ -73,6 +73,9 @@ test('SearchStudioPrimeReactDemoWidget requests an initial render during constru
 
     assert.ok(widget);
     assert.equal(updateCalls, 1);
+    assert.equal(widget.node.style.display, 'flex');
+    assert.equal(widget.node.style.height, '100%');
+    assert.equal(widget.node.style.overflow, 'hidden');
 });
 
 /**

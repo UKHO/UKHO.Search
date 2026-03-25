@@ -63,6 +63,12 @@ export class SearchStudioPrimeReactDemoWidget extends ReactWidget {
         this.title.closable = true;
         this.addClass('search-studio-primereact-demo-widget');
 
+        // Force the widget root itself to participate in full-height flex layout so page-local splitter and scroll ownership rules can consume the full Theia content area.
+        this.node.style.display = 'flex';
+        this.node.style.minHeight = '0';
+        this.node.style.height = '100%';
+        this.node.style.overflow = 'hidden';
+
         // Request the first render immediately so restored workbench tabs also repaint their React content without waiting for a manual page switch.
         this.update();
     }

@@ -106,6 +106,7 @@ Rules:
 
 ## PrimeReact Theia Research Demos
 - For the PrimeReact Theia research demos, use full styled PrimeReact only; remove unstyled mode and its toggle because the styled mode is preferred.
+- When refining the Theia PrimeReact showcase, ensure the expected desktop density is much tighter: action buttons should be substantially smaller, grid spacing should be reduced heavily, and the page should fit within the workbench with scrolling owned by the inner grid rather than the outer page.
 
 ## Detailed Topic Guides
 Refer to specialized instruction files for full detail:
