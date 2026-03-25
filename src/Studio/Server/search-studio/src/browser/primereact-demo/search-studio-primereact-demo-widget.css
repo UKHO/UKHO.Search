@@ -708,12 +708,14 @@
 
 /* Keep the showcase-specific tidy-up scoped to that page so the other PrimeReact research pages remain unchanged. */
 .search-studio-primereact-demo-page--showcase-compact {
-    grid-template-rows: auto minmax(0, 1fr);
-    gap: 0.65rem;
+    --search-studio-primereact-showcase-control-font-size: 0.72rem;
+    --search-studio-primereact-showcase-control-line-height: 1;
+    grid-template-rows: minmax(0, 1fr);
+    gap: 0;
     height: 100%;
     min-width: 0;
     min-height: 0;
-    padding: 0.65rem 0.85rem 0.75rem;
+    padding: 0.4rem 0.85rem 0.75rem;
     font-size: 0.875rem;
     overflow: hidden;
 }
@@ -723,15 +725,12 @@
     font-size: inherit;
 }
 
-.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__showcase-header,
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__showcase-workspace,
-.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__showcase-heading,
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__workspace-title-block {
     display: grid;
-    gap: 0.35rem;
+    gap: 0.25rem;
 }
 
-.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__showcase-header-row,
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__workspace-bar {
     display: flex;
     align-items: flex-start;
@@ -740,21 +739,20 @@
     flex-wrap: wrap;
 }
 
-.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__showcase-status {
-    display: grid;
-    gap: 0.2rem;
-    padding: 0.35rem 0.5rem;
-    border-radius: 0.6rem;
-    background: color-mix(in srgb, var(--search-studio-primereact-surface-muted) 88%, transparent 12%);
-}
-
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__title--compact {
-    font-size: 1.15rem;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__summary--compact,
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__section-summary {
+    font-size: 0.78rem;
     line-height: 1.3;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__section-title {
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__field-label,
@@ -763,31 +761,12 @@
     letter-spacing: 0.02em;
 }
 
-.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__showcase-metrics {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.4rem;
-}
-
-.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__showcase-metric {
-    display: grid;
-    gap: 0.1rem;
-    min-width: 0;
-    padding: 0.35rem 0.5rem;
-    border-radius: 0.5rem;
-    background: color-mix(in srgb, var(--search-studio-primereact-surface-muted) 72%, transparent 28%);
-}
-
-.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__showcase-metric--wide {
-    grid-column: span 2;
-}
-
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__showcase-workspace {
     grid-template-rows: auto auto auto minmax(0, 1fr);
-    padding-top: 0.25rem;
-    border-top: 1px solid var(--search-studio-primereact-border);
+    padding-top: 0;
+    border-top: none;
     min-height: 0;
-    gap: 0.35rem;
+    gap: 0.3rem;
     overflow: hidden;
 }
 
@@ -828,7 +807,7 @@
 .search-studio-primereact-demo-page--showcase-compact .p-button {
     gap: 0.35rem;
     padding: 0.32rem 0.65rem;
-    font-size: 0.76rem;
+    font-size: var(--search-studio-primereact-showcase-control-font-size);
 }
 
 .search-studio-primereact-demo-page--showcase-compact .p-button .p-button-icon {
@@ -839,7 +818,7 @@
 .search-studio-primereact-demo-page--showcase-compact .p-inputtextarea,
 .search-studio-primereact-demo-page--showcase-compact .p-selectbutton .p-button,
 .search-studio-primereact-demo-page--showcase-compact .p-tag {
-    font-size: 0.76rem;
+    font-size: var(--search-studio-primereact-showcase-control-font-size);
 }
 
 .search-studio-primereact-demo-page--showcase-compact .p-inputtext,
@@ -866,6 +845,23 @@
     font-size: 0.74rem;
 }
 
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__section-tag,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__callout-row--compact .p-tag,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__section-heading-row .p-tag {
+    font-weight: 500;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__section-heading-row strong,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__checkbox-copy > span {
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__field-group {
+    gap: 0.35rem;
+}
+
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__layout-pane {
     min-height: 0;
     padding: 0.2rem;
@@ -883,6 +879,10 @@
 
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__pane-shell {
     gap: 0.45rem;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__pane-shell--grid {
+    overflow: hidden;
 }
 
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__pane-shell--detail {
@@ -915,8 +915,8 @@
 }
 
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__pane-panel .p-panel-title {
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 0.82rem;
+    font-weight: 500;
 }
 
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__pane-panel .p-panel-content {
@@ -947,6 +947,10 @@
     flex-direction: column;
 }
 
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__tree--showcase-compact {
+    overflow: hidden;
+}
+
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__tree .p-tree-filter-container {
     margin-bottom: 0.35rem;
 }
@@ -962,15 +966,51 @@
     overflow: auto;
 }
 
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__tree--showcase-compact .p-treenode {
+    margin: 0;
+}
+
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__tree .p-treenode-content {
-    padding: 0.2rem 0.3rem;
+    gap: 0.22rem;
+    padding: 0.12rem 0.18rem;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__tree--showcase-compact .p-treenode-label {
+    font-size: 0.72rem;
+    font-weight: 400;
+    line-height: 1.15;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__tree--showcase-compact .p-tree-toggler,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__tree--showcase-compact .p-tree-toggler .p-tree-toggler-icon,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__tree--showcase-compact .p-checkbox,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__tree--showcase-compact .p-checkbox .p-checkbox-box,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__tree--showcase-compact .p-tree-filter-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    font-size: 0.7rem;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__tree--showcase-compact .p-checkbox {
+    margin-right: 0.08rem;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__tree--showcase-compact .p-tree-filter-container .p-inputtext {
+    font-size: 0.76rem;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__tree--showcase-compact .p-treenode-children {
+    padding-left: 1rem;
 }
 
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable,
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable .p-datatable,
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable .p-datatable-flex-scrollable,
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable .p-datatable-scrollable,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable .p-datatable-table-container,
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable .p-datatable-wrapper,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable .p-datatable-scrollable-header,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable .p-datatable-scrollable-body,
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable .p-virtualscroller {
     display: flex;
     flex: 1 1 auto;
@@ -978,26 +1018,143 @@
     min-height: 0;
 }
 
-.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable .p-datatable-wrapper {
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid {
     overflow: hidden;
+}
+
+/* Keep the Showcase grid on a stable 100%-height contract so vertical scrolling belongs to the grid even after the workbench width changes. */
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-datatable,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-datatable-wrapper,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-datatable-table-container,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-datatable-scrollable-body,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-virtualscroller {
+    height: 100%;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-datatable-wrapper,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-datatable-table-container {
+    overflow: hidden;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-datatable-scrollable-body,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-virtualscroller {
+    overflow: auto;
 }
 
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable .p-virtualscroller-content {
     min-height: 0;
 }
 
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-datatable-thead > tr > th {
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.15;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-datatable-tbody > tr > td {
+    font-size: 0.74rem;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable .p-datatable-thead > tr > th,
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable .p-datatable-tbody > tr > td {
-    padding: 0.45rem 0.55rem;
+    padding: 0.32rem 0.45rem;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-selection-column {
+    width: 2.8rem;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .search-studio-primereact-demo-page__table-copy strong {
+    font-size: 0.76rem;
+    font-weight: 600;
 }
 
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable .p-paginator {
-    padding: 0.2rem 0;
+    gap: 0.2rem;
+    padding: 0.12rem 0;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-page,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-element,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-dropdown,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-dropdown-label,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-dropdown-trigger,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-dropdown-item {
+    font-size: var(--search-studio-primereact-showcase-control-font-size);
+    line-height: var(--search-studio-primereact-showcase-control-line-height);
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-page,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-first,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-prev,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-next,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-last,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-rpp-options {
+    min-width: 1.7rem;
+    height: 1.7rem;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-page,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-element {
+    margin: 0;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-rpp-options {
+    display: inline-flex;
+    align-items: center;
+    font-size: inherit;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-rpp-options.p-dropdown {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    font-size: inherit;
+    line-height: 1;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-rpp-options .p-dropdown-label,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-rpp-options .p-dropdown-label.p-inputtext {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding: 0 0.4rem;
+    height: 100%;
+    min-height: 100%;
+    line-height: 1;
+    box-sizing: border-box;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-rpp-options .p-dropdown-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-rpp-options-panel,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-rpp-options-panel .p-dropdown-items,
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__datatable--showcase-grid .p-paginator .p-paginator-rpp-options-panel .p-dropdown-item {
+    font-size: var(--search-studio-primereact-showcase-control-font-size);
 }
 
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__checkbox-card {
-    padding: 0.55rem 0.7rem;
-    border-radius: 0.75rem;
+    gap: 0.45rem;
+    padding: 0.1rem 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+}
+
+.search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__checkbox-card .p-checkbox {
+    margin-top: 0.08rem;
 }
 
 .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__action-row--section-top {
@@ -1021,11 +1178,4 @@
         align-items: flex-start;
     }
 
-    .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__showcase-metrics {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .search-studio-primereact-demo-page--showcase-compact .search-studio-primereact-demo-page__showcase-metric--wide {
-        grid-column: 1 / -1;
-    }
 }

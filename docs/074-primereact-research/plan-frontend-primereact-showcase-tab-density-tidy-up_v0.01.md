@@ -64,7 +64,8 @@
 
 ## Slice 1 — Remove summary chrome and establish smaller heading density
 
-- [ ] Work Item 1: Remove the `Showcase` summary/status strip and rebalance the page shell for denser working content
+- [x] Work Item 1: Remove the `Showcase` summary/status strip and rebalance the page shell for denser working content - Completed
+  - Summary: Removed the retired `Showcase` summary strip and remaining local showcase hero/theme-sync header, tightened showcase heading density in the scoped stylesheet, updated showcase shell regression coverage, and refreshed the Studio wiki reviewer guidance for the reclaimed workspace area.
   - **Purpose**: Deliver an immediately reviewable improvement by reclaiming vertical space, reducing oversized emphasis, and making the `Showcase` tab feel more like a Theia workbench surface without changing its core workflow.
   - **Acceptance Criteria**:
     - The summary/status strip containing items such as `Grid selection`, `Hierarchy selection`, `Scenario`, and `Last action` is no longer rendered on the `Showcase` tab.
@@ -80,21 +81,21 @@
     - Relevant frontend tests updated or added
     - Wiki guidance updated if reviewer expectations change materially
     - Can execute end to end via: open the PrimeReact showcase page from `View`, confirm the `Showcase` tab opens without the summary/status strip, and verify the main working panes occupy the reclaimed space
-  - [ ] Task 1.1: Remove summary/status-strip markup and related layout dependencies
-    - [ ] Step 1: Review the current `Showcase` tab component structure to identify the full summary/status strip markup, wrappers, and any dependent spacing rules.
-    - [ ] Step 2: Remove the summary/status strip content and any title/panel wrappers that belong only to that section.
-    - [ ] Step 3: Rebalance surrounding layout containers so the reclaimed vertical space is absorbed by the remaining hierarchy, grid, and detail working area.
-    - [ ] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
-  - [ ] Task 1.2: Reduce title and section-heading scale toward the Theia baseline
-    - [ ] Step 1: Review the current page title, section title, and label typography within the `Showcase` tab.
-    - [ ] Step 2: Reduce heading font size, weight, and spacing so titles support orientation without dominating the page.
-    - [ ] Step 3: Keep the `Grid filter` and `Filter showcase hierarchy` controls broadly unchanged and use them as a reference point for nearby typography weight and sizing.
-    - [ ] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
-  - [ ] Task 1.3: Add focused verification for removed chrome and reduced title density
-    - [ ] Step 1: Update or add frontend tests that assert the summary/status strip is absent from the `Showcase` tab.
-    - [ ] Step 2: Add focused checks, where practical, that the retained headings and labels still render correctly after the layout simplification.
-    - [ ] Step 3: Update `wiki/Tools-UKHO-Search-Studio.md` so reviewers know to assess reduced chrome, smaller titles, and improved working-space usage.
-    - [ ] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 1.1: Remove summary/status-strip markup and related layout dependencies - Completed
+    - [x] Step 1: Review the current `Showcase` tab component structure to identify the full summary/status strip markup, wrappers, and any dependent spacing rules.
+    - [x] Step 2: Remove the summary/status strip content and any title/panel wrappers that belong only to that section.
+    - [x] Step 3: Rebalance surrounding layout containers so the reclaimed vertical space is absorbed by the remaining hierarchy, grid, and detail working area.
+    - [x] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 1.2: Reduce title and section-heading scale toward the Theia baseline - Completed
+    - [x] Step 1: Review the current page title, section title, and label typography within the `Showcase` tab.
+    - [x] Step 2: Reduce heading font size, weight, and spacing so titles support orientation without dominating the page.
+    - [x] Step 3: Keep the `Grid filter` and `Filter showcase hierarchy` controls broadly unchanged and use them as a reference point for nearby typography weight and sizing.
+    - [x] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 1.3: Add focused verification for removed chrome and reduced title density - Completed
+    - [x] Step 1: Update or add frontend tests that assert the summary/status strip is absent from the `Showcase` tab.
+    - [x] Step 2: Add focused checks, where practical, that the retained headings and labels still render correctly after the layout simplification.
+    - [x] Step 3: Update `wiki/Tools-UKHO-Search-Studio.md` so reviewers know to assess reduced chrome, smaller titles, and improved working-space usage.
+    - [x] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
   - **Files**:
     - `src/Studio/Server/search-studio/src/browser/primereact-demo/pages/search-studio-primereact-showcase-demo-page.tsx`: remove summary/status strip and rebalance page composition
     - `src/Studio/Server/search-studio/src/browser/primereact-demo/search-studio-primereact-demo-widget.css`: heading, spacing, and shell-density adjustments for the `Showcase` tab
@@ -114,7 +115,8 @@
 
 ## Slice 2 — Fix grid scroll ownership and compact the grid region
 
-- [ ] Work Item 2: Make the grid own vertical scrolling reliably and reduce grid typography weight and size
+- [x] Work Item 2: Make the grid own vertical scrolling reliably and reduce grid typography weight and size - Completed
+  - Summary: Centralized the `Showcase` grid scroll/density contract, switched the grid to a stable full-height inner scroll configuration, tightened grid header/body typography, centralized compact control font sizing, paginator sizing, and row spacing, added focused regression coverage for the grid contract, and refreshed Studio reviewer guidance for scrollbar validation.
   - **Purpose**: Deliver the most important interaction fix in the spec by ensuring the grid scrolls correctly at narrower widths while also making the grid read as a denser, calmer desktop table.
   - **Acceptance Criteria**:
     - The grid displays and owns a vertical scrollbar whenever row content exceeds the visible grid viewport height.
@@ -130,23 +132,23 @@
     - Code comments added in full compliance with `./.github/instructions/documentation-pass.instructions.md`
     - Relevant frontend tests updated or added
     - Can execute end to end via: open the `Showcase` tab, narrow the workbench, confirm the grid vertical scrollbar appears when needed, and verify the detail pane still behaves correctly
-  - [ ] Task 2.1: Correct deterministic grid overflow behavior inside the `Showcase` layout
-    - [ ] Step 1: Review the current grid container, splitter/pane sizing rules, and overflow CSS to identify why vertical scrolling depends on resize side effects.
-    - [ ] Step 2: Adjust the `Showcase` layout and grid-region sizing so the grid has a stable height contract and owns its own vertical overflow.
-    - [ ] Step 3: Verify the grid scrollbar appears correctly when the workbench is narrowed and the effective viewport becomes insufficient.
-    - [ ] Step 4: Preserve the current detail-pane scrollbar behavior and avoid introducing competing scroll owners.
-    - [ ] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
-  - [ ] Task 2.2: Tighten grid typography, row density, and emphasis
-    - [ ] Step 1: Reduce grid body and header font size so the table aligns more closely with the compact filter textbox baseline.
-    - [ ] Step 2: Reduce font weight and ease off bold usage across the grid unless a stronger emphasis remains clearly justified.
-    - [ ] Step 3: Tighten row padding, line-height, and related spacing so the grid feels denser as a whole.
-    - [ ] Step 4: Keep the `Grid filter` control broadly unchanged and confirm nearby text styling does not make it feel inconsistent.
-    - [ ] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
-  - [ ] Task 2.3: Add focused verification for grid scrollbar behavior and density
-    - [ ] Step 1: Update or add frontend tests around the `Showcase` tab so the grid region still renders correctly after layout changes.
-    - [ ] Step 2: Add practical checks for the absence of regressions in grid and detail pane composition, using the current node-based test approach where full resize simulation is limited.
-    - [ ] Step 3: Update wiki reviewer guidance so manual review explicitly covers grid scrollbar appearance under narrower widths and reduced grid text density.
-    - [ ] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 2.1: Correct deterministic grid overflow behavior inside the `Showcase` layout - Completed
+    - [x] Step 1: Review the current grid container, splitter/pane sizing rules, and overflow CSS to identify why vertical scrolling depends on resize side effects.
+    - [x] Step 2: Adjust the `Showcase` layout and grid-region sizing so the grid has a stable height contract and owns its own vertical overflow.
+    - [x] Step 3: Verify the grid scrollbar appears correctly when the workbench is narrowed and the effective viewport becomes insufficient.
+    - [x] Step 4: Preserve the current detail-pane scrollbar behavior and avoid introducing competing scroll owners.
+    - [x] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 2.2: Tighten grid typography, row density, and emphasis - Completed
+    - [x] Step 1: Reduce grid body and header font size so the table aligns more closely with the compact filter textbox baseline.
+    - [x] Step 2: Reduce font weight and ease off bold usage across the grid unless a stronger emphasis remains clearly justified.
+    - [x] Step 3: Tighten row padding, line-height, and related spacing so the grid feels denser as a whole.
+    - [x] Step 4: Keep the `Grid filter` control broadly unchanged and confirm nearby text styling does not make it feel inconsistent.
+    - [x] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 2.3: Add focused verification for grid scrollbar behavior and density - Completed
+    - [x] Step 1: Update or add frontend tests around the `Showcase` tab so the grid region still renders correctly after layout changes.
+    - [x] Step 2: Add practical checks for the absence of regressions in grid and detail pane composition, using the current node-based test approach where full resize simulation is limited.
+    - [x] Step 3: Update wiki reviewer guidance so manual review explicitly covers grid scrollbar appearance under narrower widths and reduced grid text density.
+    - [x] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
   - **Files**:
     - `src/Studio/Server/search-studio/src/browser/primereact-demo/pages/search-studio-primereact-showcase-demo-page.tsx`: grid-region layout and sizing adjustments
     - `src/Studio/Server/search-studio/src/browser/primereact-demo/search-studio-primereact-demo-widget.css`: grid overflow, row density, and typography refinements
@@ -166,7 +168,8 @@
 
 ## Slice 3 — Tighten hierarchy-tree density and finish Theia-aligned polish
 
-- [ ] Work Item 3: Compact the hierarchy tree and complete the final Theia-aligned typography pass for the `Showcase` tab
+- [x] Work Item 3: Compact the hierarchy tree and complete the final Theia-aligned typography pass for the `Showcase` tab - Completed
+  - Summary: Centralized the `Showcase` hierarchy contract, tightened tree label and control spacing, applied the final lighter-weight typography pass across remaining showcase labels and detail headings, removed the heavy publish-follow-up card chrome, refined paginator dropdown alignment, added focused regression coverage for the hierarchy contract and retained regions, and refreshed the Studio wiki reviewer guidance for final Theia-aligned assessment.
   - **Purpose**: Finish the density tidy-up by bringing the tree control and remaining `Showcase` typography into closer alignment with the compact filter textbox baseline and Theia workbench rhythm.
   - **Acceptance Criteria**:
     - The hierarchy tree uses materially tighter vertical spacing than before.
@@ -182,22 +185,22 @@
     - Relevant frontend tests updated or added
     - Wiki guidance updated for final reviewer checks
     - Can execute end to end via: open the `Showcase` tab, review hierarchy density against the filter textbox baseline, and confirm the full surface feels denser and lighter overall
-  - [ ] Task 3.1: Tighten hierarchy tree node spacing and typography
-    - [ ] Step 1: Review the current hierarchy tree row structure, PrimeReact tree classes, checkbox spacing, and node-label typography.
-    - [ ] Step 2: Reduce node text size and weight so it aligns more closely with the compact textbox watermark baseline.
-    - [ ] Step 3: Tighten expander, checkbox, icon, and row padding so the tree becomes materially denser without appearing broken.
-    - [ ] Step 4: Preserve usability and readability for tree interaction after the density reduction.
-    - [ ] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
-  - [ ] Task 3.2: Complete the final typography-weight pass across the remaining `Showcase` content
-    - [ ] Step 1: Review residual labels, badges, and supporting text across the `Showcase` tab for over-heavy weight or oversized scale.
-    - [ ] Step 2: Reduce unnecessary bold emphasis while preserving clear semantic cues where they still add value.
-    - [ ] Step 3: Keep the overall page visually calm, compact, and aligned with Theia workbench density.
-    - [ ] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
-  - [ ] Task 3.3: Finish regression coverage and final reviewer documentation
-    - [ ] Step 1: Update or add focused tests so the `Showcase` tab still renders the hierarchy, grid, and detail regions correctly after the density pass.
-    - [ ] Step 2: Add practical checks for the continued presence of hierarchy filtering and the absence of removed status content.
-    - [ ] Step 3: Update `wiki/Tools-UKHO-Search-Studio.md` so manual reviewers assess hierarchy density, title scale, and overall Theia alignment together.
-    - [ ] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 3.1: Tighten hierarchy tree node spacing and typography - Completed
+    - [x] Step 1: Review the current hierarchy tree row structure, PrimeReact tree classes, checkbox spacing, and node-label typography.
+    - [x] Step 2: Reduce node text size and weight so it aligns more closely with the compact textbox watermark baseline.
+    - [x] Step 3: Tighten expander, checkbox, icon, and row padding so the tree becomes materially denser without appearing broken.
+    - [x] Step 4: Preserve usability and readability for tree interaction after the density reduction.
+    - [x] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 3.2: Complete the final typography-weight pass across the remaining `Showcase` content - Completed
+    - [x] Step 1: Review residual labels, badges, and supporting text across the `Showcase` tab for over-heavy weight or oversized scale.
+    - [x] Step 2: Reduce unnecessary bold emphasis while preserving clear semantic cues where they still add value.
+    - [x] Step 3: Keep the overall page visually calm, compact, and aligned with Theia workbench density.
+    - [x] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 3.3: Finish regression coverage and final reviewer documentation - Completed
+    - [x] Step 1: Update or add focused tests so the `Showcase` tab still renders the hierarchy, grid, and detail regions correctly after the density pass.
+    - [x] Step 2: Add practical checks for the continued presence of hierarchy filtering and the absence of removed status content.
+    - [x] Step 3: Update `wiki/Tools-UKHO-Search-Studio.md` so manual reviewers assess hierarchy density, title scale, and overall Theia alignment together.
+    - [x] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
   - **Files**:
     - `src/Studio/Server/search-studio/src/browser/primereact-demo/pages/search-studio-primereact-showcase-demo-page.tsx`: hierarchy-tree presentation and remaining label refinements
     - `src/Studio/Server/search-studio/src/browser/primereact-demo/search-studio-primereact-demo-widget.css`: hierarchy density, label-weight, and final typography tuning

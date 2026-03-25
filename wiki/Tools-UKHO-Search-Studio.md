@@ -116,6 +116,10 @@ Current behavior:
 - the temporary demo surfaces use in-memory datasets only and keep all actions mock-only for look-and-feel review
 - the `PrimeReact Showcase Demo` now uses a showcase-scoped compact density pass so the page reads more like a desktop workbench surface than a long-form web page
 - the `PrimeReact Showcase Demo` now configures its widget root, splitters, and pane wrappers for pane-owned scrolling so the hierarchy and grid can scroll internally instead of pushing the outer page downward
+- the `Showcase` grid now uses a dedicated stable inner-height contract so narrowing the workbench still leaves vertical scrolling owned by the grid instead of depending on resize side effects
+- the `Showcase` grid now uses lighter header/body typography, a tighter paginator, reduced row padding, and a centralized compact control font-size baseline so the table reads more like a compact Theia workbench surface
+- the `Showcase` hierarchy tree now uses smaller node labels, tighter node padding, and denser expander/checkbox spacing so it sits closer to the `Filter showcase hierarchy` textbox baseline
+- the remaining `Showcase` labels, badges, and detail headings now use lighter weight, and the secondary publish-follow-up control no longer sits inside a heavy card panel, so the whole page reads as one calmer Theia-aligned workbench surface
 - the `PrimeReact Showcase Demo` now hosts the retained review surface inside one root tab shell with the fixed order `Showcase`, `Forms`, `Data View`, `Data Table`, `Tree`, and `Tree Table`
 - the root tab control now owns the whole showcase page without an extra toolbar or decorative header band above it
 - the `Forms`, `Data View`, `Data Table`, `Tree`, and `Tree Table` tabs now render inside that consolidated shell using the same tighter spacing baseline as the compact showcase page
@@ -127,7 +131,7 @@ Manual review steps:
 1. Start `AppHost` and open the Studio shell.
 2. Open `View -> PrimeReact Showcase Demo` and confirm the page opens directly on a root tab strip with no toolbar or decorative header band above the tabs.
 3. Confirm the tab order is `Showcase`, `Forms`, `Data View`, `Data Table`, `Tree`, and `Tree Table`, and that `Showcase` is selected by default.
-4. Review the default `Showcase` tab and confirm the combined page still shows tree, grid, and edit/detail form surfaces together with compact density, flatter chrome, smaller action controls, tighter row spacing, pane-owned grid scrolling, selection, filtering, mock editing, and styled-theme following.
+4. Review the default `Showcase` tab and confirm the upper summary/status strip plus the local showcase hero/theme-sync header are absent, and the combined page still shows tree, grid, and edit/detail form surfaces together with compact density, flatter chrome, smaller action controls, tighter row spacing, pane-owned grid scrolling, selection, filtering, mock editing, and styled-theme following.
 5. Switch to the `Forms` tab and confirm the migrated content keeps the same tighter shell density and does not introduce a new page toolbar above the root tabs.
 6. Switch to the `Data View` tab and confirm the migrated content keeps the same compact baseline and remains inside the shared tab shell rather than acting like a separate page.
 7. Switch to the `Data Table` tab and confirm sorting, filtering, pagination, selection, inline editing, loading, empty, and disabled states remain available with scrolling owned by the inner grid region.
@@ -135,8 +139,13 @@ Manual review steps:
 9. Switch to the `Tree Table` tab and confirm hierarchical rows, columns, checkbox selection, loading, empty, and expansion states remain available with scrolling kept inside the hierarchical grid region.
 10. After each tab switch, confirm keyboard focus moves into the newly displayed tab content instead of staying on the tab header.
 11. Resize the Studio content area vertically and confirm the outer page remains stable while the hierarchy and grid-heavy regions keep their own scrollbars.
-12. Narrow the content area moderately and confirm horizontal overflow stays with the root tab strip or the inner grid region rather than introducing duplicate outer scrollbars.
-13. Switch Theia between light and dark themes and confirm the consolidated showcase updates to the matching stock PrimeReact theme.
+12. Narrow the content area moderately and confirm the `Showcase` grid still presents its own vertical scrollbar when the visible viewport becomes insufficient rather than requiring a widen-then-shrink repaint cycle.
+13. While reviewing that narrower layout, confirm the grid header/body text, paginator size, rows-per-page dropdown alignment, and row spacing feel lighter and tighter than before while the `Grid filter` textbox still looks acceptable.
+14. Confirm the publish-follow-up checkbox remains available in the detail area without the previous heavy filled panel around it.
+15. Compare the hierarchy node text and spacing to the `Filter showcase hierarchy` textbox watermark and confirm the tree now feels materially denser without harming readability.
+16. Review the remaining detail labels, badges, and section titles and confirm the overall page feels lighter and more consistent rather than like isolated demo cards.
+17. Confirm horizontal overflow stays with the root tab strip or the inner grid region rather than introducing duplicate outer scrollbars.
+18. Switch Theia between light and dark themes and confirm the consolidated showcase updates to the matching stock PrimeReact theme.
 
 ## Prerequisite tooling
 

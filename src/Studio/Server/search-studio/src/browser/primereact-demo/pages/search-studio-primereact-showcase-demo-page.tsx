@@ -128,6 +128,51 @@ export interface SearchStudioPrimeReactShowcaseTabDefinition {
 export type SearchStudioPrimeReactShowcaseTabRenderState = Record<SearchStudioPrimeReactShowcaseTabId, boolean>;
 
 /**
+ * Describes the stable grid configuration used by the compact Showcase review surface.
+ */
+export interface SearchStudioPrimeReactShowcaseGridConfiguration {
+    /**
+     * Stores the default page size used by the compact Showcase grid.
+     */
+    readonly rows: number;
+
+    /**
+     * Stores the paginator page-size options shown by the compact Showcase grid.
+     */
+    readonly rowsPerPageOptions: ReadonlyArray<number>;
+
+    /**
+     * Stores the grid scroll-height contract so the inner grid owns vertical overflow.
+     */
+    readonly scrollHeight: '100%';
+
+    /**
+     * Stores the PrimeReact density token used to reduce row height in the Showcase grid.
+     */
+    readonly size: 'small';
+
+    /**
+     * Stores the CSS class list used to scope grid-specific overflow and density refinements.
+     */
+    readonly className: string;
+}
+
+/**
+ * Describes the stable hierarchy configuration used by the compact Showcase review surface.
+ */
+export interface SearchStudioPrimeReactShowcaseHierarchyConfiguration {
+    /**
+     * Stores the hierarchy filter placeholder so the compact tree stays aligned with the page-level reviewer guidance.
+     */
+    readonly filterPlaceholder: string;
+
+    /**
+     * Stores the CSS class list used to scope tree-density refinements to the Showcase hierarchy only.
+     */
+    readonly className: string;
+}
+
+/**
  * Stores the fixed root-tab order required by the consolidated showcase shell.
  */
 export const SearchStudioPrimeReactShowcaseTabOrder: ReadonlyArray<SearchStudioPrimeReactShowcaseTabId> = [
@@ -172,6 +217,19 @@ const searchStudioPrimeReactShowcaseTabDefinitions: ReadonlyArray<SearchStudioPr
     }
 ];
 
+const searchStudioPrimeReactShowcaseGridConfiguration: SearchStudioPrimeReactShowcaseGridConfiguration = {
+    rows: 8,
+    rowsPerPageOptions: [8, 12, 16],
+    scrollHeight: '100%',
+    size: 'small',
+    className: 'search-studio-primereact-demo-page__datatable search-studio-primereact-demo-page__datatable--showcase-grid'
+};
+
+const searchStudioPrimeReactShowcaseHierarchyConfiguration: SearchStudioPrimeReactShowcaseHierarchyConfiguration = {
+    filterPlaceholder: 'Filter showcase hierarchy',
+    className: 'search-studio-primereact-demo-page__tree search-studio-primereact-demo-page__tree--showcase-compact'
+};
+
 /**
  * Gets the ordered root-tab metadata used by the consolidated showcase shell.
  *
@@ -180,6 +238,26 @@ const searchStudioPrimeReactShowcaseTabDefinitions: ReadonlyArray<SearchStudioPr
 export function getSearchStudioPrimeReactShowcaseTabDefinitions(): ReadonlyArray<SearchStudioPrimeReactShowcaseTabDefinition> {
     // Keep the tab metadata centralized so the runtime shell and focused tests share one stable tab order.
     return searchStudioPrimeReactShowcaseTabDefinitions;
+}
+
+/**
+ * Gets the stable grid configuration used by the compact Showcase review surface.
+ *
+ * @returns The immutable grid-configuration contract shared by the runtime page and focused regression tests.
+ */
+export function getSearchStudioPrimeReactShowcaseGridConfiguration(): SearchStudioPrimeReactShowcaseGridConfiguration {
+    // Keep the scroll-height and density contract centralized so runtime rendering and tests stay aligned when the grid layout is refined.
+    return searchStudioPrimeReactShowcaseGridConfiguration;
+}
+
+/**
+ * Gets the stable hierarchy configuration used by the compact Showcase review surface.
+ *
+ * @returns The immutable hierarchy-configuration contract shared by the runtime page and focused regression tests.
+ */
+export function getSearchStudioPrimeReactShowcaseHierarchyConfiguration(): SearchStudioPrimeReactShowcaseHierarchyConfiguration {
+    // Keep the hierarchy filter copy and scoped class list centralized so tree-density refinements remain easy to review and test.
+    return searchStudioPrimeReactShowcaseHierarchyConfiguration;
 }
 
 /**
@@ -281,17 +359,6 @@ const reviewLaneOptions = [
 ];
 
 /**
- * Returns the short theme label shown in the temporary combined showcase header.
- *
- * @param activeThemeVariant Identifies the current Theia-aligned PrimeReact theme variant.
- * @returns The short theme label displayed to reviewers.
- */
-function getThemeLabel(activeThemeVariant: SearchStudioPrimeReactDemoPageProps['activeThemeVariant']): string {
-    // Surface the current light or dark mapping explicitly so reviewers can confirm Theia theme following while the combined showcase is open.
-    return activeThemeVariant === 'light' ? 'Theia light -> Lara Light Blue' : 'Theia dark -> Lara Dark Blue';
-}
-
-/**
  * Maps a mock lifecycle state to the PrimeReact tag severity used across the temporary combined showcase page.
  *
  * @param status Identifies the mock lifecycle state that should be rendered.
@@ -365,6 +432,8 @@ function getFilteredRecords(
  */
 export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeReactDemoPageProps): React.ReactNode {
     const tabDefinitions = React.useMemo(() => getSearchStudioPrimeReactShowcaseTabDefinitions(), []);
+    const hierarchyConfiguration = React.useMemo(() => getSearchStudioPrimeReactShowcaseHierarchyConfiguration(), []);
+    const gridConfiguration = React.useMemo(() => getSearchStudioPrimeReactShowcaseGridConfiguration(), []);
     const initialRecords = React.useMemo(() => createDataTableDemoRecords(48), []);
     const treeNodes = React.useMemo(() => createTreeDemoNodes(4, 4, 4), []);
     const [activeTabId, setActiveTabId] = React.useState<SearchStudioPrimeReactShowcaseTabId>('showcase');
@@ -376,7 +445,6 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
     const [treeSelectionKeys, setTreeSelectionKeys] = React.useState<SearchStudioPrimeReactDemoTreeSelectionKeys | undefined>();
     const [expandedKeys, setExpandedKeys] = React.useState<SearchStudioPrimeReactDemoExpandedKeys>(() => createExpandedTreeKeys(treeNodes));
     const [detailFormState, setDetailFormState] = React.useState<SearchStudioPrimeReactShowcaseDetailFormState>(() => createDetailFormState(undefined));
-    const [lastActionSummary, setLastActionSummary] = React.useState('Compact review surface ready for hierarchy, grid, and detail comparisons.');
 
     const filteredRecords = React.useMemo(
         () => getFilteredRecords(records, tableFilter),
@@ -451,7 +519,6 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
         setScenario(event.value as SearchStudioPrimeReactDemoScenario);
         setSelectedRecords([]);
         setTreeSelectionKeys(undefined);
-        setLastActionSummary(`Scenario switched to ${String(event.value)} for the combined showcase.`);
         console.info('Switched temporary PrimeReact showcase scenario.', { scenario: event.value });
     }
 
@@ -473,9 +540,6 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
     function handleSelectionChanged(event: SearchStudioPrimeReactShowcaseSelectionChangedEvent): void {
         // Keep the selected rows in page state so the detail panel can react immediately to the lead selected record.
         setSelectedRecords(event.value);
-        setLastActionSummary(event.value.length > 0
-            ? `Loaded ${event.value.length} selected grid row(s) into the combined review surface.`
-            : 'Cleared the current combined grid selection.');
     }
 
     /**
@@ -504,7 +568,6 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
     function handleExpandAll(): void {
         // Recompute the expansion dictionary so the action remains aligned with the generated tree even if the sample shape changes later.
         setExpandedKeys(createExpandedTreeKeys(treeNodes));
-        setLastActionSummary('Expanded every hierarchy branch in the combined showcase.');
     }
 
     /**
@@ -513,7 +576,6 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
     function handleCollapseAll(): void {
         // Clear the expansion dictionary so PrimeReact collapses every hierarchy branch in one consistent update.
         setExpandedKeys({});
-        setLastActionSummary('Collapsed the combined showcase hierarchy to its top level.');
     }
 
     /**
@@ -584,7 +646,6 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
     function handleSaveDetailChanges(): void {
         if (!activeDetailRecord) {
             // Stop early when no lead record is selected because the combined edit panel is intentionally selection-driven.
-            setLastActionSummary('Select a grid row before saving the combined detail panel.');
             return;
         }
 
@@ -601,7 +662,6 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
                     reviewNotes: detailFormState.draftReviewNotes.trim() || record.reviewNotes
                 };
             }));
-            setLastActionSummary(`Saved the mock detail changes for ${activeDetailRecord.title}.`);
             console.info('Saved temporary PrimeReact showcase detail changes.', {
                 recordId: activeDetailRecord.id,
                 reviewLane: detailFormState.reviewLane,
@@ -610,7 +670,6 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
         } catch (error) {
             // Log the failure so temporary combined-page save issues remain diagnosable during stakeholder review.
             console.error('Failed to save temporary PrimeReact showcase detail changes.', error);
-            setLastActionSummary('Failed to save the mock detail panel changes. Check the console for diagnostics.');
         }
     }
 
@@ -620,9 +679,6 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
     function handleResetDetailChanges(): void {
         // Rebuild the detail form from the lead selected row so reviewers can return to the current grid state quickly.
         setDetailFormState(createDetailFormState(activeDetailRecord));
-        setLastActionSummary(activeDetailRecord
-            ? `Reset the detail panel back to ${activeDetailRecord.title}.`
-            : 'Reset the detail panel back to its empty placeholder state.');
     }
 
     /**
@@ -679,42 +735,6 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
 
     const showcaseTabContent = (
         <div className="search-studio-primereact-demo-page search-studio-primereact-demo-page--styled search-studio-primereact-demo-page--showcase-compact">
-            <header className="search-studio-primereact-demo-page__showcase-header">
-                <div className="search-studio-primereact-demo-page__showcase-header-row">
-                    <div className="search-studio-primereact-demo-page__showcase-heading">
-                        <div className="search-studio-primereact-demo-page__hero-heading-row">
-                            <h1 className="search-studio-primereact-demo-page__title search-studio-primereact-demo-page__title--compact">PrimeReact showcase demo</h1>
-                            <Tag value="Compact desktop review" severity="success" rounded className="search-studio-primereact-demo-page__mode-tag" />
-                        </div>
-                        <p className="search-studio-primereact-demo-page__summary search-studio-primereact-demo-page__summary--compact">
-                            Review hierarchy, grid, and detail panes together in one flatter workbench-style surface.
-                        </p>
-                    </div>
-                    <div className="search-studio-primereact-demo-page__showcase-status">
-                        <span className="search-studio-primereact-demo-page__field-label">Styled theme sync</span>
-                        <strong className="search-studio-primereact-demo-page__theme-value">{getThemeLabel(props.activeThemeVariant)}</strong>
-                    </div>
-                </div>
-                <div className="search-studio-primereact-demo-page__showcase-metrics" aria-label="PrimeReact showcase metrics">
-                    <article className="search-studio-primereact-demo-page__showcase-metric">
-                        <span className="search-studio-primereact-demo-page__metric-label">Grid selection</span>
-                        <strong className="search-studio-primereact-demo-page__metric-value">{selectedRecords.length} row(s)</strong>
-                    </article>
-                    <article className="search-studio-primereact-demo-page__showcase-metric">
-                        <span className="search-studio-primereact-demo-page__metric-label">Hierarchy selection</span>
-                        <strong className="search-studio-primereact-demo-page__metric-value">{selectedTreeCount} node(s)</strong>
-                    </article>
-                    <article className="search-studio-primereact-demo-page__showcase-metric">
-                        <span className="search-studio-primereact-demo-page__metric-label">Scenario</span>
-                        <strong className="search-studio-primereact-demo-page__metric-value">{scenario}</strong>
-                    </article>
-                    <article className="search-studio-primereact-demo-page__showcase-metric search-studio-primereact-demo-page__showcase-metric--wide">
-                        <span className="search-studio-primereact-demo-page__metric-label">Last action</span>
-                        <span className="search-studio-primereact-demo-page__helper-text">{lastActionSummary}</span>
-                    </article>
-                </div>
-            </header>
-
             <section className="search-studio-primereact-demo-page__showcase-workspace">
                 <div className="search-studio-primereact-demo-page__workspace-bar">
                     <div className="search-studio-primereact-demo-page__workspace-title-block">
@@ -768,8 +788,8 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
                                         onToggle={event => handleExpansionChanged(event as SearchStudioPrimeReactShowcaseTreeToggleEvent)}
                                         loading={scenario === 'loading'}
                                         filter
-                                        filterPlaceholder="Filter showcase hierarchy"
-                                        className="search-studio-primereact-demo-page__tree"
+                                        filterPlaceholder={hierarchyConfiguration.filterPlaceholder}
+                                        className={hierarchyConfiguration.className}
                                     />
                                 </div>
                             </div>
@@ -788,13 +808,14 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
                                                 dataKey="id"
                                                 selectionMode="multiple"
                                                 paginator
-                                                rows={8}
-                                                rowsPerPageOptions={[8, 12, 16]}
+                                                rows={gridConfiguration.rows}
+                                                rowsPerPageOptions={Array.from(gridConfiguration.rowsPerPageOptions)}
                                                 scrollable
-                                                scrollHeight="flex"
+                                                scrollHeight={gridConfiguration.scrollHeight}
+                                                size={gridConfiguration.size}
                                                 loading={scenarioSnapshot.isLoading}
                                                 emptyMessage="No combined showcase rows match the current scenario and filter."
-                                                className="search-studio-primereact-demo-page__datatable">
+                                                className={gridConfiguration.className}>
                                                 <Column selectionMode="multiple" headerStyle={{ width: '3.5rem' }} />
                                                 <Column field="title" header="Title" body={renderTitleBody} sortable style={{ minWidth: '22rem' }} />
                                                 <Column field="provider" header="Provider" sortable style={{ minWidth: '10rem' }} />

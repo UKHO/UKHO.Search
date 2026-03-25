@@ -100,6 +100,8 @@ Rules:
 - Prefer using HTTPS endpoints instead of HTTP whenever possible for StudioHost/Theia integration.
 - For Theia Studio specification work, provider root nodes should open an operational dashboard rather than acting as purely structural nodes. Additionally, ensure that the editor opening behavior in the first skeleton follows the normal default Theia interaction model rather than a custom one.
 - After completing a work item for Theia Studio shell work, always run `yarn --cwd .\src\Studio\Server build:browser` to ensure the user does not run stale frontend code.
+- Avoid heavy card-like panel chrome around secondary controls in the Showcase surface and keep compact control alignment visually consistent with the rest of the Theia-style page.
+- Ensure every PrimeReact page in the Theia interface has the same desktop-app-style resizing and layout behavior as the Showcase tab, enforced through a shared layout contract/setup pattern rather than ad hoc page behavior.
 
 ## Provider Model Guidelines
 - Use `UKHO.Search.ProviderModel` as the mandatory shared home for generic provider registration and metadata concerns, located at `src/UKHO.Search.ProviderModel`. Ensure specifications reflect required refactoring and test migration.
@@ -118,3 +120,4 @@ Refer to specialized instruction files for full detail:
 - Coding Standards: `.github/instructions/coding-standards.instructions.md`
 
 All original guidance now resides in one of these files. Do not duplicate; update the relevant file when changing practices.
+`` ````
