@@ -7154,8 +7154,7 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
 .p-button:focus,
 .p-inputtext:enabled:focus,
 .p-dropdown:not(.p-disabled).p-focus,
-.p-multiselect:not(.p-disabled).p-focus,
-.p-tabview .p-tabview-nav li .p-tabview-nav-link:focus {
+.p-multiselect:not(.p-disabled).p-focus {
   box-shadow: 0 0 0 0.1rem rgba(11, 92, 171, 0.22);
 }
 
@@ -7209,12 +7208,15 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
 .p-card .p-card-body,
 .p-panel .p-panel-header,
 .p-panel .p-panel-content,
-.p-panel .p-panel-footer,
+.p-panel .p-panel-footer {
+  padding: 0.625rem 0.75rem;
+}
+
 .p-datatable .p-datatable-header,
 .p-datatable .p-datatable-footer,
 .p-treetable .p-treetable-header,
 .p-treetable .p-treetable-footer {
-  padding: 0.625rem 0.75rem;
+  padding: 0.32rem 0.45rem;
 }
 
 .p-tabview .p-tabview-nav {
@@ -7228,9 +7230,25 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
   background: transparent;
 }
 
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus-visible {
+  outline: 0 none;
+  outline-offset: 0;
+  box-shadow: inset 0 0 0 0.1rem rgba(11, 92, 171, 0.22);
+}
+
+.p-tabview .p-tabview-panels,
+.p-tabview .p-tabview-panels:focus,
+.p-tabview .p-tabview-panels:focus-within,
+.p-tabview .p-tabview-panel,
+.p-tabview .p-tabview-panel:focus,
+.p-tabview .p-tabview-panel:focus-within {
+  box-shadow: none;
+  outline: 0 none;
+}
+
 .p-paginator {
-  padding: 0.375rem 0.5rem;
-  gap: 0.25rem;
+  padding: 0.12rem 0;
+  gap: 0.2rem;
 }
 
 .p-paginator .p-paginator-pages .p-paginator-page,
@@ -7238,17 +7256,25 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
 .p-paginator .p-paginator-prev,
 .p-paginator .p-paginator-first,
 .p-paginator .p-paginator-last,
-.p-paginator .p-paginator-current {
-  min-width: 2rem;
-  min-height: 2rem;
+.p-paginator .p-paginator-current,
+.p-paginator .p-dropdown,
+.p-paginator .p-dropdown .p-dropdown-label,
+.p-paginator .p-dropdown .p-dropdown-trigger {
+  min-width: 1.7rem;
+  min-height: 1.7rem;
 }
 
 .p-datatable .p-datatable-thead > tr > th,
 .p-datatable .p-datatable-tbody > tr > td,
 .p-treetable .p-treetable-thead > tr > th,
 .p-treetable .p-treetable-tbody > tr > td {
-  padding: 0.625rem 0.75rem;
+  padding: 0.32rem 0.45rem;
   border-color: #d3dce8;
+}
+
+.p-datatable .p-datatable-tbody > tr > td,
+.p-treetable .p-treetable-tbody > tr > td {
+  vertical-align: top;
 }
 
 .p-datatable .p-datatable-thead > tr > th,
@@ -7266,6 +7292,37 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
 .p-datatable .p-datatable-tbody > tr:hover,
 .p-treetable .p-treetable-tbody > tr:hover {
   background: #e8eef6;
+}
+
+.p-tree .p-tree-filter-container {
+  margin-bottom: 0.35rem;
+}
+
+.p-tree .p-treenode {
+  margin: 0;
+}
+
+.p-tree .p-treenode-content {
+  gap: 0.22rem;
+  padding: 0.12rem 0.18rem;
+}
+
+.p-tree .p-treenode-children {
+  padding-left: 1rem;
+}
+
+.p-tree .p-tree-toggler,
+.p-tree .p-tree-toggler .p-tree-toggler-icon,
+.p-tree .p-checkbox,
+.p-tree .p-checkbox .p-checkbox-box,
+.p-tree .p-tree-filter-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  font-size: 0.7rem;
+}
+
+.p-tree .p-checkbox {
+  margin-right: 0.08rem;
 }
 
 .p-tag {
@@ -14438,8 +14495,7 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
 .p-button:focus,
 .p-inputtext:enabled:focus,
 .p-dropdown:not(.p-disabled).p-focus,
-.p-multiselect:not(.p-disabled).p-focus,
-.p-tabview .p-tabview-nav li .p-tabview-nav-link:focus {
+.p-multiselect:not(.p-disabled).p-focus {
   box-shadow: 0 0 0 0.1rem rgba(92, 169, 255, 0.28);
 }
 
@@ -14493,12 +14549,15 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
 .p-card .p-card-body,
 .p-panel .p-panel-header,
 .p-panel .p-panel-content,
-.p-panel .p-panel-footer,
+.p-panel .p-panel-footer {
+  padding: 0.625rem 0.75rem;
+}
+
 .p-datatable .p-datatable-header,
 .p-datatable .p-datatable-footer,
 .p-treetable .p-treetable-header,
 .p-treetable .p-treetable-footer {
-  padding: 0.625rem 0.75rem;
+  padding: 0.32rem 0.45rem;
 }
 
 .p-tabview .p-tabview-nav {
@@ -14512,9 +14571,25 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
   background: transparent;
 }
 
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus-visible {
+  outline: 0 none;
+  outline-offset: 0;
+  box-shadow: inset 0 0 0 0.1rem rgba(92, 169, 255, 0.28);
+}
+
+.p-tabview .p-tabview-panels,
+.p-tabview .p-tabview-panels:focus,
+.p-tabview .p-tabview-panels:focus-within,
+.p-tabview .p-tabview-panel,
+.p-tabview .p-tabview-panel:focus,
+.p-tabview .p-tabview-panel:focus-within {
+  box-shadow: none;
+  outline: 0 none;
+}
+
 .p-paginator {
-  padding: 0.375rem 0.5rem;
-  gap: 0.25rem;
+  padding: 0.12rem 0;
+  gap: 0.2rem;
 }
 
 .p-paginator .p-paginator-pages .p-paginator-page,
@@ -14522,17 +14597,25 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
 .p-paginator .p-paginator-prev,
 .p-paginator .p-paginator-first,
 .p-paginator .p-paginator-last,
-.p-paginator .p-paginator-current {
-  min-width: 2rem;
-  min-height: 2rem;
+.p-paginator .p-paginator-current,
+.p-paginator .p-dropdown,
+.p-paginator .p-dropdown .p-dropdown-label,
+.p-paginator .p-dropdown .p-dropdown-trigger {
+  min-width: 1.7rem;
+  min-height: 1.7rem;
 }
 
 .p-datatable .p-datatable-thead > tr > th,
 .p-datatable .p-datatable-tbody > tr > td,
 .p-treetable .p-treetable-thead > tr > th,
 .p-treetable .p-treetable-tbody > tr > td {
-  padding: 0.625rem 0.75rem;
+  padding: 0.32rem 0.45rem;
   border-color: #314252;
+}
+
+.p-datatable .p-datatable-tbody > tr > td,
+.p-treetable .p-treetable-tbody > tr > td {
+  vertical-align: top;
 }
 
 .p-datatable .p-datatable-thead > tr > th,
@@ -14550,6 +14633,37 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
 .p-datatable .p-datatable-tbody > tr:hover,
 .p-treetable .p-treetable-tbody > tr:hover {
   background: #253443;
+}
+
+.p-tree .p-tree-filter-container {
+  margin-bottom: 0.35rem;
+}
+
+.p-tree .p-treenode {
+  margin: 0;
+}
+
+.p-tree .p-treenode-content {
+  gap: 0.22rem;
+  padding: 0.12rem 0.18rem;
+}
+
+.p-tree .p-treenode-children {
+  padding-left: 1rem;
+}
+
+.p-tree .p-tree-toggler,
+.p-tree .p-tree-toggler .p-tree-toggler-icon,
+.p-tree .p-checkbox,
+.p-tree .p-checkbox .p-checkbox-box,
+.p-tree .p-tree-filter-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  font-size: 0.7rem;
+}
+
+.p-tree .p-checkbox {
+  margin-right: 0.08rem;
 }
 
 .p-tag {

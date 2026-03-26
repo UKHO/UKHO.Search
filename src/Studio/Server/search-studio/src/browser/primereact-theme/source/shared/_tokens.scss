@@ -1,13 +1,36 @@
-// Defines the shared typography and sizing tokens used by the first UKHO/Theia PrimeReact theme iteration.
+// Defines the shared typography and sizing tokens used by the Studio-owned UKHO/Theia PrimeReact theme.
 $ukho-theia-font-family: var(--theia-ui-font-family, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
 $ukho-theia-component-font-size: 0.875rem;
+
+// Keeps the baseline control sizing aligned with the existing accepted PrimeReact and Theia typography contract.
 $ukho-theia-control-min-height: 2.25rem;
 $ukho-theia-control-inline-padding: 0.75rem;
 $ukho-theia-control-block-padding: 0.5rem;
+
+// Preserves the existing compact-but-readable root tab chrome that was already accepted before this uplift pass.
 $ukho-theia-tab-inline-padding: 0.875rem;
 $ukho-theia-tab-block-padding: 0.625rem;
+
+// Retains the original generic content-surface spacing used outside the newly compacted data-heavy component families.
 $ukho-theia-table-cell-inline-padding: 0.75rem;
 $ukho-theia-table-cell-block-padding: 0.625rem;
+
+// Promotes the remaining Showcase-proven compact spacing into the shared data-heavy theme layer for grids and tree-like surfaces.
+$ukho-theia-data-surface-inline-padding: 0.45rem;
+$ukho-theia-data-surface-block-padding: 0.32rem;
+$ukho-theia-paginator-inline-gap: 0.2rem;
+$ukho-theia-paginator-block-padding: 0.12rem;
+$ukho-theia-paginator-target-size: 1.7rem;
+$ukho-theia-tree-node-inline-padding: 0.18rem;
+$ukho-theia-tree-node-block-padding: 0.12rem;
+$ukho-theia-tree-node-gap: 0.22rem;
+$ukho-theia-tree-filter-spacing: 0.35rem;
+$ukho-theia-tree-affordance-size: 0.9rem;
+$ukho-theia-tree-affordance-icon-size: 0.7rem;
+$ukho-theia-tree-checkbox-inline-gap: 0.08rem;
+$ukho-theia-tree-indent-size: 1rem;
+
+// Keeps the shared component chrome aligned with the surrounding Theia shell.
 $ukho-theia-content-border-radius: 0.375rem;
 $ukho-theia-focus-ring-width: 0.1rem;
 $ukho-theia-inline-gap: 0.5rem;

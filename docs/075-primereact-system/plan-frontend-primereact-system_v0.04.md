@@ -214,7 +214,8 @@ This revision keeps the completed theme-pipeline and runtime-loading work from `
 
 ## Slice 5 — Finalize the authoritative workflow, visual verification guidance, and contributor checklists
 
-- [ ] Work Item 5: Document the complete source-build-deploy-verify workflow and the ongoing page-authoring model
+- [x] Work Item 5: Document the complete source-build-deploy-verify workflow and the ongoing page-authoring model - Completed
+  - Summary: Added the authoritative implementation guide at `wiki/PrimeReact-Theia-UI-System.md`, updated `wiki/Tools-UKHO-Search-Studio.md` with a concise PrimeReact/Theia system summary and link to that guide, documented bootstrap/build/deploy/verify and new-page checklists, and clarified that `Showcase` is the layout proving surface rather than the styling authority.
   - **Purpose**: Finish the work package by making the system repeatable for future contributors and Copilot without rediscovery.
   - **Acceptance Criteria**:
     - A dedicated authoritative wiki page exists and documents source location, build bootstrap, build/deploy flow, verification, and layout separation.
@@ -229,18 +230,18 @@ This revision keeps the completed theme-pipeline and runtime-loading work from `
     - Starter-page and checklist guidance documented
     - Reference implementation guidance corrected
     - Can execute end-to-end via: open the docs, follow the commands, and trace the correct split between generic theme authority and shared layout authority
-  - [ ] Task 5.1: Document the authoritative PrimeReact/Theia theme + layout workflow
-    - [ ] Step 1: Update or create the dedicated authoritative wiki page.
-    - [ ] Step 2: Document the source/reference/custom/generated folder structure and the build/bootstrap commands.
-    - [ ] Step 3: Document the separation of theme concerns and layout concerns.
-  - [ ] Task 5.2: Update the Studio summary wiki page
-    - [ ] Step 1: Add a concise summary section to `wiki/Tools-UKHO-Search-Studio.md`.
-    - [ ] Step 2: Link clearly to the authoritative guide.
-    - [ ] Step 3: Reference `Showcase` as the layout proving surface rather than the styling authority.
-  - [ ] Task 5.3: Document practical checklists
-    - [ ] Step 1: Add a checklist for first-time bootstrap and theme rebuild/deploy.
-    - [ ] Step 2: Add a checklist for creating a new PrimeReact page or window using the shared theme + layout system.
-    - [ ] Step 3: Explain how to decide whether a rule belongs in theme source, layout helpers, or a narrow page-local exception.
+  - [x] Task 5.1: Document the authoritative PrimeReact/Theia theme + layout workflow - Completed (created `wiki/PrimeReact-Theia-UI-System.md` as the authoritative guide for source locations, bootstrap/build/deploy flow, visual verification, and the theme-versus-layout authority split.)
+    - [x] Step 1: Update or create the dedicated authoritative wiki page. - Completed (created `wiki/PrimeReact-Theia-UI-System.md`.)
+    - [x] Step 2: Document the source/reference/custom/generated folder structure and the build/bootstrap commands. - Completed (documented the upstream/reference workspace, Studio-owned source, generated output folders, prerequisites, bootstrap flow, and root-level command sequence.)
+    - [x] Step 3: Document the separation of theme concerns and layout concerns. - Completed (documented the generic theme authority, shared layout authority, and the corrected `Showcase` role.)
+  - [x] Task 5.2: Update the Studio summary wiki page - Completed (updated `wiki/Tools-UKHO-Search-Studio.md` with a concise system summary, a clear link to the authoritative guide, and corrected `Showcase` guidance.)
+    - [x] Step 1: Add a concise summary section to `wiki/Tools-UKHO-Search-Studio.md`. - Completed (added a dedicated PrimeReact/Theia UI system summary section.)
+    - [x] Step 2: Link clearly to the authoritative guide. - Completed (linked the summary section to `wiki/PrimeReact-Theia-UI-System.md`.)
+    - [x] Step 3: Reference `Showcase` as the layout proving surface rather than the styling authority. - Completed (explicitly documented the corrected `Showcase` role in the summary section.)
+  - [x] Task 5.3: Document practical checklists - Completed (documented first-time bootstrap, theme rebuild/deploy, retained-page authoring, and a decision table for theme versus layout versus page-local exceptions.)
+    - [x] Step 1: Add a checklist for first-time bootstrap and theme rebuild/deploy. - Completed (added bootstrap and standard theme rebuild/deploy checklists to the authoritative guide.)
+    - [x] Step 2: Add a checklist for creating a new PrimeReact page or window using the shared theme + layout system. - Completed (added a retained-page authoring checklist covering shared host helpers, overflow ownership, and verification.)
+    - [x] Step 3: Explain how to decide whether a rule belongs in theme source, layout helpers, or a narrow page-local exception. - Completed (added a decision table that separates generic theme rules, layout rules, variant-specific rules, and narrow page-local exceptions.)
   - **Files**:
     - `wiki/PrimeReact-Theia-UI-System.md`: authoritative implementation guide
     - `wiki/Tools-UKHO-Search-Studio.md`: summary and entry point

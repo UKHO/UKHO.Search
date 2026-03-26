@@ -15,7 +15,8 @@ import {
     createDataTableDemoRecords,
     createTreeDemoNodes,
     SearchStudioPrimeReactDemoStatus,
-    SearchStudioPrimeReactDemoTableRecord
+    SearchStudioPrimeReactDemoTableRecord,
+    SearchStudioPrimeReactDemoTreeNode
 } from '../data/search-studio-primereact-demo-data';
 import {
     countSelectedTreeKeys,
@@ -23,6 +24,7 @@ import {
     createScenarioSnapshot,
     SearchStudioPrimeReactDemoExpandedKeys,
     SearchStudioPrimeReactDemoScenario,
+    SearchStudioPrimeReactDemoScenarioSnapshot,
     SearchStudioPrimeReactDemoTreeSelectionKeys
 } from '../data/search-studio-primereact-demo-state';
 import { SearchStudioPrimeReactDemoTabContent } from '../search-studio-primereact-demo-page-layout';
@@ -426,6 +428,19 @@ function getFilteredRecords(
 }
 
 /**
+ * Resolves the tree dataset rendered by the compact `Showcase` hierarchy.
+ *
+ * @param scenarioSnapshot Supplies the current tree snapshot for the active showcase scenario.
+ * @returns The exact tree array that should be passed to PrimeReact so expansion state is not destabilized by unnecessary root-array cloning.
+ */
+export function getSearchStudioPrimeReactShowcaseTreeValue(
+    scenarioSnapshot: SearchStudioPrimeReactDemoScenarioSnapshot<SearchStudioPrimeReactDemoTreeNode>
+): ReadonlyArray<SearchStudioPrimeReactDemoTreeNode> {
+    // Preserve the original root-array identity because PrimeReact's controlled tree expansion can collapse flickerily when the showcase recreates the top-level value array on every render.
+    return scenarioSnapshot.items;
+}
+
+/**
  * Renders the temporary PrimeReact combined showcase evaluation page.
  *
  * @param props Supplies the current Theia-aligned theme mapping for the styled PrimeReact demo page.
@@ -781,7 +796,7 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
                                 </div>
                                 <div className="search-studio-primereact-demo-page__pane-scroll-host search-studio-primereact-demo-page__pane-scroll-host--tree">
                                     <Tree
-                                        value={Array.from(treeScenarioSnapshot.items) as never[]}
+                                        value={getSearchStudioPrimeReactShowcaseTreeValue(treeScenarioSnapshot) as never[]}
                                         selectionMode="checkbox"
                                         selectionKeys={treeSelectionKeys as never}
                                         onSelectionChange={event => handleTreeSelectionChanged(event as SearchStudioPrimeReactShowcaseTreeSelectionChangedEvent)}

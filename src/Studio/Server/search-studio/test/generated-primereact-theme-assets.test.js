@@ -72,8 +72,50 @@ test('generatedPrimeReactThemeAssets_WhenSearchStudioBuildRuns_ShouldBeCopiedInt
 
         assert.match(
             generatedThemeContent,
-            /padding:\s*0\.625rem\s+0\.75rem;/,
+            /\.p-tabview \.p-tabview-nav li \.p-tabview-nav-link:not\(\.p-disabled\):focus-visible\s*\{[^}]*box-shadow:\s*inset 0 0 0 0\.1rem/s,
+            `Expected generated theme content to preserve a header-level keyboard focus treatment for tabs in ${generatedThemeFilePath}.`
+        );
+
+        assert.match(
+            generatedThemeContent,
+            /\.p-tabview \.p-tabview-nav li\.p-highlight \.p-tabview-nav-link\s*\{[^}]*border-color:/s,
+            `Expected generated theme content to preserve the selected-tab underline treatment in ${generatedThemeFilePath}.`
+        );
+
+        assert.match(
+            generatedThemeContent,
+            /\.p-tabview \.p-tabview-panels,\s*\.p-tabview \.p-tabview-panels:focus,\s*\.p-tabview \.p-tabview-panels:focus-within,\s*\.p-tabview \.p-tabview-panel,\s*\.p-tabview \.p-tabview-panel:focus,\s*\.p-tabview \.p-tabview-panel:focus-within\s*\{[^}]*box-shadow:\s*none;/s,
+            `Expected generated theme content to remove themed tab-panel focus chrome in ${generatedThemeFilePath}.`
+        );
+
+        assert.match(
+            generatedThemeContent,
+            /padding:\s*0\.32rem\s+0\.45rem;/,
             `Expected generated theme content to include the generic data-heavy cell spacing refinement in ${generatedThemeFilePath}.`
+        );
+
+        assert.match(
+            generatedThemeContent,
+            /\.p-tree \.p-treenode-content\s*\{[^}]*padding:\s*0\.12rem\s+0\.18rem;/s,
+            `Expected generated theme content to include the generic compact tree node density refinement in ${generatedThemeFilePath}.`
+        );
+
+        assert.match(
+            generatedThemeContent,
+            /\.p-tree \.p-treenode-children\s*\{[^}]*padding-left:\s*1rem;/s,
+            `Expected generated theme content to include the generic compact tree indentation refinement in ${generatedThemeFilePath}.`
+        );
+
+        assert.match(
+            generatedThemeContent,
+            /\.p-paginator\s*\{[^}]*padding:\s*0\.12rem\s+0;/s,
+            `Expected generated theme content to include the generic compact paginator spacing refinement in ${generatedThemeFilePath}.`
+        );
+
+        assert.match(
+            generatedThemeContent,
+            /\.p-paginator \.p-paginator-pages \.p-paginator-page,[\s\S]*?min-height:\s*1\.7rem;/,
+            `Expected generated theme content to include the generic compact paginator target sizing refinement in ${generatedThemeFilePath}.`
         );
     }
 });

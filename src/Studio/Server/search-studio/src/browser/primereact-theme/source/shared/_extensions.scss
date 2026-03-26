@@ -1,8 +1,9 @@
 @use 'sass:map';
 @use './tokens' as sharedTokens;
 
-// Applies the first Studio-owned Theia cohesion pass on top of the upstream Lara baseline theme output.
+// Applies the Studio-owned Theia cohesion pass on top of the upstream Lara baseline theme output.
 @mixin render-ukho-theia-theme-extensions($theme-tokens) {
+    // Keep the shared PrimeReact typography contract anchored to the Theia shell so page-local selectors do not become the font authority.
     .p-component,
     .p-inputtext,
     .p-button,
@@ -18,6 +19,7 @@
         font-size: sharedTokens.$ukho-theia-component-font-size;
     }
 
+    // Reuse one border-radius language across the retained PrimeReact controls so the shell reads like one coherent system.
     .p-button,
     .p-inputtext,
     .p-dropdown,
@@ -29,6 +31,7 @@
         border-radius: sharedTokens.$ukho-theia-content-border-radius;
     }
 
+    // Remove extra stock panel and tab shadows because the retained Theia workbench already provides the surrounding surface separation.
     .p-card,
     .p-panel,
     .p-datatable .p-datatable-header,
@@ -40,11 +43,11 @@
         box-shadow: none;
     }
 
+    // Keep focus visibility owned by the shared theme instead of leaving it to browser-default chrome on the key interactive controls.
     .p-button:focus,
     .p-inputtext:enabled:focus,
     .p-dropdown:not(.p-disabled).p-focus,
-    .p-multiselect:not(.p-disabled).p-focus,
-    .p-tabview .p-tabview-nav li .p-tabview-nav-link:focus {
+    .p-multiselect:not(.p-disabled).p-focus {
         box-shadow: 0 0 0 sharedTokens.$ukho-theia-focus-ring-width #{map.get($theme-tokens, 'focus-ring-color')};
     }
 
@@ -53,6 +56,7 @@
         color: map.get($theme-tokens, 'primary-color');
     }
 
+    // Preserve the existing accepted minimum control sizing baseline for general inputs and buttons.
     .p-button,
     .p-inputtext,
     .p-dropdown,
@@ -60,28 +64,33 @@
         min-height: sharedTokens.$ukho-theia-control-min-height;
     }
 
+    // Keep general action buttons compact without changing the broader typography baseline.
     .p-button {
         padding: sharedTokens.$ukho-theia-control-block-padding sharedTokens.$ukho-theia-control-inline-padding;
         font-weight: 600;
     }
 
+    // Ensure icon-only buttons still center their icon after the shared sizing refinements are applied.
     .p-button.p-button-icon-only {
         width: sharedTokens.$ukho-theia-control-min-height;
         padding: 0;
         justify-content: center;
     }
 
+    // Match the general input-family controls to the same baseline padding so filters and editors stay visually aligned.
     .p-inputtext,
     .p-dropdown .p-dropdown-label,
     .p-multiselect .p-multiselect-label {
         padding: sharedTokens.$ukho-theia-control-block-padding sharedTokens.$ukho-theia-control-inline-padding;
     }
 
+    // Keep dropdown and multiselect trigger affordances square and aligned with the shared minimum control height.
     .p-dropdown .p-dropdown-trigger,
     .p-multiselect .p-multiselect-trigger {
         width: sharedTokens.$ukho-theia-control-min-height;
     }
 
+    // Give the shared container-like PrimeReact surfaces the same background and text treatment as the surrounding themed shell.
     .p-card,
     .p-panel,
     .p-paginator,
@@ -95,57 +104,96 @@
         color: map.get($theme-tokens, 'text-color');
     }
 
+    // Keep generic card and panel body spacing slightly roomier because they are not data-dense surfaces.
     .p-card .p-card-body,
     .p-panel .p-panel-header,
     .p-panel .p-panel-content,
-    .p-panel .p-panel-footer,
+    .p-panel .p-panel-footer {
+        padding: sharedTokens.$ukho-theia-table-cell-block-padding sharedTokens.$ukho-theia-table-cell-inline-padding;
+    }
+
+    // Promote the remaining reusable Showcase density into the shared theme for table and tree-table surface headers and footers.
     .p-datatable .p-datatable-header,
     .p-datatable .p-datatable-footer,
     .p-treetable .p-treetable-header,
     .p-treetable .p-treetable-footer {
-        padding: sharedTokens.$ukho-theia-table-cell-block-padding sharedTokens.$ukho-theia-table-cell-inline-padding;
+        padding: sharedTokens.$ukho-theia-data-surface-block-padding sharedTokens.$ukho-theia-data-surface-inline-padding;
     }
 
+    // Keep the shared tab strip compact and neutral while a later work item refines the focus treatment further.
     .p-tabview .p-tabview-nav {
         gap: 0.25rem;
         background: transparent;
         border-color: map.get($theme-tokens, 'surface-border');
     }
 
+    // Preserve the accepted tab header spacing baseline from the earlier PrimeReact system pass.
     .p-tabview .p-tabview-nav li .p-tabview-nav-link {
         padding: sharedTokens.$ukho-theia-tab-block-padding sharedTokens.$ukho-theia-tab-inline-padding;
         background: transparent;
     }
 
-    .p-paginator {
-        padding: 0.375rem 0.5rem;
-        gap: 0.25rem;
+    // Keep keyboard focus visible on the tab header itself so reviewers can track focus without needing panel-level focus chrome.
+    .p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus-visible {
+        outline: 0 none;
+        outline-offset: 0;
+        box-shadow: inset 0 0 0 sharedTokens.$ukho-theia-focus-ring-width #{map.get($theme-tokens, 'focus-ring-color')};
     }
 
+    // Remove the unwanted tab content focus chrome so the themed experience relies on header-level focus rather than panel borders.
+    .p-tabview .p-tabview-panels,
+    .p-tabview .p-tabview-panels:focus,
+    .p-tabview .p-tabview-panels:focus-within,
+    .p-tabview .p-tabview-panel,
+    .p-tabview .p-tabview-panel:focus,
+    .p-tabview .p-tabview-panel:focus-within {
+        box-shadow: none;
+        outline: 0 none;
+    }
+
+    // Apply the shared compact paginator spacing that used to live only on the Showcase data grid.
+    .p-paginator {
+        padding: sharedTokens.$ukho-theia-paginator-block-padding 0;
+        gap: sharedTokens.$ukho-theia-paginator-inline-gap;
+    }
+
+    // Reduce paginator hit-target chrome to the same compact density now expected across retained data-heavy pages.
     .p-paginator .p-paginator-pages .p-paginator-page,
     .p-paginator .p-paginator-next,
     .p-paginator .p-paginator-prev,
     .p-paginator .p-paginator-first,
     .p-paginator .p-paginator-last,
-    .p-paginator .p-paginator-current {
-        min-width: 2rem;
-        min-height: 2rem;
+    .p-paginator .p-paginator-current,
+    .p-paginator .p-dropdown,
+    .p-paginator .p-dropdown .p-dropdown-label,
+    .p-paginator .p-dropdown .p-dropdown-trigger {
+        min-width: sharedTokens.$ukho-theia-paginator-target-size;
+        min-height: sharedTokens.$ukho-theia-paginator-target-size;
     }
 
+    // Promote the shared compact data-surface spacing so Data Table and Tree Table no longer depend on Showcase-only selectors.
     .p-datatable .p-datatable-thead > tr > th,
     .p-datatable .p-datatable-tbody > tr > td,
     .p-treetable .p-treetable-thead > tr > th,
     .p-treetable .p-treetable-tbody > tr > td {
-        padding: sharedTokens.$ukho-theia-table-cell-block-padding sharedTokens.$ukho-theia-table-cell-inline-padding;
+        padding: sharedTokens.$ukho-theia-data-surface-block-padding sharedTokens.$ukho-theia-data-surface-inline-padding;
         border-color: map.get($theme-tokens, 'surface-border');
     }
 
+    // Align table and tree-table body cells to the top so dense metadata stacks remain readable when rows contain multi-line content.
+    .p-datatable .p-datatable-tbody > tr > td,
+    .p-treetable .p-treetable-tbody > tr > td {
+        vertical-align: top;
+    }
+
+    // Keep data-surface headers visually subordinate to row content while still using the shared compact spacing.
     .p-datatable .p-datatable-thead > tr > th,
     .p-treetable .p-treetable-thead > tr > th {
         background: map.get($theme-tokens, 'surface-ground');
         color: map.get($theme-tokens, 'text-color-secondary');
     }
 
+    // Preserve the current row and hover treatments so the density pass does not alter the existing selection/readability balance.
     .p-datatable .p-datatable-tbody > tr,
     .p-treetable .p-treetable-tbody > tr {
         background: map.get($theme-tokens, 'surface-card');
@@ -157,11 +205,45 @@
         background: map.get($theme-tokens, 'surface-hover');
     }
 
+    // Tighten generic tree filtering and node spacing so standalone Tree pages inherit the same compact rhythm as Showcase.
+    .p-tree .p-tree-filter-container {
+        margin-bottom: sharedTokens.$ukho-theia-tree-filter-spacing;
+    }
+
+    .p-tree .p-treenode {
+        margin: 0;
+    }
+
+    .p-tree .p-treenode-content {
+        gap: sharedTokens.$ukho-theia-tree-node-gap;
+        padding: sharedTokens.$ukho-theia-tree-node-block-padding sharedTokens.$ukho-theia-tree-node-inline-padding;
+    }
+
+    .p-tree .p-treenode-children {
+        padding-left: sharedTokens.$ukho-theia-tree-indent-size;
+    }
+
+    .p-tree .p-tree-toggler,
+    .p-tree .p-tree-toggler .p-tree-toggler-icon,
+    .p-tree .p-checkbox,
+    .p-tree .p-checkbox .p-checkbox-box,
+    .p-tree .p-tree-filter-icon {
+        width: sharedTokens.$ukho-theia-tree-affordance-size;
+        height: sharedTokens.$ukho-theia-tree-affordance-size;
+        font-size: sharedTokens.$ukho-theia-tree-affordance-icon-size;
+    }
+
+    .p-tree .p-checkbox {
+        margin-right: sharedTokens.$ukho-theia-tree-checkbox-inline-gap;
+    }
+
+    // Keep shared tag chrome slightly compact so table and tree metadata chips align with the new data-surface density.
     .p-tag {
         padding: 0.25rem 0.5rem;
         font-weight: 600;
     }
 
+    // Use the same surface border color across the retained interactive surfaces after the density uplift.
     .p-inputtext,
     .p-dropdown,
     .p-multiselect,
@@ -173,6 +255,7 @@
         border-color: map.get($theme-tokens, 'surface-border');
     }
 
+    // Normalize inline alignment for button and paginator sub-elements so the tighter spacing still reads cleanly.
     .p-button,
     .p-button .p-button-label,
     .p-button .p-button-icon,

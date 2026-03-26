@@ -151,6 +151,17 @@ Manual review steps:
 
 Work package `075-primereact-system` currently treats `src/Studio/Theme` as the accepted upstream/reference PrimeReact SASS workspace for Studio's first custom theme slice.
 
+For the authoritative workflow, checklists, and theme-versus-layout decision guide, see [PrimeReact Theia UI System](./PrimeReact-Theia-UI-System.md).
+
+### PrimeReact/Theia UI system summary
+
+- `src/Studio/Theme` is the upstream/reference SASS workspace and build toolchain.
+- Studio-owned editable theme source lives under `src/Studio/Server/search-studio/src/browser/primereact-theme/source`.
+- Generated Studio-consumed theme outputs live under `src/Studio/Server/search-studio/src/browser/primereact-theme/generated`.
+- Shared desktop layout behavior lives in the Studio frontend layer, especially `src/Studio/Server/search-studio/src/browser/primereact-demo/search-studio-primereact-demo-page-layout.tsx`.
+- `Showcase` remains the first layout proving surface and review entry point for retained pages.
+- `Showcase` is not the styling authority for the real UKHO/Theia theme; generic theme authority stays with the Studio-owned theme source.
+
 Current practical version relationship:
 
 - Studio runtime `primereact` package in `search-studio`: `10.9.7`

@@ -100,6 +100,11 @@ test('getSearchStudioPrimeReactGeneratedThemeDefinition_WhenCalled_ShouldResolve
     assert.doesNotMatch(lightThemeDefinition.stylesheetContent, /@font-face|Inter var/);
     assert.doesNotMatch(lightThemeDefinition.stylesheetContent, /showcase/i);
     assert.match(lightThemeDefinition.stylesheetContent, /min-height:\s*2\.25rem;/);
+    assert.match(lightThemeDefinition.stylesheetContent, /\.p-tree \.p-treenode-content\s*\{[^}]*padding:\s*0\.12rem\s+0\.18rem;/s);
+    assert.match(lightThemeDefinition.stylesheetContent, /\.p-paginator\s*\{[^}]*padding:\s*0\.12rem\s+0;/s);
+    assert.match(lightThemeDefinition.stylesheetContent, /\.p-tabview \.p-tabview-nav li \.p-tabview-nav-link:not\(\.p-disabled\):focus-visible\s*\{[^}]*box-shadow:\s*inset 0 0 0 0\.1rem/s);
+    assert.match(lightThemeDefinition.stylesheetContent, /\.p-tabview \.p-tabview-nav li\.p-highlight \.p-tabview-nav-link\s*\{[^}]*border-color:/s);
+    assert.match(lightThemeDefinition.stylesheetContent, /\.p-tabview \.p-tabview-panels,\s*\.p-tabview \.p-tabview-panels:focus,\s*\.p-tabview \.p-tabview-panels:focus-within,\s*\.p-tabview \.p-tabview-panel,\s*\.p-tabview \.p-tabview-panel:focus,\s*\.p-tabview \.p-tabview-panel:focus-within\s*\{[^}]*box-shadow:\s*none;/s);
 
     assert.equal(darkThemeDefinition.fileName, 'ukho-theia-dark.css');
     assert.match(darkThemeDefinition.stylesheetContent, /--ukho-primereact-theme-name:\s*ukho-theia-dark/);
@@ -107,6 +112,11 @@ test('getSearchStudioPrimeReactGeneratedThemeDefinition_WhenCalled_ShouldResolve
     assert.doesNotMatch(darkThemeDefinition.stylesheetContent, /@font-face|Inter var/);
     assert.doesNotMatch(darkThemeDefinition.stylesheetContent, /showcase/i);
     assert.match(darkThemeDefinition.stylesheetContent, /min-height:\s*2\.25rem;/);
+    assert.match(darkThemeDefinition.stylesheetContent, /\.p-tree \.p-treenode-content\s*\{[^}]*padding:\s*0\.12rem\s+0\.18rem;/s);
+    assert.match(darkThemeDefinition.stylesheetContent, /\.p-paginator\s*\{[^}]*padding:\s*0\.12rem\s+0;/s);
+    assert.match(darkThemeDefinition.stylesheetContent, /\.p-tabview \.p-tabview-nav li \.p-tabview-nav-link:not\(\.p-disabled\):focus-visible\s*\{[^}]*box-shadow:\s*inset 0 0 0 0\.1rem/s);
+    assert.match(darkThemeDefinition.stylesheetContent, /\.p-tabview \.p-tabview-nav li\.p-highlight \.p-tabview-nav-link\s*\{[^}]*border-color:/s);
+    assert.match(darkThemeDefinition.stylesheetContent, /\.p-tabview \.p-tabview-panels,\s*\.p-tabview \.p-tabview-panels:focus,\s*\.p-tabview \.p-tabview-panels:focus-within,\s*\.p-tabview \.p-tabview-panel,\s*\.p-tabview \.p-tabview-panel:focus,\s*\.p-tabview \.p-tabview-panel:focus-within\s*\{[^}]*box-shadow:\s*none;/s);
 });
 
 /**
@@ -130,6 +140,11 @@ test('SearchStudioPrimeReactDemoThemeService_WhenStyledModeIsEnabled_ShouldAttac
         assert.match(themeStylesheet.textContent, /--ukho-primereact-theme-name:\s*ukho-theia-light/);
         assert.match(themeStylesheet.textContent, /var\(--theia-ui-font-family/);
         assert.doesNotMatch(themeStylesheet.textContent, /@font-face|Inter var/);
+        assert.match(themeStylesheet.textContent, /\.p-tree \.p-treenode-content\s*\{[^}]*padding:\s*0\.12rem\s+0\.18rem;/s);
+        assert.match(themeStylesheet.textContent, /\.p-paginator\s*\{[^}]*padding:\s*0\.12rem\s+0;/s);
+        assert.match(themeStylesheet.textContent, /\.p-tabview \.p-tabview-nav li \.p-tabview-nav-link:not\(\.p-disabled\):focus-visible\s*\{[^}]*box-shadow:\s*inset 0 0 0 0\.1rem/s);
+        assert.match(themeStylesheet.textContent, /\.p-tabview \.p-tabview-nav li\.p-highlight \.p-tabview-nav-link\s*\{[^}]*border-color:/s);
+        assert.match(themeStylesheet.textContent, /\.p-tabview \.p-tabview-panels,\s*\.p-tabview \.p-tabview-panels:focus,\s*\.p-tabview \.p-tabview-panels:focus-within,\s*\.p-tabview \.p-tabview-panel,\s*\.p-tabview \.p-tabview-panel:focus,\s*\.p-tabview \.p-tabview-panel:focus-within\s*\{[^}]*box-shadow:\s*none;/s);
 
         const coreStylesheet = document.getElementById('search-studio-primereact-core-stylesheet');
         const iconsStylesheet = document.getElementById('search-studio-primereact-icons-stylesheet');
@@ -164,6 +179,9 @@ test('SearchStudioPrimeReactDemoThemeService_WhenThemeVariantChanges_ShouldReuse
         assert.equal(updatedThemeStylesheet, originalThemeStylesheet);
         assert.equal(updatedThemeStylesheet.getAttribute('data-search-studio-generated-theme-file-name'), 'ukho-theia-dark.css');
         assert.match(updatedThemeStylesheet.textContent, /--ukho-primereact-theme-name:\s*ukho-theia-dark/);
+        assert.match(updatedThemeStylesheet.textContent, /\.p-tree \.p-treenode-content\s*\{[^}]*padding:\s*0\.12rem\s+0\.18rem;/s);
+        assert.match(updatedThemeStylesheet.textContent, /\.p-tabview \.p-tabview-nav li\.p-highlight \.p-tabview-nav-link\s*\{[^}]*border-color:/s);
+        assert.match(updatedThemeStylesheet.textContent, /\.p-tabview \.p-tabview-panels,\s*\.p-tabview \.p-tabview-panels:focus,\s*\.p-tabview \.p-tabview-panels:focus-within,\s*\.p-tabview \.p-tabview-panel,\s*\.p-tabview \.p-tabview-panel:focus,\s*\.p-tabview \.p-tabview-panel:focus-within\s*\{[^}]*box-shadow:\s*none;/s);
         assert.equal(headChildren.length, 3);
     } finally {
         global.document = originalDocument;

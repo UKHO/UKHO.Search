@@ -1,4 +1,4 @@
-4 - I have an app idea to develop. The overall concept is in my initial prompt.
+ 4 - I have an app idea to develop. The overall concept is in my initial prompt.
 
 I want to collaborate with you a Senior Business Analyst to produce a set of specification documents covering the functional and technical requirements for this project.
 
