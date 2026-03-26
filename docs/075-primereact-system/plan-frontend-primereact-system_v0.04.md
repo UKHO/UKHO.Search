@@ -99,7 +99,8 @@ This revision keeps the completed theme-pipeline and runtime-loading work from `
 
 ## Slice 3 — Establish the real generic UKHO/Theia theme direction and stop treating `Showcase` styling as authoritative
 
-- [ ] Work Item 3: Preserve the current typography baseline and iteratively refine generic component styling without treating `Showcase` styling as authoritative
+- [x] Work Item 3: Preserve the current typography baseline and iteratively refine generic component styling without treating `Showcase` styling as authoritative - Completed
+  - Summary: Reset the styling authority guidance in `src/Studio/Theme/README.md`, removed upstream hosted font ownership from generated Studio theme assets, added compact generic component refinements in shared theme source, updated retained demo theme labels to the UKHO/Theia naming, rebuilt generated light/dark assets, and extended regression coverage for generated output and runtime theme selection.
   - **Purpose**: Deliver the first credible styling pass by preserving the generic UKHO/Theia typography that already reads correctly on non-`Showcase` tabs and then iteratively refining generic component styling, colors, spacing, and sizing instead of deriving the theme from `Showcase`-specific compact styling.
   - **Acceptance Criteria**:
     - Shared theme source does not rely on `Showcase`-named selectors for the generic theme pass.
@@ -119,26 +120,26 @@ This revision keeps the completed theme-pipeline and runtime-loading work from `
     - Code comments added in full compliance with `./.github/instructions/documentation-pass.instructions.md`
     - Tests or verification checks updated or added
     - Can execute end-to-end via: rebuild generated themes, start Studio, open retained pages, and confirm the generic theme still reads coherently with Theia while `Showcase` is aligned to that baseline without depending on `Showcase`-specific styling
-  - [ ] Task 3.1: Reset the styling authority model in repository documentation and implementation intent
-    - [ ] Step 1: Record that `Showcase` is authoritative for layout but not for final styling/typography.
-    - [ ] Step 2: Record that shared theme source must remain generic and should not contain page-named selectors for this workstream.
-    - [ ] Step 3: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
-  - [ ] Task 3.2: Confirm and protect the current typography baseline
-    - [ ] Step 1: Review retained PrimeReact pages and confirm which shared typography patterns already read correctly and should therefore remain the baseline: headings, body copy, labels, inputs, tabs, table text, and paginator text.
-    - [ ] Step 2: Use `Forms` as a primary validation surface for typography alignment with Theia, and use at least one additional retained page to avoid overfitting to a single page.
-    - [ ] Step 3: Keep the current font family and font-size baseline in place unless new evidence shows a genuine mismatch.
-    - [ ] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
-  - [ ] Task 3.3: Make only the targeted generic styling changes needed beyond typography
-    - [ ] Step 1: Update shared/light/dark theme source only where evidence shows a real generic mismatch in component styling, colors, spacing, or sizing, and otherwise leave the current typography rules in place.
-    - [ ] Step 2: Rebuild and deploy the generated theme outputs.
-    - [ ] Step 3: Keep page-local CSS only for layout mechanics or narrow exceptions that clearly do not belong in the shared theme, including any remaining `Showcase`-specific layout behavior.
-    - [ ] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
-  - [ ] Task 3.4: Verify the first generic theme pass across retained pages
-    - [ ] Step 1: Verify the preserved typography size, weight, and readability under the UKHO/Theia light theme.
-    - [ ] Step 2: Verify equivalent typography behavior under the UKHO/Theia dark theme.
-    - [ ] Step 3: Verify controls such as buttons, inputs, tags, paginator, tables, spacing, and component chrome feel cohesive with the Theia shell on retained pages, not only in `Showcase`, and confirm non-`Showcase` tabs were not made worse by the refinement work.
-    - [ ] Step 4: Add or update focused regression coverage where practical.
-    - [ ] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 3.1: Reset the styling authority model in repository documentation and implementation intent - Completed
+    - [x] Step 1: Record that `Showcase` is authoritative for layout but not for final styling/typography.
+    - [x] Step 2: Record that shared theme source must remain generic and should not contain page-named selectors for this workstream.
+    - [x] Step 3: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 3.2: Confirm and protect the current typography baseline - Completed
+    - [x] Step 1: Review retained PrimeReact pages and confirm which shared typography patterns already read correctly and should therefore remain the baseline: headings, body copy, labels, inputs, tabs, table text, and paginator text.
+    - [x] Step 2: Use `Forms` as a primary validation surface for typography alignment with Theia, and use at least one additional retained page to avoid overfitting to a single page.
+    - [x] Step 3: Keep the current font family and font-size baseline in place unless new evidence shows a genuine mismatch.
+    - [x] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 3.3: Make only the targeted generic styling changes needed beyond typography - Completed
+    - [x] Step 1: Update shared/light/dark theme source only where evidence shows a real generic mismatch in component styling, colors, spacing, or sizing, and otherwise leave the current typography rules in place.
+    - [x] Step 2: Rebuild and deploy the generated theme outputs.
+    - [x] Step 3: Keep page-local CSS only for layout mechanics or narrow exceptions that clearly do not belong in the shared theme, including any remaining `Showcase`-specific layout behavior.
+    - [x] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 3.4: Verify the first generic theme pass across retained pages - Completed
+    - [x] Step 1: Verify the preserved typography size, weight, and readability under the UKHO/Theia light theme.
+    - [x] Step 2: Verify equivalent typography behavior under the UKHO/Theia dark theme.
+    - [x] Step 3: Verify controls such as buttons, inputs, tags, paginator, tables, spacing, and component chrome feel cohesive with the Theia shell on retained pages, not only in `Showcase`, and confirm non-`Showcase` tabs were not made worse by the refinement work.
+    - [x] Step 4: Add or update focused regression coverage where practical.
+    - [x] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
   - **Files**:
     - `src/Studio/Server/search-studio/src/browser/primereact-theme/source/shared/`: generic UKHO/Theia SASS fragments only
     - `src/Studio/Server/search-studio/src/browser/primereact-theme/source/ukho-theia-light/`: light-theme generic source uplift
@@ -162,7 +163,8 @@ This revision keeps the completed theme-pipeline and runtime-loading work from `
 
 ## Slice 4 — Preserve the desktop layout contract separately and migrate the remaining PrimeReact pages onto the new theme + layout system
 
-- [ ] Work Item 4: Keep layout separate from theme and migrate the retained PrimeReact pages onto the coherent UKHO/Theia system
+- [x] Work Item 4: Keep layout separate from theme and migrate the retained PrimeReact pages onto the coherent UKHO/Theia system - Completed
+  - Summary: Added a shared retained-page layout helper at `src/Studio/Server/search-studio/src/browser/primereact-demo/search-studio-primereact-demo-page-layout.tsx`, migrated the consolidated showcase tab wrappers plus the retained `Forms`, `Data View`, `Data Table`, `Tree`, and `Tree Table` pages onto that shared contract, added focused layout-host regression coverage in `src/Studio/Server/search-studio/test/search-studio-primereact-demo-page.test.js`, and validated with `yarn --cwd .\src\Studio\Server\search-studio test`, `yarn --cwd .\src\Studio\Server build:browser`, and a solution build.
   - **Purpose**: Deliver the next runnable slice by proving the new system works beyond `Showcase` and that the layout contract remains a separate reusable layer.
   - **Acceptance Criteria**:
     - Shared desktop layout rules remain separate from the theme source.
@@ -177,19 +179,19 @@ This revision keeps the completed theme-pipeline and runtime-loading work from `
     - Code comments added in full compliance with `./.github/instructions/documentation-pass.instructions.md`
     - Tests updated or added
     - Can execute end-to-end via: open the retained PrimeReact tabs/pages and confirm consistent theme + desktop layout behavior
-  - [ ] Task 4.1: Preserve the shared desktop layout contract as a separate Studio-owned layer
-    - [ ] Step 1: Review current shared page host and layout helper behavior.
-    - [ ] Step 2: Keep full-height, splitter, and scroll ownership rules in Studio-side layout helpers/CSS rather than pushing them into theme source.
-    - [ ] Step 3: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
-  - [ ] Task 4.2: Migrate retained PrimeReact pages to the generated theme + shared layout host
-    - [ ] Step 1: Identify retained PrimeReact pages and tab-content surfaces that should consume the generated UKHO/Theia themes and shared layout contract.
-    - [ ] Step 2: Update those pages so they use the new system by default.
-    - [ ] Step 3: Reduce ad hoc page-local styling where practical.
-    - [ ] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
-  - [ ] Task 4.3: Extend cross-page verification and regression coverage
-    - [ ] Step 1: Add or update tests for cross-page reuse of the theme and layout system.
-    - [ ] Step 2: Add practical visual verification guidance across the migrated page set.
-    - [ ] Step 3: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files.
+  - [x] Task 4.1: Preserve the shared desktop layout contract as a separate Studio-owned layer - Completed (added a shared PrimeReact demo page host helper in `search-studio-primereact-demo-page-layout.tsx`, centralized page-hosted layout class selection, and kept data-heavy scroll ownership in the Studio-side page host layer rather than the theme source.)
+    - [x] Step 1: Review current shared page host and layout helper behavior. - Completed (reviewed the consolidated showcase tab shell, page-hosted layout classes, and current data-heavy overflow ownership in the PrimeReact demo pages and shared widget CSS.)
+    - [x] Step 2: Keep full-height, splitter, and scroll ownership rules in Studio-side layout helpers/CSS rather than pushing them into theme source. - Completed (centralized retained page host class selection and data-heavy scroll-height rules in `search-studio-primereact-demo-page-layout.tsx` while leaving the shared layout CSS as the owner of full-height and overflow behavior.)
+    - [x] Step 3: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files. - Completed (documented the new shared layout helper and kept the touched retained page files aligned with the repository documentation-pass standard.)
+  - [x] Task 4.2: Migrate retained PrimeReact pages to the generated theme + shared layout host - Completed (migrated the retained `Forms`, `Data View`, `Data Table`, `Tree`, and `Tree Table` pages plus the consolidated showcase tab wrappers onto the shared page-host helper so tab-hosted pages now opt into the shared layout contract by default.)
+    - [x] Step 1: Identify retained PrimeReact pages and tab-content surfaces that should consume the generated UKHO/Theia themes and shared layout contract. - Completed (confirmed the retained showcase tab set is `Showcase`, `Forms`, `Data View`, `Data Table`, `Tree`, and `Tree Table`, with shared focusable tab wrappers inside the consolidated showcase page.)
+    - [x] Step 2: Update those pages so they use the new system by default. - Completed (updated the retained tab wrappers and retained page components to resolve page-host class names and data-heavy scroll-height rules from the shared layout helper.)
+    - [x] Step 3: Reduce ad hoc page-local styling where practical. - Completed (removed repeated retained-tab wrapper markup and repeated page-host class selection logic in favor of the shared PrimeReact demo page helper.)
+    - [x] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files. - Completed (documented the shared retained-page helper and kept the touched retained page sources aligned with the documentation-pass requirement.)
+  - [x] Task 4.3: Extend cross-page verification and regression coverage - Completed (added focused retained-page layout-host tests and expanded the practical retained-page verification checklist so reviewers can validate both general page hosting and data-heavy inner scroll ownership.)
+    - [x] Step 1: Add or update tests for cross-page reuse of the theme and layout system. - Completed (added `search-studio-primereact-demo-page.test.js` to verify shared page-host class selection, shared tab-panel overflow handling, data-heavy scroll-height resolution, and the shared retained-tab wrapper contract.)
+    - [x] Step 2: Add practical visual verification guidance across the migrated page set. - Completed (expanded the Work Item 4 verification guidance so reviewers explicitly check `Forms`, `Data View`, `Data Table`, `Tree`, `Tree Table`, and `Showcase`, including inner scroll ownership on the data-heavy tabs.)
+    - [x] Step 3: Apply `./.github/instructions/documentation-pass.instructions.md` in full to all touched source files. - Completed (documented the new retained-page layout helper and kept the new regression test source aligned with the documentation-pass standard.)
   - **Files**:
     - `src/Studio/Server/search-studio/src/browser/primereact-demo/search-studio-primereact-demo-page.tsx`: preserve/refine the shared page host
     - `src/Studio/Server/search-studio/src/browser/primereact-demo/pages/*.tsx`: migrate retained PrimeReact pages under the theme + layout system
@@ -202,7 +204,10 @@ This revision keeps the completed theme-pipeline and runtime-loading work from `
     - `yarn --cwd .\src\Studio\Server build:browser`
     - Start `AppHost` with Visual Studio `F5`
     - Open `PrimeReact Showcase Demo`
-    - switch through retained pages and confirm coherent theme + layout behavior
+    - open `Showcase` and confirm the compact workspace still owns splitter sizing, inner grid scrolling, and detail-pane scrolling without the outer page taking overflow
+    - open `Forms` and `Data View` and confirm the shared tab host provides consistent padding, focus transfer, and page-level scrolling without page-specific host setup
+    - open `Data Table`, `Tree`, and `Tree Table` and confirm the shared retained-page contract keeps scrolling inside the grid/tree surfaces instead of pushing overflow to the outer tab page
+    - switch across the full retained page set and confirm coherent theme + layout behavior
   - **User Instructions**: Confirm the retained PrimeReact pages now feel like one coherent UKHO/Theia-themed desktop workbench system.
 
 ---

@@ -16,6 +16,10 @@ import {
     createScenarioSnapshot,
     SearchStudioPrimeReactDemoScenario
 } from '../../data/search-studio-primereact-demo-state';
+import {
+    getSearchStudioPrimeReactDemoDataScrollHeight,
+    getSearchStudioPrimeReactDemoPageClassName
+} from '../../search-studio-primereact-demo-page-layout';
 import { SearchStudioPrimeReactDemoPageProps } from '../../search-studio-primereact-demo-page-props';
 
 const scenarioOptions = [
@@ -96,7 +100,7 @@ interface SearchStudioPrimeReactDemoColumnEditorOptions<TValue> {
  */
 function getThemeLabel(activeThemeVariant: SearchStudioPrimeReactDemoPageProps['activeThemeVariant']): string {
     // Surface the current light or dark mapping explicitly so reviewers can confirm Theia theme following while the data-heavy page is open.
-    return activeThemeVariant === 'light' ? 'Theia light -> Lara Light Blue' : 'Theia dark -> Lara Dark Blue';
+    return activeThemeVariant === 'light' ? 'Theia light -> UKHO/Theia light' : 'Theia dark -> UKHO/Theia dark';
 }
 
 /**
@@ -183,11 +187,11 @@ export function SearchStudioPrimeReactDataTableDemoPage(props: SearchStudioPrime
         () => createScenarioSnapshot(filteredRecords, scenario),
         [filteredRecords, scenario]
     );
-    const hostedInsideTabbedShell = props.hostDisplayMode === 'tabbed';
-    const pageClassName = hostedInsideTabbedShell
-        ? 'search-studio-primereact-demo-page search-studio-primereact-demo-page--styled search-studio-primereact-demo-page--tab-hosted search-studio-primereact-demo-page--tab-hosted-data-heavy'
-        : 'search-studio-primereact-demo-page search-studio-primereact-demo-page--styled';
-    const dataTableScrollHeight = hostedInsideTabbedShell ? 'flex' : '32rem';
+    const pageClassName = getSearchStudioPrimeReactDemoPageClassName({
+        hostDisplayMode: props.hostDisplayMode,
+        usesDataHeavyLayout: true
+    });
+    const dataTableScrollHeight = getSearchStudioPrimeReactDemoDataScrollHeight(props.hostDisplayMode);
 
     /**
      * Updates the current high-level page scenario shown by the `DataTable` surface.

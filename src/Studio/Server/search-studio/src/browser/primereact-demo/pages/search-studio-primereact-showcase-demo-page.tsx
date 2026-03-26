@@ -25,6 +25,7 @@ import {
     SearchStudioPrimeReactDemoScenario,
     SearchStudioPrimeReactDemoTreeSelectionKeys
 } from '../data/search-studio-primereact-demo-state';
+import { SearchStudioPrimeReactDemoTabContent } from '../search-studio-primereact-demo-page-layout';
 import { SearchStudioPrimeReactDemoPageProps } from '../search-studio-primereact-demo-page-props';
 import { SearchStudioPrimeReactDataTableDemoPage } from './tab-content/search-studio-primereact-data-table-showcase-tab';
 import { SearchStudioPrimeReactDataViewDemoPage } from './tab-content/search-studio-primereact-data-view-showcase-tab';
@@ -919,68 +920,60 @@ export function SearchStudioPrimeReactShowcaseDemoPage(props: SearchStudioPrimeR
                 className="search-studio-primereact-demo-page__root-tabview">
                 <TabPanel header="Showcase" leftIcon="pi pi-desktop mr-2" className="search-studio-primereact-demo-page__root-tab-panel">
                     {renderedTabs.showcase ? (
-                        <section
-                            id={getSearchStudioPrimeReactShowcaseTabFocusTargetId('showcase')}
-                            tabIndex={-1}
-                            aria-label="PrimeReact Showcase tab content"
-                            className="search-studio-primereact-demo-page__tab-panel-content search-studio-primereact-demo-page__tab-panel-content--contained">
+                        <SearchStudioPrimeReactDemoTabContent
+                            focusTargetId={getSearchStudioPrimeReactShowcaseTabFocusTargetId('showcase')}
+                            ariaLabel="PrimeReact Showcase tab content"
+                            overflowMode="contained">
                             {showcaseTabContent}
-                        </section>
+                        </SearchStudioPrimeReactDemoTabContent>
                     ) : null}
                 </TabPanel>
                 <TabPanel header="Forms" leftIcon="pi pi-pencil mr-2" className="search-studio-primereact-demo-page__root-tab-panel">
                     {renderedTabs.forms ? (
-                        <section
-                            id={getSearchStudioPrimeReactShowcaseTabFocusTargetId('forms')}
-                            tabIndex={-1}
-                            aria-label="PrimeReact Forms tab content"
-                            className="search-studio-primereact-demo-page__tab-panel-content">
+                        <SearchStudioPrimeReactDemoTabContent
+                            focusTargetId={getSearchStudioPrimeReactShowcaseTabFocusTargetId('forms')}
+                            ariaLabel="PrimeReact Forms tab content">
                             <SearchStudioPrimeReactFormsDemoPage {...props} hostDisplayMode="tabbed" />
-                        </section>
+                        </SearchStudioPrimeReactDemoTabContent>
                     ) : null}
                 </TabPanel>
                 <TabPanel header="Data View" leftIcon="pi pi-th-large mr-2" className="search-studio-primereact-demo-page__root-tab-panel">
                     {renderedTabs.dataview ? (
-                        <section
-                            id={getSearchStudioPrimeReactShowcaseTabFocusTargetId('dataview')}
-                            tabIndex={-1}
-                            aria-label="PrimeReact Data View tab content"
-                            className="search-studio-primereact-demo-page__tab-panel-content">
+                        <SearchStudioPrimeReactDemoTabContent
+                            focusTargetId={getSearchStudioPrimeReactShowcaseTabFocusTargetId('dataview')}
+                            ariaLabel="PrimeReact Data View tab content">
                             <SearchStudioPrimeReactDataViewDemoPage {...props} hostDisplayMode="tabbed" />
-                        </section>
+                        </SearchStudioPrimeReactDemoTabContent>
                     ) : null}
                 </TabPanel>
                 <TabPanel header="Data Table" leftIcon="pi pi-table mr-2" className="search-studio-primereact-demo-page__root-tab-panel">
                     {renderedTabs.datatable ? (
-                        <section
-                            id={getSearchStudioPrimeReactShowcaseTabFocusTargetId('datatable')}
-                            tabIndex={-1}
-                            aria-label="PrimeReact Data Table tab content"
-                            className="search-studio-primereact-demo-page__tab-panel-content search-studio-primereact-demo-page__tab-panel-content--contained">
+                        <SearchStudioPrimeReactDemoTabContent
+                            focusTargetId={getSearchStudioPrimeReactShowcaseTabFocusTargetId('datatable')}
+                            ariaLabel="PrimeReact Data Table tab content"
+                            overflowMode="contained">
                             <SearchStudioPrimeReactDataTableDemoPage {...props} hostDisplayMode="tabbed" />
-                        </section>
+                        </SearchStudioPrimeReactDemoTabContent>
                     ) : null}
                 </TabPanel>
                 <TabPanel header="Tree" leftIcon="pi pi-sitemap mr-2" className="search-studio-primereact-demo-page__root-tab-panel">
                     {renderedTabs.tree ? (
-                        <section
-                            id={getSearchStudioPrimeReactShowcaseTabFocusTargetId('tree')}
-                            tabIndex={-1}
-                            aria-label="PrimeReact Tree tab content"
-                            className="search-studio-primereact-demo-page__tab-panel-content search-studio-primereact-demo-page__tab-panel-content--contained">
+                        <SearchStudioPrimeReactDemoTabContent
+                            focusTargetId={getSearchStudioPrimeReactShowcaseTabFocusTargetId('tree')}
+                            ariaLabel="PrimeReact Tree tab content"
+                            overflowMode="contained">
                             <SearchStudioPrimeReactTreeDemoPage {...props} hostDisplayMode="tabbed" />
-                        </section>
+                        </SearchStudioPrimeReactDemoTabContent>
                     ) : null}
                 </TabPanel>
                 <TabPanel header="Tree Table" leftIcon="pi pi-list mr-2" className="search-studio-primereact-demo-page__root-tab-panel">
                     {renderedTabs.treetable ? (
-                        <section
-                            id={getSearchStudioPrimeReactShowcaseTabFocusTargetId('treetable')}
-                            tabIndex={-1}
-                            aria-label="PrimeReact Tree Table tab content"
-                            className="search-studio-primereact-demo-page__tab-panel-content search-studio-primereact-demo-page__tab-panel-content--contained">
+                        <SearchStudioPrimeReactDemoTabContent
+                            focusTargetId={getSearchStudioPrimeReactShowcaseTabFocusTargetId('treetable')}
+                            ariaLabel="PrimeReact Tree Table tab content"
+                            overflowMode="contained">
                             <SearchStudioPrimeReactTreeTableDemoPage {...props} hostDisplayMode="tabbed" />
-                        </section>
+                        </SearchStudioPrimeReactDemoTabContent>
                     ) : null}
                 </TabPanel>
             </TabView>

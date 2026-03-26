@@ -16,6 +16,7 @@ import {
     SearchStudioPrimeReactDemoScenario,
     SearchStudioPrimeReactDemoTreeSelectionKeys
 } from '../../data/search-studio-primereact-demo-state';
+import { getSearchStudioPrimeReactDemoPageClassName } from '../../search-studio-primereact-demo-page-layout';
 import { SearchStudioPrimeReactDemoPageProps } from '../../search-studio-primereact-demo-page-props';
 
 const scenarioOptions = [
@@ -52,7 +53,7 @@ interface SearchStudioPrimeReactDemoTreeToggleEvent {
  */
 function getThemeLabel(activeThemeVariant: SearchStudioPrimeReactDemoPageProps['activeThemeVariant']): string {
     // Surface the current light or dark mapping explicitly so reviewers can confirm Theia theme following while the hierarchy page is open.
-    return activeThemeVariant === 'light' ? 'Theia light -> Lara Light Blue' : 'Theia dark -> Lara Dark Blue';
+    return activeThemeVariant === 'light' ? 'Theia light -> UKHO/Theia light' : 'Theia dark -> UKHO/Theia dark';
 }
 
 /**
@@ -96,10 +97,10 @@ export function SearchStudioPrimeReactTreeDemoPage(props: SearchStudioPrimeReact
         () => countSelectedTreeKeys(selectionKeys),
         [selectionKeys]
     );
-    const hostedInsideTabbedShell = props.hostDisplayMode === 'tabbed';
-    const pageClassName = hostedInsideTabbedShell
-        ? 'search-studio-primereact-demo-page search-studio-primereact-demo-page--styled search-studio-primereact-demo-page--tab-hosted search-studio-primereact-demo-page--tab-hosted-data-heavy'
-        : 'search-studio-primereact-demo-page search-studio-primereact-demo-page--styled';
+    const pageClassName = getSearchStudioPrimeReactDemoPageClassName({
+        hostDisplayMode: props.hostDisplayMode,
+        usesDataHeavyLayout: true
+    });
 
     /**
      * Updates the current high-level page scenario shown by the hierarchy surface.

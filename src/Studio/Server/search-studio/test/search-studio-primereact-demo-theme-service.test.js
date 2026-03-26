@@ -97,10 +97,16 @@ test('getSearchStudioPrimeReactGeneratedThemeDefinition_WhenCalled_ShouldResolve
     assert.equal(lightThemeDefinition.fileName, 'ukho-theia-light.css');
     assert.match(lightThemeDefinition.stylesheetContent, /--ukho-primereact-theme-name:\s*ukho-theia-light/);
     assert.match(lightThemeDefinition.stylesheetContent, /var\(--theia-ui-font-family/);
+    assert.doesNotMatch(lightThemeDefinition.stylesheetContent, /@font-face|Inter var/);
+    assert.doesNotMatch(lightThemeDefinition.stylesheetContent, /showcase/i);
+    assert.match(lightThemeDefinition.stylesheetContent, /min-height:\s*2\.25rem;/);
 
     assert.equal(darkThemeDefinition.fileName, 'ukho-theia-dark.css');
     assert.match(darkThemeDefinition.stylesheetContent, /--ukho-primereact-theme-name:\s*ukho-theia-dark/);
     assert.match(darkThemeDefinition.stylesheetContent, /var\(--theia-ui-font-family/);
+    assert.doesNotMatch(darkThemeDefinition.stylesheetContent, /@font-face|Inter var/);
+    assert.doesNotMatch(darkThemeDefinition.stylesheetContent, /showcase/i);
+    assert.match(darkThemeDefinition.stylesheetContent, /min-height:\s*2\.25rem;/);
 });
 
 /**
@@ -123,6 +129,7 @@ test('SearchStudioPrimeReactDemoThemeService_WhenStyledModeIsEnabled_ShouldAttac
         assert.equal(themeStylesheet.getAttribute('data-search-studio-generated-theme-file-name'), 'ukho-theia-light.css');
         assert.match(themeStylesheet.textContent, /--ukho-primereact-theme-name:\s*ukho-theia-light/);
         assert.match(themeStylesheet.textContent, /var\(--theia-ui-font-family/);
+        assert.doesNotMatch(themeStylesheet.textContent, /@font-face|Inter var/);
 
         const coreStylesheet = document.getElementById('search-studio-primereact-core-stylesheet');
         const iconsStylesheet = document.getElementById('search-studio-primereact-icons-stylesheet');

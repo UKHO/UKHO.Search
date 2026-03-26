@@ -108,6 +108,25 @@ function compileStudioThemeSource(studioThemeArtifact) {
 }
 
 /**
+ * Removes upstream Lara typography ownership that would otherwise reintroduce hosted fonts and override the Studio-owned Theia font contract.
+ *
+ * @param {string} baselineThemeContent Supplies the built upstream Lara baseline CSS content.
+ * @returns {string} The baseline CSS with hosted font-face blocks and root-level typography ownership removed.
+ */
+function removeUpstreamTypographyOwnership(baselineThemeContent) {
+    // Remove the upstream hosted Inter font registrations because the Studio-owned theme deliberately relies on Theia's font contract instead.
+    const baselineWithoutFontFaces = baselineThemeContent.replace(/@font-face\s*\{[\s\S]*?\}\s*/g, '');
+
+    // Remove only the root typography declarations that make the upstream baseline authoritative for font family selection.
+    return baselineWithoutFontFaces
+        .replace(/^\s*font-family:\s*"Inter var",\s*sans-serif;\r?\n/m, '')
+        .replace(/^\s*font-feature-settings:\s*"cv02",\s*"cv03",\s*"cv04",\s*"cv11";\r?\n/m, '')
+        .replace(/^\s*font-variation-settings:\s*normal;\r?\n/m, '')
+        .replace(/^\s*--font-family:\s*"Inter var",\s*sans-serif;\r?\n/m, '')
+        .replace(/^\s*--font-feature-settings:\s*"cv02",\s*"cv03",\s*"cv04",\s*"cv11";\r?\n/m, '');
+}
+
+/**
  * Escapes CSS content so it can be emitted safely inside a generated JavaScript template literal.
  *
  * @param {string} content Supplies the CSS content that will be embedded into the generated TypeScript module.
@@ -212,7 +231,7 @@ function deployStudioThemeArtifact(studioThemeArtifact) {
     ensureDirectoryExists(studioGeneratedThemeRoot);
 
     // Compose the final generated theme CSS by layering the Studio-owned theme source output after the validated upstream Lara baseline.
-    const baselineThemeContent = fs.readFileSync(baselineSourceFilePath, 'utf8');
+    const baselineThemeContent = removeUpstreamTypographyOwnership(fs.readFileSync(baselineSourceFilePath, 'utf8'));
     const customThemeContent = compileStudioThemeSource(studioThemeArtifact);
     const generatedThemeContent = `${createGeneratedThemeBanner(studioThemeArtifact)}${baselineThemeContent}\n\n${customThemeContent}`;
 

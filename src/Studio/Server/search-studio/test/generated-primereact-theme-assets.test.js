@@ -45,5 +45,35 @@ test('generatedPrimeReactThemeAssets_WhenSearchStudioBuildRuns_ShouldBeCopiedInt
             /--ukho-primereact-theme-name:/,
             `Expected generated theme content to declare the generated UKHO theme marker in ${generatedThemeFilePath}.`
         );
+
+        assert.doesNotMatch(
+            generatedThemeContent,
+            /@font-face|Inter var/,
+            `Expected generated theme content to preserve the Theia typography contract without reintroducing hosted PrimeReact font assets in ${generatedThemeFilePath}.`
+        );
+
+        assert.doesNotMatch(
+            generatedThemeContent,
+            /showcase/i,
+            `Expected generated theme content to stay generic and avoid page-named selectors in ${generatedThemeFilePath}.`
+        );
+
+        assert.match(
+            generatedThemeContent,
+            /min-height:\s*2\.25rem;/,
+            `Expected generated theme content to include the compact generic control sizing pass in ${generatedThemeFilePath}.`
+        );
+
+        assert.match(
+            generatedThemeContent,
+            /padding:\s*0\.625rem\s+0\.875rem;/,
+            `Expected generated theme content to include the generic tab spacing refinement in ${generatedThemeFilePath}.`
+        );
+
+        assert.match(
+            generatedThemeContent,
+            /padding:\s*0\.625rem\s+0\.75rem;/,
+            `Expected generated theme content to include the generic data-heavy cell spacing refinement in ${generatedThemeFilePath}.`
+        );
     }
 });

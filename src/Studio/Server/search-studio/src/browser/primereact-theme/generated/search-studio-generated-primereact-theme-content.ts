@@ -37,11 +37,6 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
  * The first Studio-owned iteration intentionally reuses Theia's UI font family contract via --theia-ui-font-family and does not introduce hosted font assets.
  */
 :root {
-  font-family: "Inter var", sans-serif;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  font-variation-settings: normal;
-  --font-family: "Inter var", sans-serif;
-  --font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   --surface-a: #ffffff;
   --surface-b: #f9fafb;
   --surface-c: #f3f4f6;
@@ -89,22 +84,6 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
   color-scheme: light;
 }
 
-@font-face {
-  font-family: "Inter var";
-  font-weight: 100 900;
-  font-display: swap;
-  font-style: normal;
-  font-named-instance: "Regular";
-  src: url("./fonts/InterVariable.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Inter var";
-  font-weight: 100 900;
-  font-display: swap;
-  font-style: italic;
-  font-named-instance: "Italic";
-  src: url("./fonts/InterVariable-Italic.woff2") format("woff2");
-}
 :root {
   --blue-50:#f5f9ff;
   --blue-100:#d0e1fd;
@@ -7185,6 +7164,115 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
   color: #0b5cab;
 }
 
+.p-button,
+.p-inputtext,
+.p-dropdown,
+.p-multiselect {
+  min-height: 2.25rem;
+}
+
+.p-button {
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+}
+
+.p-button.p-button-icon-only {
+  width: 2.25rem;
+  padding: 0;
+  justify-content: center;
+}
+
+.p-inputtext,
+.p-dropdown .p-dropdown-label,
+.p-multiselect .p-multiselect-label {
+  padding: 0.5rem 0.75rem;
+}
+
+.p-dropdown .p-dropdown-trigger,
+.p-multiselect .p-multiselect-trigger {
+  width: 2.25rem;
+}
+
+.p-card,
+.p-panel,
+.p-paginator,
+.p-tree,
+.p-treetable,
+.p-datatable .p-datatable-header,
+.p-datatable .p-datatable-footer,
+.p-treetable .p-treetable-header,
+.p-treetable .p-treetable-footer {
+  background: #ffffff;
+  color: #16212d;
+}
+
+.p-card .p-card-body,
+.p-panel .p-panel-header,
+.p-panel .p-panel-content,
+.p-panel .p-panel-footer,
+.p-datatable .p-datatable-header,
+.p-datatable .p-datatable-footer,
+.p-treetable .p-treetable-header,
+.p-treetable .p-treetable-footer {
+  padding: 0.625rem 0.75rem;
+}
+
+.p-tabview .p-tabview-nav {
+  gap: 0.25rem;
+  background: transparent;
+  border-color: #d3dce8;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  padding: 0.625rem 0.875rem;
+  background: transparent;
+}
+
+.p-paginator {
+  padding: 0.375rem 0.5rem;
+  gap: 0.25rem;
+}
+
+.p-paginator .p-paginator-pages .p-paginator-page,
+.p-paginator .p-paginator-next,
+.p-paginator .p-paginator-prev,
+.p-paginator .p-paginator-first,
+.p-paginator .p-paginator-last,
+.p-paginator .p-paginator-current {
+  min-width: 2rem;
+  min-height: 2rem;
+}
+
+.p-datatable .p-datatable-thead > tr > th,
+.p-datatable .p-datatable-tbody > tr > td,
+.p-treetable .p-treetable-thead > tr > th,
+.p-treetable .p-treetable-tbody > tr > td {
+  padding: 0.625rem 0.75rem;
+  border-color: #d3dce8;
+}
+
+.p-datatable .p-datatable-thead > tr > th,
+.p-treetable .p-treetable-thead > tr > th {
+  background: #f4f7fb;
+  color: #526170;
+}
+
+.p-datatable .p-datatable-tbody > tr,
+.p-treetable .p-treetable-tbody > tr {
+  background: #ffffff;
+  color: #16212d;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover,
+.p-treetable .p-treetable-tbody > tr:hover {
+  background: #e8eef6;
+}
+
+.p-tag {
+  padding: 0.25rem 0.5rem;
+  font-weight: 600;
+}
+
 .p-inputtext,
 .p-dropdown,
 .p-multiselect,
@@ -7223,11 +7311,6 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
  * The first Studio-owned iteration intentionally reuses Theia's UI font family contract via --theia-ui-font-family and does not introduce hosted font assets.
  */
 :root {
-  font-family: "Inter var", sans-serif;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  font-variation-settings: normal;
-  --font-family: "Inter var", sans-serif;
-  --font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   --surface-a: #1f2937;
   --surface-b: #111827;
   --surface-c: rgba(255, 255, 255, 0.03);
@@ -7275,22 +7358,6 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
   color-scheme: dark;
 }
 
-@font-face {
-  font-family: "Inter var";
-  font-weight: 100 900;
-  font-display: swap;
-  font-style: normal;
-  font-named-instance: "Regular";
-  src: url("./fonts/InterVariable.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Inter var";
-  font-weight: 100 900;
-  font-display: swap;
-  font-style: italic;
-  font-named-instance: "Italic";
-  src: url("./fonts/InterVariable-Italic.woff2") format("woff2");
-}
 :root {
   --blue-50:#f5f9ff;
   --blue-100:#d0e1fd;
@@ -14379,6 +14446,115 @@ const searchStudioPrimeReactGeneratedThemeDefinitions: Record<SearchStudioPrimeR
 .p-button.p-button-text,
 .p-button.p-button-link {
   color: #5ca9ff;
+}
+
+.p-button,
+.p-inputtext,
+.p-dropdown,
+.p-multiselect {
+  min-height: 2.25rem;
+}
+
+.p-button {
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+}
+
+.p-button.p-button-icon-only {
+  width: 2.25rem;
+  padding: 0;
+  justify-content: center;
+}
+
+.p-inputtext,
+.p-dropdown .p-dropdown-label,
+.p-multiselect .p-multiselect-label {
+  padding: 0.5rem 0.75rem;
+}
+
+.p-dropdown .p-dropdown-trigger,
+.p-multiselect .p-multiselect-trigger {
+  width: 2.25rem;
+}
+
+.p-card,
+.p-panel,
+.p-paginator,
+.p-tree,
+.p-treetable,
+.p-datatable .p-datatable-header,
+.p-datatable .p-datatable-footer,
+.p-treetable .p-treetable-header,
+.p-treetable .p-treetable-footer {
+  background: #192430;
+  color: #e4ebf2;
+}
+
+.p-card .p-card-body,
+.p-panel .p-panel-header,
+.p-panel .p-panel-content,
+.p-panel .p-panel-footer,
+.p-datatable .p-datatable-header,
+.p-datatable .p-datatable-footer,
+.p-treetable .p-treetable-header,
+.p-treetable .p-treetable-footer {
+  padding: 0.625rem 0.75rem;
+}
+
+.p-tabview .p-tabview-nav {
+  gap: 0.25rem;
+  background: transparent;
+  border-color: #314252;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  padding: 0.625rem 0.875rem;
+  background: transparent;
+}
+
+.p-paginator {
+  padding: 0.375rem 0.5rem;
+  gap: 0.25rem;
+}
+
+.p-paginator .p-paginator-pages .p-paginator-page,
+.p-paginator .p-paginator-next,
+.p-paginator .p-paginator-prev,
+.p-paginator .p-paginator-first,
+.p-paginator .p-paginator-last,
+.p-paginator .p-paginator-current {
+  min-width: 2rem;
+  min-height: 2rem;
+}
+
+.p-datatable .p-datatable-thead > tr > th,
+.p-datatable .p-datatable-tbody > tr > td,
+.p-treetable .p-treetable-thead > tr > th,
+.p-treetable .p-treetable-tbody > tr > td {
+  padding: 0.625rem 0.75rem;
+  border-color: #314252;
+}
+
+.p-datatable .p-datatable-thead > tr > th,
+.p-treetable .p-treetable-thead > tr > th {
+  background: #121a24;
+  color: #9eb0c3;
+}
+
+.p-datatable .p-datatable-tbody > tr,
+.p-treetable .p-treetable-tbody > tr {
+  background: #192430;
+  color: #e4ebf2;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover,
+.p-treetable .p-treetable-tbody > tr:hover {
+  background: #253443;
+}
+
+.p-tag {
+  padding: 0.25rem 0.5rem;
+  font-weight: 600;
 }
 
 .p-inputtext,

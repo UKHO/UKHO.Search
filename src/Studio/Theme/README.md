@@ -88,6 +88,14 @@ The Studio-owned source structure that now feeds those generated assets lives un
 
 The current deploy step composes the validated Lara light/dark baseline outputs with the Studio-owned UKHO/Theia light/dark SASS source so Studio can load generated local theme content instead of relying only on the stock PrimeReact CDN theme CSS.
 
+## Styling authority split for the current UKHO/Theia pass
+
+- `Showcase` remains the proving surface for shared layout behaviour such as full-height composition, splitter ownership, and inner scrolling.
+- `Showcase` is not the styling or typography authority for the Studio-owned UKHO/Theia theme.
+- Shared theme source under `src/Studio/Server/search-studio/src/browser/primereact-theme/source/shared` must stay generic and must not accumulate page-named selectors.
+- The current typography baseline should continue to follow `--theia-ui-font-family` rather than reintroducing hosted PrimeReact font assets.
+- Theme refinements in this pass should focus on generic PrimeReact component chrome, colors, spacing, and sizing that read coherently across retained pages such as `Forms` and `DataView`.
+
 Optional manual wrappers:
 
 - Windows: `build.bat`
