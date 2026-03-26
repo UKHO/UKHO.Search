@@ -3,11 +3,11 @@
 Provider identity in `UKHO.Search` needs to be available in more than one place:
 
 - ingestion runtime needs it for queue-backed processing, diagnostics, and fail-fast validation
-- development-time tooling needs it for provider discovery and read-only rule discovery in `StudioApiHost` and Theia
+- development-time tooling needs it for provider discovery and read-only rule discovery in `StudioServiceHost` and Theia
 
 In the current implementation, generic provider identity, metadata, catalogs, and registration helpers now live in the shared `src/UKHO.Search.ProviderModel` project so both ingestion and studio composition can use the same source of truth.
 
-The important constraint is that `StudioApiHost` must **not** depend on `IngestionServiceHost` being present. In live deployments, `StudioApiHost` and Theia are not expected to be deployed at all.
+The important constraint is that `StudioServiceHost` must **not** depend on `IngestionServiceHost` being present. In live deployments, `StudioServiceHost` and Theia are not expected to be deployed at all.
 
 ## Why this exists
 
@@ -67,7 +67,7 @@ It must **not** require:
 - hosted services
 - ingestion runtime bootstrapping
 
-This is what allows `StudioApiHost` to know about providers without becoming an ingestion runtime host.
+This is what allows `StudioServiceHost` to know about providers without becoming an ingestion runtime host.
 
 ### Runtime registration
 
@@ -115,9 +115,9 @@ That validation should fail fast before queue creation, queue polling, or other 
 
 In the current implementation this validation is performed by `IngestionProviderStartupValidator`, and `IngestionPipelineHostedService.StartAsync()` runs it before bootstrap starts.
 
-### `StudioApiHost`
+### `StudioServiceHost`
 
-`StudioApiHost` should compose:
+`StudioServiceHost` should compose:
 
 - provider metadata registrations only
 - read-oriented rules loading
@@ -131,7 +131,7 @@ The current `/providers` response returns the full shared `ProviderDescriptor` m
 - `displayName`
 - `description`
 
-`StudioApiHost` also exposes a read-only `/rules` response backed by the same provider-aware rules-loading path used by ingestion.
+`StudioServiceHost` also exposes a read-only `/rules` response backed by the same provider-aware rules-loading path used by ingestion.
 
 Current `/rules` behavior:
 
@@ -151,15 +151,15 @@ It must not:
 
 ### Theia
 
-Theia is a development-time consumer of `StudioApiHost`.
+Theia is a development-time consumer of `StudioServiceHost`.
 
-It should consume provider metadata through the `StudioApiHost` API instead of trying to inspect ingestion runtime state directly.
+It should consume provider metadata through the `StudioServiceHost` API instead of trying to inspect ingestion runtime state directly.
 
 ## Development-time versus live deployment
 
 This split is intentionally designed so that live deployments do not need any studio components.
 
-- `StudioApiHost` is development-time only
+- `StudioServiceHost` is development-time only
 - Theia is development-time only
 - live ingestion deployment still works with provider metadata plus runtime registration in `IngestionServiceHost`
 
@@ -184,7 +184,7 @@ For concrete examples, see:
 - `src/Providers/UKHO.Search.Studio.Providers.FileShare/*`
 - `src/Providers/UKHO.Search.Ingestion.Providers.FileShare/Injection/InjectionExtensions.cs`
 - `src/UKHO.Search.Services.Ingestion/Providers/IngestionProviderStartupValidator.cs`
-- `src/Studio/StudioApiHost/StudioApiHostApplication.cs`
+- `src/Studio/StudioServiceHost/StudioServiceHostApplication.cs`
 
 ## Related documents
 

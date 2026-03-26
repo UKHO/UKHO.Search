@@ -56,10 +56,10 @@ flowchart LR
 - `src/Hosts/AppHost` — Aspire orchestration and `runmode` switching
 - `src/Hosts/IngestionServiceHost` — ingestion host and bootstrap/runtime wiring
 - `src/Hosts/QueryServiceHost` — query-side host
-- `src/Studio/StudioApiHost` — studio-facing minimal API host for development-time tooling, exposing `/providers`, read-only `/rules`, and the temporary `/echo` proof endpoint while validating provider-backed rules at startup
+- `src/Studio/StudioServiceHost` — studio-facing minimal API host for development-time tooling, exposing `/providers`, read-only `/rules`, provider-neutral ingestion/operation APIs, OpenAPI/Scalar metadata, and the lightweight `/echo` smoke endpoint
 - `tools/FileShareEmulator` — local File Share emulator UI/API
 - `tools/RulesWorkbench` — rule inspection, evaluation, and checker tooling
-- `src/Studio/Server` — browser-hosted Eclipse Theia studio shell, including `Home`, `Providers`, `Rules`, `Ingestion`, `Search`, and `Studio Output` work areas
+- `src/Studio/Server` — browser-hosted Eclipse Theia studio shell, currently centered on the default `Home` document, the runtime configuration bridge, and the temporary `PrimeReact Showcase Demo` review surface
 
 ### Core libraries
 
@@ -89,7 +89,7 @@ flowchart LR
 
 If your task is rule authoring or rule diagnosis, open [`RulesWorkbench`](Tools-RulesWorkbench) as part of that loop.
 
-If you only need a read-only view of canonical providers and currently loaded rules, query `StudioApiHost` first via [`/providers` and `/rules`](Tools-UKHO-Search-Studio).
+If you are reviewing Studio shell wiring, open [Tools: `UKHO Search Studio`](Tools-UKHO-Search-Studio) for the current Theia shell and `StudioServiceHost` guidance.
 
 ## Design themes carried through the repo
 

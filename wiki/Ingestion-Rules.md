@@ -121,9 +121,9 @@ Rules are applied in deterministic order. When loading per-rule files under a pr
 1. file path using ordinal, case-insensitive ordering
 2. rule id using ordinal, case-insensitive ordering as a tie-break
 
-## `StudioApiHost` rule discovery
+## `StudioServiceHost` rule discovery
 
-`StudioApiHost` now composes the same provider-aware read path used by ingestion rule loading.
+`StudioServiceHost` now composes the same provider-aware read path used by ingestion rule loading.
 
 - `GET /rules` returns a read-only rule discovery response
 - providers are returned using canonical provider names from `UKHO.Search.ProviderModel`

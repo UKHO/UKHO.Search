@@ -16,7 +16,7 @@ flowchart TB
         AppHost[AppHost]
         IngestionHost[IngestionServiceHost]
         QueryHost[QueryServiceHost]
-        StudioApiHost[StudioApiHost]
+        StudioServiceHost[StudioServiceHost]
         ServiceDefaults[UKHO.Search.ServiceDefaults]
     end
 
@@ -40,10 +40,10 @@ flowchart TB
 
     AppHost --> IngestionHost
     AppHost --> QueryHost
-    AppHost --> StudioApiHost
+    AppHost --> StudioServiceHost
     IngestionHost --> InfraIngestion
     QueryHost --> InfraQuery
-    StudioApiHost --> InfraIngestion
+    StudioServiceHost --> InfraIngestion
     InfraIngestion --> ServicesIngestion
     InfraQuery --> ServicesQuery
     ServicesIngestion --> Ingestion
@@ -63,7 +63,7 @@ flowchart TB
 | `src/Hosts/AppHost` | Aspire orchestration, container/resource definitions, and run-mode switching for local workflows. |
 | `src/Hosts/IngestionServiceHost` | Ingestion host, DI/bootstrap, Elasticsearch/blob/queue client wiring, operational UI. |
 | `src/Hosts/QueryServiceHost` | Query-side host and external endpoint surface. |
-| `src/Studio/StudioApiHost` | Studio-facing minimal API host for development-time tooling, including provider metadata discovery and read-only rules discovery. |
+| `src/Studio/StudioServiceHost` | Studio-facing minimal API host for development-time tooling, including provider metadata discovery, read-only rules discovery, provider-neutral ingestion APIs, tracked operation endpoints, and OpenAPI metadata. |
 | `src/Hosts/UKHO.Search.ServiceDefaults` | Shared Aspire/OpenTelemetry/health-check defaults for hosts. |
 
 ### Shared provider and studio support
@@ -142,7 +142,7 @@ Current aligned structure:
 | Services | `test/UKHO.Search.Services.Tests`, `test/UKHO.Search.Services.Ingestion.Tests`, `test/UKHO.Search.Services.Query.Tests` |
 | Provider | `test/UKHO.Search.Ingestion.Providers.FileShare.Tests` |
 | Infrastructure | `test/UKHO.Search.Infrastructure.Tests`, `test/UKHO.Search.Infrastructure.Ingestion.Tests`, `test/UKHO.Search.Infrastructure.Query.Tests` |
-| Hosts / UI | `test/AppHost.Tests`, `test/IngestionServiceHost.Tests`, `test/QueryServiceHost.Tests`, `test/StudioApiHost.Tests`, `test/UKHO.Search.ServiceDefaults.Tests` |
+| Hosts / UI | `test/AppHost.Tests`, `test/IngestionServiceHost.Tests`, `test/QueryServiceHost.Tests`, `test/StudioServiceHost.Tests`, `test/UKHO.Search.ServiceDefaults.Tests` |
 | Tools | `test/FileShareEmulator.Tests`, `test/FileShareEmulator.Common.Tests`, `test/FileShareImageBuilder.Tests`, `test/FileShareImageLoader.Tests`, `test/RulesWorkbench.Tests` |
 | Configuration | `test/UKHO.Aspire.Configuration.Tests`, `test/UKHO.Aspire.Configuration.Hosting.Tests`, `test/UKHO.Aspire.Configuration.Seeder.Tests`, `test/UKHO.Aspire.Configuration.Emulator.Tests` |
 | Shared / integration exceptions | `test/UKHO.Search.Tests.Common`, `test/UKHO.Search.IntegrationTests` |
@@ -170,7 +170,7 @@ flowchart LR
         KC[Keycloak]
         ING[IngestionServiceHost]
         QRY[QueryServiceHost]
-        STAPI[StudioApiHost]
+        STAPI[StudioServiceHost]
         STSHELL[Studio shell / Theia]
         FSE[FileShareEmulator]
         RWB[RulesWorkbench]
@@ -221,7 +221,7 @@ flowchart LR
 
 - emulator UI/API: `tools/FileShareEmulator`
 - rule tooling: `tools/RulesWorkbench`
-- studio shell/API: `src/Studio/Server`, `src/Studio/StudioApiHost`
+- studio shell/API: `src/Studio/Server`, `src/Studio/StudioServiceHost`
 - data-image import/export: `tools/FileShareImageLoader`, `tools/FileShareImageBuilder`
 
 ## Architectural intent

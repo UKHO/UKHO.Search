@@ -25,12 +25,11 @@ If you are building the Theia shell in `src/Studio/Server`, also ensure the foll
 
 - Node `18.20.4`
 - `yarn` classic (`1.x`)
-- the globally installed `generator-theia-extension` package
 - Visual Studio Build Tools 2022 C++ tooling for native Node module compilation
 
 The current generated Theia stack in this repository was validated with that toolchain combination.
 
-When building from Visual Studio, the `StudioApiHost` project now triggers the Theia workspace build script before build so a fresh clone can prepare the shell as part of the normal solution build.
+When building from Visual Studio, the `StudioServiceHost` project triggers the Theia workspace build script before build so a fresh clone can prepare the shell as part of the normal solution build.
 
 ## Local orchestration entry point
 
@@ -234,7 +233,7 @@ For more detail, see [Tools: `UKHO Search Studio`](Tools-UKHO-Search-Studio).
 
 ### Automatic build from Visual Studio
 
-If you build the solution in Visual Studio, `src/Studio/StudioApiHost/StudioApiHost.csproj` runs `src/Studio/Server/build.ps1` before build.
+If you build the solution in Visual Studio, `src/Studio/StudioServiceHost/StudioServiceHost.csproj` runs `src/Studio/Server/build.ps1` before build.
 
 That integration is incremental, so the script is intended to run only when relevant Theia workspace inputs have changed or when the shell has not yet been built on a fresh clone.
 

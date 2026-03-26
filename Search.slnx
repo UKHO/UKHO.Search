@@ -22,6 +22,7 @@
   <Folder Name="/04 Studio/">
     <Project Path="src/Studio/UKHO.Search.Studio/UKHO.Search.Studio.csproj" />
   </Folder>
+  <Folder Name="/04 Workbench/" />
   <Folder Name="/05 Hosts/">
     <Project Path="src/Hosts/IngestionServiceHost/IngestionServiceHost.csproj" />
     <Project Path="src/Hosts/QueryServiceHost/QueryServiceHost.csproj" />
@@ -71,6 +72,7 @@
   <Folder Name="/@test/04 Studio/">
     <Project Path="test/UKHO.Search.Studio.Tests/UKHO.Search.Studio.Tests.csproj" />
   </Folder>
+  <Folder Name="/@test/04 Workbench/" />
   <Folder Name="/@test/05 Hosts/">
     <Project Path="test/AppHost.Tests/AppHost.Tests.csproj" />
     <Project Path="test/IngestionServiceHost.Tests/IngestionServiceHost.Tests.csproj" />

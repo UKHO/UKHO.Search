@@ -188,19 +188,19 @@ Repository-wide test coverage baseline assessment and identification of importan
 Implementation planning and delivery tracking for the project-aligned test-estate refactor, including shared sample-data consolidation, matching test-project creation, provider/infrastructure/integration ownership cleanup, and the final solution-wide test audit.
 
 ### `docs/058-studio-config`
-Historical design package for propagating the studio API endpoint into the Theia shell. This package predates the `StudioApiHost` rename and therefore documents the earlier `StudioHost` project identity.
+Historical design package for propagating the studio API endpoint into the Theia shell. This package predates later host renames, so it documents the earlier `StudioHost` identity rather than the current `StudioServiceHost` project name.
 
 ### `docs/060-studio-host-rename`
-Current work package for renaming the studio API host and its matching test project from `StudioHost` / `StudioHost.Tests` to `StudioApiHost` / `StudioApiHost.Tests`, including Theia contract and wiki alignment.
+Historical work package for renaming the studio API host and its matching test project from `StudioHost` / `StudioHost.Tests` to `StudioApiHost` / `StudioApiHost.Tests`. The current repository has since moved on again and now uses `StudioServiceHost` / `StudioServiceHost.Tests`.
 
 ### `docs/061-provider-metadata`
-Provider metadata model and split-registration design for provider packages, including development-time composition in `StudioApiHost`/Theia and live-deployment independence from studio components.
+Provider metadata model and split-registration design for provider packages, including development-time composition in the studio API host/Theia path and live-deployment independence from studio components. The current implementation host is `StudioServiceHost`.
 
 ### `docs/062-studio-provider`
-Shared Provider Model extraction plus Studio provider contracts, tandem Studio provider registration, and the amended `StudioApiHost` `/providers` contract that returns full provider metadata for development-time tooling.
+Shared Provider Model extraction plus Studio provider contracts, tandem Studio provider registration, and the amended studio API `/providers` contract that returns full provider metadata for development-time tooling. The current implementation host is `StudioServiceHost`.
 
 ### `docs/063-provider-metadata-rule-loading`
-Provider Model-backed rule loading, canonical provider-name validation for rules, reusable read-oriented rules loading, and the `StudioApiHost` read-only `/rules` discovery endpoint.
+Provider Model-backed rule loading, canonical provider-name validation for rules, reusable read-oriented rules loading, and the studio host read-only `/rules` discovery endpoint. The current implementation host is `StudioServiceHost`.
 
 ### Top-level operational docs
 

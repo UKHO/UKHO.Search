@@ -15,24 +15,24 @@ See also:
 The current bootstrap slice provides:
 
 - a fresh active Theia workspace at `src/Studio/Server`
-- the previous Studio shell preserved at `src/Studio/OldServer` as reference-only source
 - the preserved root workspace script names `build:browser` and `start:browser`
 - the preserved package names `browser-app` and `search-studio`
 - Studio product branding through the browser-app Theia frontend configuration
 - a lightweight Studio `Home` document that opens by default and can be reopened from `View -> Home`
+- a temporary `PrimeReact Showcase Demo` document that can be reopened from `View -> PrimeReact Showcase Demo`
 - the copied UKHO logo served from the active runtime asset pipeline under `search-studio`
 - a same-origin runtime configuration bridge at `/search-studio/api/configuration`
-- browser-side startup validation that logs the resolved `STUDIO_API_HOST_API_BASE_URL` handoff
+- browser-side startup validation that logs the resolved `STUDIO_API_HOST_API_BASE_URL` handoff without blocking shell startup
 - the preserved Visual Studio incremental build entrypoint `src/Studio/Server/build.ps1`
 
 This work package does **not** migrate existing repository tooling into the shell yet.
 
-The current Studio shell deliberately keeps live backend usage focused on Studio-safe provider-neutral contracts:
+The current retained Studio shell is intentionally lightweight:
 
-- `GET /providers` supplies real provider metadata for the shell navigation
-- `GET /rules` supplies real provider-scoped rule discovery for the `Rules` work area
-- queue and dead-letter surfaces remain placeholder-driven for UX review
-- ingestion surfaces actively use the provider-neutral Studio ingestion and operations APIs for fetch-by-id, payload submit, context discovery, long-running operations, SSE progress, conflict handling, and final-state readback
+- the visible Theia experience currently centers on `Home`
+- the retained review surface is the temporary `PrimeReact Showcase Demo`
+- the runtime configuration bridge is active so future browser features can discover the Studio API base URL safely
+- `StudioServiceHost` remains available beside the shell for provider, rules, ingestion, and operations APIs even though those APIs are not yet surfaced through the retained `Home` and demo documents
 
 ## How it is hosted locally
 
@@ -58,7 +58,7 @@ Do **not** use:
 
 - `https://localhost:3000`
 
-The shell continues to call `StudioServiceHost` over its Aspire-provided HTTPS endpoint through `STUDIO_API_HOST_API_BASE_URL`, while the browser shell itself stays on fixed-port HTTP for local development.
+The shell receives the Aspire-provided `StudioServiceHost` HTTPS base URL through `STUDIO_API_HOST_API_BASE_URL`, while the browser shell itself stays on fixed-port HTTP for local development.
 
 ## Visual Studio build integration
 
@@ -98,8 +98,8 @@ The current shell intentionally keeps the generated Theia workbench structure wh
 - the active browser-app composition no longer includes the scaffold-owned Theia `Welcome` / getting-started surface
 - the `search-studio` extension preloads the same-origin runtime configuration bridge during startup
 - startup logs report whether the Studio API base URL handoff was resolved successfully
-- the Home surface uses the copied runtime-served UKHO logo plus lightweight orientation text only, without the previous lower explanatory box
-- later work items build on the restored Home document with follow-on Studio UI surfaces
+- the Home surface uses the copied runtime-served UKHO logo plus lightweight orientation text only
+- the temporary PrimeReact surface remains a review-only document and is not part of normal startup
 
 ## Temporary PrimeReact evaluation pages
 
@@ -219,7 +219,6 @@ To build the current Theia workspace successfully on this repository, use the fo
 
 - Node `18.20.4`
 - `yarn` classic (`1.x`)
-- the globally installed `generator-theia-extension` package used to scaffold the workspace
 - Visual Studio Build Tools 2022 with C++ build support available for native Node module compilation
 
 Helpful optional tooling:
@@ -289,14 +288,14 @@ Then:
 - restart the Aspire-managed `tools-studio-shell` resource, or
 - hard refresh the open Studio browser page with `Ctrl+F5`
 
-This is particularly important for `Studio Output` work because stale browser bundles can make the panel appear to ignore xterm-related styling or behavior changes.
+This is particularly important for `Home`, runtime configuration, and PrimeReact demo work because stale browser bundles can make the shell appear to ignore recent frontend changes.
 
 ## Key workspace files
 
 - `src/Studio/Server/package.json` — root workspace scripts
 - `src/Studio/Server/browser-app/package.json` — browser application build/start scripts
 - `src/Studio/Server/search-studio/package.json` — native Theia extension package metadata and scripts
-- `src/Studio/Server/search-studio/src/browser/` — Studio shell browser-side services, views, trees, commands, and document surfaces
+- `src/Studio/Server/search-studio/src/browser/` — Studio shell browser-side services, commands, runtime configuration, and document surfaces
 - `src/Studio/Server/search-studio/src/browser/assets/` — source assets copied into the extension build output for runtime use, including the `Home` logo
 
 ## Workspace structure
@@ -321,32 +320,39 @@ The shell is designed to run as part of the wider local Aspire stack.
 8. Confirm the `Home` tab still shows the UKHO logo and Studio orientation text
 9. Close the `Home` tab and reopen it from `View -> Home`
 
-`StudioApiHost` remains a separate API host, and the shell consumes a runtime configuration bridge so its browser-side services can discover the correct API base URL at startup.
+`StudioServiceHost` remains a separate API host, and the shell consumes a runtime configuration bridge so browser code can discover the correct API base URL at startup.
 
-## Current `StudioApiHost` integration
+## Current `StudioServiceHost` integration
 
 For work package `058-studio-config`, the shell introduced the local API callback mechanism end to end.
 
-Later work packages extended `StudioApiHost` so that the shell now has read-only provider and rules discovery APIs for studio tooling.
+Later work packages extended the Studio API host so the repository now has provider, rules, ingestion, operations, OpenAPI, and diagnostics endpoints available through `StudioServiceHost`.
 
-For work package `064-studio-skeleton`, the shell actively uses:
+The current retained Theia shell actively uses only the runtime configuration bridge:
 
-- `GET /providers` for the live `Providers`, `Rules`, and `Ingestion` provider roots
-- `GET /rules` for the live `Rules` provider grouping, rule lists, and rule overview counts
+- `GET /search-studio/api/configuration` to read the normalized `STUDIO_API_HOST_API_BASE_URL` value through the Theia backend
 
-The shell intentionally does **not** yet call deeper queue or dead-letter APIs. Those screens remain placeholders whose job is to validate workbench layout, editor behavior, and navigation before real functionality is lifted from existing Blazor tools.
+The retained shell intentionally does **not** yet call `StudioServiceHost` directly from its visible UI. The current `Home` and demo documents are review surfaces only.
 
-The ingestion work area now actively uses:
+`StudioServiceHost` itself currently exposes:
 
-- `GET /ingestion/{provider}/{id}` to fetch a provider-neutral payload envelope by id
-- `POST /ingestion/{provider}/payload` to submit a fetched payload synchronously
-- `PUT /ingestion/{provider}/all` and `POST /ingestion/{provider}/operations/reset-indexing-status` for provider-wide long-running ingestion/reset flows
-- `GET /ingestion/{provider}/contexts`, `PUT /ingestion/{provider}/context/{context}`, and `POST /ingestion/{provider}/context/{context}/operations/reset-indexing-status` for context-scoped flows
-- `GET /operations/active`, `GET /operations/{operationId}`, and `GET /operations/{operationId}/events` for recovery, live progress, shared conflict handling, and final-state readback across all ingestion screens
+- `GET /providers`
+- `GET /rules`
+- `GET /ingestion/{provider}/{id}`
+- `POST /ingestion/{provider}/payload`
+- `PUT /ingestion/{provider}/all`
+- `POST /ingestion/{provider}/operations/reset-indexing-status`
+- `GET /ingestion/{provider}/contexts`
+- `PUT /ingestion/{provider}/context/{context}`
+- `POST /ingestion/{provider}/context/{context}/operations/reset-indexing-status`
+- `GET /operations/active`
+- `GET /operations/{operationId}`
+- `GET /operations/{operationId}/events`
+- `GET /echo`
+- `GET /openapi/v1.json`
+- `GET /scalar/v1`
 
-The shell also intentionally does **not** write rules yet. `New Rule` currently opens a placeholder authoring surface only.
-
-This section describes the implemented mechanism in detail, including why it uses a Theia backend proxy and how Aspire, Theia, and `StudioApiHost` each participate.
+The host also validates Studio provider registration and loads provider-aware rules during startup so provider/rule mismatches fail early.
 
 ### Why this mechanism exists
 
@@ -354,7 +360,7 @@ The studio shell runs in a browser-hosted Theia application on:
 
 - `http://localhost:3000`
 
-`StudioApiHost` is orchestrated separately by Aspire and exposes developer-facing endpoints that can vary by machine and session.
+`StudioServiceHost` is orchestrated separately by Aspire and exposes developer-facing endpoints that can vary by machine and session.
 
 The shell therefore must **not** hard-code:
 
@@ -363,11 +369,11 @@ The shell therefore must **not** hard-code:
 - protocol (`http` / `https`)
 - launch-profile URLs
 
-Instead, Aspire remains the source of truth for the effective `StudioApiHost` endpoint and passes that value into the shell at startup.
+Instead, Aspire remains the source of truth for the effective `StudioServiceHost` endpoint and passes that value into the shell at startup.
 
 ### Runtime configuration bridge
 
-`AppHost` resolves the `StudioApiHost` **HTTPS** endpoint and passes it into the Theia JavaScript application as the environment variable:
+`AppHost` resolves the `StudioServiceHost` **HTTPS** endpoint and passes it into the Theia JavaScript application as the environment variable:
 
 - `STUDIO_API_HOST_API_BASE_URL`
 
@@ -394,94 +400,13 @@ The browser does **not** read Node.js process environment directly.
 The current shell flow is:
 
 1. `AppHost` starts in `runmode=services`
-2. Aspire allocates the effective `StudioApiHost` endpoints
-3. `AppHost` injects `STUDIO_API_HOST_API_BASE_URL` into the Theia JavaScript app using the resolved `StudioApiHost` **HTTPS** endpoint
+2. Aspire allocates the effective `StudioServiceHost` endpoints
+3. `AppHost` injects `STUDIO_API_HOST_API_BASE_URL` into the Theia JavaScript app using the resolved `StudioServiceHost` **HTTPS** endpoint
 4. The Theia backend starts on `http://localhost:3000`
-5. The browser loads the Theia shell and the `Providers` work area
-6. the browser-side Studio API client calls the Theia same-origin configuration endpoint:
-   - `/search-studio/api/configuration`
-7. the browser-side Studio API client calls `StudioApiHost` `GET /providers` using the configured base URL
-8. provider metadata is mapped into the shell trees for `Providers`, `Rules`, and `Ingestion`
-9. the first visible provider root in each work area is expanded automatically on first render while later top-level roots remain collapsed until the user changes them
-10. selecting provider nodes opens placeholder editor surfaces in the main workbench area
-11. shell loading and placeholder actions are written to the lower `Studio Output` panel
-
-## `Studio Output` baseline
-
-Work package [`067-studio-output-enhancements`](../docs/067-studio-output-enhancements/plan-studio-output-enhancements_v0.03.md) established the current `Studio Output` baseline.
-
-The panel is intentionally:
-
-- Studio-owned
-- read-only
-- non-terminal in semantics
-- rendered through `xterm.js` for dense output presentation
-
-Current baseline behaviors:
-
-- a single merged chronological stream
-- explicit visible `time`, `severity`, `source`, and `message` text on each line
-- reveal-latest behavior for newly appended output
-- pastel blue `INFO` and pastel red `ERROR` severity tokens
-- direct text selection from the output surface
-- toolbar `Copy all` and `Clear output` actions
-
-The panel deliberately does **not** expose:
-
-- shell prompts
-- command entry
-- stdin-driven interaction
-- explicit output-channel switching
-
-## Reviewing the Studio skeleton
-
-The purpose of the current shell is to review the overall look, navigation model, and workbench shape before real `RulesWorkbench` and `FileShareEmulator` functionality is lifted into Studio.
-
-### Recommended manual smoke path
-
-1. Start the local stack through `AppHost`
-2. Open `http://localhost:3000`
-3. Confirm the `Providers`, `Rules`, `Ingestion`, and `Search` activity-bar items are visible, and that built-in `Explore` sits below them
-4. Open `Providers` and confirm it renders as a native tree fed by live `GET /providers` data
-5. Confirm only the first visible provider root is expanded automatically, then collapse or expand a root manually and confirm a refresh preserves that top-level state
-6. Double-click a provider root to open its overview, then open `Queue` and `Dead letters`
-7. Open `Rules` and confirm it renders as a native tree with provider roots, `Rule checker`, a `Rules` grouping node, and live rule entries from `GET /rules`
-8. Confirm the `Rules` view toolbar exposes `New Rule` and `Refresh Rules`, verify only the first visible provider root auto-expands, then open a rules overview, a rule checker placeholder, an existing rule, and `New Rule`
-9. Open `Ingestion` and confirm it renders as a native tree with provider roots plus `By id`, `All unindexed`, and `By context` beneath each provider root
-10. Confirm the `Ingestion` view toolbar exposes `Refresh Providers`, verify only the first visible provider root auto-expands, then open an ingestion overview, open each ingestion mode, and trigger `Reset indexing status`
-11. Open `Search`, enter a query, confirm the `Search` button enables only when text is present, then trigger search and verify the mock `Search results` document plus empty `Search Details` panel appear
-12. Select a mock result and confirm the right-hand `Search Details` panel updates with fake values
-13. Open the `Studio Output` panel and confirm loading, navigation, and placeholder action entries appear there in a dense log-style layout
-14. Confirm the output toolbar exposes `Clear output`, use it, and verify the panel clears immediately without a body-level clear button
-13. Note that the current `067-studio-output-enhancements` baseline also plans a toolbar `Copy all` action for the merged output stream once that slice is delivered
-14. Confirm all three work areas and the output panel feel visually consistent, with no body-level CTA buttons, duplicate in-body titles, or persistent provider description text in the side bar
-
-At this stage, success means the shell feels coherent and reviewable, not that queue, rules, or ingestion functionality has been implemented yet.
-
-### Why the Theia backend uses a probe/configuration bridge
-
-The first implementation attempted to have the browser call `StudioApiHost` directly.
-
-That approach is fragile in local development because it depends on:
-
-- browser CORS rules
-- certificate trust for the browser-facing shell
-- certificate trust for the browser-to-`StudioApiHost` HTTPS call
-- protocol mismatches between shell and API endpoints
-
-The current implementation uses a **same-origin Theia backend proxy/probe** instead:
-
-- browser -> `http://localhost:3000/search-studio/api/echo`
-- Theia backend -> `https://localhost:<studioapihost-port>/echo`
-
-Advantages of this approach:
-
-- the browser only talks to the same origin as the shell
-- the probe can return structured diagnostics to the UI
-- the probe can handle local HTTPS certificate behaviour explicitly
-- the UI can show the actual configured URL and attempted target URL
-
-This is still only a temporary proof mechanism, but it is more diagnosable and more reliable for local orchestration.
+5. The browser loads the Theia shell
+6. the browser-side runtime configuration service calls `/search-studio/api/configuration`
+7. startup logging records whether the Studio API base URL was resolved successfully
+8. the `Home` document opens automatically, while `PrimeReact Showcase Demo` remains available from `View`
 
 ### Theia backend implementation details
 
@@ -489,129 +414,81 @@ The backend contribution lives in:
 
 - `src/Studio/Server/search-studio/src/node/search-studio-backend-application-contribution.ts`
 
-It exposes two local endpoints:
+The browser-side runtime configuration service lives in:
 
-1. configuration endpoint
-   - `/search-studio/api/configuration`
-   - returns the configured `StudioApiHost` base URL and related environment diagnostics
+- `src/Studio/Server/search-studio/src/browser/search-studio-runtime-configuration-service.ts`
 
-2. echo probe endpoint
-   - `/search-studio/api/echo`
-   - performs the server-side request to `StudioApiHost`
-   - returns:
-     - configured base URL
-     - raw environment value
-     - attempted `/echo` URL
-     - HTTP status if obtained
-     - returned echo body when successful
-     - error text when unsuccessful
+The default startup contribution that validates the bridge and opens `Home` lives in:
 
-The probe uses Node.js `http` / `https` request handling rather than browser `fetch` so it can better manage local HTTPS behavior and provide clearer error reporting.
+- `src/Studio/Server/search-studio/src/browser/search-studio-frontend-application-contribution.ts`
 
-### Current `StudioApiHost` endpoints
+### Current `StudioServiceHost` endpoints
 
-`StudioApiHost` currently exposes:
+`StudioServiceHost` currently exposes:
 
 - `GET /providers`
   - returns the shared `ProviderDescriptor` metadata for all known providers
-  - uses canonical provider names from `UKHO.Search.ProviderModel`
 - `GET /rules`
   - returns a read-only rule discovery response for all known providers
-  - includes the shared rules `schemaVersion`
-  - returns canonical provider names plus rule summaries (`id`, `context`, `title`, `description`, `enabled`)
-  - includes known providers with no rules as empty `rules` arrays
-  - fails startup clearly if configured rules reference an unknown provider
+- `GET /ingestion/{provider}/{id}`
+  - fetches a provider-neutral payload envelope by provider-defined id
+- `POST /ingestion/{provider}/payload`
+  - submits a provider-neutral payload envelope
+- `PUT /ingestion/{provider}/all`
+  - starts a provider-wide ingestion operation
+- `POST /ingestion/{provider}/operations/reset-indexing-status`
+  - starts a provider-wide reset operation
+- `GET /ingestion/{provider}/contexts`
+  - returns provider-neutral contexts
+- `PUT /ingestion/{provider}/context/{context}`
+  - starts a context-scoped ingestion operation
+- `POST /ingestion/{provider}/context/{context}/operations/reset-indexing-status`
+  - starts a context-scoped reset operation
+- `GET /operations/active`
+  - returns the currently active tracked operation when one exists
+- `GET /operations/{operationId}`
+  - returns a retained operation snapshot by id
+- `GET /operations/{operationId}/events`
+  - streams server-sent operation events
 - `GET /echo`
-  - temporary connectivity proof kept for backend-bridge diagnosis
-
-The visible Studio shell now uses `/providers` and `/rules` for navigation. `GET /echo` remains available only as a lightweight backend-bridge diagnostic endpoint.
-
-### Temporary proof endpoint
-
-`StudioApiHost` now exposes:
-
-- `GET /echo`
-
-Current temporary response:
-
-- `Hello from StudioApiHost echo.`
-
-This endpoint remains only a lightweight diagnostic mechanism and is not part of the stakeholder-reviewable Studio workbench experience.
+  - returns `Hello from StudioServiceHost echo.` as a lightweight smoke check
+- `GET /openapi/v1.json`
+  - returns the generated OpenAPI document
+- `GET /scalar/v1`
+  - returns the Scalar UI for local exploration
 
 ### HTTPS selection
 
-For `StudioApiHost` integration, the configured base URL should prefer the Aspire-resolved **HTTPS** endpoint.
-
-In practice this means the environment handoff uses the HTTPS `StudioApiHost` address, for example:
-
-- `https://localhost:7073`
-
-and not the HTTP address, for example:
-
-- `http://localhost:5105`
-
-This matters because in local runs the HTTP endpoint may not behave as expected for the proof flow, while the HTTPS endpoint is the intended developer-facing endpoint.
-
-### CORS and protocol note
+For `StudioServiceHost` integration, the configured base URL should prefer the Aspire-resolved **HTTPS** endpoint.
 
 The shell itself still runs on plain HTTP:
 
 - `http://localhost:3000`
 
-`StudioApiHost` is probed over HTTPS.
-
-The current `StudioApiHost` CORS policy still allows the local shell origin:
-
-- `http://localhost:3000`
-
-That allowance is harmless for the current proof and preserves flexibility, but the important detail is that the browser-facing widget now relies on the Theia same-origin backend probe rather than a direct cross-origin browser call.
-
-### Debug information available through the shell and backend bridge
-
-The current shell keeps the backend probe/configuration path available for local diagnosis while the visible Studio experience has moved on to the multi-work-area skeleton.
-
-Current fields include:
-
-- `Browser origin`
-- `Probe transport`
-- `Theia probe endpoint`
-- `Theia config endpoint`
-- `StudioApiHost env var`
-- `Raw StudioApiHost env value`
-- `Configured StudioApiHost base URL`
-- `Attempted StudioApiHost echo URL`
-- `Probe HTTP status`
-- `Probe error`
-
-This information is intended for local diagnosis and should make it obvious whether a failure is caused by:
-
-- missing environment propagation from Aspire
-- incorrect protocol selection
-- wrong host or port
-- backend timeout
-- TLS / certificate issues
-- `StudioApiHost` not responding on the expected endpoint
+`StudioServiceHost` should normally be consumed over the Aspire-provided HTTPS endpoint handed off through `STUDIO_API_HOST_API_BASE_URL`.
 
 ### Main code locations for the mechanism
 
-The current proof path is spread across the following files:
+The current mechanism is spread across the following files:
 
 - `src/Hosts/AppHost/AppHost.cs`
-  - resolves the Aspire `StudioApiHost` endpoint
+  - resolves the Aspire `StudioServiceHost` endpoint
   - passes it into the Theia JavaScript app as `STUDIO_API_HOST_API_BASE_URL`
-- `src/Studio/StudioApiHost/StudioApiHostApplication.cs`
-  - exposes `GET /providers`, `GET /rules`, and `GET /echo`
-  - forces shared provider-aware rules loading during startup so invalid rule-provider identities fail early
+- `src/Studio/StudioServiceHost/StudioServiceHostApplication.cs`
+  - exposes provider, rules, ingestion, operations, diagnostics, and OpenAPI endpoints
+  - validates Studio provider registration and forces rules loading during startup
+- `src/Studio/StudioServiceHost/StudioServiceHost.csproj`
+  - runs `src/Studio/Server/build.ps1` before build using incremental inputs and a stamp file
 - `src/Studio/Server/search-studio/src/node/search-studio-backend-application-contribution.ts`
-  - exposes the Theia config and probe endpoints
-- `src/Studio/Server/search-studio/src/browser/search-studio-api-configuration-service.ts`
+  - exposes the Theia configuration endpoint
+- `src/Studio/Server/search-studio/src/browser/search-studio-runtime-configuration-service.ts`
   - reads the configuration endpoint from the browser side
-- `src/Studio/Server/search-studio/src/browser/search-studio-echo-probe-service.ts`
-  - calls the same-origin Theia probe endpoint
-- `src/Studio/Server/search-studio/src/browser/search-studio-widget.tsx`
-  - renders the live provider-backed `Providers` work area
+- `src/Studio/Server/search-studio/src/browser/search-studio-frontend-application-contribution.ts`
+  - validates the bridge at startup and opens `Home`
+- `src/Studio/Server/search-studio/src/browser/search-studio-command-contribution.ts`
+  - exposes `Home` and `PrimeReact Showcase Demo` reopen commands
 
-If you build the solution in Visual Studio first, the Theia shell should already have been prepared by the `StudioApiHost` pre-build target.
+If you build the solution in Visual Studio first, the Theia shell should already have been prepared by the `StudioServiceHost` pre-build target.
 
 ### About the installer resource
 
@@ -621,14 +498,27 @@ When Aspire starts the JavaScript application resource, you may also see a compa
 
 That installer is responsible for JavaScript dependency restore when Aspire determines the workspace may need it.
 
-Practical guidance:
+### Current scope limits
 
-- on a fresh clone, expect the installer step to run and take noticeable time
-- after the workspace has already been restored and built, startup should usually be faster
-- if `package.json`, `yarn.lock`, or other key workspace inputs change, Aspire may run the installer again
+The retained Studio shell intentionally remains lightweight:
 
-The separate Visual Studio pre-build integration exists so the shell is usually prepared before normal local debugging starts.
+- no visible provider, rules, ingestion, search, or output work areas are currently active in the retained Theia shell
+- the visible default experience is `Home`
+- the retained review-only extra surface is `PrimeReact Showcase Demo`
+- `StudioServiceHost` is ready beside the shell for future browser-backed functionality
 
+## Quick verification checklist for the current Studio shell
+
+1. Run `yarn --cwd .\src\Studio\Server build:browser`
+2. Run `dotnet build src/Hosts/AppHost/AppHost.csproj`
+3. Start `AppHost` in `runmode=services`
+4. In the Aspire dashboard, verify `tools-studio-api` and `tools-studio-shell` are healthy
+5. Open `http://localhost:3000`
+6. Confirm only the `Home` tab opens automatically and the default Theia `Welcome` page does not appear
+7. Confirm `View -> Home` reopens the same document after it is closed
+8. Open `View -> PrimeReact Showcase Demo` and confirm the temporary review surface opens on demand
+9. Verify `StudioServiceHost` responds over HTTPS on `/providers`, `/rules`, `/echo`, and `/openapi/v1.json`
+10. If the shell startup logs warn about missing runtime configuration, inspect the `STUDIO_API_HOST_API_BASE_URL` handoff from `AppHost`
 ## Current build caveats
 
 The current generated Theia stack has a few practical constraints in this repository:
@@ -643,28 +533,3 @@ The current generated Theia stack has a few practical constraints in this reposi
 
 If native dependency restore fails, retry from a clean PowerShell session with the validated Node version selected.
 
-## Current scope limits
-
-The initial shell intentionally remains lightweight:
-
-- no bundled VS Code extensions
-- queue, dead-letter, rule-authoring persistence, and ingestion execution remain placeholder-only despite the live navigation data
-- no migrated `RulesWorkbench`, `FileShareEmulator`, or other tooling workflows
-
-Later work packages can replace the remaining placeholder editors with real lifted tooling functionality.
-
-## Quick verification checklist for the Studio skeleton
-
-1. Run `yarn build:browser` from `src/Studio/Server`
-2. Run `dotnet build src/Hosts/AppHost/AppHost.csproj`
-3. Start `AppHost` in `runmode=services`
-4. In the Aspire dashboard, prefer the `StudioApiHost` **HTTPS** URL
-5. Verify `StudioApiHost` responds on `/providers`, `/rules`, and `/echo` via HTTPS
-6. Open `http://localhost:3000`
-7. Confirm the `Providers`, `Rules`, and `Ingestion` activity-bar items appear
-8. Walk through the manual smoke path above for one provider across all three work areas
-9. If the shell cannot load its live data, inspect the Theia backend configuration/probe diagnostics for:
-   - raw environment value
-   - configured base URL
-   - attempted echo URL
-   - probe status / error
