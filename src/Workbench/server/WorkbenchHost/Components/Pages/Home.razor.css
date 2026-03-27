@@ -1,0 +1,425 @@
+/* Defines the viewport-filling shell baseline used for the temporary Workbench mock-up. */
+.home-shell {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: var(--shell-background);
+    color: var(--shell-foreground);
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+/* Keeps every direct shell child in border-box sizing so edge-to-edge width math remains predictable. */
+.home-shell > * {
+    box-sizing: border-box;
+}
+
+/* Prevents text selection while the user drags the temporary sidebar resize handle. */
+.home-shell-resizing {
+    user-select: none;
+    cursor: col-resize;
+}
+
+/* Applies a Material-inspired dark shell palette that stays visually aligned with Radzen dark theme usage. */
+.theme-dark {
+    --shell-background: #121212;
+    --shell-foreground: #f5f5f5;
+    --shell-muted-foreground: #c7c7c7;
+    --shell-border: rgba(255, 255, 255, 0.12);
+    --shell-activity-background: #1f1f1f;
+    --shell-activity-hover: rgba(255, 255, 255, 0.08);
+    --shell-activity-active: rgba(144, 202, 249, 0.18);
+    --shell-activity-icon: #c7c7c7;
+    --shell-activity-icon-active: #ffffff;
+    --shell-toggle-background: #1e1e1e;
+    --shell-toggle-hover: #252525;
+    --shell-toggle-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --shell-sidebar-background: #1f1f1f;
+    --shell-sidebar-surface: rgba(255, 255, 255, 0.06);
+    --shell-sidebar-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.1);
+    --shell-placeholder-accent: rgba(144, 202, 249, 0.18);
+}
+
+/* Applies a Material-inspired light shell palette that mirrors the Radzen Material light direction. */
+.theme-light {
+    --shell-background: #fafafa;
+    --shell-foreground: #1f1f1f;
+    --shell-muted-foreground: #5f6368;
+    --shell-border: rgba(0, 0, 0, 0.12);
+    --shell-activity-background: #f1f3f4;
+    --shell-activity-hover: rgba(0, 0, 0, 0.06);
+    --shell-activity-active: rgba(25, 118, 210, 0.14);
+    --shell-activity-icon: #5f6368;
+    --shell-activity-icon-active: #1f1f1f;
+    --shell-toggle-background: #ffffff;
+    --shell-toggle-hover: #f5f5f5;
+    --shell-toggle-shadow: 0 8px 24px rgba(60, 64, 67, 0.15);
+    --shell-sidebar-background: #ffffff;
+    --shell-sidebar-surface: #f5f5f5;
+    --shell-sidebar-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+    --shell-placeholder-accent: rgba(25, 118, 210, 0.12);
+}
+
+/* Keeps the left activity bar pinned full height with top and bottom icon groups. */
+.activity-bar {
+    width: 3.5rem;
+    flex: 0 0 3.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 0.5rem;
+    background: var(--shell-activity-background);
+}
+
+/* Keeps the primary left activity bar split between the main tool group and the decorative gear icon. */
+.activity-bar-left {
+    justify-content: space-between;
+    box-shadow: inset -1px 0 0 var(--shell-border);
+}
+
+/* Keeps the secondary right activity bar top-aligned with no bottom utility group. */
+.activity-bar-right {
+    justify-content: flex-start;
+    box-shadow: inset 1px 0 0 var(--shell-border);
+}
+
+/* Stacks the main workbench icons tightly at the top of the activity bar. */
+.activity-bar-top-group,
+.activity-bar-bottom-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Styles the icon-only activity buttons with restrained hover and active feedback. */
+.activity-button,
+.sidebar-close {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 0.65rem;
+    background: transparent;
+    color: var(--shell-activity-icon);
+    cursor: pointer;
+    font: inherit;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+/* Removes Radzen's default button chrome so the shell buttons keep the intended workbench styling. */
+.activity-button::deep .rz-button,
+.sidebar-close::deep .rz-button,
+.theme-toggle::deep .rz-button {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: inherit;
+    background: transparent;
+    box-shadow: none;
+    color: inherit;
+}
+
+/* Preserves the custom theme-toggle padding after switching the control to RadzenButton. */
+.theme-toggle::deep .rz-button {
+    width: auto;
+    min-height: 2.5rem;
+    padding: 0.45rem 0.9rem;
+}
+
+/* Adds the requested hover treatment while keeping the shell chrome understated. */
+.activity-button:hover,
+.sidebar-close:hover {
+    background: var(--shell-activity-hover);
+}
+
+/* Highlights the active left icon without changing the layout or introducing visible text labels. */
+.activity-button-active {
+    background: var(--shell-activity-active);
+    border-color: var(--shell-border);
+    color: var(--shell-activity-icon-active);
+}
+
+/* Keeps focus indication visible for keyboard users across icon-only buttons. */
+.activity-button:focus-visible,
+.sidebar-close:focus-visible {
+    outline: 2px solid var(--shell-foreground);
+    outline-offset: 2px;
+}
+
+/* Leaves the bottom settings button decorative while still allowing its tooltip to appear. */
+.activity-button-utility {
+    cursor: default;
+}
+
+/* Sizes the icon glyphs consistently across the activity bar and sidebar header buttons. */
+.activity-button ::deep .rz-icon,
+.sidebar-header-icon ::deep .rz-icon,
+.sidebar-close ::deep .rz-icon,
+.theme-toggle ::deep .rz-icon {
+    font-size: 1.15rem;
+}
+
+/* Makes the temporary sidebars full height and visually separated from the main canvas. */
+.left-sidebar,
+.right-sidebar {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    background: var(--shell-sidebar-background);
+    overflow: hidden;
+    transition: width 160ms ease, background-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+/* Applies the subtle separator on the left sidebar edge without introducing a heavy divider. */
+.left-sidebar {
+    box-shadow: inset -1px 0 0 var(--shell-border);
+}
+
+/* Applies the subtle separator on the right sidebar edge while keeping the panel mirrored. */
+.right-sidebar {
+    box-shadow: inset 1px 0 0 var(--shell-border);
+}
+
+/* Keeps collapsed sidebars mounted but visually inert so width transitions can animate in both directions. */
+.sidebar-collapsed {
+    pointer-events: none;
+    opacity: 0;
+    box-shadow: none;
+}
+
+/* Provides a visible, draggable edge between either sidebar and the main area. */
+.left-sidebar-resize-handle,
+.right-sidebar-resize-handle {
+    flex: 0 0 0.375rem;
+    width: 0.375rem;
+    height: 100%;
+    cursor: col-resize;
+    background: transparent;
+    transition: background-color 160ms ease;
+}
+
+/* Keeps the resize affordance subtle until the user intentionally hovers it. */
+.left-sidebar-resize-handle:hover,
+.right-sidebar-resize-handle:hover,
+.home-shell-resizing .left-sidebar-resize-handle,
+.home-shell-resizing .right-sidebar-resize-handle {
+    background: rgba(148, 163, 184, 0.18);
+}
+
+/* Hides the resize handle when the related sidebar is collapsed. */
+.sidebar-resize-handle-collapsed {
+    flex-basis: 0;
+    width: 0;
+    pointer-events: none;
+}
+
+/* Keeps the sidebar header icon-only with space reserved for the close affordance. */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--shell-border);
+}
+
+/* Frames the arbitrary header icon as shell chrome without showing visible text. */
+.sidebar-header-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.65rem;
+    background: var(--shell-sidebar-surface);
+    color: var(--shell-foreground);
+}
+
+/* Lets the sidebar body stretch and scroll independently of the shell chrome. */
+.sidebar-content {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 0.9rem 1rem 1rem;
+}
+
+/* Gives each placeholder panel a light surface treatment while preserving the no-card main canvas rule. */
+.sidebar-placeholder {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    box-sizing: border-box;
+    padding: 0.35rem 0;
+    color: var(--shell-foreground);
+}
+
+/* Keeps placeholder headings readable without turning them into shell chrome. */
+.sidebar-placeholder h2 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* Normalizes placeholder body copy spacing for the three temporary left-side panels. */
+.sidebar-placeholder p,
+.sidebar-placeholder ul,
+.sidebar-placeholder ol {
+    margin: 0;
+    color: var(--shell-muted-foreground);
+}
+
+/* Provides simple list indentation for explorer and search placeholder content. */
+.sidebar-placeholder ul,
+.sidebar-placeholder ol {
+    padding-left: 1.2rem;
+}
+
+/* Differentiates the explorer panel with a compact stacked layout. */
+.sidebar-placeholder-explorer ul {
+    display: grid;
+    gap: 0.55rem;
+}
+
+/* Lays out the mock search chips so the search panel reads differently at a glance. */
+.placeholder-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Styles the temporary search chips with a subtle accent fill. */
+.placeholder-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.85rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: var(--shell-placeholder-accent);
+    color: var(--shell-foreground);
+}
+
+/* Separates the outline placeholder into stacked summary rows. */
+.placeholder-outline-item {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.75rem;
+    border: 1px solid var(--shell-border);
+    border-radius: 0.85rem;
+    background: var(--shell-sidebar-surface);
+}
+
+/* Arranges the mirrored insights placeholder as a compact metric wall. */
+.placeholder-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr));
+    gap: 0.75rem;
+}
+
+/* Frames each temporary metric with a subtle shell surface so the right sidebar remains visually distinct. */
+.placeholder-metric-item {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.85rem 0.75rem;
+    border: 1px solid var(--shell-border);
+    border-radius: 0.85rem;
+    background: var(--shell-sidebar-surface);
+}
+
+/* Emphasizes the headline metric values without turning the sidebar body into chrome. */
+.placeholder-metric-item strong {
+    font-size: 1.15rem;
+}
+
+/* Stacks the mirrored activity placeholder into a subtle review timeline. */
+.placeholder-timeline {
+    display: grid;
+    gap: 0.75rem;
+}
+
+/* Uses a compact two-column timeline row so the right-side content differs clearly from the left panels. */
+.placeholder-timeline-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.6rem 0.85rem;
+    align-items: start;
+    padding: 0.75rem;
+    border-left: 2px solid var(--shell-placeholder-accent);
+    background: linear-gradient(90deg, var(--shell-sidebar-surface), transparent);
+}
+
+/* Keeps the main content edge-to-edge and anchored from the shell origin. */
+.home-main {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+/* Groups the greeting and toggle while keeping the top-left composition visually lightweight. */
+.home-main-tools {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+}
+
+/* Preserves the intentionally small and neutral greeting text. */
+.home-greeting {
+    font-size: 1.25rem;
+    line-height: 1.4;
+    color: var(--shell-foreground);
+}
+
+/* Styles the temporary theme toggle as a subtle workbench control rather than a framed panel. */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.5rem;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--shell-border);
+    border-radius: 999px;
+    background: var(--shell-toggle-background);
+    color: var(--shell-foreground);
+    box-shadow: var(--shell-toggle-shadow);
+    cursor: pointer;
+    font: inherit;
+    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+/* Provides a restrained hover treatment suitable for the desktop-shell mock-up. */
+.theme-toggle:hover {
+    background: var(--shell-toggle-hover);
+}
+
+/* Keeps keyboard focus visible without introducing a heavy browser-default outline style. */
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--shell-foreground);
+    outline-offset: 2px;
+}
+
+/* Adds slight press feedback so the toggle feels interactive during manual review. */
+.theme-toggle:active {
+    transform: translateY(1px);
+}
+
+/* Keeps the Radzen button text readable in both light and dark palettes. */
+.theme-toggle::deep .rz-button-text {
+    color: var(--shell-muted-foreground);
+    font-size: 0.95rem;
+    line-height: 1.2;
+}

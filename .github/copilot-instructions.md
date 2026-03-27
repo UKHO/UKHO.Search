@@ -105,4 +105,8 @@ Refer to specialized instruction files for full detail:
 - Documentation Authoring: `.github/instructions/documentation.instructions.md`
 - Coding Standards: `.github/instructions/coding-standards.instructions.md`
 
+## Workbench Shell Guidelines
+- Keep `box-sizing: border-box` for the Workbench shell because it will help when combining with CSS Grid later.
+- For the temporary Workbench sidebar resize behavior, keep a minimum width of 16 pixels so the handle cannot be dragged past zero and lost.
+
 All original guidance now resides in one of these files. Do not duplicate; update the relevant file when changing practices.

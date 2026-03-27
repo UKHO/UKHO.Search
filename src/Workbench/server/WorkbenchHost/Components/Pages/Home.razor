@@ -1,78 +1,660 @@
 @page "/"
 @rendermode InteractiveServer
-@using System.Security.Claims
-@using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>Workbench</PageTitle>
 
-<section class="home">
-    <h1>Hello UKHO Workbench</h1>
+<HeadContent>
+    @* Uses the requested Radzen Material theme and swaps variants with the temporary page toggle. *@
+    <RadzenTheme Theme="@RadzenThemeName" @key="RadzenThemeName" />
+</HeadContent>
 
-    @if (_user?.Identity?.IsAuthenticated == true)
-    {
-        <section>
-            <p><strong>User:</strong> @(_user.Identity?.Name ?? "(no name claim)")</p>
+@* Establishes the full-viewport shell baseline and composes the final temporary two-sided workbench chrome. *@
+<section class="home-shell @ThemeCssClass @ShellInteractionCssClass"
+         @onpointermove="HandleSidebarPointerMoveAsync"
+         @onpointerup="StopSidebarResizeAsync"
+         @onpointercancel="StopSidebarResizeAsync"
+         @onpointerleave="StopSidebarResizeAsync">
+    @* Anchors the primary activity bar to the left edge with separate top and bottom icon groups. *@
+    <nav class="activity-bar activity-bar-left" aria-label="Workbench activity bar">
+        <div class="activity-bar-top-group">
+            <RadzenButton class="@GetLeftActivityButtonCssClass(ExplorerPanelId)"
+                          Icon="folder_open"
+                          title="Explorer"
+                          aria-label="Explorer"
+                          aria-pressed="@IsLeftPanelActive(ExplorerPanelId)"
+                          Click="@(() => ToggleLeftPanelAsync(ExplorerPanelId))" />
+            <RadzenButton class="@GetLeftActivityButtonCssClass(SearchPanelId)"
+                          Icon="search"
+                          title="Search"
+                          aria-label="Search"
+                          aria-pressed="@IsLeftPanelActive(SearchPanelId)"
+                          Click="@(() => ToggleLeftPanelAsync(SearchPanelId))" />
+            <RadzenButton class="@GetLeftActivityButtonCssClass(OutlinePanelId)"
+                          Icon="timeline"
+                          title="Outline"
+                          aria-label="Outline"
+                          aria-pressed="@IsLeftPanelActive(OutlinePanelId)"
+                          Click="@(() => ToggleLeftPanelAsync(OutlinePanelId))" />
+        </div>
+        <div class="activity-bar-bottom-group">
+            <RadzenButton class="activity-button activity-button-utility"
+                          Icon="settings"
+                          title="Settings"
+                          aria-label="Settings"
+                          Disabled="true" />
+        </div>
+    </nav>
 
-            <h2>Roles</h2>
-            @if (_roles.Count > 0)
-            {
-                <ul>
-                    @foreach (var role in _roles)
-                    {
-                        <li><code>@role</code></li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <p>No role claims found.</p>
-            }
-
-            <h2>Claims</h2>
-            <ul>
-                @foreach (var claim in _claims)
+    @* Keeps the left sidebar mounted so width transitions can animate both opening and closing. *@
+    <aside class="@LeftSidebarCssClass" aria-label="Left sidebar" aria-hidden="@(!IsLeftSidebarOpen)" style="@LeftSidebarStyle" @key="_activeLeftPanelId">
+        @if (IsLeftSidebarOpen)
+        {
+            <header class="sidebar-header">
+                <span class="sidebar-header-icon" title="@ActiveLeftPanelTooltip" aria-hidden="true">
+                    <RadzenIcon Icon="@ActiveLeftPanelIcon" />
+                </span>
+                <RadzenButton class="sidebar-close"
+                              Icon="close"
+                              title="Close"
+                              aria-label="Close"
+                              Click="@CloseLeftPanelAsync"
+                              @onclick:stopPropagation="true" />
+            </header>
+            <div class="sidebar-content">
+                @switch (_activeLeftPanelId)
                 {
-                    <li><strong>@claim.Type</strong>: <code>@claim.Value</code></li>
+                    case ExplorerPanelId:
+                        <section class="sidebar-placeholder sidebar-placeholder-explorer">
+                            <h2>Explorer</h2>
+                            <p>Temporary file and workspace placeholders make this panel visibly different from the other mock-ups.</p>
+                            <ul>
+                                <li>WorkbenchHost</li>
+                                <li>RulesWorkbench</li>
+                                <li>Search Providers</li>
+                            </ul>
+                        </section>
+                        break;
+                    case SearchPanelId:
+                        <section class="sidebar-placeholder sidebar-placeholder-search">
+                            <h2>Search</h2>
+                            <p>This mock panel uses filter chips and a short result list to contrast with the explorer view.</p>
+                            <div class="placeholder-chip-row">
+                                <span class="placeholder-chip">Charts</span>
+                                <span class="placeholder-chip">Rules</span>
+                                <span class="placeholder-chip">Signals</span>
+                            </div>
+                            <ol>
+                                <li>Temporary result A</li>
+                                <li>Temporary result B</li>
+                                <li>Temporary result C</li>
+                            </ol>
+                        </section>
+                        break;
+                    case OutlinePanelId:
+                        <section class="sidebar-placeholder sidebar-placeholder-outline">
+                            <h2>Outline</h2>
+                            <p>This mock panel emphasizes structure by showing stacked sections and short descriptive summaries.</p>
+                            <div class="placeholder-outline-item">
+                                <strong>Shell</strong>
+                                <span>Activity bar and panel frame</span>
+                            </div>
+                            <div class="placeholder-outline-item">
+                                <strong>Canvas</strong>
+                                <span>Main content and theme switch</span>
+                            </div>
+                            <div class="placeholder-outline-item">
+                                <strong>Review</strong>
+                                <span>Desktop-only spacing and resize feel</span>
+                            </div>
+                        </section>
+                        break;
                 }
-            </ul>
-        </section>
-    }
-    else
-    {
-        <p>No authenticated user is available.</p>
-    }
+            </div>
+        }
+    </aside>
+
+    @* Places the draggable left separator between the left sidebar and the neutral main canvas. *@
+    <div class="@LeftResizeHandleCssClass"
+         role="separator"
+         aria-label="Resize left sidebar"
+         aria-orientation="vertical"
+         @onpointerdown="StartLeftSidebarResizeAsync"
+         @onpointerdown:stopPropagation="true"></div>
+
+    <main class="home-main" aria-label="Workbench home shell">
+        @* Keeps the temporary main content intentionally minimal and aligned to the top-left corner. *@
+        <div class="home-main-tools">
+            <span class="home-greeting">hello</span>
+            <RadzenButton class="theme-toggle"
+                          Icon="@ThemeToggleIcon"
+                          Text="@ThemeToggleText"
+                          aria-label="@ThemeToggleText"
+                          aria-pressed="@_isDarkTheme"
+                          Click="@ToggleThemeAsync" />
+        </div>
+    </main>
+
+    @* Places the draggable right separator between the main canvas and the mirrored right sidebar. *@
+    <div class="@RightResizeHandleCssClass"
+         role="separator"
+         aria-label="Resize right sidebar"
+         aria-orientation="vertical"
+         @onpointerdown="StartRightSidebarResizeAsync"
+         @onpointerdown:stopPropagation="true"></div>
+
+    @* Keeps the right sidebar mounted so width transitions can animate while the activity bar remains edge anchored. *@
+    <aside class="@RightSidebarCssClass" aria-label="Right sidebar" aria-hidden="@(!IsRightSidebarOpen)" style="@RightSidebarStyle" @key="_activeRightPanelId">
+        @if (IsRightSidebarOpen)
+        {
+            <header class="sidebar-header">
+                <span class="sidebar-header-icon" title="@ActiveRightPanelTooltip" aria-hidden="true">
+                    <RadzenIcon Icon="@ActiveRightPanelIcon" />
+                </span>
+                <RadzenButton class="sidebar-close"
+                              Icon="close"
+                              title="Close"
+                              aria-label="Close"
+                              Click="@CloseRightPanelAsync"
+                              @onclick:stopPropagation="true" />
+            </header>
+            <div class="sidebar-content">
+                @switch (_activeRightPanelId)
+                {
+                    case InsightsPanelId:
+                        <section class="sidebar-placeholder sidebar-placeholder-insights">
+                            <h2>Insights</h2>
+                            <p>This placeholder leans on compact status metrics so it reads differently from the left-side panels.</p>
+                            <div class="placeholder-metric-grid">
+                                <div class="placeholder-metric-item">
+                                    <strong>14</strong>
+                                    <span>Open notes</span>
+                                </div>
+                                <div class="placeholder-metric-item">
+                                    <strong>3</strong>
+                                    <span>Pending checks</span>
+                                </div>
+                                <div class="placeholder-metric-item">
+                                    <strong>92%</strong>
+                                    <span>Shell fit</span>
+                                </div>
+                            </div>
+                        </section>
+                        break;
+                    case ActivityPanelId:
+                        <section class="sidebar-placeholder sidebar-placeholder-activity">
+                            <h2>Activity</h2>
+                            <p>This placeholder uses a timeline layout so the mirrored sidebar content is visibly distinct.</p>
+                            <div class="placeholder-timeline">
+                                <div class="placeholder-timeline-item">
+                                    <strong>09:10</strong>
+                                    <span>Mock review opened</span>
+                                </div>
+                                <div class="placeholder-timeline-item">
+                                    <strong>09:24</strong>
+                                    <span>Right panel resized</span>
+                                </div>
+                                <div class="placeholder-timeline-item">
+                                    <strong>09:41</strong>
+                                    <span>Theme toggled for contrast check</span>
+                                </div>
+                            </div>
+                        </section>
+                        break;
+                }
+            </div>
+        }
+    </aside>
+
+    @* Anchors the mirrored secondary activity bar to the outer right edge with two top-aligned icon buttons. *@
+    <nav class="activity-bar activity-bar-right" aria-label="Workbench secondary activity bar">
+        <div class="activity-bar-top-group">
+            <RadzenButton class="@GetRightActivityButtonCssClass(InsightsPanelId)"
+                          Icon="monitoring"
+                          title="Insights"
+                          aria-label="Insights"
+                          aria-pressed="@IsRightPanelActive(InsightsPanelId)"
+                          Click="@(() => ToggleRightPanelAsync(InsightsPanelId))" />
+            <RadzenButton class="@GetRightActivityButtonCssClass(ActivityPanelId)"
+                          Icon="notifications"
+                          title="Activity"
+                          aria-label="Activity"
+                          aria-pressed="@IsRightPanelActive(ActivityPanelId)"
+                          Click="@(() => ToggleRightPanelAsync(ActivityPanelId))" />
+        </div>
+    </nav>
 </section>
 
 @code
 {
-    [CascadingParameter]
-    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+    /// <summary>
+    /// Identifies the explorer placeholder panel in the left activity bar.
+    /// </summary>
+    private const string ExplorerPanelId = "explorer";
 
-    private ClaimsPrincipal? _user;
-    private IReadOnlyList<Claim> _claims = [];
-    private IReadOnlyList<string> _roles = [];
+    /// <summary>
+    /// Identifies the search placeholder panel in the left activity bar.
+    /// </summary>
+    private const string SearchPanelId = "search";
 
-    protected override async Task OnParametersSetAsync()
+    /// <summary>
+    /// Identifies the outline placeholder panel in the left activity bar.
+    /// </summary>
+    private const string OutlinePanelId = "outline";
+
+    /// <summary>
+    /// Identifies the insights placeholder panel in the right activity bar.
+    /// </summary>
+    private const string InsightsPanelId = "insights";
+
+    /// <summary>
+    /// Identifies the activity placeholder panel in the right activity bar.
+    /// </summary>
+    private const string ActivityPanelId = "activity";
+
+    /// <summary>
+    /// Identifies the active left-side resize gesture.
+    /// </summary>
+    private const string LeftResizeSide = "left";
+
+    /// <summary>
+    /// Identifies the active right-side resize gesture.
+    /// </summary>
+    private const string RightResizeSide = "right";
+
+    /// <summary>
+    /// Stores the initial open width, in pixels, used by the temporary sidebars.
+    /// </summary>
+    private const int SidebarDefaultWidth = 280;
+
+    /// <summary>
+    /// Stores the minimum visible width, in pixels, so the resize handle cannot be dragged fully out of reach.
+    /// </summary>
+    private const int SidebarMinimumWidth = 16;
+
+    /// <summary>
+    /// Tracks the temporary in-memory theme selection for the shell baseline.
+    /// </summary>
+    private bool _isDarkTheme = true;
+
+    /// <summary>
+    /// Tracks which left-side mock panel is currently open, or <see langword="null"/> when the sidebar is closed.
+    /// </summary>
+    private string? _activeLeftPanelId;
+
+    /// <summary>
+    /// Tracks the current width of the left sidebar so drag interactions persist across component re-renders.
+    /// </summary>
+    private int _leftSidebarWidth = SidebarDefaultWidth;
+
+    /// <summary>
+    /// Tracks which right-side mock panel is currently open, or <see langword="null"/> when the sidebar is closed.
+    /// </summary>
+    private string? _activeRightPanelId;
+
+    /// <summary>
+    /// Tracks the current width of the right sidebar so drag interactions persist across component re-renders.
+    /// </summary>
+    private int _rightSidebarWidth = SidebarDefaultWidth;
+
+    /// <summary>
+    /// Tracks which side, if any, is currently being resized by the user.
+    /// </summary>
+    private string? _activeResizeSide;
+
+    /// <summary>
+    /// Stores the pointer X coordinate captured when the current resize gesture started.
+    /// </summary>
+    private double _resizeStartClientX;
+
+    /// <summary>
+    /// Stores the sidebar width that was active when the current resize gesture started.
+    /// </summary>
+    private int _resizeStartWidth;
+
+    /// <summary>
+    /// Gets the CSS class that applies the currently selected shell palette.
+    /// </summary>
+    private string ThemeCssClass => _isDarkTheme ? "theme-dark" : "theme-light";
+
+    /// <summary>
+    /// Gets the visible text shown on the temporary theme toggle control.
+    /// </summary>
+    private string ThemeToggleText => _isDarkTheme ? "Switch to light theme" : "Switch to dark theme";
+
+    /// <summary>
+    /// Gets the Radzen icon name shown on the temporary theme toggle control.
+    /// </summary>
+    private string ThemeToggleIcon => _isDarkTheme ? "light_mode" : "dark_mode";
+
+    /// <summary>
+    /// Gets the Radzen Material theme variant that matches the temporary shell state.
+    /// </summary>
+    private string RadzenThemeName => _isDarkTheme ? "material-dark" : "material";
+
+    /// <summary>
+    /// Gets a value indicating whether any left-side placeholder panel is currently visible.
+    /// </summary>
+    private bool IsLeftSidebarOpen => !string.IsNullOrWhiteSpace(_activeLeftPanelId);
+
+    /// <summary>
+    /// Gets a value indicating whether any right-side placeholder panel is currently visible.
+    /// </summary>
+    private bool IsRightSidebarOpen => !string.IsNullOrWhiteSpace(_activeRightPanelId);
+
+    /// <summary>
+    /// Gets the inline width style applied to the currently visible left sidebar.
+    /// </summary>
+    private string LeftSidebarStyle => $"width: {(IsLeftSidebarOpen ? _leftSidebarWidth : 0)}px; min-width: 0;";
+
+    /// <summary>
+    /// Gets the inline width style applied to the currently visible right sidebar.
+    /// </summary>
+    private string RightSidebarStyle => $"width: {(IsRightSidebarOpen ? _rightSidebarWidth : 0)}px; min-width: 0;";
+
+    /// <summary>
+    /// Gets the optional shell CSS modifier used while either sidebar resize handle is actively being dragged.
+    /// </summary>
+    private string ShellInteractionCssClass => _activeResizeSide is not null ? "home-shell-resizing" : string.Empty;
+
+    /// <summary>
+    /// Gets the CSS class list used for the mounted left sidebar shell.
+    /// </summary>
+    private string LeftSidebarCssClass => IsLeftSidebarOpen ? "left-sidebar sidebar-open" : "left-sidebar sidebar-collapsed";
+
+    /// <summary>
+    /// Gets the CSS class list used for the mounted right sidebar shell.
+    /// </summary>
+    private string RightSidebarCssClass => IsRightSidebarOpen ? "right-sidebar sidebar-open" : "right-sidebar sidebar-collapsed";
+
+    /// <summary>
+    /// Gets the CSS class list used for the left resize handle.
+    /// </summary>
+    private string LeftResizeHandleCssClass => IsLeftSidebarOpen ? "left-sidebar-resize-handle" : "left-sidebar-resize-handle sidebar-resize-handle-collapsed";
+
+    /// <summary>
+    /// Gets the CSS class list used for the right resize handle.
+    /// </summary>
+    private string RightResizeHandleCssClass => IsRightSidebarOpen ? "right-sidebar-resize-handle" : "right-sidebar-resize-handle sidebar-resize-handle-collapsed";
+
+    /// <summary>
+    /// Gets the header icon used for the currently selected left-side placeholder panel.
+    /// </summary>
+    private string ActiveLeftPanelIcon => _activeLeftPanelId switch
     {
-        if (AuthenticationStateTask is null)
+        ExplorerPanelId => "folder_open",
+        SearchPanelId => "search",
+        OutlinePanelId => "timeline",
+        _ => "apps"
+    };
+
+    /// <summary>
+    /// Gets the tooltip shown on the non-interactive header icon for the current left-side panel.
+    /// </summary>
+    private string ActiveLeftPanelTooltip => _activeLeftPanelId switch
+    {
+        ExplorerPanelId => "Explorer",
+        SearchPanelId => "Search",
+        OutlinePanelId => "Outline",
+        _ => "Panel"
+    };
+
+    /// <summary>
+    /// Gets the header icon used for the currently selected right-side placeholder panel.
+    /// </summary>
+    private string ActiveRightPanelIcon => _activeRightPanelId switch
+    {
+        InsightsPanelId => "monitoring",
+        ActivityPanelId => "notifications",
+        _ => "apps"
+    };
+
+    /// <summary>
+    /// Gets the tooltip shown on the non-interactive header icon for the current right-side panel.
+    /// </summary>
+    private string ActiveRightPanelTooltip => _activeRightPanelId switch
+    {
+        InsightsPanelId => "Insights",
+        ActivityPanelId => "Activity",
+        _ => "Panel"
+    };
+
+    /// <summary>
+    /// Toggles the temporary shell theme without persisting any state beyond the current page instance.
+    /// </summary>
+    /// <returns>A completed task once the in-memory theme flag has been flipped.</returns>
+    private Task ToggleThemeAsync()
+    {
+        // Flip the shell palette so the component re-renders with the opposite temporary theme.
+        _isDarkTheme = !_isDarkTheme;
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Opens the requested left-side panel, or closes it when the user re-selects the currently active icon.
+    /// </summary>
+    /// <param name="panelId">The identifier of the left activity-bar panel that was clicked.</param>
+    /// <returns>A completed task after the in-memory left-panel state has been updated.</returns>
+    private Task ToggleLeftPanelAsync(string panelId)
+    {
+        // Re-clicking the active icon closes the panel so the left side behaves like a workbench activity bar.
+        if (string.Equals(_activeLeftPanelId, panelId, StringComparison.Ordinal))
         {
-            _user = null;
-            _claims = [];
-            _roles = [];
-            return;
+            _activeLeftPanelId = null;
+            return Task.CompletedTask;
         }
 
-        var authenticationState = await AuthenticationStateTask;
-        _user = authenticationState.User;
-        _claims = _user.Claims
-            .OrderBy(claim => claim.Type, StringComparer.Ordinal)
-            .ThenBy(claim => claim.Value, StringComparer.Ordinal)
-            .ToArray();
-        _roles = _user.FindAll(ClaimTypes.Role)
-            .Select(claim => claim.Value)
-            .Where(value => !string.IsNullOrWhiteSpace(value))
-            .Distinct(StringComparer.Ordinal)
-            .OrderBy(value => value, StringComparer.Ordinal)
-            .ToArray();
+        // Restore the default starter width when opening from a fully closed state, but keep any resized width when switching content.
+        if (!IsLeftSidebarOpen)
+        {
+            _leftSidebarWidth = SidebarDefaultWidth;
+        }
+
+        _activeLeftPanelId = panelId;
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Closes the left-side placeholder panel from the sidebar header close button.
+    /// </summary>
+    /// <returns>A completed task after the active left panel has been cleared.</returns>
+    private Task CloseLeftPanelAsync()
+    {
+        // Stop any in-progress resize gesture before collapsing the panel to avoid stale drag state.
+        ResetResizeState();
+
+        // Clearing the panel identifier hides the sidebar pane while leaving the rest of the shell unchanged.
+        _activeLeftPanelId = null;
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Opens the requested right-side panel, or closes it when the user re-selects the currently active icon.
+    /// </summary>
+    /// <param name="panelId">The identifier of the right activity-bar panel that was clicked.</param>
+    /// <returns>A completed task after the in-memory right-panel state has been updated.</returns>
+    private Task ToggleRightPanelAsync(string panelId)
+    {
+        // Re-clicking the active icon closes the mirrored panel so the right side behaves independently from the left.
+        if (string.Equals(_activeRightPanelId, panelId, StringComparison.Ordinal))
+        {
+            _activeRightPanelId = null;
+            return Task.CompletedTask;
+        }
+
+        // Restore the default starter width when opening from a fully closed state, but keep any resized width when switching content.
+        if (!IsRightSidebarOpen)
+        {
+            _rightSidebarWidth = SidebarDefaultWidth;
+        }
+
+        _activeRightPanelId = panelId;
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Closes the right-side placeholder panel from the sidebar header close button.
+    /// </summary>
+    /// <returns>A completed task after the active right panel has been cleared.</returns>
+    private Task CloseRightPanelAsync()
+    {
+        // Stop any in-progress resize gesture before collapsing the mirrored panel to avoid stale drag state.
+        ResetResizeState();
+
+        // Clearing the panel identifier hides the sidebar pane while leaving the left side and main area intact.
+        _activeRightPanelId = null;
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Starts a left-sidebar resize gesture from the shell resize handle.
+    /// </summary>
+    /// <param name="args">The pointer event that started the resize gesture.</param>
+    /// <returns>A completed task after the resize mode has been enabled.</returns>
+    private Task StartLeftSidebarResizeAsync(PointerEventArgs args)
+    {
+        // Ignore non-primary buttons so only the main pointer interaction can resize the shell.
+        if (args.Button != 0)
+        {
+            return Task.CompletedTask;
+        }
+
+        _activeResizeSide = LeftResizeSide;
+        _resizeStartClientX = args.ClientX;
+        _resizeStartWidth = _leftSidebarWidth;
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Starts a right-sidebar resize gesture from the shell resize handle.
+    /// </summary>
+    /// <param name="args">The pointer event that started the resize gesture.</param>
+    /// <returns>A completed task after the resize mode has been enabled.</returns>
+    private Task StartRightSidebarResizeAsync(PointerEventArgs args)
+    {
+        // Ignore non-primary buttons so only the main pointer interaction can resize the shell.
+        if (args.Button != 0)
+        {
+            return Task.CompletedTask;
+        }
+
+        _activeResizeSide = RightResizeSide;
+        _resizeStartClientX = args.ClientX;
+        _resizeStartWidth = _rightSidebarWidth;
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Updates the active sidebar width while the user drags either resize handle.
+    /// </summary>
+    /// <param name="args">The pointer event providing the latest cursor position.</param>
+    /// <returns>A completed task after the sidebar width has been recalculated when needed.</returns>
+    private Task HandleSidebarPointerMoveAsync(PointerEventArgs args)
+    {
+        // Only adjust a sidebar width while an active resize gesture is in progress.
+        if (_activeResizeSide is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        // Translate pointer movement into a width delta so both edge-anchored sidebars can reuse the same handler.
+        var delta = (int)Math.Round(args.ClientX - _resizeStartClientX);
+
+        // Apply the delta in the direction that matches the relevant screen edge while respecting the temporary width limits.
+        if (string.Equals(_activeResizeSide, LeftResizeSide, StringComparison.Ordinal))
+        {
+            _leftSidebarWidth = ClampSidebarWidth(_resizeStartWidth + delta);
+        }
+        else if (string.Equals(_activeResizeSide, RightResizeSide, StringComparison.Ordinal))
+        {
+            _rightSidebarWidth = ClampSidebarWidth(_resizeStartWidth - delta);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Ends any active sidebar resize gesture.
+    /// </summary>
+    /// <param name="args">The pointer event that completed or cancelled the resize gesture.</param>
+    /// <returns>A completed task after resize mode has been disabled.</returns>
+    private Task StopSidebarResizeAsync(PointerEventArgs args)
+    {
+        // Reset the resize state regardless of how the pointer interaction finished.
+        ResetResizeState();
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Determines whether the supplied left-panel identifier matches the currently active sidebar panel.
+    /// </summary>
+    /// <param name="panelId">The left-side panel identifier to compare against the active panel.</param>
+    /// <returns><see langword="true"/> when the supplied panel is open; otherwise, <see langword="false"/>.</returns>
+    private bool IsLeftPanelActive(string panelId)
+    {
+        // Use an ordinal comparison because the placeholder identifiers are fixed internal constants.
+        return string.Equals(_activeLeftPanelId, panelId, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// Determines whether the supplied right-panel identifier matches the currently active sidebar panel.
+    /// </summary>
+    /// <param name="panelId">The right-side panel identifier to compare against the active panel.</param>
+    /// <returns><see langword="true"/> when the supplied panel is open; otherwise, <see langword="false"/>.</returns>
+    private bool IsRightPanelActive(string panelId)
+    {
+        // Use an ordinal comparison because the placeholder identifiers are fixed internal constants.
+        return string.Equals(_activeRightPanelId, panelId, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// Builds the CSS class list for a left activity-bar button so active styling stays centralized.
+    /// </summary>
+    /// <param name="panelId">The left-side panel identifier associated with the rendered button.</param>
+    /// <returns>The CSS class string used by the button.</returns>
+    private string GetLeftActivityButtonCssClass(string panelId)
+    {
+        // Append the active modifier only for the currently selected panel so hover and active states remain distinct.
+        return IsLeftPanelActive(panelId)
+            ? "activity-button activity-button-active"
+            : "activity-button";
+    }
+
+    /// <summary>
+    /// Builds the CSS class list for a right activity-bar button so mirrored active styling stays centralized.
+    /// </summary>
+    /// <param name="panelId">The right-side panel identifier associated with the rendered button.</param>
+    /// <returns>The CSS class string used by the button.</returns>
+    private string GetRightActivityButtonCssClass(string panelId)
+    {
+        // Append the active modifier only for the currently selected panel so the mirrored chrome stays visually consistent.
+        return IsRightPanelActive(panelId)
+            ? "activity-button activity-button-active"
+            : "activity-button";
+    }
+
+    /// <summary>
+    /// Constrains a temporary sidebar width so the resize handle remains reachable after a drag operation.
+    /// </summary>
+    /// <param name="proposedWidth">The candidate width derived from the latest pointer movement.</param>
+    /// <returns>The clamped width that keeps the sidebar handle visible while allowing the panel to grow freely.</returns>
+    private static int ClampSidebarWidth(int proposedWidth)
+    {
+        // Clamp both sidebars only at the minimum width so the handle cannot be dragged out of reach.
+        return Math.Max(proposedWidth, SidebarMinimumWidth);
+    }
+
+    /// <summary>
+    /// Clears the temporary resize tracking fields after a pointer gesture completes.
+    /// </summary>
+    private void ResetResizeState()
+    {
+        // Clear the active side first so follow-up pointer movement no longer mutates the shell layout.
+        _activeResizeSide = null;
+
+        // Reset the captured pointer values so the next drag starts from a clean baseline.
+        _resizeStartClientX = 0;
+        _resizeStartWidth = 0;
     }
 }

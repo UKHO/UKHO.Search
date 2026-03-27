@@ -5,12 +5,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
+    @* Loads the component-scoped stylesheet bundle so page-specific shell styling is applied. *@
+    <link rel="stylesheet" href="@Assets["WorkbenchHost.styles.css"]" />
     <HeadOutlet />
 </head>
 
 <body>
     <Routes />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
+    @* Loads the Radzen runtime script required by Radzen components. *@
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
 </body>
 
 </html>

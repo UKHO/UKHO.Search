@@ -50,7 +50,7 @@
 
 ## Slice 1 — Establish the Radzen-backed full-viewport shell baseline
 
-- [ ] Work Item 1: Replace the current home page with a full-viewport dark shell baseline and theme toggle
+- [x] Work Item 1: Replace the current home page with a full-viewport dark shell baseline and theme toggle - Completed
   - **Purpose**: Deliver the smallest runnable visual slice that proves `WorkbenchHost` can host the new Radzen-backed desktop shell direction before sidebar mechanics are layered in.
   - **Acceptance Criteria**:
     - `WorkbenchHost` is configured to use Radzen according to the official get-started guidance.
@@ -67,25 +67,25 @@
     - No new automated tests added, per specification
     - Solution builds successfully
     - End-to-end path can be manually verified through `AppHost` / Aspire at `/`
-  - [ ] Task 1.1: Introduce Radzen into `WorkbenchHost`
-    - [ ] Step 1: Inspect `WorkbenchHost.csproj`, `Program.cs`, shared imports, and host assets to identify the correct integration points for Radzen.
-    - [ ] Step 2: Add the Radzen package references, service registration, and static asset usage required by the official Radzen get-started guidance.
-    - [ ] Step 3: Keep `.csproj` edits aligned with repository package grouping conventions.
-    - [ ] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
-  - [ ] Task 1.2: Replace the current home-page scaffold with the shell baseline
-    - [ ] Step 1: Remove the current temporary greeting and any scaffold-only listing markup from `Home.razor`.
-    - [ ] Step 2: Add a full-viewport shell container that occupies the full browser width and height with no outer padding or margins.
-    - [ ] Step 3: Place the visible `hello` text and a working theme toggle at the top left of the main area.
-    - [ ] Step 4: Ensure the page remains visually neutral and does not introduce cards or panel framing.
-    - [ ] Step 5: Add `@rendermode InteractiveServer` explicitly because the page contains interactive controls.
-    - [ ] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched Razor or C# file.
-  - [ ] Task 1.3: Implement temporary light/dark theme switching for the baseline shell
-    - [ ] Step 1: Choose a lightweight theme-switching approach appropriate for a temporary Blazor shell mock-up.
-    - [ ] Step 2: Make dark the default first-load theme.
-    - [ ] Step 3: Make the toggle switch between dark and light themes in both directions.
-    - [ ] Step 4: Ensure the selected theme resets on refresh rather than persisting.
-    - [ ] Step 5: Keep the exact toggle visual treatment implementation-led, as permitted by the specification.
-    - [ ] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
+  - [x] Task 1.1: Introduce Radzen into `WorkbenchHost` - Completed
+    - [x] Step 1: Inspect `WorkbenchHost.csproj`, `Program.cs`, shared imports, and host assets to identify the correct integration points for Radzen.
+    - [x] Step 2: Add the Radzen package references, service registration, and static asset usage required by the official Radzen get-started guidance.
+    - [x] Step 3: Keep `.csproj` edits aligned with repository package grouping conventions.
+    - [x] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
+  - [x] Task 1.2: Replace the current home-page scaffold with the shell baseline - Completed
+    - [x] Step 1: Remove the current temporary greeting and any scaffold-only listing markup from `Home.razor`.
+    - [x] Step 2: Add a full-viewport shell container that occupies the full browser width and height with no outer padding or margins.
+    - [x] Step 3: Place the visible `hello` text and a working theme toggle at the top left of the main area.
+    - [x] Step 4: Ensure the page remains visually neutral and does not introduce cards or panel framing.
+    - [x] Step 5: Add `@rendermode InteractiveServer` explicitly because the page contains interactive controls.
+    - [x] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched Razor or C# file.
+  - [x] Task 1.3: Implement temporary light/dark theme switching for the baseline shell - Completed
+    - [x] Step 1: Choose a lightweight theme-switching approach appropriate for a temporary Blazor shell mock-up.
+    - [x] Step 2: Make dark the default first-load theme.
+    - [x] Step 3: Make the toggle switch between dark and light themes in both directions.
+    - [x] Step 4: Ensure the selected theme resets on refresh rather than persisting.
+    - [x] Step 5: Keep the exact toggle visual treatment implementation-led, as permitted by the specification.
+    - [x] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
   - **Files**:
     - `src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`: Radzen package references
     - `src/workbench/server/WorkbenchHost/Program.cs`: Radzen service registration and host wiring if required
@@ -103,12 +103,13 @@
     - confirm `hello` and the theme toggle appear at the top left
     - confirm the theme toggle switches between dark and light and resets after refresh
   - **User Instructions**: None beyond the normal `AppHost` launch path.
+  - **Completion Summary**: Added `Radzen.Blazor` package/service/theme/script wiring, replaced the scaffolded `Home.razor` content with a full-viewport dark-first shell baseline and non-persistent theme toggle, and added `Home.razor.css` for edge-to-edge shell styling. Files touched: `src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`, `src/workbench/server/WorkbenchHost/Program.cs`, `src/workbench/server/WorkbenchHost/Components/App.razor`, `src/workbench/server/WorkbenchHost/Components/_Imports.razor`, `src/workbench/server/WorkbenchHost/Components/Pages/Home.razor`, `src/workbench/server/WorkbenchHost/Components/Pages/Home.razor.css`. Tests added: none.
 
 ---
 
 ## Slice 2 — Deliver the left activity bar and left resizable sidebar
 
-- [ ] Work Item 2: Add the left Theia-style activity bar, gear utility icon, and resizable left sidebar
+- [x] Work Item 2: Add the left Theia-style activity bar, gear utility icon, and resizable left sidebar - Completed
   - **Purpose**: Deliver the first real shell-mechanics slice by making the left side behave like a desktop workbench activity bar with an independently controlled, resizable panel.
   - **Acceptance Criteria**:
     - The left activity bar is anchored to the absolute left edge and runs full height.
@@ -126,27 +127,27 @@
     - No new automated tests added, per specification
     - Solution builds successfully
     - Left-side behavior can be manually verified end-to-end through `WorkbenchHost`
-  - [ ] Task 2.1: Add the left activity bar chrome
-    - [ ] Step 1: Add a full-height left activity bar anchored to the viewport edge.
-    - [ ] Step 2: Add three top-aligned main icons using icon-only presentation and tooltip labels.
-    - [ ] Step 3: Add a bottom-anchored gear icon separate from the main icon group.
-    - [ ] Step 4: Ensure the gear icon remains visual only and does not open content.
-    - [ ] Step 5: Add clear hover and active states consistent with the Theia-like direction in the specification.
-    - [ ] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
-  - [ ] Task 2.2: Add the left sidebar interaction and resize mechanics
-    - [ ] Step 1: Add state handling for one-open-panel-at-a-time behavior on the left side.
-    - [ ] Step 2: Add a full-height left sidebar that opens rightwards and pushes the main area rather than overlaying it.
-    - [ ] Step 3: Implement the left sidebar with a Radzen splitter so the user can resize it.
-    - [ ] Step 4: Enforce the `300` maximum width while otherwise using Radzen default initial sizing behavior.
-    - [ ] Step 5: Ensure the left side starts closed on initial page load.
-    - [ ] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
-  - [ ] Task 2.3: Add left-panel placeholder content and header chrome
-    - [ ] Step 1: Add a minimal full-height sidebar header with an arbitrary icon and an icon-only close button.
-    - [ ] Step 2: Ensure the close button closes the left sidebar and exposes a `Close` tooltip.
-    - [ ] Step 3: Add visibly different placeholder content for each of the three left icons.
-    - [ ] Step 4: Allow visible text inside the sidebar content area while keeping shell chrome icon-only.
-    - [ ] Step 5: Add subtle separator styling between the left sidebar and the main area.
-    - [ ] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
+  - [x] Task 2.1: Add the left activity bar chrome - Completed
+    - [x] Step 1: Add a full-height left activity bar anchored to the viewport edge.
+    - [x] Step 2: Add three top-aligned main icons using icon-only presentation and tooltip labels.
+    - [x] Step 3: Add a bottom-anchored gear icon separate from the main icon group.
+    - [x] Step 4: Ensure the gear icon remains visual only and does not open content.
+    - [x] Step 5: Add clear hover and active states consistent with the Theia-like direction in the specification.
+    - [x] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
+  - [x] Task 2.2: Add the left sidebar interaction and resize mechanics - Completed
+    - [x] Step 1: Add state handling for one-open-panel-at-a-time behavior on the left side.
+    - [x] Step 2: Add a full-height left sidebar that opens rightwards and pushes the main area rather than overlaying it.
+    - [x] Step 3: Implement the left sidebar with a Radzen splitter so the user can resize it.
+    - [x] Step 4: Enforce the `300` maximum width while otherwise using Radzen default initial sizing behavior.
+    - [x] Step 5: Ensure the left side starts closed on initial page load.
+    - [x] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
+  - [x] Task 2.3: Add left-panel placeholder content and header chrome - Completed
+    - [x] Step 1: Add a minimal full-height sidebar header with an arbitrary icon and an icon-only close button.
+    - [x] Step 2: Ensure the close button closes the left sidebar and exposes a `Close` tooltip.
+    - [x] Step 3: Add visibly different placeholder content for each of the three left icons.
+    - [x] Step 4: Allow visible text inside the sidebar content area while keeping shell chrome icon-only.
+    - [x] Step 5: Add subtle separator styling between the left sidebar and the main area.
+    - [x] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
   - **Files**:
     - `src/workbench/server/WorkbenchHost/Components/Pages/Home.razor`: left activity bar, left sidebar, left interaction state
     - `src/workbench/server/WorkbenchHost/Components/Pages/Home.razor.css`: activity bar styling, left sidebar styling, separators, hover and active visuals
@@ -164,12 +165,13 @@
     - confirm the close button also closes the left sidebar
     - confirm the left sidebar is resizable and never exceeds `300`
   - **User Instructions**: None.
+  - **Completion Summary**: Added a full-height left activity bar with three icon-only buttons plus a decorative bottom gear icon, implemented left-panel toggle state and a resizable Radzen splitter sidebar with a `300` maximum width, and added distinct placeholder panel bodies plus icon-only header chrome and close behavior. Files touched: `src/workbench/server/WorkbenchHost/Components/Pages/Home.razor`, `src/workbench/server/WorkbenchHost/Components/Pages/Home.razor.css`. Tests added: none.
 
 ---
 
 ## Slice 3 — Deliver the right activity bar, simultaneous sidebars, and final mock-up polish
 
-- [ ] Work Item 3: Add the right activity bar, right resizable sidebar, simultaneous-open behavior, and final visual polish
+- [x] Work Item 3: Add the right activity bar, right resizable sidebar, simultaneous-open behavior, and final visual polish - Completed
   - **Purpose**: Complete the first usable mock-up by mirroring the shell mechanics on the right side and finalizing the desktop workbench look and feel needed for review.
   - **Acceptance Criteria**:
     - The right activity bar is anchored to the absolute right edge and runs full height.
@@ -187,26 +189,26 @@
     - No new automated tests added, per specification
     - Solution builds successfully
     - Full mock-up can be manually reviewed through `WorkbenchHost`
-  - [ ] Task 3.1: Add the right activity bar and right panel mechanics
-    - [ ] Step 1: Add a full-height right activity bar anchored to the viewport edge.
-    - [ ] Step 2: Add two top-aligned right-side icons using icon-only presentation and tooltips.
-    - [ ] Step 3: Add state handling for one-open-panel-at-a-time behavior on the right side.
-    - [ ] Step 4: Add a full-height right sidebar that opens leftwards and pushes the main area.
-    - [ ] Step 5: Implement Radzen splitter-based resizing for the right sidebar with a maximum width of `300`.
-    - [ ] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
-  - [ ] Task 3.2: Finalize simultaneous-open desktop behavior
-    - [ ] Step 1: Allow left and right sidebars to remain open at the same time.
-    - [ ] Step 2: Ensure narrow-width behavior keeps the desktop layout intact without responsive auto-hide changes.
-    - [ ] Step 3: Ensure the main content region is allowed to become narrow when both sidebars are open.
-    - [ ] Step 4: Preserve full-height, edge-to-edge layout for the entire shell under all supported desktop review sizes.
-    - [ ] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
-  - [ ] Task 3.3: Apply final visual polish and placeholder variation
-    - [ ] Step 1: Add visibly different placeholder content for each right-side icon.
-    - [ ] Step 2: Ensure sidebars use subtle separators and subtle open/close animation only.
-    - [ ] Step 3: Verify the page contains no top header or command bar and no card or panel framing in the main area.
-    - [ ] Step 4: Verify icon-only rules remain limited to sidebar chrome, while visible text remains acceptable in the main area and sidebar bodies.
-    - [ ] Step 5: Confirm the overall composition follows the supplied screenshot's general direction while ignoring bottom panel treatment and specific panel contents.
-    - [ ] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
+  - [x] Task 3.1: Add the right activity bar and right panel mechanics - Completed
+    - [x] Step 1: Add a full-height right activity bar anchored to the viewport edge.
+    - [x] Step 2: Add two top-aligned right-side icons using icon-only presentation and tooltips.
+    - [x] Step 3: Add state handling for one-open-panel-at-a-time behavior on the right side.
+    - [x] Step 4: Add a full-height right sidebar that opens leftwards and pushes the main area.
+    - [x] Step 5: Implement Radzen splitter-based resizing for the right sidebar with a maximum width of `300`.
+    - [x] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
+  - [x] Task 3.2: Finalize simultaneous-open desktop behavior - Completed
+    - [x] Step 1: Allow left and right sidebars to remain open at the same time.
+    - [x] Step 2: Ensure narrow-width behavior keeps the desktop layout intact without responsive auto-hide changes.
+    - [x] Step 3: Ensure the main content region is allowed to become narrow when both sidebars are open.
+    - [x] Step 4: Preserve full-height, edge-to-edge layout for the entire shell under all supported desktop review sizes.
+    - [x] Step 5: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
+  - [x] Task 3.3: Apply final visual polish and placeholder variation - Completed
+    - [x] Step 1: Add visibly different placeholder content for each right-side icon.
+    - [x] Step 2: Ensure sidebars use subtle separators and subtle open/close animation only.
+    - [x] Step 3: Verify the page contains no top header or command bar and no card or panel framing in the main area.
+    - [x] Step 4: Verify icon-only rules remain limited to sidebar chrome, while visible text remains acceptable in the main area and sidebar bodies.
+    - [x] Step 5: Confirm the overall composition follows the supplied screenshot's general direction while ignoring bottom panel treatment and specific panel contents.
+    - [x] Step 6: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched source file.
   - **Files**:
     - `src/workbench/server/WorkbenchHost/Components/Pages/Home.razor`: right activity bar, right sidebar, simultaneous-open behavior, final shell composition
     - `src/workbench/server/WorkbenchHost/Components/Pages/Home.razor.css`: right-side styling, animation, separator polish, full-viewport and narrow-width desktop behavior
@@ -222,6 +224,7 @@
     - confirm the page remains full-viewport, dark-first, desktop-style, and free of top chrome
     - confirm the shell looks like a first-review workbench mock-up rather than a normal web page
   - **User Instructions**: None.
+  - **Completion Summary**: Added a mirrored right activity bar with two icon-only buttons, implemented independently controlled right-sidebar state and resize behavior so both sidebars can stay open together, and refined the shell CSS for subtle separators, open/close transitions, and distinct right-side placeholder content while preserving the edge-to-edge desktop layout. Files touched: `src/workbench/server/WorkbenchHost/Components/Pages/Home.razor`, `src/workbench/server/WorkbenchHost/Components/Pages/Home.razor.css`. Tests added: none. Validation: `run_build` succeeded and `dotnet test` was executed across projects under `test` with successful workbench-related results including `WorkbenchHost.Tests`.
 
 ---
 
