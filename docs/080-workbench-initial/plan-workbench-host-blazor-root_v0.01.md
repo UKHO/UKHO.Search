@@ -72,7 +72,7 @@
     - Build succeeds
     - Remaining tests pass
     - End-to-end path can be run via `AppHost`/Aspire and manually verified at `/`
-  - Summary: Replaced the hosted WebAssembly request pipeline in `WorkbenchHost` with server-side Razor component hosting, added a minimal component shell and root page for `/`, retained the existing Aspire registration, and validated the change with a successful solution build plus the `WorkbenchHost.Tests` test project.
+  - Summary: Replaced the hosted WebAssembly request pipeline in `WorkbenchHost` with server-side Razor component hosting, added a minimal unstyled component shell and root page for `/`, retained the existing Aspire registration, and validated the change with a successful solution build plus the `WorkbenchHost.Tests` test project.
   - [x] Task 1.1: Rework `WorkbenchHost` startup to serve Razor components directly - Completed
     - Summary: Inspected the existing WebAssembly-oriented host bootstrap, then rewired `Program.cs` to register Razor components with interactive server rendering and map the component app shell directly.
     - [x] Step 1: Inspect the current `WorkbenchHost` startup, hosting packages, and component structure to identify the existing WebAssembly-oriented hosting path.
@@ -80,7 +80,7 @@
     - [x] Step 3: Keep the startup wiring minimal and aligned with repository host conventions.
     - [x] Step 4: Apply `./.github/instructions/documentation-pass.instructions.md` in full to every touched host bootstrap file.
   - [x] Task 1.2: Add the temporary root page and route wiring - Completed
-    - Summary: Added the minimal component app shell, routing, layout, scoped styles, and a `/` page that renders `Hello UKHO Workbench` with explicit `InteractiveServer`.
+    - Summary: Added the minimal component app shell, routing, layout, and a `/` page that renders `Hello UKHO Workbench` with explicit `InteractiveServer`, while removing component-scoped CSS so the temporary page stays visually plain.
     - [x] Step 1: Create or update the minimal root component/page structure needed for `WorkbenchHost` to answer `/`.
     - [x] Step 2: Ensure the root page renders only `Hello UKHO Workbench`.
     - [x] Step 3: Explicitly apply `@rendermode InteractiveServer` to the root page in line with repository Blazor Server guidance.
