@@ -1,6 +1,3 @@
-@inject ThemeService ThemeService
-@implements IDisposable
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,9 +7,7 @@
     <base href="/" />
     @* Loads the component-scoped stylesheet bundle so page-specific shell styling is applied. *@
     <link rel="stylesheet" href="@Assets["WorkbenchHost.styles.css"]" />
-    @* Hosts the active Radzen theme at the application root so runtime theme changes update the entire workbench consistently. *@
-    <RadzenTheme Theme="@CurrentTheme" @key="CurrentTheme" />
-    @* Enables interactive head updates so runtime Radzen theme changes can replace the active theme asset. *@
+    @* Keeps the document head interactive so pages can update head content such as the active Radzen theme at runtime. *@
     <HeadOutlet @rendermode="InteractiveServer" />
 </head>
 
@@ -24,43 +19,3 @@
 </body>
 
 </html>
-
-@code
-{
-    /// <summary>
-    /// Stores the stock Radzen Material theme name used when the theme service has not selected a value yet.
-    /// </summary>
-    private const string DefaultThemeName = "material";
-
-    /// <summary>
-    /// Gets the active Radzen theme name from the shared theme service.
-    /// </summary>
-    private string CurrentTheme => string.IsNullOrWhiteSpace(ThemeService.Theme) ? DefaultThemeName : ThemeService.Theme;
-
-    /// <summary>
-    /// Subscribes to theme change notifications so the root document head re-renders when the user changes theme.
-    /// </summary>
-    protected override void OnInitialized()
-    {
-        // Subscribe once at the app root so any page-level theme selector updates the shared Radzen theme asset.
-        ThemeService.ThemeChanged += HandleThemeChanged;
-    }
-
-    /// <summary>
-    /// Releases the theme change subscription when the root app component is disposed.
-    /// </summary>
-    public void Dispose()
-    {
-        // Remove the event subscription to avoid retaining the root component after shutdown.
-        ThemeService.ThemeChanged -= HandleThemeChanged;
-    }
-
-    /// <summary>
-    /// Re-renders the root app component after the shared Radzen theme changes.
-    /// </summary>
-    private void HandleThemeChanged()
-    {
-        // Refresh the document head so the active Radzen theme tag follows the user's latest selection.
-        InvokeAsync(StateHasChanged);
-    }
-}

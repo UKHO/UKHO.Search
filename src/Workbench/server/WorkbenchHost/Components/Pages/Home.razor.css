@@ -7,6 +7,8 @@
     grid-template-rows: auto minmax(0, 1fr);
     overflow: hidden;
     box-sizing: border-box;
+    background: var(--rz-base-background-color, inherit);
+    color: var(--rz-text-color, inherit);
 }
 
 /* Keeps every direct shell child in border-box sizing so edge-to-edge width math remains predictable. */
@@ -28,6 +30,7 @@
     align-items: center;
     min-height: 3rem;
     padding: 0 0.75rem;
+    background: var(--rz-base-background-color, transparent);
 }
 
 /* Lets the Radzen menu fill the dedicated chrome row. */
@@ -102,6 +105,8 @@
     flex-direction: column;
     overflow: hidden;
     transition: width 160ms ease, opacity 160ms ease;
+    background: var(--rz-base-background-color, transparent);
+    color: inherit;
 }
 
 /* Places the left sidebar in the dedicated shell grid column. */
@@ -195,6 +200,7 @@
     padding: 0.45rem 0.75rem;
     border: 0;
     background: transparent;
+    color: inherit;
     cursor: pointer;
     font: inherit;
 }
@@ -227,6 +233,7 @@
     gap: 0.9rem;
     box-sizing: border-box;
     padding: 0.35rem 0;
+    color: inherit;
 }
 
 /* Keeps placeholder headings readable without additional shell chrome. */
@@ -254,6 +261,11 @@
     gap: 0.55rem;
 }
 
+/* Keeps the Radzen explorer tree aligned with the sidebar placeholder spacing. */
+.sidebar-explorer-tree {
+    min-width: 0;
+}
+
 /* Lays out the mock search badges so the search panel reads differently at a glance. */
 .placeholder-chip-row {
     display: flex;
@@ -265,6 +277,14 @@
 .placeholder-outline-item {
     display: grid;
     gap: 0.2rem;
+}
+
+/* Lets the Radzen card body own the outline placeholder spacing without custom surface styling. */
+.placeholder-outline-item::deep .rz-card-body,
+.placeholder-metric-item::deep .rz-card-body,
+.placeholder-timeline-item::deep .rz-card-body {
+    display: grid;
+    gap: 0.35rem;
 }
 
 /* Arranges the mirrored insights placeholder as a compact metric wall. */
@@ -329,6 +349,7 @@
     min-height: 100%;
     padding: 1rem 1.25rem 1.25rem;
     box-sizing: border-box;
+    color: inherit;
 }
 
 /* Reuses the same content frame for placeholder tabs that do not need the theme selector. */
@@ -424,6 +445,8 @@
 /* Leaves helper copy unstyled beyond simple spacing so the stock theme typography remains visible. */
 .showcase-helper-text {
     margin: 0;
+    color: inherit;
+    opacity: 0.8;
 }
 
 /* Creates a small wall of toggle and choice samples beneath the main input grid. */
@@ -477,6 +500,7 @@
     display: grid;
     gap: 0.75rem;
     padding-left: 1.2rem;
+    color: inherit;
 }
 
 /* Gives the grid tab a slightly taller card so paging and headers have stable room to breathe. */

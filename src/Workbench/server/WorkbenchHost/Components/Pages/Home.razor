@@ -4,6 +4,11 @@
 
 <PageTitle>Workbench</PageTitle>
 
+<HeadContent>
+    @* Hosts the active stock Radzen theme inside the interactive page so changing the selector updates the document head reliably. *@
+    <RadzenTheme Theme="@CurrentThemeSelection" @key="CurrentThemeSelection" />
+</HeadContent>
+
 @* Establishes the full-viewport shell baseline, including the new menu row above the workbench body. *@
 <section class="home-shell @ShellInteractionCssClass"
          @onpointermove="HandleSidebarPointerMoveAsync"
@@ -123,11 +128,15 @@
                             <section class="sidebar-placeholder sidebar-placeholder-explorer">
                                 <h2>Explorer</h2>
                                 <p>Temporary file and workspace placeholders make this panel visibly different from the other mock-ups.</p>
-                                <ul>
-                                    <li>WorkbenchHost</li>
-                                    <li>RulesWorkbench</li>
-                                    <li>Search Providers</li>
-                                </ul>
+                                @* Uses a Radzen tree here because the explorer placeholder is naturally hierarchical and benefits from Radzen-native affordances. *@
+                                <RadzenTree class="sidebar-explorer-tree">
+                                    <RadzenTreeItem Text="WorkbenchHost" Icon="folder_open" Expanded="true">
+                                        <RadzenTreeItem Text="Components" Icon="folder" />
+                                        <RadzenTreeItem Text="Pages" Icon="folder" />
+                                    </RadzenTreeItem>
+                                    <RadzenTreeItem Text="RulesWorkbench" Icon="folder_open" />
+                                    <RadzenTreeItem Text="Search Providers" Icon="folder_open" />
+                                </RadzenTree>
                             </section>
                             break;
                         case SearchPanelId:
@@ -135,9 +144,9 @@
                                 <h2>Search</h2>
                                 <p>This mock panel uses filter chips and a short result list to contrast with the explorer view.</p>
                                 <div class="placeholder-chip-row">
-                                    <span class="placeholder-chip">Charts</span>
-                                    <span class="placeholder-chip">Rules</span>
-                                    <span class="placeholder-chip">Signals</span>
+                                    <RadzenBadge Text="Charts" />
+                                    <RadzenBadge Text="Rules" />
+                                    <RadzenBadge Text="Signals" />
                                 </div>
                                 <ol>
                                     <li>Temporary result A</li>
@@ -150,18 +159,19 @@
                             <section class="sidebar-placeholder sidebar-placeholder-outline">
                                 <h2>Outline</h2>
                                 <p>This mock panel emphasizes structure by showing stacked sections and short descriptive summaries.</p>
-                                <div class="placeholder-outline-item">
+                                @* Uses Radzen cards so the outline placeholder demonstrates stock grouped-surface styling instead of custom rows. *@
+                                <RadzenCard class="placeholder-outline-item" Variant="Variant.Filled">
                                     <strong>Shell</strong>
                                     <span>Activity bar and panel frame</span>
-                                </div>
-                                <div class="placeholder-outline-item">
+                                </RadzenCard>
+                                <RadzenCard class="placeholder-outline-item" Variant="Variant.Filled">
                                     <strong>Canvas</strong>
                                     <span>Main content and theme switch</span>
-                                </div>
-                                <div class="placeholder-outline-item">
+                                </RadzenCard>
+                                <RadzenCard class="placeholder-outline-item" Variant="Variant.Filled">
                                     <strong>Review</strong>
                                     <span>Desktop-only spacing and resize feel</span>
-                                </div>
+                                </RadzenCard>
                             </section>
                             break;
                     }
@@ -218,7 +228,10 @@
 
                                     @if (!string.IsNullOrWhiteSpace(_showcaseSubmissionMessage))
                                     {
-                                        <p class="showcase-status-message">@_showcaseSubmissionMessage</p>
+                                        @* Uses Radzen alert feedback so the temporary form confirmation follows the standard Radzen message treatment. *@
+                                        <RadzenAlert Variant="Variant.Outlined">
+                                            @_showcaseSubmissionMessage
+                                        </RadzenAlert>
                                     }
 
                                     <RadzenTemplateForm TItem="WorkbenchShowcaseFormModel"
@@ -293,7 +306,7 @@
                                         </div>
 
                                         <div class="showcase-choice-grid">
-                                            <RadzenCard class="showcase-choice-card" Variant="Variant.Outlined" aria-label="Pinned overview sample">
+                                            <RadzenCard class="showcase-choice-card" Variant="Variant.Filled" aria-label="Pinned overview sample">
                                                 <div>
                                                     <h3>Pin overview tab</h3>
                                                     <p>Sample checkbox styling for a persistent workspace preference.</p>
@@ -304,7 +317,7 @@
                                                                 @bind-Value="_showcaseForm.PinOverview" />
                                             </RadzenCard>
 
-                                            <RadzenCard class="showcase-choice-card" Variant="Variant.Outlined" aria-label="Automatic refresh sample">
+                                            <RadzenCard class="showcase-choice-card" Variant="Variant.Filled" aria-label="Automatic refresh sample">
                                                 <div>
                                                     <h3>Automatic refresh</h3>
                                                     <p>Sample switch styling for a low-friction toggle state.</p>
@@ -314,7 +327,7 @@
                                                               @bind-Value="_showcaseForm.AutoRefresh" />
                                             </RadzenCard>
 
-                                            <RadzenCard class="showcase-choice-card showcase-choice-card-wide" Variant="Variant.Outlined" aria-label="Density selection sample">
+                                            <RadzenCard class="showcase-choice-card showcase-choice-card-wide" Variant="Variant.Filled" aria-label="Density selection sample">
                                                 <div>
                                                     <h3>Layout density</h3>
                                                     <p>Static radio options help reviewers compare grouped choice treatments.</p>
@@ -362,7 +375,7 @@
                                     </div>
 
                                     <div class="showcase-data-grid-layout">
-                                        <RadzenCard class="showcase-panel-card" Variant="Variant.Outlined">
+                                        <RadzenCard class="showcase-panel-card" Variant="Variant.Filled">
                                             <h3>Hierarchy preview</h3>
                                             <p class="showcase-helper-text">Checkboxes are enabled only to expose the full control styling surface for theme review.</p>
                                             <RadzenTree AllowCheckBoxes="true" class="showcase-tree">
@@ -383,7 +396,7 @@
                                             </RadzenTree>
                                         </RadzenCard>
 
-                                        <RadzenCard class="showcase-panel-card" Variant="Variant.Outlined">
+                                        <RadzenCard class="showcase-panel-card" Variant="Variant.Filled">
                                             <h3>Review prompts</h3>
                                             <ul class="showcase-note-list">
                                                 <li>Confirm the tree icons and checkbox states remain readable in both shell themes.</li>
@@ -419,7 +432,7 @@
                                         </div>
                                     </div>
 
-                                    <RadzenCard class="showcase-panel-card showcase-grid-card" Variant="Variant.Outlined">
+                                    <RadzenCard class="showcase-panel-card showcase-grid-card" Variant="Variant.Filled">
                                         <RadzenDataGrid Data="@_gridRows"
                                                         TItem="WorkbenchShowcaseGridRow"
                                                         AllowPaging="true"
@@ -540,15 +553,15 @@
                                 <h2>Insights</h2>
                                 <p>This placeholder leans on compact status metrics so it reads differently from the left-side panels.</p>
                                 <div class="placeholder-metric-grid">
-                                    <RadzenCard class="placeholder-metric-item" Variant="Variant.Outlined">
+                                    <RadzenCard class="placeholder-metric-item" Variant="Variant.Filled">
                                         <strong>14</strong>
                                         <span>Open notes</span>
                                     </RadzenCard>
-                                    <RadzenCard class="placeholder-metric-item" Variant="Variant.Outlined">
+                                    <RadzenCard class="placeholder-metric-item" Variant="Variant.Filled">
                                         <strong>3</strong>
                                         <span>Pending checks</span>
                                     </RadzenCard>
-                                    <RadzenCard class="placeholder-metric-item" Variant="Variant.Outlined">
+                                    <RadzenCard class="placeholder-metric-item" Variant="Variant.Filled">
                                         <strong>92%</strong>
                                         <span>Shell fit</span>
                                     </RadzenCard>
@@ -560,15 +573,15 @@
                                 <h2>Activity</h2>
                                 <p>This placeholder uses a timeline layout so the mirrored sidebar content is visibly distinct.</p>
                                 <div class="placeholder-timeline">
-                                    <RadzenCard class="placeholder-timeline-item" Variant="Variant.Outlined">
+                                    <RadzenCard class="placeholder-timeline-item" Variant="Variant.Filled">
                                         <strong>09:10</strong>
                                         <span>Mock review opened</span>
                                     </RadzenCard>
-                                    <RadzenCard class="placeholder-timeline-item" Variant="Variant.Outlined">
+                                    <RadzenCard class="placeholder-timeline-item" Variant="Variant.Filled">
                                         <strong>09:24</strong>
                                         <span>Right panel resized</span>
                                     </RadzenCard>
-                                    <RadzenCard class="placeholder-timeline-item" Variant="Variant.Outlined">
+                                    <RadzenCard class="placeholder-timeline-item" Variant="Variant.Filled">
                                         <strong>09:41</strong>
                                         <span>Theme toggled for contrast check</span>
                                     </RadzenCard>

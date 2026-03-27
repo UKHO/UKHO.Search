@@ -76,6 +76,7 @@ Rules:
 ## Testing Guidelines
 - Prefer Playwright end-to-end tests over bUnit/component tests for Blazor UI verification in this repository.
 - For test refactor work, it is acceptable for test projects to reference other test projects when that preserves Onion Architecture direction; broad shared test-wide helpers, such as fixture resolution helpers, should live in `UKHO.Search.Tests.Common` when they are reused throughout the test estate.
+- For this work package, do not run the full test suite.
 
 ## .csproj File Editing Guidelines
 - When editing `.csproj` files, keep `PackageReference` entries in `ItemGroup` blocks that contain only `PackageReference` entries (do not mix `ProjectReference` and `PackageReference` in the same `ItemGroup`).
