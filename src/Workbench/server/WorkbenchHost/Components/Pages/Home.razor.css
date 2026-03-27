@@ -7,9 +7,6 @@
     grid-template-rows: auto minmax(0, 1fr);
     overflow: hidden;
     box-sizing: border-box;
-    background: var(--shell-background);
-    color: var(--shell-foreground);
-    transition: background-color 160ms ease, color 160ms ease;
 }
 
 /* Keeps every direct shell child in border-box sizing so edge-to-edge width math remains predictable. */
@@ -23,70 +20,6 @@
     cursor: col-resize;
 }
 
-/* Applies a Material-inspired dark shell palette that stays visually aligned with Radzen dark theme usage. */
-.theme-dark {
-    --shell-background: #121212;
-    --shell-foreground: #f5f5f5;
-    --shell-muted-foreground: #c7c7c7;
-    --shell-border: rgba(255, 255, 255, 0.12);
-    --shell-menu-background: #181818;
-    --shell-menu-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-    --shell-activity-background: #1f1f1f;
-    --shell-activity-hover: rgba(255, 255, 255, 0.08);
-    --shell-activity-active: rgba(144, 202, 249, 0.18);
-    --shell-activity-icon: #c7c7c7;
-    --shell-activity-icon-active: #ffffff;
-    --shell-toggle-background: #1e1e1e;
-    --shell-toggle-hover: #252525;
-    --shell-toggle-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    --shell-sidebar-background: #1f1f1f;
-    --shell-sidebar-surface: rgba(255, 255, 255, 0.06);
-    --shell-sidebar-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.1);
-    --shell-tab-surface: rgba(255, 255, 255, 0.04);
-    --shell-tab-content-background: rgba(255, 255, 255, 0.03);
-    --shell-tab-close-icon: rgba(255, 255, 255, 0.72);
-    --shell-placeholder-accent: rgba(144, 202, 249, 0.18);
-    --showcase-panel-background: rgba(255, 255, 255, 0.04);
-    --showcase-status-ready-background: rgba(56, 142, 60, 0.22);
-    --showcase-status-ready-foreground: #c8e6c9;
-    --showcase-status-review-background: rgba(255, 193, 7, 0.22);
-    --showcase-status-review-foreground: #ffecb3;
-    --showcase-status-blocked-background: rgba(211, 47, 47, 0.22);
-    --showcase-status-blocked-foreground: #ffcdd2;
-}
-
-/* Applies a Material-inspired light shell palette that mirrors the Radzen Material light direction. */
-.theme-light {
-    --shell-background: #fafafa;
-    --shell-foreground: #1f1f1f;
-    --shell-muted-foreground: #5f6368;
-    --shell-border: rgba(0, 0, 0, 0.12);
-    --shell-menu-background: #ffffff;
-    --shell-menu-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-    --shell-activity-background: #f1f3f4;
-    --shell-activity-hover: rgba(0, 0, 0, 0.06);
-    --shell-activity-active: rgba(25, 118, 210, 0.14);
-    --shell-activity-icon: #5f6368;
-    --shell-activity-icon-active: #1f1f1f;
-    --shell-toggle-background: #ffffff;
-    --shell-toggle-hover: #f5f5f5;
-    --shell-toggle-shadow: 0 8px 24px rgba(60, 64, 67, 0.15);
-    --shell-sidebar-background: #ffffff;
-    --shell-sidebar-surface: #f5f5f5;
-    --shell-sidebar-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
-    --shell-tab-surface: #f8f9fa;
-    --shell-tab-content-background: #ffffff;
-    --shell-tab-close-icon: rgba(31, 31, 31, 0.64);
-    --shell-placeholder-accent: rgba(25, 118, 210, 0.12);
-    --showcase-panel-background: #ffffff;
-    --showcase-status-ready-background: rgba(56, 142, 60, 0.12);
-    --showcase-status-ready-foreground: #1b5e20;
-    --showcase-status-review-background: rgba(255, 193, 7, 0.2);
-    --showcase-status-review-foreground: #8d6e00;
-    --showcase-status-blocked-background: rgba(211, 47, 47, 0.12);
-    --showcase-status-blocked-foreground: #b71c1c;
-}
-
 /* Reserves the menu row above the shell body while keeping it visually aligned with the desktop chrome. */
 .home-menu-shell {
     grid-column: 1 / -1;
@@ -95,24 +28,11 @@
     align-items: center;
     min-height: 3rem;
     padding: 0 0.75rem;
-    background: var(--shell-menu-background);
-    box-shadow: var(--shell-menu-shadow);
 }
 
-/* Lets the Radzen menu fill the dedicated chrome row without introducing extra panel framing. */
+/* Lets the Radzen menu fill the dedicated chrome row. */
 .home-menu {
     width: 100%;
-}
-
-/* Nudges the Radzen menu toward compact desktop spacing while keeping theme colors inherited from the wrapper. */
-.home-menu::deep .rz-menu {
-    border: 0;
-    background: transparent;
-}
-
-/* Keeps the top-level menu items visually lightweight so the shell chrome remains the focus. */
-.home-menu::deep .rz-navigation-item-link {
-    color: var(--shell-foreground);
 }
 
 /* Keeps the left activity bar pinned full height with top and bottom icon groups. */
@@ -125,7 +45,6 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.65rem 0.5rem;
-    background: var(--shell-activity-background);
 }
 
 /* Keeps the primary left activity bar split between the main tool group and the decorative gear icon. */
@@ -133,7 +52,6 @@
     grid-column: 1;
     grid-row: 2;
     justify-content: space-between;
-    box-shadow: inset -1px 0 0 var(--shell-border);
 }
 
 /* Keeps the secondary right activity bar top-aligned with no bottom utility group. */
@@ -141,7 +59,6 @@
     grid-column: 7;
     grid-row: 2;
     justify-content: flex-start;
-    box-shadow: inset 1px 0 0 var(--shell-border);
 }
 
 /* Stacks the main workbench icons tightly at the top of the activity bar. */
@@ -153,63 +70,19 @@
     gap: 0.5rem;
 }
 
-/* Styles the icon-only activity buttons with restrained hover and active feedback. */
+/* Fixes the shell buttons to a predictable square size while allowing Radzen to render their stock appearance. */
 .activity-button,
 .sidebar-close {
     width: 2.5rem;
     height: 2.5rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid transparent;
-    border-radius: 0.65rem;
-    background: transparent;
-    color: var(--shell-activity-icon);
-    cursor: pointer;
-    font: inherit;
-    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
 }
 
-/* Removes Radzen's default button chrome so the shell buttons keep the intended workbench styling. */
+/* Lets the inner Radzen buttons fill the shell sizing wrappers without overriding the stock theme styling. */
 .activity-button::deep .rz-button,
-.sidebar-close::deep .rz-button,
-.theme-toggle::deep .rz-button {
+.sidebar-close::deep .rz-button {
     width: 100%;
     height: 100%;
     min-height: 0;
-    padding: 0;
-    border: 0;
-    border-radius: inherit;
-    background: transparent;
-    box-shadow: none;
-    color: inherit;
-}
-
-/* Preserves the custom theme-toggle padding after switching the control to RadzenButton. */
-.theme-toggle::deep .rz-button {
-    width: auto;
-    min-height: 2.5rem;
-    padding: 0.45rem 0.9rem;
-}
-
-/* Adds the requested hover treatment while keeping the shell chrome understated. */
-.activity-button:hover,
-.sidebar-close:hover {
-    background: var(--shell-activity-hover);
-}
-
-/* Highlights the active left icon without changing the layout or introducing visible text labels. */
-.activity-button-active {
-    background: var(--shell-activity-active);
-    border-color: var(--shell-border);
-    color: var(--shell-activity-icon-active);
-}
-
-/* Keeps focus indication visible for keyboard users across icon-only buttons. */
-.activity-button:focus-visible,
-.sidebar-close:focus-visible {
-    outline: 2px solid var(--shell-foreground);
-    outline-offset: 2px;
 }
 
 /* Leaves the bottom settings button decorative while still allowing its tooltip to appear. */
@@ -217,15 +90,7 @@
     cursor: default;
 }
 
-/* Sizes the icon glyphs consistently across the activity bar and sidebar header buttons. */
-.activity-button ::deep .rz-icon,
-.sidebar-header-icon ::deep .rz-icon,
-.sidebar-close ::deep .rz-icon,
-.theme-toggle ::deep .rz-icon {
-    font-size: 1.15rem;
-}
-
-/* Makes the temporary sidebars full height and visually separated from the main canvas. */
+/* Makes the temporary sidebars full height and visually separated from the main canvas through layout only. */
 .left-sidebar,
 .right-sidebar {
     position: relative;
@@ -235,30 +100,26 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    background: var(--shell-sidebar-background);
     overflow: hidden;
-    transition: width 160ms ease, background-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+    transition: width 160ms ease, opacity 160ms ease;
 }
 
-/* Applies the subtle separator on the left sidebar edge without introducing a heavy divider. */
+/* Places the left sidebar in the dedicated shell grid column. */
 .left-sidebar {
     grid-column: 2;
     grid-row: 2;
-    box-shadow: inset -1px 0 0 var(--shell-border);
 }
 
-/* Applies the subtle separator on the right sidebar edge while keeping the panel mirrored. */
+/* Places the right sidebar in the dedicated shell grid column. */
 .right-sidebar {
     grid-column: 6;
     grid-row: 2;
-    box-shadow: inset 1px 0 0 var(--shell-border);
 }
 
 /* Keeps collapsed sidebars mounted but visually inert so width transitions can animate in both directions. */
 .sidebar-collapsed {
     pointer-events: none;
     opacity: 0;
-    box-shadow: none;
 }
 
 /* Provides a visible, draggable edge between either sidebar and the main area. */
@@ -268,8 +129,6 @@
     width: 0.375rem;
     height: 100%;
     cursor: col-resize;
-    background: transparent;
-    transition: background-color 160ms ease;
 }
 
 /* Places the left resize handle in the dedicated grid column beside the left sidebar. */
@@ -284,14 +143,6 @@
     grid-row: 2;
 }
 
-/* Keeps the resize affordance subtle until the user intentionally hovers it. */
-.left-sidebar-resize-handle:hover,
-.right-sidebar-resize-handle:hover,
-.home-shell-resizing .left-sidebar-resize-handle,
-.home-shell-resizing .right-sidebar-resize-handle {
-    background: rgba(148, 163, 184, 0.18);
-}
-
 /* Hides the resize handle when the related sidebar is collapsed. */
 .sidebar-resize-handle-collapsed {
     flex-basis: 0;
@@ -299,26 +150,22 @@
     pointer-events: none;
 }
 
-/* Keeps the sidebar header icon-only with space reserved for the close affordance. */
+/* Keeps the sidebar header icon and close action aligned without adding custom color treatment. */
 .sidebar-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
     padding: 0.75rem;
-    border-bottom: 1px solid var(--shell-border);
 }
 
-/* Frames the arbitrary header icon as shell chrome without showing visible text. */
+/* Reserves a fixed square for the sidebar header icon. */
 .sidebar-header-icon {
     width: 2.5rem;
     height: 2.5rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0.65rem;
-    background: var(--shell-sidebar-surface);
-    color: var(--shell-foreground);
 }
 
 /* Lets the sidebar body stretch and scroll independently of the shell chrome. */
@@ -338,34 +185,23 @@
     flex-wrap: wrap;
     gap: 0.35rem;
     padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--shell-border);
 }
 
-/* Styles the sidebar tab buttons as lightweight shell chrome rather than as primary call-to-action buttons. */
+/* Keeps the fallback sidebar tab buttons lightweight and layout-focused. */
 .sidebar-tab-button {
     display: inline-flex;
     align-items: center;
     min-height: 2.25rem;
     padding: 0.45rem 0.75rem;
-    border: 1px solid transparent;
-    border-radius: 0.65rem;
-    background: var(--shell-tab-surface);
-    color: var(--shell-foreground);
+    border: 0;
+    background: transparent;
     cursor: pointer;
     font: inherit;
-    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
 }
 
-/* Highlights the currently selected sidebar tab without overwhelming the rest of the workbench chrome. */
+/* Gives the selected fallback tab a simple emphasis without introducing a custom palette. */
 .sidebar-tab-button-active {
-    border-color: var(--shell-border);
-    background: var(--shell-activity-active);
-}
-
-/* Keeps focus indication visible for keyboard review of the sidebar tab strip. */
-.sidebar-tab-button:focus-visible {
-    outline: 2px solid var(--shell-foreground);
-    outline-offset: 2px;
+    font-weight: 600;
 }
 
 /* Gives the sidebar tab content area a predictable vertical region beneath the local tab strip. */
@@ -376,7 +212,7 @@
     overflow: auto;
 }
 
-/* Uses an explicit flex wrapper inside each header template so the close icon stays visually to the right of the label. */
+/* Uses an explicit flex wrapper inside each fallback header so the close icon stays visually to the right of the label. */
 .section-tab-header {
     display: inline-flex;
     align-items: center;
@@ -384,34 +220,26 @@
     min-width: 0;
 }
 
-/* Keeps the decorative close glyph visible without turning the mock-up affordance into a functional button yet. */
-.section-tab-close-icon {
-    color: var(--shell-tab-close-icon);
-    font-size: 0.95rem;
-}
-
-/* Gives each placeholder panel a light surface treatment while preserving the no-card main canvas rule. */
+/* Gives each placeholder panel a simple vertical layout. */
 .sidebar-placeholder {
     display: flex;
     flex-direction: column;
     gap: 0.9rem;
     box-sizing: border-box;
     padding: 0.35rem 0;
-    color: var(--shell-foreground);
 }
 
-/* Keeps placeholder headings readable without turning them into shell chrome. */
+/* Keeps placeholder headings readable without additional shell chrome. */
 .sidebar-placeholder h2 {
     margin: 0;
     font-size: 1rem;
 }
 
-/* Normalizes placeholder body copy spacing for the three temporary left-side panels. */
+/* Normalizes placeholder body copy spacing for the temporary sidebar panels. */
 .sidebar-placeholder p,
 .sidebar-placeholder ul,
 .sidebar-placeholder ol {
     margin: 0;
-    color: var(--shell-muted-foreground);
 }
 
 /* Provides simple list indentation for explorer and search placeholder content. */
@@ -426,32 +254,17 @@
     gap: 0.55rem;
 }
 
-/* Lays out the mock search chips so the search panel reads differently at a glance. */
+/* Lays out the mock search badges so the search panel reads differently at a glance. */
 .placeholder-chip-row {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
 }
 
-/* Styles the temporary search chips with a subtle accent fill. */
-.placeholder-chip {
-    display: inline-flex;
-    align-items: center;
-    min-height: 1.85rem;
-    padding: 0.2rem 0.65rem;
-    border-radius: 999px;
-    background: var(--shell-placeholder-accent);
-    color: var(--shell-foreground);
-}
-
 /* Separates the outline placeholder into stacked summary rows. */
 .placeholder-outline-item {
     display: grid;
     gap: 0.2rem;
-    padding: 0.75rem;
-    border: 1px solid var(--shell-border);
-    border-radius: 0.85rem;
-    background: var(--shell-sidebar-surface);
 }
 
 /* Arranges the mirrored insights placeholder as a compact metric wall. */
@@ -461,22 +274,18 @@
     gap: 0.75rem;
 }
 
-/* Frames each temporary metric with a subtle shell surface so the right sidebar remains visually distinct. */
+/* Frames each temporary metric as a compact stacked region while letting Radzen render the card surface. */
 .placeholder-metric-item {
     display: grid;
     gap: 0.25rem;
-    padding: 0.85rem 0.75rem;
-    border: 1px solid var(--shell-border);
-    border-radius: 0.85rem;
-    background: var(--shell-sidebar-surface);
 }
 
-/* Emphasizes the headline metric values without turning the sidebar body into chrome. */
+/* Emphasizes the headline metric values without additional custom theme styling. */
 .placeholder-metric-item strong {
     font-size: 1.15rem;
 }
 
-/* Stacks the mirrored activity placeholder into a subtle review timeline. */
+/* Stacks the mirrored activity placeholder into a simple review timeline. */
 .placeholder-timeline {
     display: grid;
     gap: 0.75rem;
@@ -488,9 +297,6 @@
     grid-template-columns: auto 1fr;
     gap: 0.6rem 0.85rem;
     align-items: start;
-    padding: 0.75rem;
-    border-left: 2px solid var(--shell-placeholder-accent);
-    background: linear-gradient(90deg, var(--shell-sidebar-surface), transparent);
 }
 
 /* Keeps the main content edge-to-edge and anchored from the shell origin. */
@@ -516,24 +322,7 @@
     height: 100%;
 }
 
-/* Applies a subtle divider so the upper pane still feels distinct while the splitter bar remains the primary affordance. */
-.workspace-pane-upper {
-    border-bottom: 1px solid var(--shell-border);
-}
-
-/* Allows the lower pane to share the same full-height behavior without adding extra chrome of its own. */
-.workspace-pane-lower {
-    border-top: 0;
-}
-
-/* Styles the splitter bar so it remains visible in both themes during manual resize review. */
-.home-main::deep .rz-splitter-bar {
-    background: var(--shell-tab-surface);
-    border-top: 1px solid var(--shell-border);
-    border-bottom: 1px solid var(--shell-border);
-}
-
-/* Gives the center tab content comfortable review spacing while keeping the future split-pane area easy to evolve. */
+/* Keeps the center tab content comfortably spaced while preserving the established pane sizing behavior. */
 .main-pane-content {
     display: grid;
     gap: 1rem;
@@ -542,7 +331,7 @@
     box-sizing: border-box;
 }
 
-/* Reuses the same content frame for placeholder tabs that do not need the theme toggle. */
+/* Reuses the same content frame for placeholder tabs that do not need the theme selector. */
 .main-pane-content-secondary {
     align-content: start;
 }
@@ -553,72 +342,10 @@
     padding-bottom: 1rem;
 }
 
-/* Keeps the placeholder copy readable and compact for quick shell review. */
-.main-pane-copy {
-    display: grid;
-    gap: 0.75rem;
-    color: var(--shell-muted-foreground);
-}
-
 /* Normalizes heading and paragraph spacing inside the temporary center pane placeholders. */
 .main-pane-content h2,
 .main-pane-content p {
     margin: 0;
-}
-
-/* Groups the greeting and toggle while keeping the top-left composition visually lightweight. */
-.home-main-tools {
-    display: inline-flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-}
-
-/* Preserves the intentionally small and neutral greeting text. */
-.home-greeting {
-    font-size: 1.25rem;
-    line-height: 1.4;
-    color: var(--shell-foreground);
-}
-
-/* Styles the temporary theme toggle as a subtle workbench control rather than a framed panel. */
-.theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    min-height: 2.5rem;
-    padding: 0.45rem 0.9rem;
-    border: 1px solid var(--shell-border);
-    border-radius: 999px;
-    background: var(--shell-toggle-background);
-    color: var(--shell-foreground);
-    box-shadow: var(--shell-toggle-shadow);
-    cursor: pointer;
-    font: inherit;
-    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
-}
-
-/* Provides a restrained hover treatment suitable for the desktop-shell mock-up. */
-.theme-toggle:hover {
-    background: var(--shell-toggle-hover);
-}
-
-/* Keeps keyboard focus visible without introducing a heavy browser-default outline style. */
-.theme-toggle:focus-visible {
-    outline: 2px solid var(--shell-foreground);
-    outline-offset: 2px;
-}
-
-/* Adds slight press feedback so the toggle feels interactive during manual review. */
-.theme-toggle:active {
-    transform: translateY(1px);
-}
-
-/* Keeps the Radzen button text readable in both light and dark palettes. */
-.theme-toggle::deep .rz-button-text {
-    color: var(--shell-muted-foreground);
-    font-size: 0.95rem;
-    line-height: 1.2;
 }
 
 /* Makes the showcase tabs scroll their own content while preserving the center pane height contract. */
@@ -629,7 +356,7 @@
     overflow: auto;
 }
 
-/* Keeps the tab title, explanatory copy, and theme toggle aligned without wasting vertical space. */
+/* Keeps the tab title, explanatory copy, and theme selector aligned without altering Radzen surfaces. */
 .showcase-toolbar {
     display: flex;
     flex-wrap: wrap;
@@ -651,36 +378,23 @@
     margin: 0;
 }
 
-/* Groups the theme toggle with a small status chip that clarifies the mock-only nature of the content. */
+/* Groups the stock Radzen badges and theme selectors without adding custom presentation. */
 .showcase-toolbar-actions {
     display: inline-flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-end;
     justify-content: flex-end;
     gap: 0.75rem;
 }
 
-/* Styles the small toolbar chip so it reads like supporting chrome rather than a primary call to action. */
-.showcase-toolbar-chip {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2rem;
-    padding: 0.25rem 0.75rem;
-    border: 1px solid var(--shell-border);
-    border-radius: 999px;
-    background: var(--shell-tab-surface);
-    color: var(--shell-muted-foreground);
-    font-size: 0.9rem;
+/* Reserves a stable width for the stock Radzen theme picker. */
+.showcase-theme-picker {
+    min-width: 12rem;
 }
 
-/* Highlights the temporary form feedback without competing with the surrounding Radzen controls. */
+/* Keeps the temporary form feedback in normal document flow without applying a custom shell look. */
 .showcase-status-message {
     margin: 0;
-    padding: 0.75rem 0.9rem;
-    border: 1px solid var(--shell-border);
-    border-radius: 0.85rem;
-    background: var(--shell-placeholder-accent);
-    color: var(--shell-foreground);
 }
 
 /* Keeps the showcase form sections vertically spaced while letting Radzen own the individual control chrome. */
@@ -707,11 +421,9 @@
     grid-column: 1 / -1;
 }
 
-/* Styles short helper copy so it remains readable without overpowering the underlying controls. */
+/* Leaves helper copy unstyled beyond simple spacing so the stock theme typography remains visible. */
 .showcase-helper-text {
     margin: 0;
-    color: var(--shell-muted-foreground);
-    font-size: 0.9rem;
 }
 
 /* Creates a small wall of toggle and choice samples beneath the main input grid. */
@@ -721,20 +433,16 @@
     gap: 1rem;
 }
 
-/* Frames the choice controls so reviewers can compare grouped surfaces and spacing at a glance. */
-.showcase-choice-card,
-.showcase-panel-card {
-    display: grid;
-    gap: 0.75rem;
-    padding: 1rem;
-    border: 1px solid var(--shell-border);
-    border-radius: 1rem;
-    background: var(--showcase-panel-background);
-}
-
 /* Lets the radio-button list sample span the wider row so the grouped options do not feel cramped. */
 .showcase-choice-card-wide {
     grid-column: 1 / -1;
+}
+
+/* Uses the Radzen card body as the spacing container for the grouped showcase sections. */
+.showcase-choice-card::deep .rz-card-body,
+.showcase-panel-card::deep .rz-card-body {
+    display: grid;
+    gap: 0.75rem;
 }
 
 /* Normalizes headings and body copy inside the grouped showcase cards. */
@@ -764,12 +472,11 @@
     min-height: 18rem;
 }
 
-/* Styles the supporting notes list with compact enterprise-like spacing. */
+/* Styles the supporting notes list with compact spacing only. */
 .showcase-note-list {
     display: grid;
     gap: 0.75rem;
     padding-left: 1.2rem;
-    color: var(--shell-muted-foreground);
 }
 
 /* Gives the grid tab a slightly taller card so paging and headers have stable room to breathe. */
@@ -777,38 +484,15 @@
     min-height: 20rem;
 }
 
+/* Ensures the Radzen card body stretches cleanly around the data grid. */
+.showcase-grid-card::deep .rz-card-body {
+    display: grid;
+    min-height: 100%;
+}
+
 /* Encourages the Radzen grid to occupy the full available width in the showcase card. */
 .showcase-grid {
     width: 100%;
-}
-
-/* Keeps the grid status badge compact and easy to compare between themes. */
-.showcase-status-badge {
-    display: inline-flex;
-    align-items: center;
-    min-height: 1.9rem;
-    padding: 0.2rem 0.65rem;
-    border-radius: 999px;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-/* Styles the mock success state used by the static grid rows. */
-.showcase-status-badge-ready {
-    background: var(--showcase-status-ready-background);
-    color: var(--showcase-status-ready-foreground);
-}
-
-/* Styles the mock in-review state used by the static grid rows. */
-.showcase-status-badge-review {
-    background: var(--showcase-status-review-background);
-    color: var(--showcase-status-review-foreground);
-}
-
-/* Styles the mock blocked state used by the static grid rows. */
-.showcase-status-badge-blocked {
-    background: var(--showcase-status-blocked-background);
-    color: var(--showcase-status-blocked-foreground);
 }
 
 /* Keeps the tree and grid layouts from feeling cramped on narrower workbench widths. */

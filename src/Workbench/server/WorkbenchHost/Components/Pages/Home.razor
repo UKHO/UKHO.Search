@@ -1,15 +1,11 @@
 @page "/"
 @rendermode InteractiveServer
+@inject ThemeService ThemeService
 
 <PageTitle>Workbench</PageTitle>
 
-<HeadContent>
-    @* Uses the requested Radzen Material theme and swaps variants with the temporary page toggle. *@
-    <RadzenTheme Theme="@RadzenThemeName" @key="RadzenThemeName" />
-</HeadContent>
-
 @* Establishes the full-viewport shell baseline, including the new menu row above the workbench body. *@
-<section class="home-shell @ThemeCssClass @ShellInteractionCssClass"
+<section class="home-shell @ShellInteractionCssClass"
          @onpointermove="HandleSidebarPointerMoveAsync"
          @onpointerup="StopSidebarResizeAsync"
          @onpointercancel="StopSidebarResizeAsync"
@@ -204,13 +200,19 @@
                                             <p>Review common input, choice, and file-selection controls without leaving the temporary workbench shell.</p>
                                         </div>
                                         <div class="showcase-toolbar-actions">
-                                            <span class="showcase-toolbar-chip">Mock data</span>
-                                            <RadzenButton class="theme-toggle"
-                                                          Icon="@ThemeToggleIcon"
-                                                          Text="@ThemeToggleText"
-                                                          aria-label="@ThemeToggleText"
-                                                          aria-pressed="@_isDarkTheme"
-                                                          Click="@ToggleThemeAsync" />
+                                            <RadzenBadge Text="Mock data" />
+                                            <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem" class="showcase-theme-picker">
+                                                <RadzenLabel Text="Theme" Component="showcaseThemeForms" />
+                                                <RadzenDropDown id="showcaseThemeForms"
+                                                                Name="ShowcaseThemeForms"
+                                                                TValue="string"
+                                                                Value="@CurrentThemeSelection"
+                                                                Change="@HandleThemeSelectionChangedAsync"
+                                                                Data="@_themeOptions"
+                                                                TextProperty="Label"
+                                                                ValueProperty="Value"
+                                                                Style="width: 12rem;" />
+                                            </RadzenStack>
                                         </div>
                                     </div>
 
@@ -291,7 +293,7 @@
                                         </div>
 
                                         <div class="showcase-choice-grid">
-                                            <section class="showcase-choice-card" aria-label="Pinned overview sample">
+                                            <RadzenCard class="showcase-choice-card" Variant="Variant.Outlined" aria-label="Pinned overview sample">
                                                 <div>
                                                     <h3>Pin overview tab</h3>
                                                     <p>Sample checkbox styling for a persistent workspace preference.</p>
@@ -300,9 +302,9 @@
                                                                 TValue="bool"
                                                                 TriState="false"
                                                                 @bind-Value="_showcaseForm.PinOverview" />
-                                            </section>
+                                            </RadzenCard>
 
-                                            <section class="showcase-choice-card" aria-label="Automatic refresh sample">
+                                            <RadzenCard class="showcase-choice-card" Variant="Variant.Outlined" aria-label="Automatic refresh sample">
                                                 <div>
                                                     <h3>Automatic refresh</h3>
                                                     <p>Sample switch styling for a low-friction toggle state.</p>
@@ -310,9 +312,9 @@
                                                 <RadzenSwitch Name="AutoRefresh"
                                                               TValue="bool"
                                                               @bind-Value="_showcaseForm.AutoRefresh" />
-                                            </section>
+                                            </RadzenCard>
 
-                                            <section class="showcase-choice-card showcase-choice-card-wide" aria-label="Density selection sample">
+                                            <RadzenCard class="showcase-choice-card showcase-choice-card-wide" Variant="Variant.Outlined" aria-label="Density selection sample">
                                                 <div>
                                                     <h3>Layout density</h3>
                                                     <p>Static radio options help reviewers compare grouped choice treatments.</p>
@@ -323,7 +325,7 @@
                                                                        TextProperty="Label"
                                                                        ValueProperty="Value"
                                                                        @bind-Value="_showcaseForm.LayoutDensity" />
-                                            </section>
+                                            </RadzenCard>
                                         </div>
 
                                         <div class="showcase-form-actions">
@@ -343,18 +345,24 @@
                                             <p>The hierarchy remains entirely in-memory and intentionally generic while showcasing expansion, icons, and nested indentation.</p>
                                         </div>
                                         <div class="showcase-toolbar-actions">
-                                            <span class="showcase-toolbar-chip">@_treeNodes.Count roots</span>
-                                            <RadzenButton class="theme-toggle"
-                                                          Icon="@ThemeToggleIcon"
-                                                          Text="@ThemeToggleText"
-                                                          aria-label="@ThemeToggleText"
-                                                          aria-pressed="@_isDarkTheme"
-                                                          Click="@ToggleThemeAsync" />
+                                            <RadzenBadge Text="@TreeRootCountText" />
+                                            <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem" class="showcase-theme-picker">
+                                                <RadzenLabel Text="Theme" Component="showcaseThemeTree" />
+                                                <RadzenDropDown id="showcaseThemeTree"
+                                                                Name="ShowcaseThemeTree"
+                                                                TValue="string"
+                                                                Value="@CurrentThemeSelection"
+                                                                Change="@HandleThemeSelectionChangedAsync"
+                                                                Data="@_themeOptions"
+                                                                TextProperty="Label"
+                                                                ValueProperty="Value"
+                                                                Style="width: 12rem;" />
+                                            </RadzenStack>
                                         </div>
                                     </div>
 
                                     <div class="showcase-data-grid-layout">
-                                        <div class="showcase-panel-card">
+                                        <RadzenCard class="showcase-panel-card" Variant="Variant.Outlined">
                                             <h3>Hierarchy preview</h3>
                                             <p class="showcase-helper-text">Checkboxes are enabled only to expose the full control styling surface for theme review.</p>
                                             <RadzenTree AllowCheckBoxes="true" class="showcase-tree">
@@ -373,16 +381,16 @@
                                                     </RadzenTreeItem>
                                                 }
                                             </RadzenTree>
-                                        </div>
+                                        </RadzenCard>
 
-                                        <div class="showcase-panel-card">
+                                        <RadzenCard class="showcase-panel-card" Variant="Variant.Outlined">
                                             <h3>Review prompts</h3>
                                             <ul class="showcase-note-list">
                                                 <li>Confirm the tree icons and checkbox states remain readable in both shell themes.</li>
                                                 <li>Compare collapsed versus expanded indentation to judge density in the upper workspace.</li>
                                                 <li>Use the sidebars and splitter while this tab is active to verify the tree remains visually stable.</li>
                                             </ul>
-                                        </div>
+                                        </RadzenCard>
                                     </div>
                                 </section>
                             </RadzenTabsItem>
@@ -395,17 +403,23 @@
                                             <p>The grid keeps sorting and paging lightweight so reviewers can focus on Radzen styling rather than workflow behavior.</p>
                                         </div>
                                         <div class="showcase-toolbar-actions">
-                                            <span class="showcase-toolbar-chip">@_gridRows.Count rows</span>
-                                            <RadzenButton class="theme-toggle"
-                                                          Icon="@ThemeToggleIcon"
-                                                          Text="@ThemeToggleText"
-                                                          aria-label="@ThemeToggleText"
-                                                          aria-pressed="@_isDarkTheme"
-                                                          Click="@ToggleThemeAsync" />
+                                            <RadzenBadge Text="@GridRowCountText" />
+                                            <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem" class="showcase-theme-picker">
+                                                <RadzenLabel Text="Theme" Component="showcaseThemeGrid" />
+                                                <RadzenDropDown id="showcaseThemeGrid"
+                                                                Name="ShowcaseThemeGrid"
+                                                                TValue="string"
+                                                                Value="@CurrentThemeSelection"
+                                                                Change="@HandleThemeSelectionChangedAsync"
+                                                                Data="@_themeOptions"
+                                                                TextProperty="Label"
+                                                                ValueProperty="Value"
+                                                                Style="width: 12rem;" />
+                                            </RadzenStack>
                                         </div>
                                     </div>
 
-                                    <div class="showcase-panel-card showcase-grid-card">
+                                    <RadzenCard class="showcase-panel-card showcase-grid-card" Variant="Variant.Outlined">
                                         <RadzenDataGrid Data="@_gridRows"
                                                         TItem="WorkbenchShowcaseGridRow"
                                                         AllowPaging="true"
@@ -418,7 +432,7 @@
                                                 <RadzenDataGridColumn TItem="WorkbenchShowcaseGridRow" Property="Owner" Title="Owner" />
                                                 <RadzenDataGridColumn TItem="WorkbenchShowcaseGridRow" Title="Status">
                                                     <Template Context="row">
-                                                        <span class="@GetShowcaseStatusBadgeCssClass(row.Status)">@row.Status</span>
+                                                        <RadzenBadge Text="@row.Status" />
                                                     </Template>
                                                 </RadzenDataGridColumn>
                                                 <RadzenDataGridColumn TItem="WorkbenchShowcaseGridRow" Property="Confidence" Title="Confidence %" />
@@ -428,7 +442,7 @@
                                                                       FormatString="{0:dd MMM yyyy}" />
                                             </Columns>
                                         </RadzenDataGrid>
-                                    </div>
+                                    </RadzenCard>
                                 </section>
                             </RadzenTabsItem>
                         </Tabs>
@@ -526,18 +540,18 @@
                                 <h2>Insights</h2>
                                 <p>This placeholder leans on compact status metrics so it reads differently from the left-side panels.</p>
                                 <div class="placeholder-metric-grid">
-                                    <div class="placeholder-metric-item">
+                                    <RadzenCard class="placeholder-metric-item" Variant="Variant.Outlined">
                                         <strong>14</strong>
                                         <span>Open notes</span>
-                                    </div>
-                                    <div class="placeholder-metric-item">
+                                    </RadzenCard>
+                                    <RadzenCard class="placeholder-metric-item" Variant="Variant.Outlined">
                                         <strong>3</strong>
                                         <span>Pending checks</span>
-                                    </div>
-                                    <div class="placeholder-metric-item">
+                                    </RadzenCard>
+                                    <RadzenCard class="placeholder-metric-item" Variant="Variant.Outlined">
                                         <strong>92%</strong>
                                         <span>Shell fit</span>
-                                    </div>
+                                    </RadzenCard>
                                 </div>
                             </section>
                             break;
@@ -546,18 +560,18 @@
                                 <h2>Activity</h2>
                                 <p>This placeholder uses a timeline layout so the mirrored sidebar content is visibly distinct.</p>
                                 <div class="placeholder-timeline">
-                                    <div class="placeholder-timeline-item">
+                                    <RadzenCard class="placeholder-timeline-item" Variant="Variant.Outlined">
                                         <strong>09:10</strong>
                                         <span>Mock review opened</span>
-                                    </div>
-                                    <div class="placeholder-timeline-item">
+                                    </RadzenCard>
+                                    <RadzenCard class="placeholder-timeline-item" Variant="Variant.Outlined">
                                         <strong>09:24</strong>
                                         <span>Right panel resized</span>
-                                    </div>
-                                    <div class="placeholder-timeline-item">
+                                    </RadzenCard>
+                                    <RadzenCard class="placeholder-timeline-item" Variant="Variant.Outlined">
                                         <strong>09:41</strong>
                                         <span>Theme toggled for contrast check</span>
-                                    </div>
+                                    </RadzenCard>
                                 </div>
                             </section>
                             break;
@@ -644,9 +658,13 @@
     private int _selectedLowerWorkspaceTabIndex;
 
     /// <summary>
-    /// Tracks the temporary in-memory theme selection for the shell baseline.
+    /// Stores the Radzen theme options available from the temporary showcase selector.
     /// </summary>
-    private bool _isDarkTheme = true;
+    private readonly IReadOnlyList<WorkbenchShowcaseOption> _themeOptions =
+        [
+            new WorkbenchShowcaseOption("Material", DefaultRadzenThemeName, "The stock Radzen Material theme baseline."),
+            new WorkbenchShowcaseOption("Material Dark", "material-dark", "The stock Radzen Material dark baseline."),
+        ];
 
     /// <summary>
     /// Tracks which left-side mock panel is currently open, or <see langword="null"/> when the sidebar is closed.
@@ -780,24 +798,24 @@
     private string? _showcaseSubmissionMessage;
 
     /// <summary>
-    /// Gets the CSS class that applies the currently selected shell palette.
+    /// Gets the short badge text that summarizes the number of root nodes in the showcase tree.
     /// </summary>
-    private string ThemeCssClass => _isDarkTheme ? "theme-dark" : "theme-light";
+    private string TreeRootCountText => $"{_treeNodes.Count} roots";
 
     /// <summary>
-    /// Gets the visible text shown on the temporary theme toggle control.
+    /// Gets the short badge text that summarizes the number of rows in the showcase grid.
     /// </summary>
-    private string ThemeToggleText => _isDarkTheme ? "Switch to light theme" : "Switch to dark theme";
+    private string GridRowCountText => $"{_gridRows.Count} rows";
 
     /// <summary>
-    /// Gets the Radzen icon name shown on the temporary theme toggle control.
+    /// Stores the stock Radzen Material theme name used when the shared theme service has not selected a value yet.
     /// </summary>
-    private string ThemeToggleIcon => _isDarkTheme ? "light_mode" : "dark_mode";
+    private const string DefaultRadzenThemeName = "material";
 
     /// <summary>
-    /// Gets the Radzen Material theme variant that matches the temporary shell state.
+    /// Gets the currently selected shared Radzen theme value for the showcase drop-down controls.
     /// </summary>
-    private string RadzenThemeName => _isDarkTheme ? "material-dark" : "material";
+    private string CurrentThemeSelection => string.IsNullOrWhiteSpace(ThemeService.Theme) ? DefaultRadzenThemeName : ThemeService.Theme;
 
     /// <summary>
     /// Gets a value indicating whether any left-side placeholder panel is currently visible.
@@ -956,17 +974,6 @@
     }
 
     /// <summary>
-    /// Toggles the temporary shell theme without persisting any state beyond the current page instance.
-    /// </summary>
-    /// <returns>A completed task once the in-memory theme flag has been flipped.</returns>
-    private Task ToggleThemeAsync()
-    {
-        // Flip the shell palette so the component re-renders with the opposite temporary theme.
-        _isDarkTheme = !_isDarkTheme;
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
     /// Handles the visual-only upper-pane form submission so reviewers receive lightweight feedback without any backend dependency.
     /// </summary>
     /// <param name="model">The in-memory showcase form values submitted by the Radzen template form.</param>
@@ -975,6 +982,19 @@
     {
         // Summarize the current form state in a short message so reviewers can confirm the sample stays entirely client-side.
         _showcaseSubmissionMessage = $"Preview updated for {model.WorkspaceTitle} using the {model.Dataset} dataset and {model.LayoutDensity} density option.";
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Updates the shared Radzen theme service when the user selects a different stock theme from the showcase controls.
+    /// </summary>
+    /// <param name="value">The stock Radzen theme value selected by the user.</param>
+    /// <returns>A completed task after the shared theme service has been updated.</returns>
+    private Task HandleThemeSelectionChangedAsync(object value)
+    {
+        // Apply the selected stock Radzen theme at the shared service level so the root theme tag can refresh for the whole page.
+        ThemeService.SetTheme(value?.ToString() ?? DefaultRadzenThemeName);
 
         return Task.CompletedTask;
     }
@@ -1182,22 +1202,6 @@
         return IsRightPanelActive(panelId)
             ? "activity-button activity-button-active"
             : "activity-button";
-    }
-
-    /// <summary>
-    /// Builds the CSS class list for the sample grid status badge so each placeholder row remains visually distinct.
-    /// </summary>
-    /// <param name="status">The visual-only status label assigned to the sample grid row.</param>
-    /// <returns>The CSS class string used by the rendered status badge.</returns>
-    private static string GetShowcaseStatusBadgeCssClass(string status)
-    {
-        // Normalize the sample statuses into a small set of badge modifiers so the mock grid stays easy to scan.
-        return status switch
-        {
-            "Ready" => "showcase-status-badge showcase-status-badge-ready",
-            "Blocked" => "showcase-status-badge showcase-status-badge-blocked",
-            _ => "showcase-status-badge showcase-status-badge-review",
-        };
     }
 
     /// <summary>

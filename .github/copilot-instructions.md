@@ -30,6 +30,7 @@ Be concise but complete. Prefer current research (Microsoft Learn) for Microsoft
 
 ## Blazor Server Guidelines
 - For Blazor Server (Razor Components) pages, explicitly add `@rendermode InteractiveServer` on pages that must handle input/click events; otherwise, pages may render non-interactively even when other pages (e.g., Counter) are interactive.
+- In the Workbench Blazor UI, stay as close as possible to the stock Radzen Material theme so future custom theme work can lift styles directly rather than layering custom shell colors.
 
 ## Logging Standards
 - Prefer using `ILogger` abstractions (Microsoft.Extensions.Logging.Abstractions) over `Action<string>` logging callbacks in this codebase, including Domain pipeline nodes.
