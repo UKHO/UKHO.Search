@@ -8,7 +8,7 @@
     <RadzenTheme Theme="@RadzenThemeName" @key="RadzenThemeName" />
 </HeadContent>
 
-@* Establishes the full-viewport shell baseline and composes the final temporary two-sided workbench chrome. *@
+@* Establishes the full-viewport shell baseline, including the new menu row above the workbench body. *@
 <section class="home-shell @ThemeCssClass @ShellInteractionCssClass"
          @onpointermove="HandleSidebarPointerMoveAsync"
          @onpointerup="StopSidebarResizeAsync"
@@ -45,6 +45,32 @@
         </div>
     </nav>
 
+    @* Adds the requested application-style menu above the shell body while leaving item behavior placeholder-only. *@
+    <header class="home-menu-shell" aria-label="Workbench application menu">
+        <RadzenMenu class="home-menu">
+            <RadzenMenuItem Text="File">
+                <RadzenMenuItem Text="New workspace" />
+                <RadzenMenuItem Text="Open recent" />
+                <RadzenMenuItem Text="Save snapshot" />
+            </RadzenMenuItem>
+            <RadzenMenuItem Text="Edit">
+                <RadzenMenuItem Text="Undo" />
+                <RadzenMenuItem Text="Redo" />
+                <RadzenMenuItem Text="Preferences" />
+            </RadzenMenuItem>
+            <RadzenMenuItem Text="View">
+                <RadzenMenuItem Text="Toggle explorer" />
+                <RadzenMenuItem Text="Toggle insights" />
+                <RadzenMenuItem Text="Reset layout" />
+            </RadzenMenuItem>
+            <RadzenMenuItem Text="Help">
+                <RadzenMenuItem Text="Workbench tour" />
+                <RadzenMenuItem Text="Keyboard shortcuts" />
+                <RadzenMenuItem Text="About this mock-up" />
+            </RadzenMenuItem>
+        </RadzenMenu>
+    </header>
+
     @* Keeps the left sidebar mounted so width transitions can animate both opening and closing. *@
     <aside class="@LeftSidebarCssClass" aria-label="Left sidebar" aria-hidden="@(!IsLeftSidebarOpen)" style="@LeftSidebarStyle" @key="_activeLeftPanelId">
         @if (IsLeftSidebarOpen)
@@ -61,54 +87,89 @@
                               @onclick:stopPropagation="true" />
             </header>
             <div class="sidebar-content">
-                @switch (_activeLeftPanelId)
-                {
-                    case ExplorerPanelId:
-                        <section class="sidebar-placeholder sidebar-placeholder-explorer">
-                            <h2>Explorer</h2>
-                            <p>Temporary file and workspace placeholders make this panel visibly different from the other mock-ups.</p>
-                            <ul>
-                                <li>WorkbenchHost</li>
-                                <li>RulesWorkbench</li>
-                                <li>Search Providers</li>
-                            </ul>
-                        </section>
-                        break;
-                    case SearchPanelId:
-                        <section class="sidebar-placeholder sidebar-placeholder-search">
-                            <h2>Search</h2>
-                            <p>This mock panel uses filter chips and a short result list to contrast with the explorer view.</p>
-                            <div class="placeholder-chip-row">
-                                <span class="placeholder-chip">Charts</span>
-                                <span class="placeholder-chip">Rules</span>
-                                <span class="placeholder-chip">Signals</span>
-                            </div>
-                            <ol>
-                                <li>Temporary result A</li>
-                                <li>Temporary result B</li>
-                                <li>Temporary result C</li>
-                            </ol>
-                        </section>
-                        break;
-                    case OutlinePanelId:
-                        <section class="sidebar-placeholder sidebar-placeholder-outline">
-                            <h2>Outline</h2>
-                            <p>This mock panel emphasizes structure by showing stacked sections and short descriptive summaries.</p>
-                            <div class="placeholder-outline-item">
-                                <strong>Shell</strong>
-                                <span>Activity bar and panel frame</span>
-                            </div>
-                            <div class="placeholder-outline-item">
-                                <strong>Canvas</strong>
-                                <span>Main content and theme switch</span>
-                            </div>
-                            <div class="placeholder-outline-item">
-                                <strong>Review</strong>
-                                <span>Desktop-only spacing and resize feel</span>
-                            </div>
-                        </section>
-                        break;
-                }
+                @* Uses lightweight local tab buttons here so the sidebars always render visible content even while the center keeps the Radzen tab showcase. *@
+                <div class="sidebar-tab-strip" role="tablist" aria-label="Left sidebar sections">
+                    <button class="@GetSidebarTabButtonCssClass(GetLeftSidebarTabIndex() == 0)"
+                            type="button"
+                            role="tab"
+                            aria-selected="@(GetLeftSidebarTabIndex() == 0)"
+                            @onclick="() => HandleLeftSidebarTabChangeAsync(0)">
+                        <span class="section-tab-header">
+                            <span>Explorer</span>
+                            <RadzenIcon class="section-tab-close-icon" Icon="close" aria-hidden="true" />
+                        </span>
+                    </button>
+                    <button class="@GetSidebarTabButtonCssClass(GetLeftSidebarTabIndex() == 1)"
+                            type="button"
+                            role="tab"
+                            aria-selected="@(GetLeftSidebarTabIndex() == 1)"
+                            @onclick="() => HandleLeftSidebarTabChangeAsync(1)">
+                        <span class="section-tab-header">
+                            <span>Search</span>
+                            <RadzenIcon class="section-tab-close-icon" Icon="close" aria-hidden="true" />
+                        </span>
+                    </button>
+                    <button class="@GetSidebarTabButtonCssClass(GetLeftSidebarTabIndex() == 2)"
+                            type="button"
+                            role="tab"
+                            aria-selected="@(GetLeftSidebarTabIndex() == 2)"
+                            @onclick="() => HandleLeftSidebarTabChangeAsync(2)">
+                        <span class="section-tab-header">
+                            <span>Outline</span>
+                            <RadzenIcon class="section-tab-close-icon" Icon="close" aria-hidden="true" />
+                        </span>
+                    </button>
+                </div>
+                <div class="sidebar-tab-panel" role="tabpanel">
+                    @switch (_activeLeftPanelId)
+                    {
+                        case ExplorerPanelId:
+                            <section class="sidebar-placeholder sidebar-placeholder-explorer">
+                                <h2>Explorer</h2>
+                                <p>Temporary file and workspace placeholders make this panel visibly different from the other mock-ups.</p>
+                                <ul>
+                                    <li>WorkbenchHost</li>
+                                    <li>RulesWorkbench</li>
+                                    <li>Search Providers</li>
+                                </ul>
+                            </section>
+                            break;
+                        case SearchPanelId:
+                            <section class="sidebar-placeholder sidebar-placeholder-search">
+                                <h2>Search</h2>
+                                <p>This mock panel uses filter chips and a short result list to contrast with the explorer view.</p>
+                                <div class="placeholder-chip-row">
+                                    <span class="placeholder-chip">Charts</span>
+                                    <span class="placeholder-chip">Rules</span>
+                                    <span class="placeholder-chip">Signals</span>
+                                </div>
+                                <ol>
+                                    <li>Temporary result A</li>
+                                    <li>Temporary result B</li>
+                                    <li>Temporary result C</li>
+                                </ol>
+                            </section>
+                            break;
+                        case OutlinePanelId:
+                            <section class="sidebar-placeholder sidebar-placeholder-outline">
+                                <h2>Outline</h2>
+                                <p>This mock panel emphasizes structure by showing stacked sections and short descriptive summaries.</p>
+                                <div class="placeholder-outline-item">
+                                    <strong>Shell</strong>
+                                    <span>Activity bar and panel frame</span>
+                                </div>
+                                <div class="placeholder-outline-item">
+                                    <strong>Canvas</strong>
+                                    <span>Main content and theme switch</span>
+                                </div>
+                                <div class="placeholder-outline-item">
+                                    <strong>Review</strong>
+                                    <span>Desktop-only spacing and resize feel</span>
+                                </div>
+                            </section>
+                            break;
+                    }
+                </div>
             </div>
         }
     </aside>
@@ -121,17 +182,293 @@
          @onpointerdown="StartLeftSidebarResizeAsync"
          @onpointerdown:stopPropagation="true"></div>
 
+    @* Splits the center workspace into upper and lower panes so the shell now matches the denser workbench layout slice. *@
     <main class="home-main" aria-label="Workbench home shell">
-        @* Keeps the temporary main content intentionally minimal and aligned to the top-left corner. *@
-        <div class="home-main-tools">
-            <span class="home-greeting">hello</span>
-            <RadzenButton class="theme-toggle"
-                          Icon="@ThemeToggleIcon"
-                          Text="@ThemeToggleText"
-                          aria-label="@ThemeToggleText"
-                          aria-pressed="@_isDarkTheme"
-                          Click="@ToggleThemeAsync" />
-        </div>
+        <RadzenSplitter class="main-workspace-splitter"
+                        Orientation="Orientation.Vertical"
+                        Style="height: 100%; width: 100%;">
+            <RadzenSplitterPane Size="60%" Min="220px" Resizable="true">
+                @* Uses a real HTML wrapper inside the splitter pane so the tab host gets explicit, reliable height from standard flex layout. *@
+                <div class="workspace-pane-shell workspace-pane-upper"
+                     style="display: flex; flex-direction: column; min-width: 0; min-height: 0; height: 100%; overflow: hidden;">
+                    <RadzenTabs class="workspace-radzen-tabs"
+                                @bind-SelectedIndex="_selectedUpperWorkspaceTabIndex"
+                                Style="flex: 1 1 auto; min-width: 0; min-height: 0; width: 100%; height: 100%;">
+                        <Tabs>
+                            <RadzenTabsItem Text="Forms">
+                                @* Groups the sample form controls into a dense but mock-only review surface for light and dark theme comparison. *@
+                                <section class="main-pane-content showcase-pane">
+                                    <div class="showcase-toolbar">
+                                        <div class="showcase-toolbar-copy">
+                                            <h2>Radzen form controls</h2>
+                                            <p>Review common input, choice, and file-selection controls without leaving the temporary workbench shell.</p>
+                                        </div>
+                                        <div class="showcase-toolbar-actions">
+                                            <span class="showcase-toolbar-chip">Mock data</span>
+                                            <RadzenButton class="theme-toggle"
+                                                          Icon="@ThemeToggleIcon"
+                                                          Text="@ThemeToggleText"
+                                                          aria-label="@ThemeToggleText"
+                                                          aria-pressed="@_isDarkTheme"
+                                                          Click="@ToggleThemeAsync" />
+                                        </div>
+                                    </div>
+
+                                    @if (!string.IsNullOrWhiteSpace(_showcaseSubmissionMessage))
+                                    {
+                                        <p class="showcase-status-message">@_showcaseSubmissionMessage</p>
+                                    }
+
+                                    <RadzenTemplateForm TItem="WorkbenchShowcaseFormModel"
+                                                        Data="@_showcaseForm"
+                                                        Submit="@HandleShowcaseSubmitAsync"
+                                                        class="showcase-form-host">
+                                        <div class="showcase-form-grid">
+                                            <div class="showcase-form-field">
+                                                <RadzenFormField Text="Workspace title" Variant="Variant.Outlined">
+                                                    <RadzenTextBox Name="WorkspaceTitle"
+                                                                   @bind-Value="_showcaseForm.WorkspaceTitle"
+                                                                   Style="width: 100%;" />
+                                                </RadzenFormField>
+                                                <RadzenRequiredValidator Component="WorkspaceTitle" Text="Enter a title for this visual review sample." />
+                                            </div>
+
+                                            <div class="showcase-form-field showcase-form-field-wide">
+                                                <RadzenFormField Text="Review notes" Variant="Variant.Outlined">
+                                                    <RadzenTextArea Name="ReviewNotes"
+                                                                    @bind-Value="_showcaseForm.ReviewNotes"
+                                                                    Style="width: 100%; min-height: 8rem;" />
+                                                </RadzenFormField>
+                                                <p class="showcase-helper-text">Helper copy stays intentionally light so reviewers can focus on spacing, borders, and typography.</p>
+                                            </div>
+
+                                            <div class="showcase-form-field">
+                                                <RadzenFormField Text="Result limit" Variant="Variant.Outlined">
+                                                    <RadzenNumeric Name="ResultLimit"
+                                                                   TValue="int"
+                                                                   Min="10"
+                                                                   Max="500"
+                                                                   Step="10"
+                                                                   @bind-Value="_showcaseForm.ResultLimit"
+                                                                   Style="width: 100%;" />
+                                                </RadzenFormField>
+                                            </div>
+
+                                            <div class="showcase-form-field">
+                                                <RadzenFormField Text="Review date" Variant="Variant.Outlined">
+                                                    <RadzenDatePicker Name="ReviewDate"
+                                                                      TValue="DateTime?"
+                                                                      DateFormat="dd MMM yyyy"
+                                                                      @bind-Value="_showcaseForm.ReviewDate"
+                                                                      Style="width: 100%;" />
+                                                </RadzenFormField>
+                                            </div>
+
+                                            <div class="showcase-form-field">
+                                                <RadzenFormField Text="Dataset" Variant="Variant.Outlined">
+                                                    <RadzenDropDown Name="Dataset"
+                                                                    TValue="string"
+                                                                    Data="@_datasetOptions"
+                                                                    TextProperty="Label"
+                                                                    ValueProperty="Value"
+                                                                    @bind-Value="_showcaseForm.Dataset"
+                                                                    Style="width: 100%;" />
+                                                </RadzenFormField>
+                                                <RadzenRequiredValidator Component="Dataset" Text="Select a dataset to complete the visual review sample." />
+                                            </div>
+
+                                            <div class="showcase-form-field showcase-form-field-wide">
+                                                <RadzenFormField Text="Reference file" Variant="Variant.Outlined">
+                                                    <RadzenFileInput Name="ReferenceFile"
+                                                                     TValue="string"
+                                                                     Accept=".csv,.json,.txt"
+                                                                     ChooseText="Choose sample file"
+                                                                     @bind-Value="_showcaseForm.ReferenceFileContent"
+                                                                     Style="width: 100%;" />
+                                                </RadzenFormField>
+                                                <p class="showcase-helper-text">The file chooser is visual-only and keeps all content local to the current browser session.</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="showcase-choice-grid">
+                                            <section class="showcase-choice-card" aria-label="Pinned overview sample">
+                                                <div>
+                                                    <h3>Pin overview tab</h3>
+                                                    <p>Sample checkbox styling for a persistent workspace preference.</p>
+                                                </div>
+                                                <RadzenCheckBox Name="PinOverview"
+                                                                TValue="bool"
+                                                                TriState="false"
+                                                                @bind-Value="_showcaseForm.PinOverview" />
+                                            </section>
+
+                                            <section class="showcase-choice-card" aria-label="Automatic refresh sample">
+                                                <div>
+                                                    <h3>Automatic refresh</h3>
+                                                    <p>Sample switch styling for a low-friction toggle state.</p>
+                                                </div>
+                                                <RadzenSwitch Name="AutoRefresh"
+                                                              TValue="bool"
+                                                              @bind-Value="_showcaseForm.AutoRefresh" />
+                                            </section>
+
+                                            <section class="showcase-choice-card showcase-choice-card-wide" aria-label="Density selection sample">
+                                                <div>
+                                                    <h3>Layout density</h3>
+                                                    <p>Static radio options help reviewers compare grouped choice treatments.</p>
+                                                </div>
+                                                <RadzenRadioButtonList Name="LayoutDensity"
+                                                                       TValue="string"
+                                                                       Data="@_densityOptions"
+                                                                       TextProperty="Label"
+                                                                       ValueProperty="Value"
+                                                                       @bind-Value="_showcaseForm.LayoutDensity" />
+                                            </section>
+                                        </div>
+
+                                        <div class="showcase-form-actions">
+                                            <RadzenButton Text="Preview styles"
+                                                          Icon="visibility"
+                                                          ButtonType="ButtonType.Submit" />
+                                        </div>
+                                    </RadzenTemplateForm>
+                                </section>
+                            </RadzenTabsItem>
+                            <RadzenTabsItem Text="Tree">
+                                @* Uses a static hierarchy so reviewers can compare Radzen tree spacing, selection affordances, and icon rhythm. *@
+                                <section class="main-pane-content showcase-pane showcase-data-pane">
+                                    <div class="showcase-toolbar">
+                                        <div class="showcase-toolbar-copy">
+                                            <h2>Sample tree</h2>
+                                            <p>The hierarchy remains entirely in-memory and intentionally generic while showcasing expansion, icons, and nested indentation.</p>
+                                        </div>
+                                        <div class="showcase-toolbar-actions">
+                                            <span class="showcase-toolbar-chip">@_treeNodes.Count roots</span>
+                                            <RadzenButton class="theme-toggle"
+                                                          Icon="@ThemeToggleIcon"
+                                                          Text="@ThemeToggleText"
+                                                          aria-label="@ThemeToggleText"
+                                                          aria-pressed="@_isDarkTheme"
+                                                          Click="@ToggleThemeAsync" />
+                                        </div>
+                                    </div>
+
+                                    <div class="showcase-data-grid-layout">
+                                        <div class="showcase-panel-card">
+                                            <h3>Hierarchy preview</h3>
+                                            <p class="showcase-helper-text">Checkboxes are enabled only to expose the full control styling surface for theme review.</p>
+                                            <RadzenTree AllowCheckBoxes="true" class="showcase-tree">
+                                                @foreach (var rootNode in _treeNodes)
+                                                {
+                                                    <RadzenTreeItem Text="@rootNode.Text" Icon="@rootNode.Icon" Expanded="@rootNode.IsExpanded">
+                                                        @foreach (var childNode in rootNode.Children)
+                                                        {
+                                                            <RadzenTreeItem Text="@childNode.Text" Icon="@childNode.Icon" Expanded="@childNode.IsExpanded">
+                                                                @foreach (var grandchildNode in childNode.Children)
+                                                                {
+                                                                    <RadzenTreeItem Text="@grandchildNode.Text" Icon="@grandchildNode.Icon" Expanded="@grandchildNode.IsExpanded" />
+                                                                }
+                                                            </RadzenTreeItem>
+                                                        }
+                                                    </RadzenTreeItem>
+                                                }
+                                            </RadzenTree>
+                                        </div>
+
+                                        <div class="showcase-panel-card">
+                                            <h3>Review prompts</h3>
+                                            <ul class="showcase-note-list">
+                                                <li>Confirm the tree icons and checkbox states remain readable in both shell themes.</li>
+                                                <li>Compare collapsed versus expanded indentation to judge density in the upper workspace.</li>
+                                                <li>Use the sidebars and splitter while this tab is active to verify the tree remains visually stable.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </section>
+                            </RadzenTabsItem>
+                            <RadzenTabsItem Text="Grid">
+                                @* Uses fixed row data so the data grid can demonstrate headers, paging, templates, and date rendering without backend calls. *@
+                                <section class="main-pane-content showcase-pane showcase-data-pane">
+                                    <div class="showcase-toolbar">
+                                        <div class="showcase-toolbar-copy">
+                                            <h2>Sample data grid</h2>
+                                            <p>The grid keeps sorting and paging lightweight so reviewers can focus on Radzen styling rather than workflow behavior.</p>
+                                        </div>
+                                        <div class="showcase-toolbar-actions">
+                                            <span class="showcase-toolbar-chip">@_gridRows.Count rows</span>
+                                            <RadzenButton class="theme-toggle"
+                                                          Icon="@ThemeToggleIcon"
+                                                          Text="@ThemeToggleText"
+                                                          aria-label="@ThemeToggleText"
+                                                          aria-pressed="@_isDarkTheme"
+                                                          Click="@ToggleThemeAsync" />
+                                        </div>
+                                    </div>
+
+                                    <div class="showcase-panel-card showcase-grid-card">
+                                        <RadzenDataGrid Data="@_gridRows"
+                                                        TItem="WorkbenchShowcaseGridRow"
+                                                        AllowPaging="true"
+                                                        PageSize="5"
+                                                        AllowSorting="true"
+                                                        class="showcase-grid">
+                                            <Columns>
+                                                <RadzenDataGridColumn TItem="WorkbenchShowcaseGridRow" Property="Title" Title="Title" />
+                                                <RadzenDataGridColumn TItem="WorkbenchShowcaseGridRow" Property="Category" Title="Category" />
+                                                <RadzenDataGridColumn TItem="WorkbenchShowcaseGridRow" Property="Owner" Title="Owner" />
+                                                <RadzenDataGridColumn TItem="WorkbenchShowcaseGridRow" Title="Status">
+                                                    <Template Context="row">
+                                                        <span class="@GetShowcaseStatusBadgeCssClass(row.Status)">@row.Status</span>
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+                                                <RadzenDataGridColumn TItem="WorkbenchShowcaseGridRow" Property="Confidence" Title="Confidence %" />
+                                                <RadzenDataGridColumn TItem="WorkbenchShowcaseGridRow"
+                                                                      Property="LastReviewedOn"
+                                                                      Title="Reviewed"
+                                                                      FormatString="{0:dd MMM yyyy}" />
+                                            </Columns>
+                                        </RadzenDataGrid>
+                                    </div>
+                                </section>
+                            </RadzenTabsItem>
+                        </Tabs>
+                    </RadzenTabs>
+                </div>
+            </RadzenSplitterPane>
+            <RadzenSplitterPane Size="40%" Min="180px">
+                @* Mirrors the upper-pane wrapper so the lower tab host receives the same explicit height contract. *@
+                <div class="workspace-pane-shell workspace-pane-lower"
+                     style="display: flex; flex-direction: column; min-width: 0; min-height: 0; height: 100%; overflow: hidden;">
+                    <RadzenTabs class="workspace-radzen-tabs"
+                                @bind-SelectedIndex="_selectedLowerWorkspaceTabIndex"
+                                Style="flex: 1 1 auto; min-width: 0; min-height: 0; width: 100%; height: 100%;">
+                        <Tabs>
+                            <RadzenTabsItem Text="Console">
+                                <section class="main-pane-content main-pane-content-secondary lower-pane-content">
+                                    <h2>Console</h2>
+                                    <p>This lower placeholder pane can host future execution output once the mock-up grows beyond shell review.</p>
+                                    <p>For now it simply demonstrates the requested second workbench region beneath the upper tabs.</p>
+                                </section>
+                            </RadzenTabsItem>
+                            <RadzenTabsItem Text="Problems">
+                                <section class="main-pane-content main-pane-content-secondary lower-pane-content">
+                                    <h2>Problems</h2>
+                                    <p>The lower pane remains intentionally visual-first, with alternate placeholder copy to prove tab switching and layout balance.</p>
+                                    <p>No diagnostics, persistence, or backend integration are wired in this refinement slice.</p>
+                                </section>
+                            </RadzenTabsItem>
+                            <RadzenTabsItem Text="Output">
+                                <section class="main-pane-content main-pane-content-secondary lower-pane-content">
+                                    <h2>Output</h2>
+                                    <p>This tab reserves space for future review traces while keeping the current implementation entirely mock-up oriented.</p>
+                                    <p>The splitter above stays resizable so reviewers can judge the balance between the upper and lower panes.</p>
+                                </section>
+                            </RadzenTabsItem>
+                        </Tabs>
+                    </RadzenTabs>
+                </div>
+            </RadzenSplitterPane>
+        </RadzenSplitter>
     </main>
 
     @* Places the draggable right separator between the main canvas and the mirrored right sidebar. *@
@@ -158,49 +495,74 @@
                               @onclick:stopPropagation="true" />
             </header>
             <div class="sidebar-content">
-                @switch (_activeRightPanelId)
-                {
-                    case InsightsPanelId:
-                        <section class="sidebar-placeholder sidebar-placeholder-insights">
-                            <h2>Insights</h2>
-                            <p>This placeholder leans on compact status metrics so it reads differently from the left-side panels.</p>
-                            <div class="placeholder-metric-grid">
-                                <div class="placeholder-metric-item">
-                                    <strong>14</strong>
-                                    <span>Open notes</span>
+                @* Mirrors the left sidebar fallback so the right-side content remains visible while preserving tabbed chrome. *@
+                <div class="sidebar-tab-strip" role="tablist" aria-label="Right sidebar sections">
+                    <button class="@GetSidebarTabButtonCssClass(GetRightSidebarTabIndex() == 0)"
+                            type="button"
+                            role="tab"
+                            aria-selected="@(GetRightSidebarTabIndex() == 0)"
+                            @onclick="() => HandleRightSidebarTabChangeAsync(0)">
+                        <span class="section-tab-header">
+                            <span>Insights</span>
+                            <RadzenIcon class="section-tab-close-icon" Icon="close" aria-hidden="true" />
+                        </span>
+                    </button>
+                    <button class="@GetSidebarTabButtonCssClass(GetRightSidebarTabIndex() == 1)"
+                            type="button"
+                            role="tab"
+                            aria-selected="@(GetRightSidebarTabIndex() == 1)"
+                            @onclick="() => HandleRightSidebarTabChangeAsync(1)">
+                        <span class="section-tab-header">
+                            <span>Activity</span>
+                            <RadzenIcon class="section-tab-close-icon" Icon="close" aria-hidden="true" />
+                        </span>
+                    </button>
+                </div>
+                <div class="sidebar-tab-panel" role="tabpanel">
+                    @switch (_activeRightPanelId)
+                    {
+                        case InsightsPanelId:
+                            <section class="sidebar-placeholder sidebar-placeholder-insights">
+                                <h2>Insights</h2>
+                                <p>This placeholder leans on compact status metrics so it reads differently from the left-side panels.</p>
+                                <div class="placeholder-metric-grid">
+                                    <div class="placeholder-metric-item">
+                                        <strong>14</strong>
+                                        <span>Open notes</span>
+                                    </div>
+                                    <div class="placeholder-metric-item">
+                                        <strong>3</strong>
+                                        <span>Pending checks</span>
+                                    </div>
+                                    <div class="placeholder-metric-item">
+                                        <strong>92%</strong>
+                                        <span>Shell fit</span>
+                                    </div>
                                 </div>
-                                <div class="placeholder-metric-item">
-                                    <strong>3</strong>
-                                    <span>Pending checks</span>
+                            </section>
+                            break;
+                        case ActivityPanelId:
+                            <section class="sidebar-placeholder sidebar-placeholder-activity">
+                                <h2>Activity</h2>
+                                <p>This placeholder uses a timeline layout so the mirrored sidebar content is visibly distinct.</p>
+                                <div class="placeholder-timeline">
+                                    <div class="placeholder-timeline-item">
+                                        <strong>09:10</strong>
+                                        <span>Mock review opened</span>
+                                    </div>
+                                    <div class="placeholder-timeline-item">
+                                        <strong>09:24</strong>
+                                        <span>Right panel resized</span>
+                                    </div>
+                                    <div class="placeholder-timeline-item">
+                                        <strong>09:41</strong>
+                                        <span>Theme toggled for contrast check</span>
+                                    </div>
                                 </div>
-                                <div class="placeholder-metric-item">
-                                    <strong>92%</strong>
-                                    <span>Shell fit</span>
-                                </div>
-                            </div>
-                        </section>
-                        break;
-                    case ActivityPanelId:
-                        <section class="sidebar-placeholder sidebar-placeholder-activity">
-                            <h2>Activity</h2>
-                            <p>This placeholder uses a timeline layout so the mirrored sidebar content is visibly distinct.</p>
-                            <div class="placeholder-timeline">
-                                <div class="placeholder-timeline-item">
-                                    <strong>09:10</strong>
-                                    <span>Mock review opened</span>
-                                </div>
-                                <div class="placeholder-timeline-item">
-                                    <strong>09:24</strong>
-                                    <span>Right panel resized</span>
-                                </div>
-                                <div class="placeholder-timeline-item">
-                                    <strong>09:41</strong>
-                                    <span>Theme toggled for contrast check</span>
-                                </div>
-                            </div>
-                        </section>
-                        break;
-                }
+                            </section>
+                            break;
+                    }
+                </div>
             </div>
         }
     </aside>
@@ -272,6 +634,16 @@
     private const int SidebarMinimumWidth = 16;
 
     /// <summary>
+    /// Stores the fixed upper-pane tab index so user selection survives interactive re-renders.
+    /// </summary>
+    private int _selectedUpperWorkspaceTabIndex;
+
+    /// <summary>
+    /// Stores the fixed lower-pane tab index so user selection survives interactive re-renders.
+    /// </summary>
+    private int _selectedLowerWorkspaceTabIndex;
+
+    /// <summary>
     /// Tracks the temporary in-memory theme selection for the shell baseline.
     /// </summary>
     private bool _isDarkTheme = true;
@@ -310,6 +682,102 @@
     /// Stores the sidebar width that was active when the current resize gesture started.
     /// </summary>
     private int _resizeStartWidth;
+
+    /// <summary>
+    /// Stores the in-memory values shown by the upper-middle Radzen form showcase.
+    /// </summary>
+    private readonly WorkbenchShowcaseFormModel _showcaseForm = new()
+    {
+        WorkspaceTitle = "Workbench styling review",
+        ReviewNotes = "This temporary form mixes common Radzen inputs so theme, density, and helper text can be compared side by side.",
+        ResultLimit = 120,
+        ReviewDate = DateTime.Today.AddDays(3),
+        Dataset = "catalogue",
+        LayoutDensity = "comfortable",
+        PinOverview = true,
+        AutoRefresh = false,
+    };
+
+    /// <summary>
+    /// Stores the static drop-down options used by the sample selection control.
+    /// </summary>
+    private readonly IReadOnlyList<WorkbenchShowcaseOption> _datasetOptions =
+        [
+            new WorkbenchShowcaseOption("Catalogue snapshot", "catalogue", "Balanced placeholder dataset for layout review."),
+            new WorkbenchShowcaseOption("Signals digest", "signals", "Compact option intended to show shorter labels."),
+            new WorkbenchShowcaseOption("Discovery archive", "archive", "Longer wording used to compare wrapped helper text."),
+        ];
+
+    /// <summary>
+    /// Stores the static radio-button options used by the density choice control.
+    /// </summary>
+    private readonly IReadOnlyList<WorkbenchShowcaseOption> _densityOptions =
+        [
+            new WorkbenchShowcaseOption("Comfortable", "comfortable", "Roomier spacing for broader visual review."),
+            new WorkbenchShowcaseOption("Compact", "compact", "Denser spacing for workbench-oriented layouts."),
+            new WorkbenchShowcaseOption("Relaxed", "relaxed", "Wider spacing that emphasizes label readability."),
+        ];
+
+    /// <summary>
+    /// Stores the static hierarchical nodes rendered by the upper-middle Radzen tree sample.
+    /// </summary>
+    private readonly IReadOnlyList<WorkbenchShowcaseTreeNode> _treeNodes =
+        [
+            new WorkbenchShowcaseTreeNode(
+                "Workspace views",
+                "folder_open",
+                true,
+                [
+                    new WorkbenchShowcaseTreeNode(
+                        "Navigation",
+                        "dashboard",
+                        true,
+                        [
+                            new WorkbenchShowcaseTreeNode("Menu review", "menu", false),
+                            new WorkbenchShowcaseTreeNode("Sidebar layout", "left_panel_open", false),
+                        ]),
+                    new WorkbenchShowcaseTreeNode(
+                        "Analysis",
+                        "insights",
+                        true,
+                        [
+                            new WorkbenchShowcaseTreeNode("Grid comparison", "table_rows", false),
+                            new WorkbenchShowcaseTreeNode("Theme contrast", "dark_mode", false),
+                        ]),
+                ]),
+            new WorkbenchShowcaseTreeNode(
+                "Reference assets",
+                "inventory_2",
+                true,
+                [
+                    new WorkbenchShowcaseTreeNode(
+                        "Inputs",
+                        "upload_file",
+                        false,
+                        [
+                            new WorkbenchShowcaseTreeNode("File chooser", "description", false),
+                            new WorkbenchShowcaseTreeNode("Selection lists", "list_alt", false),
+                        ]),
+                ]),
+        ];
+
+    /// <summary>
+    /// Stores the static rows rendered by the upper-middle Radzen data-grid sample.
+    /// </summary>
+    private readonly IReadOnlyList<WorkbenchShowcaseGridRow> _gridRows =
+        [
+            new WorkbenchShowcaseGridRow("Shell review", "Navigation", "Alex", "Ready", 94, DateTime.Today.AddDays(-1)),
+            new WorkbenchShowcaseGridRow("Theme contrast", "Presentation", "Sam", "In review", 88, DateTime.Today.AddDays(-2)),
+            new WorkbenchShowcaseGridRow("Grid density", "Data", "Jordan", "Ready", 91, DateTime.Today.AddDays(-3)),
+            new WorkbenchShowcaseGridRow("Tree spacing", "Navigation", "Taylor", "Blocked", 72, DateTime.Today.AddDays(-4)),
+            new WorkbenchShowcaseGridRow("Upload affordance", "Inputs", "Morgan", "Ready", 97, DateTime.Today.AddDays(-5)),
+            new WorkbenchShowcaseGridRow("Choice controls", "Inputs", "Casey", "In review", 84, DateTime.Today.AddDays(-6)),
+        ];
+
+    /// <summary>
+    /// Stores the temporary submission message shown after the visual-only showcase form is submitted.
+    /// </summary>
+    private string? _showcaseSubmissionMessage;
 
     /// <summary>
     /// Gets the CSS class that applies the currently selected shell palette.
@@ -419,6 +887,75 @@
     };
 
     /// <summary>
+    /// Maps the current left sidebar panel identifier to the matching tab index so the activity bar and tabs stay synchronized.
+    /// </summary>
+    /// <returns>The zero-based index of the left sidebar tab that should appear selected.</returns>
+    private int GetLeftSidebarTabIndex()
+    {
+        // Translate the active panel identifier into the matching fixed tab position for this mock shell.
+        return _activeLeftPanelId switch
+        {
+            SearchPanelId => 1,
+            OutlinePanelId => 2,
+            _ => 0
+        };
+    }
+
+    /// <summary>
+    /// Maps the current right sidebar panel identifier to the matching tab index so the mirrored activity bar stays synchronized.
+    /// </summary>
+    /// <returns>The zero-based index of the right sidebar tab that should appear selected.</returns>
+    private int GetRightSidebarTabIndex()
+    {
+        // Translate the active panel identifier into the matching fixed tab position for the mirrored shell section.
+        return string.Equals(_activeRightPanelId, ActivityPanelId, StringComparison.Ordinal) ? 1 : 0;
+    }
+
+    /// <summary>
+    /// Updates the active left panel when the user switches tabs directly inside the left sidebar.
+    /// </summary>
+    /// <param name="index">The zero-based tab index selected in the left sidebar.</param>
+    /// <returns>A completed task after the left activity-bar state has been synchronized with the chosen tab.</returns>
+    private Task HandleLeftSidebarTabChangeAsync(int index)
+    {
+        // Mirror the tab selection back to the activity-bar state so both entry points describe the same open panel.
+        _activeLeftPanelId = index switch
+        {
+            1 => SearchPanelId,
+            2 => OutlinePanelId,
+            _ => ExplorerPanelId
+        };
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Updates the active right panel when the user switches tabs directly inside the right sidebar.
+    /// </summary>
+    /// <param name="index">The zero-based tab index selected in the right sidebar.</param>
+    /// <returns>A completed task after the mirrored activity-bar state has been synchronized with the chosen tab.</returns>
+    private Task HandleRightSidebarTabChangeAsync(int index)
+    {
+        // Mirror the tab selection back to the right activity-bar state so the visual affordances remain aligned.
+        _activeRightPanelId = index == 1 ? ActivityPanelId : InsightsPanelId;
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Builds the CSS class list for the lightweight sidebar tab buttons so active state styling stays centralized.
+    /// </summary>
+    /// <param name="isActive">A value indicating whether the rendered sidebar tab should appear selected.</param>
+    /// <returns>The CSS class string used by the sidebar tab button.</returns>
+    private static string GetSidebarTabButtonCssClass(bool isActive)
+    {
+        // Append the active modifier only for the currently selected sidebar tab so the placeholder chrome stays legible.
+        return isActive
+            ? "sidebar-tab-button sidebar-tab-button-active"
+            : "sidebar-tab-button";
+    }
+
+    /// <summary>
     /// Toggles the temporary shell theme without persisting any state beyond the current page instance.
     /// </summary>
     /// <returns>A completed task once the in-memory theme flag has been flipped.</returns>
@@ -426,6 +963,19 @@
     {
         // Flip the shell palette so the component re-renders with the opposite temporary theme.
         _isDarkTheme = !_isDarkTheme;
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Handles the visual-only upper-pane form submission so reviewers receive lightweight feedback without any backend dependency.
+    /// </summary>
+    /// <param name="model">The in-memory showcase form values submitted by the Radzen template form.</param>
+    /// <returns>A completed task after the temporary status message has been refreshed.</returns>
+    private Task HandleShowcaseSubmitAsync(WorkbenchShowcaseFormModel model)
+    {
+        // Summarize the current form state in a short message so reviewers can confirm the sample stays entirely client-side.
+        _showcaseSubmissionMessage = $"Preview updated for {model.WorkspaceTitle} using the {model.Dataset} dataset and {model.LayoutDensity} density option.";
+
         return Task.CompletedTask;
     }
 
@@ -632,6 +1182,22 @@
         return IsRightPanelActive(panelId)
             ? "activity-button activity-button-active"
             : "activity-button";
+    }
+
+    /// <summary>
+    /// Builds the CSS class list for the sample grid status badge so each placeholder row remains visually distinct.
+    /// </summary>
+    /// <param name="status">The visual-only status label assigned to the sample grid row.</param>
+    /// <returns>The CSS class string used by the rendered status badge.</returns>
+    private static string GetShowcaseStatusBadgeCssClass(string status)
+    {
+        // Normalize the sample statuses into a small set of badge modifiers so the mock grid stays easy to scan.
+        return status switch
+        {
+            "Ready" => "showcase-status-badge showcase-status-badge-ready",
+            "Blocked" => "showcase-status-badge showcase-status-badge-blocked",
+            _ => "showcase-status-badge showcase-status-badge-review",
+        };
     }
 
     /// <summary>

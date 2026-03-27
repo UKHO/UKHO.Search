@@ -1,4 +1,4 @@
-# Work Package: `080-workbench-initial` — `WorkbenchHost` Radzen home page mock-up
+# Work Package: `080-workbench-initial` — `WorkbenchHost` Radzen shell refinement mock-up
 
 **Target output path:** `docs/080-workbench-initial/spec-frontend-workbench-home-radzen-mockup_v0.01.md`
 
@@ -6,230 +6,126 @@
 
 ## Change Log
 
-- `v0.01` — Initial draft created for a temporary Radzen-based visual mock-up on `WorkbenchHost` `Home.razor`.
-- `v0.01` — Captures the requirement to follow the official Radzen get-started guidance for introducing Radzen into `WorkbenchHost`.
-- `v0.01` — Captures the requirement to remove the temporary `Hello UKHO Workbench` content and the temporary listing code from `Home.razor`.
-- `v0.01` — Captures the requirement for a purely visual mock-up focused on look and feel rather than real content or behavior.
-- `v0.01` — Captures the requirement for left and right edge-anchored icon strips with expandable sidebars and a simple `hello` main content area.
-- `v0.01` — Captures the requirement that no tests are needed for this mock-up work.
-- `v0.01` — Confirms that each side behaves independently, with one open panel per side at a time and repeat-click closing the active panel.
-- `v0.01` — Confirms that opening either sidebar pushes and resizes the middle area rather than overlaying it.
-- `v0.01` — Confirms that both sidebars should be user-resizable using Radzen splitters, with the left sidebar resizing rightwards, the right sidebar resizing leftwards, and a maximum width of `300`.
-- `v0.01` — Confirms that both sidebars are closed by default on initial page load.
-- `v0.01` — Confirms that the left and right icon strips should use a Workbench or tool-style visual treatment with icon-only buttons, clear active and hover states, no visible text labels, and optional tooltip names similar to Theia activity bars.
-- `v0.01` — Confirms that both left and right icon strips should be full-height activity bars running from top to bottom.
-- `v0.01` — Confirms that opened left and right sidebar panels should also run full height.
-- `v0.01` — Confirms that the main area should remain visually neutral with just `hello`, and should not introduce panels or cards unless explicitly requested.
-- `v0.01` — Confirms that the mock-up should work in both light and dark themes.
-- `v0.01` — Confirms that the main area should include a toggle button alongside the `hello` text.
-- `v0.01` — Confirms that the central toggle button should switch the page theme between light and dark.
-- `v0.01` — Confirms that theme choice should not persist after refresh because this is temporary look-and-feel code focused on visual behavior.
-- `v0.01` — Confirms that sidebar initial open width should use the Radzen default behavior if available and can be refined later.
-- `v0.01` — Confirms that the mock-up should not include a top header or command bar.
-- `v0.01` — Confirms that the left and right activity bars should use asymmetric icon counts, with two icons on one side and three on the other.
-- `v0.01` — Confirms that the left activity bar should use three icons and the right activity bar should use two icons.
-- `v0.01` — Confirms that icon groups in both full-height activity bars should be top-aligned.
-- `v0.01` — Confirms that sidebar content areas should use subtle separators against the main area.
-- `v0.01` — Records that the supplied screenshot is general visual direction only, while bottom panel treatment and panel contents remain out of scope.
-- `v0.01` — Confirms that only the left activity bar should include a bottom-anchored utility icon, using a gear visual.
-- `v0.01` — Confirms that the left bottom utility icon is separate from the main icon count, giving the left side `3 + gear`, while the right side has `2` icons and no utility icon.
-- `v0.01` — Confirms that bottom utility icons are visual only for this temporary mock-up and do not open sidebars.
-- `v0.01` — Confirms that the mock-up should use subtle open and close animation only.
-- `v0.01` — Confirms that opened sidebars should show a minimal title or header.
-- `v0.01` — Confirms that the minimal sidebar header should include a close button.
-- `v0.01` — Confirms that each activity-bar icon should open visibly different placeholder content rather than reusing the same mock structure.
+- `v0.01` — Updates the existing Radzen shell mock-up specification so the current work package continues to use a single specification document as its source of truth.
+- `v0.01` — Captures the requirement for a full-width top application menu bar above the current Workbench shell.
+- `v0.01` — Captures the requirement for a horizontally split central area with a new lower panel and placeholder text content.
+- `v0.01` — Captures the requirement for top-aligned Radzen tabs in each visible shell section, each with a right-aligned close icon.
+- `v0.01` — Captures the requirement for a top-middle styling showcase that uses a representative set of common Radzen form and data components with sample data.
+- `v0.01` — Confirms that menu items, tab close icons, and sample controls are primarily visual placeholders for shell and styling review rather than production workflows.
+- `v0.01` — Confirms that the existing left and right activity bars, mirrored sidebars, theme toggle, and manual-only verification remain in scope unless explicitly superseded below.
 
 ## 1. Overview
 
 ### 1.1 Purpose
 
-This specification defines a temporary visual shell update for `WorkbenchHost` so the home page can be used to refine the Workbench look and feel before real Workbench features are built.
+This specification defines the next refinement of the temporary `WorkbenchHost` home page mock-up.
 
-The purpose of this work is to replace temporary placeholder content with a Radzen-based mock-up that demonstrates sizing, edge anchoring, panel expansion, and general shell mechanics while keeping all displayed content deliberately arbitrary.
+The purpose of this refinement is to evolve the existing shell into a more workbench-like desktop layout by adding top-level menu chrome, tabbed pane treatments, a lower center panel, and a Radzen component styling showcase in the upper center pane.
 
 ### 1.2 Scope
 
 This specification currently includes:
 
-- introducing Radzen into `WorkbenchHost` by following the official Radzen get-started guidance
-- removing the temporary `Hello UKHO Workbench` content from `Home.razor`
-- removing the temporary listing content from `Home.razor`, including temporary role-related listings and similar placeholder output
-- creating a temporary visual mock-up on `Home.razor`
-- providing a left-edge icon strip with two or three icons and per-icon expandable sidebar content
-- providing a mirrored right-edge icon strip with expandable sidebar panels that open leftwards from the right edge
-- leaving the central content area intentionally minimal with `hello`
-- focusing on layout, sizing, expansion, contraction, and look and feel rather than real workflows, data, or business behavior
-- omitting new automated tests for this mock-up work
+- retaining the current Radzen-based Workbench shell direction on `Home.razor`
+- retaining the existing left and right activity bars with independently controlled sidebars
+- adding a full-width top application menu using `RadzenMenu` and `RadzenMenuItem`
+- adding a lower center panel beneath the current middle area, separated by a user-resizable splitter
+- adding a tab strip to each content-bearing section of the shell
+- adding two or three tabs per section, with a close icon rendered on the right side of each tab header
+- adding placeholder text content to the new lower center panel
+- adding a collection of common Radzen form and data display components to selected tabs in the upper middle section for styling review
+- using only sample in-memory data for all form, tree, and grid content
+- keeping this work visual-first and mock-up focused rather than workflow or data driven
+- continuing to rely on manual visual verification rather than new automated tests
 
 This specification currently excludes:
 
-- real Workbench features, commands, workflows, or module composition
-- meaningful content design inside the sidebars
-- production-ready information architecture for left or right panels
-- persistence of layout or panel state
-- new automated tests, UI tests, or test scaffolding for this mock-up
+- real application menu commands or keyboard shortcut implementation
+- actual tab closing, tab persistence, or tab reordering behavior unless it is trivial and purely visual
+- real data loading, persistence, or backend integration for the form showcase
+- production information architecture for the pane contents
+- responsive/mobile redesign work
+- new automated tests, UI tests, or test scaffolding
 
 ### 1.3 Stakeholders
 
 - Workbench developers shaping the shell experience
-- contributors responsible for Blazor and UI composition in `WorkbenchHost`
-- stakeholders reviewing the visual direction of the future Workbench shell
+- contributors responsible for Blazor and Radzen UI composition in `WorkbenchHost`
+- stakeholders reviewing the visual direction of the future desktop-style Workbench shell
 
 ### 1.4 Definitions
 
-- `Radzen`: the UI component library to be introduced into `WorkbenchHost` for this mock-up
-- `icon strip`: a narrow edge-anchored vertical button area containing a small number of icons
-- `sidebar`: an expandable panel associated with an icon strip button
-- `visual mock-up`: a layout-first implementation intended to validate appearance and interaction feel rather than business behavior
+- `application menu bar`: the horizontal top menu running left to right above the shell body
+- `upper middle pane`: the main central pane above the new lower panel
+- `lower middle pane`: the new panel beneath the upper middle pane, separated by a splitter
+- `section tab strip`: the top-aligned Radzen tab header area shown within a shell section
+- `styling showcase`: a deliberately non-functional collection of representative Radzen controls used to assess look and feel
 
 ## 2. System context
 
 ### 2.1 Current state
 
-`WorkbenchHost` currently exposes a temporary home page used as an initial placeholder.
+`WorkbenchHost` already exposes a temporary Radzen-based desktop shell direction on `Home.razor`.
 
-That placeholder still contains temporary content, including `Hello UKHO Workbench` and listing-oriented output that was only intended for short-term scaffolding.
+The current shell includes left and right edge activity bars, independently controlled sidebars, a minimal central area, and a temporary theme toggle. The current central area does not yet include a bottom panel. The page also does not yet expose a top application menu bar or consistent tabbed pane treatments across its content regions.
 
-A temporary visual shell is now required so layout and interaction feel can be explored before real Workbench functionality is implemented.
+The current middle area remains deliberately simple, so the next refinement is now needed to evaluate how a denser, tabbed, tool-oriented Workbench layout feels before any real feature implementation begins.
 
 ### 2.2 Proposed state
 
 In the proposed state after this work:
 
-- `WorkbenchHost` uses Radzen on the home page
-- `Home.razor` no longer contains the temporary placeholder greeting or the temporary listing output
-- the page presents a left edge-anchored icon strip with two or three icons
-- clicking left-side icons expands a sidebar region with arbitrary panel-specific content, with one open panel at a time on that side and repeat-click closing the active panel
-- the left sidebar is user-resizable through a Radzen splitter and grows rightwards up to a maximum width of `300`
-- the page presents a right edge-anchored icon strip with the same concept mirrored
-- clicking right-side icons expands sidebar content leftwards while keeping the icon strip pinned to the outer right edge, with one open panel at a time on that side and repeat-click closing the active panel
-- the right sidebar is user-resizable through a Radzen splitter and grows leftwards up to a maximum width of `300`
-- opening either sidebar pushes and resizes the central area rather than overlaying it
-- both sidebars are closed on initial page load
-- the left and right icon strips use an activity-bar style visual treatment with icons only, clear hover and active feedback, and tooltip names rather than visible labels
-- the left and right icon strips run full height from top to bottom like activity bars
-- opened sidebar panels also run full height
-- sidebar content areas are visually separated from the main area using subtle separators rather than strong dividers
-- the left activity bar includes a bottom-anchored gear icon separate from the top-aligned main icon group
-- the left bottom gear icon is counted separately from the main left icon group
-- the left bottom gear icon is decorative for now and does not open panels, and the right activity bar has no bottom utility icon
-- sidebars use subtle open and close animation only
-- opened sidebars include a minimal header area
-- the sidebar header includes a close button
-- each activity-bar icon opens visibly different placeholder content
-- the mock-up should work in both light and dark themes
-- the central area remains visually neutral and simple, includes a theme toggle button with the `hello` text, and does not use panels or cards
-- the implementation remains explicitly mock-up focused and does not introduce real Workbench logic
-- no new automated tests are added for this work
+- the page presents a full-width `RadzenMenu` across the very top of the browser viewport
+- the top menu runs left to right and includes standard placeholder entries such as `File`, `Edit`, `View`, and `Help`
+- menu entries expose sensible placeholder submenu items, but do not need to perform real commands
+- beneath the menu, the existing shell body remains edge-to-edge and keeps the current left and right activity bars and resizable sidebars
+- the central area is split into an upper middle pane and a lower middle pane using a horizontal splitter so the user can resize the relative heights
+- the lower middle pane is visible by default and contains placeholder text content for visual review
+- each content-bearing section uses a top-aligned Radzen tab strip, including the left sidebar content area, the upper middle pane, the lower middle pane, and the right sidebar content area
+- each section tab strip contains two or three tabs
+- each tab header includes a close icon on the right side of the tab label
+- the close icon is primarily a visual affordance for this mock-up and does not require production tab lifecycle behavior
+- the upper middle pane hosts selected tabs that present a styling showcase of common Radzen form and data components
+- the styling showcase uses static sample data, including representative sample items for a tree and a data grid
+- the existing theme toggle remains available so the revised shell can still be reviewed in both light and dark themes
+- the overall result reads as a richer desktop Workbench mock-up while remaining temporary and disposable
 
 ### 2.3 Assumptions
 
-- `Home.razor` is the intended page for the temporary shell mock-up
-- the official Radzen get-started guidance is the baseline for introducing Radzen packages, services, assets, and host wiring as needed by `WorkbenchHost`
-- arbitrary placeholder content is acceptable inside left and right expandable sidebars
-- the primary success criteria are visual structure, panel mechanics, and overall feel rather than content semantics
-- a simple `hello` text is sufficient for the main content region in this iteration
-- each side manages its own active panel independently
-- each side allows only one expanded panel at a time
-- clicking the currently active icon closes that side's panel
-- expanding sidebars should reduce the available width of the main content region
-- both sidebars use Radzen splitter-based resizing rather than fixed widths
-- sidebar resizing direction should match the relevant screen edge
-- sidebar width must not exceed `300`
-- the initial state presents the mock-up with both sidebars closed
-- the icon strips should resemble tool or activity bars rather than text-based navigation
-- the icon strips should occupy the full page height rather than only wrapping their icon content
-- opened sidebar panels should occupy the full page height as part of the shell layout
-- the central area should avoid framed panel or card styling unless explicitly requested later
-- the visual treatment should hold up in both light and dark themes
-- the central toggle is intended to demonstrate light and dark theme switching
-- theme persistence is intentionally out of scope for this temporary mock-up
-- exact initial sidebar width tuning is intentionally deferred in favor of Radzen defaults for now
-- the shell mock-up should stay focused on the side bars and center area without introducing a top chrome region
-- the asymmetric icon counts should make the left side feel slightly more prominent than the right
-- the activity bar control placement should follow typical workbench expectations by starting at the top
-- a supplied screenshot provides only the general shell direction, excluding any bottom panel treatment and excluding any specific panel content expectations
-- a left-side bottom gear icon is part of the desired activity-bar feel, separate from the primary navigation icons
-- the primary left icon count and the left gear icon should be treated as distinct layout groups
-- the left gear icon should contribute to shell feel only and should not introduce extra behavior in this iteration
-- motion should remain restrained and limited to opening and closing rather than adding broader animated behavior
-- sidebar headers should stay minimal and should not become top command bars
-- a close affordance in the sidebar header supports shell mechanics review without introducing real feature behavior
-- placeholder panel content should differ clearly enough per icon to help assess shell mechanics and visual variety
-- the left gear icon tooltip can use the conventional `Settings` label
-- the main area controls should sit at the top left rather than being centered
-- the main area should feel like a flush workbench canvas rather than an inset content zone
-- the theme toggle visual can remain implementation-led for now as long as it fits the shell feel
-- independent left and right sidebar behavior includes allowing both sides to stay open together
-- preserving simultaneous left and right sidebar visibility is more important than protecting a minimum center width in this temporary mock-up
-- the page should behave as a true edge-to-edge shell rather than a contained application page
-- this mock-up is for a desktop shell and should not behave like a responsive web page
-- dark-first presentation best matches the intended workbench feel for the initial mock-up
-- icon-only treatment should be confined to Theia-like sidebar elements rather than applied across the whole page
-- the specific non-close header icon is not important as long as the header remains icon-only
-- the close affordance should still remain discoverable through a conventional `Close` tooltip
-- the main area may keep visible text because the icon-only rule is not global
-- sidebar content can use visible text because the icon-only rule applies to shell chrome rather than placeholder body content
-- placeholder content patterns may be mixed or chosen freely because exact content style is not important in this iteration
-- manual visual verification is sufficient for this mock-up phase
-- no new tests are required for this work item
+- `Home.razor` remains the intended page for the temporary shell refinement
+- the current left and right activity bar mechanics remain valid and should be preserved unless directly superseded
+- the top application menu is a visual application-menu placeholder rather than a functional command system
+- standard menu headings such as `File`, `Edit`, `View`, and `Help` are sufficient for this iteration
+- submenu entries may be arbitrary but should appear plausible for a desktop workbench application
+- each content-bearing section should have its own tab strip even when the content is only placeholder material
+- tab sets may be fixed rather than dynamically created
+- the close icon on each tab may be decorative or no-op for now, provided it looks intentional and aligned to the right side of the tab header
+- the lower middle pane is intended to help assess workbench density and should be present by default rather than collapsed
+- the horizontal splitter should behave as a real resize affordance because layout feel is important to this iteration
+- the upper middle pane is the best location for a styling showcase because it is the visual focus area of the shell
+- the styling showcase should follow the Radzen guidance that prefers Radzen-native components over custom HTML controls
+- the showcase may mix form controls and data-display controls because the purpose is visual review rather than a pure data-entry journey
+- sample data may be hard-coded, in-memory, and arbitrary
+- no persistence is required for menu selection, tab selection, splitter sizes, or form field values
+- manual visual verification remains sufficient for this mock-up phase
 
 ### 2.4 Constraints
 
 - the output must remain a single specification document in `docs/080-workbench-initial`
-- the implementation must start using Radzen in `WorkbenchHost`
-- the temporary `Hello UKHO Workbench` content must be removed from `Home.razor`
-- temporary listing code on `Home.razor` must be removed
-- the left and right icon strips must remain anchored to the absolute window edges
-- each side must support expandable and contractible sidebar behavior from icon clicks
-- each side must allow only one expanded panel at a time
-- clicking the active icon on a side must close that side's panel
-- opening a sidebar must push and resize the middle area rather than overlaying it
-- both sidebars must be user-resizable with Radzen splitters
-- the left sidebar must resize rightwards and the right sidebar must resize leftwards
-- each sidebar must have a maximum width of `300`
-- both sidebars must be closed by default on initial page load
-- the icon strips must not display visible text labels
-- the icon strips must provide clear hover and active states
-- icon names may be shown only by tooltip
-- both icon strips must run the full height of the page
-- opened sidebars must run the full height of the page
-- the main content area must remain visually neutral and must not introduce panel or card framing unless explicitly requested
-- the page should support both light and dark themes
-- the main content area must include a toggle button with the `hello` text
-- the central toggle button must switch between light and dark themes
-- the selected theme must reset on refresh and does not need browser persistence
-- initial sidebar width should use the Radzen default behavior if available
-- the page must not introduce a top header or command bar
-- the left and right icon strips together must use two icons on one side and three icons on the other
-- the left icon strip must use three icons and the right icon strip must use two icons
-- icon groups in both activity bars must be top-aligned
-- sidebar content areas must use subtle separators against the main area and must not use heavy borders
-- only the left activity bar must include a bottom-anchored gear icon
-- the left bottom gear icon must be separate from the main left icon total
-- the left bottom gear icon must remain visual only and must not open a sidebar in this iteration
-- the right activity bar must not include any bottom utility icon
-- the left bottom gear icon must expose a `Settings` tooltip
-- sidebars must use subtle open and close animation only
-- opened sidebars must include a minimal title or header area
-- opened sidebars must include a close button in the header area
-- each main activity-bar icon must open visibly different placeholder content
-- the main `hello` text and theme toggle must be positioned at the top left of the main area
-- the main area must use no padding
-- the exact visual treatment of the theme toggle may be chosen based on what looks best
-- the left and right sidebars must be allowed to remain open at the same time
-- when both sidebars are open, the main area may become very narrow
-- the home page must fill the full browser viewport horizontally and vertically with no outer margins or padding
-- the shell must keep its desktop layout under narrow widths and must not auto-hide UI regions
-- the initial theme on first load must be dark
-- sidebar headers must not display visible text and may only use tooltip text where needed
-- each opened sidebar header must show a non-text icon followed by an icon-only close button
-- the sidebar header close button must expose a `Close` tooltip
-- the icon-only rule applies only to sidebar elements and does not forbid visible text in the main area
-- visible text is permitted within sidebar content areas
-- placeholder sidebar content style may use implementation discretion
-- the right sidebar behavior must be visually reversed so expansion occurs leftwards from the right edge
-- the main content area must contain `hello`
+- the implementation must continue using Radzen in `WorkbenchHost`
+- the existing left and right edge activity bars must remain anchored to the outer edges of the window
+- the existing sidebars must continue to push and resize the center area rather than overlaying it
+- the new application menu bar must sit above the current shell UI and span the full width of the window
+- the new application menu bar must use `RadzenMenu` and `RadzenMenuItem`
+- the central section must gain a new lower panel beneath the current middle content area
+- a splitter must separate the upper and lower middle panes and allow user resizing
+- each shell content section must include a top-aligned tab treatment
+- each section must expose two or three tabs
+- each tab must show a right-aligned close icon
+- the upper middle pane must include a representative collection of common Radzen form components across a selection of tabs
+- the upper middle pane sample content must include sample tree data and sample grid data
+- all showcase data must remain static and non-sensitive
+- this refinement must remain a visual mock-up and must not introduce real business workflows or backend dependencies
 - no automated tests are required for this work
 
 ## 3. Component / service design (high level)
@@ -237,122 +133,110 @@ In the proposed state after this work:
 ### 3.1 Components
 
 1. `WorkbenchHost`
-   - hosts the Blazor UI and Radzen integration for the temporary mock-up
+   - continues to host the Blazor UI and Radzen integration for the temporary shell mock-up
 
 2. `Home.razor`
-   - becomes the visual shell mock-up page
-   - contains the left sidebar region, main content region, and right sidebar region
+   - remains the main shell page
+   - gains the top application menu, the vertically split center region, and tabbed pane treatments
 
-3. `Left shell controls`
-   - provide a small icon strip on the left edge
-   - reveal different arbitrary content depending on the selected icon
+3. `Top application menu`
+   - provides desktop-style placeholder navigation using `RadzenMenu`
+   - exposes standard menu headings and arbitrary submenu items
 
-4. `Right shell controls`
-   - provide a small icon strip on the right edge
-   - reveal different arbitrary content depending on the selected icon
-   - expand leftwards while remaining edge anchored
+4. `Left sidebar content section`
+   - continues to host placeholder content associated with the left activity bar
+   - gains a tab strip with multiple fixed tabs and close icons
 
-5. `Main content region`
-   - remains intentionally minimal and displays `hello`
+5. `Upper middle styling showcase`
+   - becomes the main tabbed content pane in the center of the shell
+   - hosts representative Radzen form, selection, tree, and data grid examples using sample data
+
+6. `Lower middle panel`
+   - provides a second central pane beneath the styling showcase
+   - contains placeholder text content under its own tab strip
+
+7. `Right sidebar content section`
+   - continues to host placeholder content associated with the right activity bar
+   - gains a tab strip with multiple fixed tabs and close icons
 
 ### 3.2 Data flows
 
 #### Runtime interaction flow
 
 1. the user opens the `WorkbenchHost` home page
-2. the page renders the left and right edge icon strips with the central content region
-3. the user selects an icon on either side
-4. the associated sidebar expands or contracts to present arbitrary placeholder content
-5. the central area continues to display `hello`
+2. the page renders the top menu, the left and right shell edges, and the split central area
+3. the user can open left or right sidebars using the existing activity bars
+4. the user can switch among the fixed tabs shown in each visible section
+5. the user can resize the split between the upper and lower central panes
+6. the upper middle tabs display sample Radzen controls and sample data for styling review
+7. the lower middle panel displays placeholder textual content for layout review
 
 ### 3.3 Key decisions
 
-- this work is visual-first and does not depend on real Workbench functionality
-- Radzen is the chosen component baseline for the mock-up
-- left and right side interactions are intentionally symmetrical in concept
-- content inside the sidebars is intentionally arbitrary and disposable
-- automated tests are intentionally out of scope for this mock-up
+- this work remains visual-first and does not depend on real Workbench functionality
+- `RadzenMenu`, `RadzenTabs`, and other Radzen-native primitives are preferred over custom menu or tab markup
+- the top menu and tab close icons are primarily shell affordances, not full workflow features
+- the upper middle pane acts as a style gallery rather than a business form
+- sample data remains static and disposable
+- automated tests remain out of scope for this mock-up
 
 ## 4. Functional requirements
 
-1. `WorkbenchHost` shall start using Radzen according to the official Radzen get-started guidance.
-2. `Home.razor` shall remove the temporary `Hello UKHO Workbench` content.
-3. `Home.razor` shall remove temporary listing output, including temporary role-related listings and similar scaffold-only content.
-4. `Home.razor` shall provide a left vertical icon strip anchored to the absolute left edge of the window.
-5. The left icon strip shall expose two or three icon actions.
-6. Selecting a left-side icon shall reveal arbitrary sidebar content associated with that icon.
-7. The left-side sidebar area shall support expansion and contraction.
-8. The left-side sidebar area shall allow only one open panel at a time.
-9. Clicking the active left-side icon again shall close the open left-side panel.
-10. The left-side sidebar shall be user-resizable by using a Radzen splitter.
-11. The left-side sidebar shall resize rightwards.
-12. The left-side sidebar shall have a maximum width of `300`.
-13. `Home.razor` shall provide a right vertical icon strip anchored to the absolute right edge of the window.
-14. The right icon strip shall expose two or three icon actions.
-15. Selecting a right-side icon shall reveal arbitrary sidebar content associated with that icon.
-16. The right-side sidebar area shall support expansion and contraction.
-17. The right-side sidebar area shall allow only one open panel at a time.
-18. Clicking the active right-side icon again shall close the open right-side panel.
-19. The right-side sidebar shall be user-resizable by using a Radzen splitter.
-20. The right-side sidebar shall resize leftwards.
-21. The right-side sidebar shall have a maximum width of `300`.
-22. The right-side sidebar shall expand leftwards while keeping the right icon strip pinned to the outer edge of the window.
-23. Opening either sidebar shall push and resize the main content area rather than overlaying it.
-24. Both sidebars shall be closed by default on initial page load.
-25. The left and right icon strips shall use a Workbench or tool-style visual treatment with clear hover and active states.
-26. The icon strips shall display icons only and shall not display visible text labels.
-27. Icon names may be shown as tooltips.
-28. The icon strips shall run the full height of the page.
-29. Opened sidebar panels shall run the full height of the page.
-30. The icon strip treatment should resemble Theia-style activity bars for look and feel direction.
-31. The page shall support both light and dark themes.
-32. The main content area shall remain visually neutral and shall not introduce panels or cards unless explicitly requested.
-33. The main content area shall include a toggle button with the `hello` text.
-34. Activating the toggle button shall switch the page theme from light to dark and from dark to light.
-35. The selected theme shall reset on page reload and shall not require persistence.
-36. When a sidebar first opens, its initial width shall use the Radzen default behavior if one is available.
-37. The page shall not include a top header or command bar.
-38. The left and right icon strips shall use asymmetric icon counts, with two icons on one side and three on the other.
-39. The left icon strip shall use three icons and the right icon strip shall use two icons.
-40. Icon groups in both activity bars shall be top-aligned.
-41. Sidebar content areas shall use subtle separators against the main area.
-42. The supplied screenshot shall be treated only as general visual direction, ignoring bottom panel treatment and sidebar content details.
-43. Only the left activity bar shall include a bottom-anchored gear icon.
-44. The left bottom gear icon shall be separate from the main left icon total, resulting in `3 + gear` on the left and `2` icons on the right.
-45. The left bottom gear icon shall remain visual only and shall not open a sidebar in this iteration.
-46. The right activity bar shall not include any bottom utility icon.
-47. The left bottom gear icon shall expose a `Settings` tooltip.
-48. Sidebar opening and closing shall use subtle animation only.
-49. Opened sidebars shall include a minimal title or header area.
-50. Opened sidebars shall include a close button in the header area.
-51. Each main activity-bar icon shall open visibly different placeholder content.
-52. The main `hello` text and theme toggle shall be positioned at the top left of the main area.
-53. The page shall behave as a visual mock-up focused on look and feel rather than real content or workflow behavior.
-54. No new automated tests shall be required for this work item.
+1. `Home.razor` shall retain the existing left and right activity bar shell behavior already established in the current mock-up.
+2. The page shall provide a full-width application menu bar at the very top of the window above the current shell UI.
+3. The application menu bar shall use `RadzenMenu` with nested `RadzenMenuItem` entries.
+4. The application menu bar shall render left-to-right headings including `File`, `Edit`, `View`, and `Help`.
+5. Each top-level menu heading shall expose one or more sensible placeholder submenu items.
+6. The menu items may be visual placeholders and do not need to invoke real commands in this iteration.
+7. The shell body beneath the menu bar shall remain edge-to-edge and desktop-oriented.
+8. The central area shall be divided into an upper middle pane and a lower middle pane.
+9. The upper and lower middle panes shall be separated by a visible splitter.
+10. The splitter between the upper and lower middle panes shall support user resizing.
+11. The lower middle pane shall be visible on initial page load.
+12. The lower middle pane shall contain placeholder text content beneath its tab strip.
+13. Each content-bearing shell section shall render a top-aligned tab strip.
+14. The tabbed sections shall include the left sidebar content area, the upper middle pane, the lower middle pane, and the right sidebar content area.
+15. Each section tab strip shall provide two or three tabs.
+16. Each tab header shall include a close icon positioned to the right of the tab text.
+17. The tab close icon may be a visual-only affordance and does not need to remove the tab in this iteration.
+18. Each section shall present visibly different placeholder content or control groupings across its tabs.
+19. The upper middle pane shall host a representative Radzen styling showcase across a selection of its tabs.
+20. The upper middle styling showcase shall use Radzen-native components before any custom HTML controls are considered.
+21. The upper middle styling showcase shall include common input controls such as text, multiline text, numeric, date, and selection controls.
+22. The upper middle styling showcase shall include representative toggle or choice controls such as checkbox, switch, radio-style, or select-bar interactions.
+23. The upper middle styling showcase shall include at least one sample file-oriented control such as file input or upload.
+24. The upper middle styling showcase shall include a sample tree using arbitrary in-memory hierarchical data.
+25. The upper middle styling showcase shall include a sample data grid using arbitrary in-memory row data.
+26. The upper middle styling showcase may include validators, form fields, alerts, badges, or other common Radzen primitives where helpful for styling review.
+27. The showcase data shall be static and shall not depend on backend calls.
+28. The existing page theme toggle shall remain available so the revised shell can be reviewed in both light and dark themes.
+29. The revised shell shall remain a temporary visual mock-up focused on layout and styling rather than business behavior.
+30. No new automated tests shall be required for this work item.
 
 ## 5. Non-functional requirements
 
-1. The mock-up should prioritize visual polish, clear structure, and predictable panel mechanics.
-2. The page should be easy to revise repeatedly as Workbench look and feel is refined.
-3. The implementation should remain intentionally lightweight and disposable where needed because the content is temporary.
-4. The layout should adapt sensibly to available browser space so sizing and shell mechanics can be reviewed.
-5. The UI should align with repository Blazor guidance, including explicit interactive behavior where input handling is required.
+1. The mock-up should prioritize visual clarity, shell density review, and predictable pane mechanics.
+2. The top menu, tab strips, and split center layout should read as a coherent desktop workbench composition.
+3. The styling showcase should help reviewers compare Radzen control appearance in both light and dark themes.
+4. The page should remain easy to revise as workbench look and feel evolves.
+5. The UI should align with repository Blazor guidance, including explicit interactive render behavior where click and resize interactions are required.
+6. The tab close icons and menu structures should remain visually accessible and discoverable even when their behavior is placeholder-only.
 
 ## 6. Data model
 
 No persistent or business data model is required for this mock-up.
 
-Any sidebar content may use temporary in-memory view state only.
+Any menu structure, tab metadata, form state, tree nodes, or data grid rows may use temporary in-memory view models only.
 
 ## 7. Interfaces & integration
 
 1. `Radzen` integration
-   - `WorkbenchHost` must include the packages, services, assets, and UI usage needed to follow the official Radzen get-started path
-   - the mock-up should use Radzen where it helps establish the desired shell layout and interaction feel
+   - `WorkbenchHost` must continue to use the packages, services, assets, and host wiring needed for Radzen
+   - the refinement should prefer `RadzenMenu`, `RadzenTabs`, `RadzenSplitter`, `RadzenTemplateForm`, `RadzenTree`, and `RadzenDataGrid` where appropriate
 
 2. `Home.razor`
-   - must replace the current temporary placeholder content
-   - must host the full mock-up shell layout
+   - must host the revised top menu and tabbed pane layout
+   - must remain the primary surface for the temporary Workbench shell review
 
 ## 8. Observability (logging/metrics/tracing)
 
@@ -360,38 +244,32 @@ No additional observability requirements are currently defined for this mock-up.
 
 ## 9. Security & compliance
 
-1. The mock-up should not introduce privileged behavior or business-specific data.
-2. Placeholder sidebar content should remain generic and non-sensitive.
+1. The mock-up shall not introduce privileged behavior or business-specific data.
+2. All sample menu items, form values, tree nodes, and data grid rows should remain generic and non-sensitive.
 
 ## 10. Testing strategy
 
 1. Manual visual verification shall be sufficient for this work.
-2. Verification should confirm Radzen is functioning in `WorkbenchHost`.
-3. Verification should confirm the left and right icon strips remain edge anchored.
-4. Verification should confirm the sidebars expand and contract in the intended directions.
-5. Verification should confirm the sidebars can be resized manually through Radzen splitters.
-6. Verification should confirm sidebar resizing respects the maximum width of `300`.
-7. Verification should confirm the page initially loads with both sidebars closed.
-8. Verification should confirm the central region resizes as sidebars open, close, and are resized.
-9. Verification should confirm the icon strips present icon-only controls with no visible text labels.
-10. Verification should confirm the icon strips provide hover, active, and tooltip feedback.
-11. Verification should confirm the icon strips run full height from top to bottom.
-12. Verification should confirm opened sidebar panels also run full height.
-13. Verification should confirm the mock-up remains usable in both light and dark themes.
-14. Verification should confirm the central region remains visually neutral without panel or card framing.
-15. Verification should confirm the central region includes a toggle button with the `hello` text.
-16. Verification should confirm the toggle switches the page theme in both directions.
-17. Verification should confirm the theme resets after page reload.
-18. Verification should confirm initial sidebar opening uses the Radzen default width behavior if available.
-19. Verification should confirm no top header or command bar is present.
-20. Verification should confirm icon groups are top-aligned within both full-height activity bars.
-21. No new automated tests are required.
+2. Verification should confirm the top application menu renders across the full width above the shell body.
+3. Verification should confirm the menu headings and submenu items are visible and styled consistently.
+4. Verification should confirm the existing left and right activity bar behaviors still work after the new top menu and lower panel are added.
+5. Verification should confirm the central area is visibly split into upper and lower panes.
+6. Verification should confirm the splitter between the upper and lower panes supports user resizing.
+7. Verification should confirm the lower middle pane is visible by default and contains placeholder text.
+8. Verification should confirm each shell section renders a tab strip at its top edge.
+9. Verification should confirm each section exposes two or three tabs.
+10. Verification should confirm each tab header shows a right-aligned close icon.
+11. Verification should confirm the upper middle pane displays a representative collection of Radzen controls for styling review.
+12. Verification should confirm the upper middle showcase includes sample tree data and sample data grid rows.
+13. Verification should confirm the revised shell remains usable in both light and dark themes.
+14. Verification should confirm the page remains an interactive Blazor page and that placeholder interactions do not require backend connectivity.
+15. No new automated tests are required.
 
 ## 11. Rollout / migration
 
-1. Replace the temporary scaffold content on `Home.razor` with the Radzen-based mock-up.
-2. Use the mock-up as a disposable visual foundation while the future Workbench shell is still being shaped.
-3. Defer real content, workflows, and test investment until the shell mechanics and look and feel are agreed.
+1. Refine the existing `Home.razor` mock-up rather than creating a separate page.
+2. Use the revised menu, tabs, lower panel, and component showcase as the next disposable visual foundation for Workbench shell review.
+3. Defer real commands, dynamic tabs, persisted layouts, and business workflows until the shell direction is agreed.
 
 ## 12. Open questions
 
