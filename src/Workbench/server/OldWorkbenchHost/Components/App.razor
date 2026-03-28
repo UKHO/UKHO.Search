@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    @* Loads the component-scoped stylesheet bundle so page-specific shell styling is applied. *@
+    <link rel="stylesheet" href="@Assets["WorkbenchHost.styles.css"]" />
+    @* Keeps the document head interactive so pages can update head content such as the active Radzen theme at runtime. *@
+    <HeadOutlet @rendermode="InteractiveServer" />
+</head>
+
+<body>
+    <Routes />
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
+    @* Loads the Radzen runtime script required by Radzen components. *@
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
+</body>
+
+</html>

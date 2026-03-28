@@ -18,16 +18,16 @@
     <Project Path="src/UKHO.Search.Infrastructure.Query/UKHO.Search.Infrastructure.Query.csproj" Id="38339a3b-8fbc-453c-877e-8dcfc1ce184a" />
     <Project Path="src/UKHO.Search.Infrastructure/UKHO.Search.Infrastructure.csproj" Id="b73eb1ec-a022-4467-a0bc-b72565a7bb3e" />
   </Folder>
-  <Folder Name="/04 Workbench/" />
+  <Folder Name="/04 Workbench/">
+    <Project Path="src/workbench/server/WorkbenchHost/WorkbenchHost.csproj" />
+  </Folder>
   <Folder Name="/04 Workbench/@radzen/">
     <Project Path="src/Workbench/radzen-blazor/Radzen.Blazor/Radzen.Blazor.csproj" />
   </Folder>
   <Folder Name="/04 Workbench/samples/">
     <Project Path="src/Workbench/samples/LayoutSample/LayoutSample.csproj" />
   </Folder>
-  <Folder Name="/04 Workbench/server/">
-    <Project Path="src/workbench/server/WorkbenchHost/WorkbenchHost.csproj" />
-  </Folder>
+  <Folder Name="/04 Workbench/server/" />
   <Folder Name="/04 Workbench/server/00 Domain/">
     <Project Path="src/workbench/server/UKHO.Workbench/UKHO.Workbench.csproj" />
   </Folder>

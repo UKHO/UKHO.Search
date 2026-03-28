@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "WorkbenchHost": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:10000;http://localhost:10001"
+    }
+  }
+}

@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\workbench\server\WorkbenchHost\WorkbenchHost.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Workbench\server\WorkbenchHost\WorkbenchHost.csproj" />
   </ItemGroup>
 
 </Project>

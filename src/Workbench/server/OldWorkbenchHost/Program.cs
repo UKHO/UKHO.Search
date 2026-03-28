@@ -1,11 +1,11 @@
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Radzen;
+using System.IdentityModel.Tokens.Jwt;
+using OldWorkbenchHost.Components;
 using UKHO.Search.ServiceDefaults;
 using UKHO.Workbench.Infrastructure;
 using WorkbenchHost.Components;
@@ -14,12 +14,12 @@ using WorkbenchHost.Extensions;
 namespace WorkbenchHost
 {
     /// <summary>
-    ///     Hosts the Workbench Blazor shell and configures its supporting infrastructure.
+    /// Hosts the temporary Workbench Blazor shell and configures its supporting infrastructure.
     /// </summary>
     public class Program
     {
         /// <summary>
-        ///     Builds and runs the Workbench host application.
+        /// Builds and runs the Workbench host application.
         /// </summary>
         /// <param name="args">Command-line arguments passed to the host process.</param>
         public static void Main(string[] args)
@@ -32,21 +32,12 @@ namespace WorkbenchHost
             // Register the workbench infrastructure services required by the host.
             builder.Services.AddWorkbenchInfrastructure();
 
-            // Add services to the container.
+            // Enable Razor components and interactive server rendering for the temporary shell.
             builder.Services.AddRazorComponents()
-                   .AddInteractiveServerComponents()
-                   .AddHubOptions(options => options.MaximumReceiveMessageSize = 10 * 1024 * 1024);
+                .AddInteractiveServerComponents();
 
             // Register Radzen services so the host can render the temporary shell using Radzen assets.
             builder.Services.AddRadzenComponents();
-
-            builder.Services.AddRadzenCookieThemeService(options =>
-            {
-                options.Name = "WorkbenchHostTheme";
-                options.Duration = TimeSpan.FromDays(365);
-            });
-
-            builder.Services.AddHttpClient();
 
             // Provide the current HTTP context and authorization helpers required by the host.
             builder.Services.AddHttpContextAccessor().AddTransient<AuthorizationHandler>();
@@ -88,30 +79,18 @@ namespace WorkbenchHost
 
             var app = builder.Build();
 
-            var forwardingOptions = new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            };
+            // Map the shared default endpoints such as health checks before middleware execution.
+            app.MapDefaultEndpoints();
 
-            forwardingOptions.KnownIPNetworks.Clear();
-            forwardingOptions.KnownProxies.Clear();
-
-            app.UseForwardedHeaders(forwardingOptions);
-
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Error", true);
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                // Use production-friendly exception and transport-security handling outside development.
+                app.UseExceptionHandler("/");
                 app.UseHsts();
             }
 
-            app.UseStatusCodePagesWithReExecute("/not-found");
+            // Redirect to HTTPS and enable antiforgery protections for interactive component requests.
             app.UseHttpsRedirection();
-            app.UseAntiforgery();
-
-
-            app.MapStaticAssets();
             app.UseAntiforgery();
 
             // Expose login and logout endpoints before the authenticated UI pipeline executes.
@@ -121,9 +100,12 @@ namespace WorkbenchHost
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Serve static assets and map the root Blazor component with interactive server rendering.
+            app.MapStaticAssets();
             app.MapRazorComponents<App>()
-               .AddInteractiveServerRenderMode();
+                .AddInteractiveServerRenderMode();
 
+            // Start processing requests for the configured workbench host pipeline.
             app.Run();
         }
     }

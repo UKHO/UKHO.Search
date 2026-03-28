@@ -22,8 +22,8 @@
 		<ProjectReference Include="..\..\..\tools\FileShareImageBuilder\FileShareImageBuilder.csproj" />
 		<ProjectReference Include="..\..\..\tools\FileShareImageLoader\FileShareImageLoader.csproj" />
 		<ProjectReference Include="..\..\..\tools\RulesWorkbench\RulesWorkbench.csproj" />
-		<ProjectReference Include="..\..\workbench\server\WorkbenchHost\WorkbenchHost.csproj" />
 		<ProjectReference Include="..\..\UKHO.Search\UKHO.Search.csproj" IsAspireProjectResource="false" />
+		<ProjectReference Include="..\..\Workbench\server\WorkbenchHost\WorkbenchHost.csproj" />
 		<ProjectReference Include="..\IngestionServiceHost\IngestionServiceHost.csproj" />
 		<ProjectReference Include="..\QueryServiceHost\QueryServiceHost.csproj" />
 	</ItemGroup>
