@@ -1,0 +1,48 @@
+.ukho-workbench-grid-splitter
+{
+    align-self: stretch;
+    background-color: transparent;
+    block-size: 100%;
+    display: block;
+    inline-size: 100%;
+    justify-self: stretch;
+    pointer-events: auto;
+    position: relative;
+    transition: background-color 120ms ease-in-out;
+    user-select: none;
+    z-index: 1000;
+}
+
+.ukho-workbench-grid-splitter-column
+{
+    cursor: col-resize;
+}
+
+.ukho-workbench-grid-splitter-row
+{
+    cursor: row-resize;
+}
+
+.ukho-workbench-grid-splitter-column:hover
+{
+    background-color: var(--ukho-workbench-splitter-hover-color, #0078d4);
+}
+
+.ukho-workbench-grid-splitter-row:hover
+{
+    background-color: var(--ukho-workbench-splitter-hover-color, #0078d4);
+}
+
+body.ukho-workbench-grid-splitter-dragging-column,
+body.ukho-workbench-grid-splitter-dragging-column *
+{
+    cursor: col-resize !important;
+    user-select: none !important;
+}
+
+body.ukho-workbench-grid-splitter-dragging-row,
+body.ukho-workbench-grid-splitter-dragging-row *
+{
+    cursor: row-resize !important;
+    user-select: none !important;
+}

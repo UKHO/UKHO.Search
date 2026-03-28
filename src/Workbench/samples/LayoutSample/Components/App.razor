@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    @* Loads the minimal global host stylesheet that provides the standalone sample's base page defaults. *@
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    @* Loads the generated component-scoped stylesheet bundle for the standalone sample. *@
+    <link rel="stylesheet" href="@Assets["LayoutSample.styles.css"]" />
+    @* Keeps the document head interactive so the routed sample page can set the browser title. *@
+    <HeadOutlet @rendermode="InteractiveServer" />
+</head>
+
+<body>
+    @* Renders the standalone sample's routed page into the minimal host document. *@
+    <Routes />
+    @* Boots the Blazor runtime required for interactive server components. *@
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
+</body>
+
+</html>

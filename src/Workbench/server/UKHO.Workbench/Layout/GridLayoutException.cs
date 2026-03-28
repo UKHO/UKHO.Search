@@ -1,6 +1,6 @@
 using System;
 
-namespace WpfGridLayout.Blazor
+namespace UKHO.Workbench.Layout
 {
 	public class GridLayoutException : Exception
 	{

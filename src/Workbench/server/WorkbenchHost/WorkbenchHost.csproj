@@ -15,6 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+        <ProjectReference Include="..\UKHO.Workbench\UKHO.Workbench.csproj" />
 		<ProjectReference Include="..\UKHO.Workbench.Infrastructure\UKHO.Workbench.Infrastructure.csproj" />
         <ProjectReference Include="..\..\..\Hosts\UKHO.Search.ServiceDefaults\UKHO.Search.ServiceDefaults.csproj" />
 	</ItemGroup>

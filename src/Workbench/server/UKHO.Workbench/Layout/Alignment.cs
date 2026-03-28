@@ -1,4 +1,4 @@
-namespace WpfGridLayout.Blazor
+namespace UKHO.Workbench.Layout
 {
 	public static class Alignment
 	{

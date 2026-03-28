@@ -7,7 +7,7 @@
 ## Change Log
 
 - `v0.01` — Initial draft created for integrating resizable splitter support into the existing `UKHO.Workbench.Layout` grid system.
-- `v0.01` — Records the intent to extend the lifted `WpfGridLayout.Blazor`-style layout model in `UKHO.Workbench.csproj` so it can support draggable row and column splitters using concepts proven in `BlazorSplitGrid`.
+- `v0.01` — Records the intent to extend the lifted `UKHO.Workbench.Layout`-style layout model in `UKHO.Workbench.csproj` so it can support draggable row and column splitters using concepts proven in `BlazorSplitGrid`.
 - `v0.01` — Confirms that the implementation target is the existing `Layouts` namespace in `UKHO.Workbench`, with an optional `Layouts.Splitters` sub-namespace if useful.
 - `v0.01` — Confirms that all implementation code must remain inside `UKHO.Workbench.csproj` rather than introducing a separate reusable package or project.
 - `v0.01` — Confirms that the enhancement is intended to become the foundation for layout behavior in a future `WorkbenchHost` work package.
@@ -107,7 +107,7 @@ This specification currently excludes:
 
 ### 1.4 Definitions
 
-- `WpfGridLayout.Blazor`: the existing WPF-style grid authoring model that has already been lifted into the `Layouts` namespace in `UKHO.Workbench`
+- `UKHO.Workbench.Layout`: the existing WPF-style grid authoring model that has already been lifted into the `Layouts` namespace in `UKHO.Workbench`
 - `BlazorSplitGrid`: a Blazor wrapper over `split-grid` used here as the reference implementation for CSS Grid splitter behavior
 - `splitter track`: a row or column definition whose rendered purpose is to act as a draggable gutter between adjacent content tracks
 - `fixed track`: a row or column whose size is expressed as a fixed pixel value
@@ -118,7 +118,7 @@ This specification currently excludes:
 
 ### 2.1 Current state
 
-The repository already contains an in-repo copy of the `WpfGridLayout.Blazor` concepts under `src/Workbench/server/UKHO.Workbench/Layout`. That layout model brings WPF-like grid authoring to Blazor by allowing developers to define rows, columns, and positioned content with a familiar mental model.
+The repository already contains an in-repo copy of the `UKHO.Workbench.Layout` concepts under `src/Workbench/server/UKHO.Workbench/Layout`. That layout model brings WPF-like grid authoring to Blazor by allowing developers to define rows, columns, and positioned content with a familiar mental model.
 
 This is considered a strong fit for the Workbench direction because many expected contributors come from a desktop WPF background and benefit from a layout model that resembles `Grid`, row definitions, column definitions, and span-based placement.
 

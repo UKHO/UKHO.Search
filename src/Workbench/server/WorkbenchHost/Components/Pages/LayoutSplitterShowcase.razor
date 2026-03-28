@@ -1,0 +1,265 @@
+@page "/layout/splitter-column"
+@rendermode InteractiveServer
+@using UKHO.Workbench.Layout
+
+<PageTitle>Workbench layout splitter showcase</PageTitle>
+
+<section class="splitter-showcase">
+    <header class="splitter-showcase__header">
+        <p class="splitter-showcase__eyebrow">Workbench layout</p>
+        <h1>Row and column splitter showcase</h1>
+        <p>Drag the Workbench-owned gutters below to verify column-only, row-only, and mixed two-dimensional splitter behavior. Every gutter defaults to a transparent 4px track and highlights blue on hover.</p>
+    </header>
+
+    <section class="splitter-showcase__examples">
+        <article class="splitter-showcase__example-card">
+            <header>
+                <h2>Column-only splitter</h2>
+                <p>Drag the central gutter to resize the left and right panes. This keeps the original fixed-plus-star column slice intact.</p>
+            </header>
+
+            @* Demonstrates the original horizontal authoring model so column-only layouts remain easy to verify. *@
+            <Grid Width="960" Height="240" OnResize="HandleGridResizeAsync">
+                <ColumnDefinitions>
+                    <ColumnDefinition Width="280" />
+                    <SplitterColumnDefinition />
+                    <ColumnDefinition Width="*" />
+                </ColumnDefinitions>
+                <RowDefinitions>
+                    <RowDefinition Height="*" />
+                </RowDefinitions>
+                <Content>
+                    <GridElement Column="1">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--left">
+                            <h3>Navigator</h3>
+                            <p>The left pane uses a fixed starting width so the first slice still proves fixed-to-star column resizing.</p>
+                        </section>
+                    </GridElement>
+                    <GridElement Column="3">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--right">
+                            <h3>Workspace</h3>
+                            <p>The right pane starts as a star-sized track and becomes pixel-sized at runtime while dragging.</p>
+                            <p class="splitter-showcase__hint">Hover the gutter between the panes to see the built-in blue highlight.</p>
+                        </section>
+                    </GridElement>
+                </Content>
+            </Grid>
+        </article>
+
+        <article class="splitter-showcase__example-card">
+            <header>
+                <h2>Row-only splitter</h2>
+                <p>Drag the horizontal gutter to resize the top and bottom panes while the unified resize panel below continues to update.</p>
+            </header>
+
+            @* Demonstrates the new row splitter primitive so developers can verify the vertical authoring pattern in isolation. *@
+            <Grid Width="960" Height="320" OnResize="HandleGridResizeAsync">
+                <ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </ColumnDefinitions>
+                <RowDefinitions>
+                    <RowDefinition Height="140" />
+                    <SplitterRowDefinition />
+                    <RowDefinition Height="*" />
+                </RowDefinitions>
+                <Content>
+                    <GridElement Row="1">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--top">
+                            <h3>Inspector</h3>
+                            <p>The top pane starts fixed so the row splitter proves fixed-to-star resizing in the vertical direction.</p>
+                        </section>
+                    </GridElement>
+                    <GridElement Row="3">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--bottom">
+                            <h3>Console</h3>
+                            <p>The lower pane keeps the remaining space until the row splitter is dragged.</p>
+                        </section>
+                    </GridElement>
+                </Content>
+            </Grid>
+        </article>
+
+        <article class="splitter-showcase__example-card">
+            <header>
+                <h2>Mixed row and column splitters</h2>
+                <p>Drag either gutter in the same grid to confirm the Workbench layout surface supports both directions together.</p>
+            </header>
+
+            @* Demonstrates combined row and column splitters in one grid so the Work Item 2 mixed-direction slice is runnable end to end. *@
+            <Grid Width="960" Height="360" OnResize="HandleGridResizeAsync">
+                <ColumnDefinitions>
+                    <ColumnDefinition Width="280" />
+                    <SplitterColumnDefinition />
+                    <ColumnDefinition Width="*" />
+                </ColumnDefinitions>
+                <RowDefinitions>
+                    <RowDefinition Height="120" />
+                    <SplitterRowDefinition />
+                    <RowDefinition Height="*" />
+                </RowDefinitions>
+                <Content>
+                    <GridElement Row="1" Column="1">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--left">
+                            <h3>Explorer</h3>
+                            <p>This pane anchors the fixed top-left corner of the mixed layout.</p>
+                        </section>
+                    </GridElement>
+                    <GridElement Row="1" Column="3">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--right">
+                            <h3>Preview</h3>
+                            <p>The upper-right pane grows with the column splitter and shares the top row resize boundary.</p>
+                        </section>
+                    </GridElement>
+                    <GridElement Row="3" Column="1">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--top">
+                            <h3>Details</h3>
+                            <p>The lower-left pane proves splitter indexing still counts the gutter tracks in both directions.</p>
+                        </section>
+                    </GridElement>
+                    <GridElement Row="3" Column="3">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--bottom">
+                            <h3>Canvas</h3>
+                            <p>The lower-right pane demonstrates the two-dimensional runtime layout slice for future Workbench screens.</p>
+                        </section>
+                    </GridElement>
+                </Content>
+            </Grid>
+        </article>
+
+        <article class="splitter-showcase__example-card">
+            <header>
+                <h2>Advanced nested and multi-splitter layout</h2>
+                <p>Drag the outer and inner gutters to verify multiple splitters, configured gaps, and nested splitter-enabled grids in the same Workbench surface.</p>
+            </header>
+
+            @* Demonstrates multiple splitters, additive gaps, and a nested splitter-enabled grid so the advanced composition slice is runnable end to end. *@
+            <Grid Width="960" Height="420" ColumnGap="12" RowGap="10" OnResize="HandleGridResizeAsync">
+                <ColumnDefinitions>
+                    <ColumnDefinition Width="220" />
+                    <SplitterColumnDefinition />
+                    <ColumnDefinition Width="*" />
+                    <SplitterColumnDefinition />
+                    <ColumnDefinition Width="200" />
+                </ColumnDefinitions>
+                <RowDefinitions>
+                    <RowDefinition Height="120" />
+                    <SplitterRowDefinition />
+                    <RowDefinition Height="*" />
+                </RowDefinitions>
+                <Content>
+                    <GridElement Row="1" Column="1">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--left">
+                            <h3>Toolbox</h3>
+                            <p>The outer layout uses two column splitters plus one row splitter while preserving the authored gaps around every track.</p>
+                        </section>
+                    </GridElement>
+                    <GridElement Row="1" Column="3">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--right">
+                            <h3>Document</h3>
+                            <p>The center pane stretches between both outer column splitters and shares the top row with the surrounding panels.</p>
+                        </section>
+                    </GridElement>
+                    <GridElement Row="1" Column="5">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--top">
+                            <h3>Outline</h3>
+                            <p>The right pane proves the second outer splitter remains independently draggable.</p>
+                        </section>
+                    </GridElement>
+                    <GridElement Row="3" Column="1">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--bottom">
+                            <h3>Activity</h3>
+                            <p>Configured row and column gaps remain additional spacing rather than replacing the splitter gutters.</p>
+                        </section>
+                    </GridElement>
+                    <GridElement Row="3" Column="3">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--nested-host">
+                            <h3>Nested grid</h3>
+                            <p>The nested grid below owns its own splitter registration so its gutters operate independently of the outer grid.</p>
+                            <div class="splitter-showcase__nested-grid-host">
+                                <Grid ColumnGap="8" RowGap="8" OnResize="HandleGridResizeAsync">
+                                    <ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <SplitterColumnDefinition />
+                                        <ColumnDefinition Width="*" />
+                                    </ColumnDefinitions>
+                                    <RowDefinitions>
+                                        <RowDefinition Height="96" />
+                                        <SplitterRowDefinition />
+                                        <RowDefinition Height="*" />
+                                    </RowDefinitions>
+                                    <Content>
+                                        <GridElement Row="1" Column="1">
+                                            <section class="splitter-showcase__pane splitter-showcase__pane--left">
+                                                <h4>Navigator</h4>
+                                                <p>Nested pane A</p>
+                                            </section>
+                                        </GridElement>
+                                        <GridElement Row="1" Column="3">
+                                            <section class="splitter-showcase__pane splitter-showcase__pane--right">
+                                                <h4>Preview</h4>
+                                                <p>Nested pane B</p>
+                                            </section>
+                                        </GridElement>
+                                        <GridElement Row="3" Column="1">
+                                            <section class="splitter-showcase__pane splitter-showcase__pane--top">
+                                                <h4>Details</h4>
+                                                <p>Nested pane C</p>
+                                            </section>
+                                        </GridElement>
+                                        <GridElement Row="3" Column="3">
+                                            <section class="splitter-showcase__pane splitter-showcase__pane--bottom">
+                                                <h4>Console</h4>
+                                                <p>Nested pane D</p>
+                                            </section>
+                                        </GridElement>
+                                    </Content>
+                                </Grid>
+                            </div>
+                        </section>
+                    </GridElement>
+                    <GridElement Row="3" Column="5">
+                        <section class="splitter-showcase__pane splitter-showcase__pane--right">
+                            <h3>Properties</h3>
+                            <p>The final pane completes the multi-splitter example and provides a stable right-hand comparison surface.</p>
+                        </section>
+                    </GridElement>
+                </Content>
+            </Grid>
+        </article>
+    </section>
+
+    <section class="splitter-showcase__notification" aria-live="polite">
+        <h2>Unified resize notification</h2>
+        <p class="splitter-showcase__notification-copy">The latest interaction from any splitter-enabled demo appears here, including the direction and the resolved template string for that axis.</p>
+        <dl>
+            <div>
+                <dt>Direction</dt>
+                <dd>@LatestDirection</dd>
+            </div>
+            <div>
+                <dt>Splitter track</dt>
+                <dd>@LatestSplitterTrack</dd>
+            </div>
+            <div>
+                <dt>Previous track</dt>
+                <dd>@LatestPreviousTrack</dd>
+            </div>
+            <div>
+                <dt>Next track</dt>
+                <dd>@LatestNextTrack</dd>
+            </div>
+            <div>
+                <dt>Previous size</dt>
+                <dd>@LatestPreviousSize</dd>
+            </div>
+            <div>
+                <dt>Next size</dt>
+                <dd>@LatestNextSize</dd>
+            </div>
+            <div class="splitter-showcase__template-row">
+                <dt>Resolved template</dt>
+                <dd>@LatestTemplate</dd>
+            </div>
+        </dl>
+    </section>
+</section>

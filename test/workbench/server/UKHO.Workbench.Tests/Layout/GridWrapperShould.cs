@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace WpfGridLayout.Blazor.Tests
+namespace UKHO.Workbench.Layout.Tests
 {
     public class GridWrapperShould
     {

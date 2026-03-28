@@ -1,0 +1,8 @@
+@* Routes every request to the standalone layout sample using the minimal host layout. *@
+<Router AppAssembly="typeof(Program).Assembly">
+    <Found Context="routeData">
+        @* The sample intentionally keeps only a minimal wrapper and focuses navigation on the routed page heading. *@
+        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>

@@ -1,56 +1,31 @@
-﻿@using WpfGridLayout.Blazor
-<CascadingValue Value="this">
+﻿<CascadingValue Value="this">
     @ColumnDefinitions
     @RowDefinitions
-    
-    <div style="@_wrapper.Css @_wrapper.RowGap(RowGap) @_wrapper.ColumnGap(ColumnGap)">
+
+    <div @ref="_gridElement" class="ukho-workbench-grid-root" style="@GridStyle">
         @Content
+
+        @if (_layoutReady)
+        {
+            foreach (var splitter in GetValidatedColumnSplitters())
+            {
+                <div class="ukho-workbench-grid-splitter ukho-workbench-grid-splitter-column"
+                     data-ukho-workbench-splitter="column"
+                     data-splitter-track-index="@splitter.Index"
+                     data-previous-track-index="@(splitter.Index - 1)"
+                     data-next-track-index="@(splitter.Index + 1)"
+                     style="grid-column: @splitter.Index; grid-row: 1 / -1;"></div>
+            }
+
+            foreach (var splitter in GetValidatedRowSplitters())
+            {
+                <div class="ukho-workbench-grid-splitter ukho-workbench-grid-splitter-row"
+                     data-ukho-workbench-splitter="row"
+                     data-splitter-track-index="@splitter.Index"
+                     data-previous-track-index="@(splitter.Index - 1)"
+                     data-next-track-index="@(splitter.Index + 1)"
+                     style="grid-column: 1 / -1; grid-row: @splitter.Index;"></div>
+            }
+        }
     </div>
 </CascadingValue>
-
-@code {
-    [Parameter]
-    public RenderFragment ColumnDefinitions { get; set; }
-
-    [Parameter]
-    public RenderFragment RowDefinitions { get; set; }
-
-    [Parameter]
-    public RenderFragment Content { get; set; }
-
-    [Parameter]
-    public double ColumnGap { get; set; } = 0;
-
-    [Parameter]
-    public double RowGap { get; set; } = 0;
-
-    [Parameter]
-    public double? Width { get; set; }
-
-    [Parameter]
-    public double? Height { get; set; }
-
-    private readonly GridWrapper _wrapper = new GridWrapper();
-
-    public void AddColumn(string width, string min, string max)
-    {
-        _wrapper.AddColumn(width, min, max);
-        StateHasChanged();
-    }
-
-    public void AddRow(string height,string min, string max)
-    {
-        _wrapper.AddRow(height, min, max);
-        StateHasChanged();
-    }
-
-    private int _zindex = 1;
-    public int NextZIndex() => _zindex++;
-
-    protected override void OnParametersSet()
-    {
-        _wrapper.SetWidth(Width);
-        _wrapper.SetHeight(Height);
-        base.OnParametersSet();
-    }
-}
