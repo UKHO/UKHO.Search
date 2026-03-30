@@ -1,0 +1,26 @@
+{
+  "probeRoots": [
+    "../../../Workbench/modules/UKHO.Workbench.Modules.Search/bin/Debug/net10.0",
+    "../../../Workbench/modules/UKHO.Workbench.Modules.PKS/bin/Debug/net10.0",
+    "../../../Workbench/modules/UKHO.Workbench.Modules.FileShare/bin/Debug/net10.0",
+    "../../../Workbench/modules/UKHO.Workbench.Modules.Admin/bin/Debug/net10.0"
+  ],
+  "modules": [
+    {
+      "id": "UKHO.Workbench.Modules.Search",
+      "enabled": true
+    },
+    {
+      "id": "UKHO.Workbench.Modules.PKS",
+      "enabled": true
+    },
+    {
+      "id": "UKHO.Workbench.Modules.FileShare",
+      "enabled": true
+    },
+    {
+      "id": "UKHO.Workbench.Modules.Admin",
+      "enabled": true
+    }
+  ]
+}

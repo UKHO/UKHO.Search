@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using UKHO.Workbench.Services.Shell;
 
 namespace UKHO.Workbench.Services
 {
@@ -17,8 +18,10 @@ namespace UKHO.Workbench.Services
             // Guard the composition root against a missing service collection so failures are immediate and descriptive.
             ArgumentNullException.ThrowIfNull(services);
 
-            // The initial Workbench slice has no concrete server services yet.
-            // Returning the collection preserves the extension point for later work items without introducing placeholder behaviour.
+            // The bootstrap slice keeps shell orchestration in a singleton manager because the shell itself is singleton-oriented for the first hosted-tool path.
+            services.AddSingleton<WorkbenchShellManager>();
+
+            // Returning the collection preserves the extension point for later work items while centralizing shell orchestration registration here.
             return services;
         }
     }

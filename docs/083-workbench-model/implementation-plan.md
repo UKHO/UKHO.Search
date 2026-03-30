@@ -14,7 +14,8 @@
 
 ## Shell Bootstrap and Baseline Vertical Slice
 
-- [ ] Work Item 1: Replace the starter page with a desktop-like Workbench shell and one runnable host-owned tool slice
+- [x] Work Item 1: Replace the starter page with a desktop-like Workbench shell and one runnable host-owned tool slice - Completed
+  - Summary: Added the first shell/domain models, the singleton `WorkbenchShellManager`, a desktop-like `WorkbenchHost` shell using `UKHO.Workbench.Layout`, a host-owned `Workbench overview` tool, targeted shell tests, and wiki updates.
   - **Purpose**: Establish the smallest demonstrable end-to-end Workbench path in the existing Blazor host so later module work builds on a credible shell instead of the generated Radzen template.
   - **Acceptance Criteria**:
     - The generated Radzen welcome experience is replaced with a desktop-like shell containing a full-width menu bar, activity rail or explorer selector, left explorer, central tool surface, active-view toolbar, and status bar.
@@ -28,23 +29,27 @@
     - Documentation updated
     - `./.github/instructions/documentation-pass.instructions.md` fully applied and treated as a hard gate
     - Can execute end-to-end via: `dotnet run --project src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
-  - [ ] Task 1: Introduce the first bounded shell model in `UKHO.Workbench`
-    - [ ] Step 1: Add foundational shell contracts and models for regions, tool definitions, tool instances, activation targets, and the initial fixed context keys.
-    - [ ] Step 2: Keep the first model intentionally light-weight and singleton-oriented so the first slice proves the architecture without advanced docking behavior.
-    - [ ] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 2: Add minimal shell orchestration services in `UKHO.Workbench.Services`
-    - [ ] Step 1: Add registries or managers for the initial shell state, active explorer, and active hosted tool instance.
-    - [ ] Step 2: Add a simple activation path that focuses an existing singleton tool instance when the same tool is reopened.
-    - [ ] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 3: Replace the current `WorkbenchHost` template UI with the first real Workbench shell
-    - [ ] Step 1: Update `MainLayout` and the landing page to render the desktop-like shell regions instead of the generated Radzen welcome card content.
-    - [ ] Step 2: Keep styling aligned to the stock Radzen theme and use component-level markup/CSS only where essential to achieve the shell structure.
-    - [ ] Step 3: Ensure the shell remains interactive in Blazor Server and that the center surface clearly hosts the exemplar tool.
-    - [ ] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 4: Add targeted tests for the bootstrap slice
-    - [ ] Step 1: Extend `test/workbench/server/UKHO.Workbench.Tests` for any new layout or shell-state primitives.
-    - [ ] Step 2: Replace placeholder host tests in `test/workbench/server/WorkbenchHost.Tests` with focused tests for shell rendering and singleton re-focus behavior.
-    - [ ] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 1: Introduce the first bounded shell model in `UKHO.Workbench` - Completed
+    - Summary: Added `WorkbenchShellRegion`, `WorkbenchContextKeys`, `WorkbenchShellState`, `ToolDefinition`, `ToolInstance`, and `ActivationTarget` to capture the bootstrap shell contract.
+    - [x] Step 1: Add foundational shell contracts and models for regions, tool definitions, tool instances, activation targets, and the initial fixed context keys.
+    - [x] Step 2: Keep the first model intentionally light-weight and singleton-oriented so the first slice proves the architecture without advanced docking behavior.
+    - [x] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 2: Add minimal shell orchestration services in `UKHO.Workbench.Services` - Completed
+    - Summary: Added `WorkbenchShellManager`, registered it through `AddWorkbenchServices`, and logged activation failures for diagnosable bootstrap-shell orchestration.
+    - [x] Step 1: Add registries or managers for the initial shell state, active explorer, and active hosted tool instance.
+    - [x] Step 2: Add a simple activation path that focuses an existing singleton tool instance when the same tool is reopened.
+    - [x] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 3: Replace the current `WorkbenchHost` template UI with the first real Workbench shell - Completed
+    - Summary: Replaced the starter Radzen welcome UI with a desktop-like shell in `MainLayout`, hosted the active tool through `Index`, added the `Workbench overview` exemplar tool, and kept styling localized to component CSS files.
+    - [x] Step 1: Update `MainLayout` and the landing page to render the desktop-like shell regions instead of the generated Radzen welcome card content.
+    - [x] Step 2: Keep styling aligned to the stock Radzen theme and use component-level markup/CSS only where essential to achieve the shell structure.
+    - [x] Step 3: Ensure the shell remains interactive in Blazor Server and that the center surface clearly hosts the exemplar tool.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 4: Add targeted tests for the bootstrap slice - Completed
+    - Summary: Added shell-state tests in `UKHO.Workbench.Tests`, replaced placeholder host tests with shell rendering and singleton re-focus coverage, and kept the bootstrap verification scoped to the Workbench projects.
+    - [x] Step 1: Extend `test/workbench/server/UKHO.Workbench.Tests` for any new layout or shell-state primitives.
+    - [x] Step 2: Replace placeholder host tests in `test/workbench/server/WorkbenchHost.Tests` with focused tests for shell rendering and singleton re-focus behavior.
+    - [x] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
   - **Files**:
     - `src/workbench/server/UKHO.Workbench/WorkbenchShell/WorkbenchShellState.cs`: initial shell state model for active regions and active tool tracking.
     - `src/workbench/server/UKHO.Workbench/Tools/ToolDefinition.cs`: static hosted tool definition model.
@@ -67,7 +72,8 @@
 
 ## Dynamic Module Discovery and Registration
 
-- [ ] Work Item 2: Load Workbench modules from `modules.json` before DI finalization and open the first module-contributed tool
+- [x] Work Item 2: Load Workbench modules from `modules.json` before DI finalization and open the first module-contributed tool - Completed
+  - Summary: Added bounded module registration contracts, `modules.json` configuration reading and probe-root scanning, host startup orchestration before DI finalization, the first Search module dummy tool, targeted infrastructure/host tests, and wiki updates.
   - **Purpose**: Prove the host-controlled startup model that discovers modules dynamically, registers their services and contributions, and surfaces at least one module tool through the shell.
   - **Acceptance Criteria**:
     - `WorkbenchHost` reads a host-owned `modules.json` file containing probe roots and per-module enable/disable settings.
@@ -81,28 +87,33 @@
     - Documentation updated
     - `./.github/instructions/documentation-pass.instructions.md` fully applied and treated as a hard gate
     - Can execute end-to-end via: `dotnet run --project src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
-  - [ ] Task 1: Define the bounded module startup contract in `UKHO.Workbench`
-    - [ ] Step 1: Add the module registration entry-point abstraction, contribution registration abstractions, and module metadata model.
-    - [ ] Step 2: Keep host ownership explicit so modules register through contracts rather than directly controlling shell internals.
-    - [ ] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 2: Implement discovery and configuration infrastructure in `UKHO.Workbench.Infrastructure`
-    - [ ] Step 1: Add `modules.json` configuration models and a reader for probe roots plus enable/disable flags.
-    - [ ] Step 2: Add probe-root resolution, assembly scanning, and reflection-based startup registration discovery constrained to approved assembly naming.
-    - [ ] Step 3: Add structured logging for probe roots, discovered assemblies, module enablement decisions, and failure stages.
-    - [ ] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 3: Wire startup orchestration into `WorkbenchHost`
-    - [ ] Step 1: Update `Program.cs` so module discovery and registration runs before the host finalizes the DI container.
-    - [ ] Step 2: Add the host-owned `modules.json` file under the Workbench host project and ensure the development workflow can point probe roots at local module outputs.
-    - [ ] Step 3: Surface load failures through logs and user-safe notifications where appropriate.
-    - [ ] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 4: Add the first module-contributed exemplar tool
-    - [ ] Step 1: Implement a bounded startup entry point in `src/Workbench/modules/UKHO.Workbench.Modules.Search` that registers one dummy or exemplar tool for discovery testing.
-    - [ ] Step 2: Ensure the tool appears only when the module is enabled and loaded from an approved probe root.
-    - [ ] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 5: Add targeted tests for discovery and registration
-    - [ ] Step 1: Replace placeholder tests in `test/workbench/server/UKHO.Workbench.Infrastructure.Tests` with tests for configuration reading, probe-root filtering, and invalid assembly handling.
-    - [ ] Step 2: Add host tests that verify enabled modules are visible and disabled modules stay absent.
-    - [ ] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 1: Define the bounded module startup contract in `UKHO.Workbench` - Completed
+    - Summary: Added `ModuleMetadata`, `IWorkbenchModule`, `ModuleRegistrationContext`, and the bounded contribution registry contracts used for pre-DI module registration without exposing shell internals.
+    - [x] Step 1: Add the module registration entry-point abstraction, contribution registration abstractions, and module metadata model.
+    - [x] Step 2: Keep host ownership explicit so modules register through contracts rather than directly controlling shell internals.
+    - [x] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 2: Implement discovery and configuration infrastructure in `UKHO.Workbench.Infrastructure` - Completed
+    - Summary: Added `modules.json` configuration models, a reader, probe-root scanning, bounded reflection-based module loading, and structured logging across discovery and failure stages.
+    - [x] Step 1: Add `modules.json` configuration models and a reader for probe roots plus enable/disable flags.
+    - [x] Step 2: Add probe-root resolution, assembly scanning, and reflection-based startup registration discovery constrained to approved assembly naming.
+    - [x] Step 3: Add structured logging for probe roots, discovered assemblies, module enablement decisions, and failure stages.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 3: Wire startup orchestration into `WorkbenchHost` - Completed
+    - Summary: Updated `Program.cs` to load modules before DI finalization, added `modules.json`, buffered startup notifications for the interactive shell, and bootstrapped the first module-contributed tool when available.
+    - [x] Step 1: Update `Program.cs` so module discovery and registration runs before the host finalizes the DI container.
+    - [x] Step 2: Add the host-owned `modules.json` file under the Workbench host project and ensure the development workflow can point probe roots at local module outputs.
+    - [x] Step 3: Surface load failures through logs and user-safe notifications where appropriate.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 4: Add the first module-contributed exemplar tool - Completed
+    - Summary: Added `SearchWorkbenchModule`, a module DI marker service, and the dummy `Search workspace` Razor tool so the shell can open a dynamically discovered module-contributed tool.
+    - [x] Step 1: Implement a bounded startup entry point in `src/Workbench/modules/UKHO.Workbench.Modules.Search` that registers one dummy or exemplar tool for discovery testing.
+    - [x] Step 2: Ensure the tool appears only when the module is enabled and loaded from an approved probe root.
+    - [x] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 5: Add targeted tests for discovery and registration - Completed
+    - Summary: Replaced the infrastructure placeholder tests with configuration/scanning/load-failure coverage and added host rendering tests for enabled versus disabled module visibility.
+    - [x] Step 1: Replace placeholder tests in `test/workbench/server/UKHO.Workbench.Infrastructure.Tests` with tests for configuration reading, probe-root filtering, and invalid assembly handling.
+    - [x] Step 2: Add host tests that verify enabled modules are visible and disabled modules stay absent.
+    - [x] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
   - **Files**:
     - `src/workbench/server/UKHO.Workbench/Modules/IWorkbenchModule.cs`: bounded module registration contract.
     - `src/workbench/server/UKHO.Workbench/Modules/ModuleRegistrationContext.cs`: bounded registration surface for services and contributions.
@@ -127,7 +138,8 @@
 
 ## Tool Activation, Commands, and Runtime Contributions
 
-- [ ] Work Item 3: Deliver explorer-led activation, command-centric actions, and active-tool runtime menu/status contributions
+- [x] Work Item 3: Deliver explorer-led activation, command-centric actions, and active-tool runtime menu/status contributions - Completed
+  - Summary: Added Workbench command and explorer contracts, runtime shell contribution and fixed-context support, service-layer composition managers behind `WorkbenchShellManager`, dynamic host shell rendering, Search tool runtime `ToolContext` behavior, focused services/host tests, and wiki updates.
   - **Purpose**: Turn the shell from a static host into the intended Workbench interaction model where explorer items activate tools through commands and active tools contribute runtime shell state through a bounded `ToolContext`.
   - **Acceptance Criteria**:
     - Explorer items activate tools through declarative activation targets and command routing rather than direct component instantiation.
@@ -141,28 +153,33 @@
     - Documentation updated
     - `./.github/instructions/documentation-pass.instructions.md` fully applied and treated as a hard gate
     - Can execute end-to-end via: `dotnet run --project src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
-  - [ ] Task 1: Add command and contribution models in `UKHO.Workbench`
-    - [ ] Step 1: Add `CommandContribution`, `ExplorerContribution`, `ExplorerSectionContribution`, `ExplorerItem`, `MenuContribution`, `ToolbarContribution`, `StatusBarContribution`, `ActivationTarget`, and `ToolContext` contracts.
-    - [ ] Step 2: Model host commands and tool commands distinctly while still routing both through the same command-centric shell abstractions.
-    - [ ] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 2: Implement orchestration services in `UKHO.Workbench.Services`
-    - [ ] Step 1: Add registries and managers for commands, explorers, tool activation, runtime contributions, and the fixed context key set.
-    - [ ] Step 2: Ensure active-tool runtime menu/status composition is recalculated on focus changes and tool state updates.
-    - [ ] Step 3: Limit runtime toolbar participation to the active-view toolbar only in this first slice.
-    - [ ] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 3: Update `WorkbenchHost` shell components to use the contribution model
-    - [ ] Step 1: Replace hard-coded shell navigation with rendered explorer, menu, toolbar, and status surfaces backed by the Workbench service layer.
-    - [ ] Step 2: Keep the UI desktop-like, preserve the full-width menu bar, and render the center tool surface clearly as the main working region.
-    - [ ] Step 3: Ensure interactive components use `@rendermode InteractiveServer` where needed for clicks, focus changes, and tool commands.
-    - [ ] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 4: Add exemplar runtime contributions in the Search module
-    - [ ] Step 1: Extend the Search module dummy tool so it publishes runtime menu and status items while active.
-    - [ ] Step 2: Demonstrate title, badge, or state updates through the bounded `ToolContext` instead of direct shell manipulation.
-    - [ ] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 5: Add targeted tests for command routing and runtime composition
-    - [ ] Step 1: Replace service placeholder tests in `test/workbench/server/UKHO.Workbench.Services.Tests` with tests for command registration, activation routing, and runtime contribution recomposition.
-    - [ ] Step 2: Add host tests that verify runtime menu/status items appear only for the active tool.
-    - [ ] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 1: Add command and contribution models in `UKHO.Workbench` - Completed
+    - Summary: Added command, explorer, menu, toolbar, status-bar, and `ToolContext` contracts, extended `ToolInstance` and `WorkbenchShellState` for runtime shell state, and expanded the bounded module contribution registry for the new static contribution types.
+    - [x] Step 1: Add `CommandContribution`, `ExplorerContribution`, `ExplorerSectionContribution`, `ExplorerItem`, `MenuContribution`, `ToolbarContribution`, `StatusBarContribution`, `ActivationTarget`, and `ToolContext` contracts.
+    - [x] Step 2: Model host commands and tool commands distinctly while still routing both through the same command-centric shell abstractions.
+    - [x] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 2: Implement orchestration services in `UKHO.Workbench.Services` - Completed
+    - Summary: Added focused managers for commands, explorers, tool activation, runtime contributions, and fixed context projection, then refactored `WorkbenchShellManager` into the host-facing façade and bounded `ToolContext` bridge.
+    - [x] Step 1: Add registries and managers for commands, explorers, tool activation, runtime contributions, and the fixed context key set.
+    - [x] Step 2: Ensure active-tool runtime menu/status composition is recalculated on focus changes and tool state updates.
+    - [x] Step 3: Limit runtime toolbar participation to the active-view toolbar only in this first slice.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 3: Update `WorkbenchHost` shell components to use the contribution model - Completed
+    - Summary: Replaced hard-coded menu/explorer/status rendering with service-layer contributions, wired `ToolContext` parameter passing into hosted tools, routed shell interactions through commands, and surfaced tool notifications safely through the layout.
+    - [x] Step 1: Replace hard-coded shell navigation with rendered explorer, menu, toolbar, and status surfaces backed by the Workbench service layer.
+    - [x] Step 2: Keep the UI desktop-like, preserve the full-width menu bar, and render the center tool surface clearly as the main working region.
+    - [x] Step 3: Ensure interactive components use `@rendermode InteractiveServer` where needed for clicks, focus changes, and tool commands.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 4: Add exemplar runtime contributions in the Search module - Completed
+    - Summary: Extended the Search dummy tool registration with declarative explorer and command contributions, added tool-scoped runtime command handlers, and implemented a `ToolContext`-driven UI that publishes runtime menu, toolbar, status, title, icon, badge, selection, and notification changes.
+    - [x] Step 1: Extend the Search module dummy tool so it publishes runtime menu and status items while active.
+    - [x] Step 2: Demonstrate title, badge, or state updates through the bounded `ToolContext` instead of direct shell manipulation.
+    - [x] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 5: Add targeted tests for command routing and runtime composition - Completed
+    - Summary: Replaced the services placeholder tests with command/context/runtime-composition coverage, updated host rendering tests for contribution-based shell bootstrap, and added host verification that runtime menu/status items disappear when focus moves away from the Search tool.
+    - [x] Step 1: Replace service placeholder tests in `test/workbench/server/UKHO.Workbench.Services.Tests` with tests for command registration, activation routing, and runtime contribution recomposition.
+    - [x] Step 2: Add host tests that verify runtime menu/status items appear only for the active tool.
+    - [x] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
   - **Files**:
     - `src/workbench/server/UKHO.Workbench/Commands/CommandContribution.cs`: command model for host and tool actions.
     - `src/workbench/server/UKHO.Workbench/Explorers/ExplorerContribution.cs`: explorer surface definition.
@@ -187,7 +204,8 @@
 
 ## Module Set Completion and Operational Hardening
 
-- [ ] Work Item 4: Deliver the initial module map, dummy tool set, diagnostics, and package-level completion for `083-workbench-model`
+- [x] Work Item 4: Deliver the initial module map, dummy tool set, diagnostics, and package-level completion for `083-workbench-model` - Completed
+  - Summary: Delivered the six-tool initial module map across Search, PKS, FileShare, and Admin, added stage-aware startup diagnostics plus safe failure notifications, expanded host/infrastructure/service verification for module discovery and singleton activation, and updated the `083-workbench-model` docs and wiki pages.
   - **Purpose**: Complete the first repository-specific Workbench model slice by proving multiple modules, multiple tools per module, enable/disable behavior, and diagnosable startup and activation flows.
   - **Acceptance Criteria**:
     - `UKHO.Workbench.Modules.Search` contributes the three specified exemplar tools: search ingestion, search query, and ingestion rule editing.
@@ -201,23 +219,27 @@
     - Documentation updated
     - `./.github/instructions/documentation-pass.instructions.md` fully applied and treated as a hard gate
     - Can execute end-to-end via: `dotnet run --project src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
-  - [ ] Task 1: Complete the initial module tool set
-    - [ ] Step 1: Extend `UKHO.Workbench.Modules.Search` to register the three required exemplar tools with clear labels and explorer placement.
-    - [ ] Step 2: Add dummy tools and module entry points for `UKHO.Workbench.Modules.PKS`, `UKHO.Workbench.Modules.FileShare`, and `UKHO.Workbench.Modules.Admin`.
-    - [ ] Step 3: Ensure each tool is hosted through the same Workbench contracts and singleton activation policies used by the Search module.
-    - [ ] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 2: Harden observability and failure handling
-    - [ ] Step 1: Add structured logging around probe-root scanning, module registration, command execution, and tool activation.
-    - [ ] Step 2: Add user-facing notifications for recoverable failures without exposing internal implementation details.
-    - [ ] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 3: Add end-to-end verification coverage for the initial module map
-    - [ ] Step 1: Add or extend host tests so each initial module can be enabled, discovered, and opened.
-    - [ ] Step 2: Verify module-disable scenarios and invalid assembly scenarios remain diagnosable.
-    - [ ] Step 3: Prefer end-to-end style verification for shell behavior over component-only testing where practical.
-    - [ ] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
-  - [ ] Task 4: Finalize package documentation for the work package
-    - [ ] Step 1: Update the work package documents in `docs/083-workbench-model/` so implementation status, module map, and verification paths are clear.
-    - [ ] Step 2: Keep this plan and the source specification aligned with the delivered slice boundaries.
+  - [x] Task 1: Complete the initial module tool set - Completed
+    - Summary: Expanded `UKHO.Workbench.Modules.Search` to register `Search ingestion`, `Search query`, and `Ingestion rule editor`, added dummy PKS, File Share, and Admin module entry points plus Razor tool components, and updated `modules.json` plus host test references for the full initial module map.
+    - [x] Step 1: Extend `UKHO.Workbench.Modules.Search` to register the three required exemplar tools with clear labels and explorer placement.
+    - [x] Step 2: Add dummy tools and module entry points for `UKHO.Workbench.Modules.PKS`, `UKHO.Workbench.Modules.FileShare`, and `UKHO.Workbench.Modules.Admin`.
+    - [x] Step 3: Ensure each tool is hosted through the same Workbench contracts and singleton activation policies used by the Search module.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 2: Harden observability and failure handling - Completed
+    - Summary: Added stage-aware module-load diagnostics with probe-root capture, expanded startup logging and startup notifications in `Program.cs`, and hardened `WorkbenchShellManager` so command and activation failures are logged and surfaced through user-safe notifications.
+    - [x] Step 1: Add structured logging around probe-root scanning, module registration, command execution, and tool activation.
+    - [x] Step 2: Add user-facing notifications for recoverable failures without exposing internal implementation details.
+    - [x] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 3: Add end-to-end verification coverage for the initial module map - Completed
+    - Summary: Extended host tests to load the full module map through the real discovery pipeline, verify each module tool opens and re-focuses as a singleton, updated shell rendering helpers to the Search query exemplar, and tightened infrastructure/service tests around diagnostics and safe notifications.
+    - [x] Step 1: Add or extend host tests so each initial module can be enabled, discovered, and opened.
+    - [x] Step 2: Verify module-disable scenarios and invalid assembly scenarios remain diagnosable.
+    - [x] Step 3: Prefer end-to-end style verification for shell behavior over component-only testing where practical.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`.
+  - [x] Task 4: Finalize package documentation for the work package - Completed
+    - Summary: Updated `docs/083-workbench-model/implementation-plan.md` and `docs/083-workbench-model/spec-workbench-model_v0.01.md` for the delivered module map and diagnostics, and refreshed `wiki/Workbench-Shell.md`, `wiki/Solution-Architecture.md`, and `wiki/Home.md` to document the completed slice.
+    - [x] Step 1: Update the work package documents in `docs/083-workbench-model/` so implementation status, module map, and verification paths are clear.
+    - [x] Step 2: Keep this plan and the source specification aligned with the delivered slice boundaries.
   - **Files**:
     - `src/Workbench/modules/UKHO.Workbench.Modules.Search/SearchWorkbenchModule.cs`: registers the three exemplar Search tools.
     - `src/Workbench/modules/UKHO.Workbench.Modules.Search/Tools/SearchIngestionTool.razor`: Search ingestion exemplar UI.

@@ -63,6 +63,19 @@ flowchart TB
 | `src/Hosts/IngestionServiceHost` | Ingestion host, DI/bootstrap, Elasticsearch/blob/queue client wiring, operational UI. |
 | `src/Hosts/QueryServiceHost` | Query-side host and external endpoint surface. |
 | `src/Hosts/UKHO.Search.ServiceDefaults` | Shared Aspire/OpenTelemetry/health-check defaults for hosts. |
+| `src/workbench/server/WorkbenchHost` | Blazor Server Workbench shell host that renders the desktop-like bootstrap shell and hosts the first exemplar tool slice. |
+
+### Workbench support libraries
+
+| Project | Purpose |
+|---|---|
+| `src/workbench/server/UKHO.Workbench` | Shared Workbench shell contracts, layout primitives, bootstrap shell models, and bounded module registration contracts such as `IWorkbenchModule` and `ModuleRegistrationContext`. |
+| `src/workbench/server/UKHO.Workbench.Services` | Workbench orchestration services, including command routing, explorer composition, singleton tool activation, runtime menu/toolbar/status composition, fixed context projection, and the host-facing shell manager. |
+| `src/workbench/server/UKHO.Workbench.Infrastructure` | Workbench infrastructure composition, `modules.json` configuration reading, approved probe-root scanning, and bounded reflection-based module loading. |
+| `src/Workbench/modules/UKHO.Workbench.Modules.Search` | Dynamic Search Workbench module assembly contributing the dummy `Search ingestion`, `Search query`, and `Ingestion rule editor` tools used to verify multi-tool module discovery and shell activation. |
+| `src/Workbench/modules/UKHO.Workbench.Modules.PKS` | Dynamic PKS Workbench module assembly contributing the dummy `PKS operations` tool. |
+| `src/Workbench/modules/UKHO.Workbench.Modules.FileShare` | Dynamic File Share Workbench module assembly contributing the dummy `File Share workspace` tool. |
+| `src/Workbench/modules/UKHO.Workbench.Modules.Admin` | Dynamic Admin Workbench module assembly contributing the dummy `Administration` tool. |
 
 ### Shared provider support
 
@@ -194,6 +207,14 @@ flowchart LR
 ```
 
 ## Where major concerns live
+
+### Workbench module startup
+
+- shared module/tool registration contracts: `src/workbench/server/UKHO.Workbench/Modules`
+- discovery configuration and probe-root scanning: `src/workbench/server/UKHO.Workbench.Infrastructure/Modules`
+- host-owned startup orchestration, user-safe startup notifications, and Blazor shell rendering: `src/workbench/server/WorkbenchHost`
+- command routing, explorer composition, active-tool runtime contributions, and fixed Workbench context projection: `src/workbench/server/UKHO.Workbench.Services`
+- delivered initial module map: `src/Workbench/modules/UKHO.Workbench.Modules.Search`, `src/Workbench/modules/UKHO.Workbench.Modules.PKS`, `src/Workbench/modules/UKHO.Workbench.Modules.FileShare`, and `src/Workbench/modules/UKHO.Workbench.Modules.Admin`
 
 ### Ingestion runtime
 

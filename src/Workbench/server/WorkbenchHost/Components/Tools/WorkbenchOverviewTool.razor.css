@@ -1,0 +1,50 @@
+.workbench-overview-tool {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100%;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    overflow: auto;
+}
+
+.workbench-overview-tool__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.workbench-overview-tool__header h1,
+.workbench-overview-tool__header p {
+    margin: 0;
+}
+
+.workbench-overview-tool__eyebrow {
+    color: var(--rz-text-secondary-color);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.workbench-overview-tool__summary {
+    max-width: 52rem;
+}
+
+.workbench-overview-tool__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1rem;
+}
+
+.workbench-overview-tool__card {
+    height: 100%;
+}
+
+.workbench-overview-tool__card h2 {
+    margin-top: 0;
+}
+
+.workbench-overview-tool__card p {
+    margin-bottom: 0;
+}

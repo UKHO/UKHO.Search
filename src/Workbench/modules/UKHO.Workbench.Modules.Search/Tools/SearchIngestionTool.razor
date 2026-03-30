@@ -1,0 +1,35 @@
+@* This exemplar Search ingestion tool proves the Search module can contribute additional singleton tools without bypassing the shared Workbench contracts. *@
+<section class="search-ingestion-tool" aria-labelledby="search-ingestion-tool-title">
+    <header class="search-ingestion-tool__header">
+        <p class="search-ingestion-tool__eyebrow">Search module</p>
+        <h1 id="search-ingestion-tool-title">Search ingestion</h1>
+        <p>
+            This dummy ingestion surface reserves space for future ingestion workflows while proving the module can contribute
+            multiple tools, explorer items, and singleton activation targets through the shared Workbench shell.
+        </p>
+    </header>
+
+    <div class="search-ingestion-tool__content">
+        <section>
+            <h2>Planned ingestion focus</h2>
+            <ul>
+                <li>Monitor ingestion requests and recent pipeline activity.</li>
+                <li>Summarize provider inputs and indexing outcomes.</li>
+                <li>Expose future command-driven ingestion operations without changing the shell model.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Current fixed Workbench context</h2>
+            <dl class="search-ingestion-tool__context-list">
+                @foreach (var contextEntry in ContextValues)
+                {
+                    <div>
+                        <dt>@contextEntry.Key</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(contextEntry.Value) ? "(empty)" : contextEntry.Value)</dd>
+                    </div>
+                }
+            </dl>
+        </section>
+    </div>
+</section>

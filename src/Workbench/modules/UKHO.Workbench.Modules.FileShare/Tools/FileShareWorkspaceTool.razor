@@ -1,0 +1,35 @@
+@* This File Share dummy tool proves that a third module can contribute an independently openable singleton tool through the same Workbench contracts. *@
+<section class="fileshare-workspace-tool" aria-labelledby="fileshare-workspace-tool-title">
+    <header class="fileshare-workspace-tool__header">
+        <p class="fileshare-workspace-tool__eyebrow">File Share module</p>
+        <h1 id="fileshare-workspace-tool-title">File Share workspace</h1>
+        <p>
+            This dummy File Share surface reserves space for future File Share workflows while validating module discovery,
+            explorer placement, and shared singleton hosting inside the Workbench shell.
+        </p>
+    </header>
+
+    <div class="fileshare-workspace-tool__content">
+        <section>
+            <h2>Planned File Share focus</h2>
+            <ul>
+                <li>Inspect File Share content workflows and provider-specific diagnostics.</li>
+                <li>Expose future command-driven actions through the same bounded shell contracts.</li>
+                <li>Remain independently openable without bypassing the shared Workbench module model.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Current fixed Workbench context</h2>
+            <dl class="fileshare-workspace-tool__context-list">
+                @foreach (var contextEntry in ContextValues)
+                {
+                    <div>
+                        <dt>@contextEntry.Key</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(contextEntry.Value) ? "(empty)" : contextEntry.Value)</dd>
+                    </div>
+                }
+            </dl>
+        </section>
+    </div>
+</section>

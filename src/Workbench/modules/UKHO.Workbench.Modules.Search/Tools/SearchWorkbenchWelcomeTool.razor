@@ -1,0 +1,44 @@
+@* This dummy Search tool proves that runtime shell participation flows through ToolContext and command routing rather than direct shell manipulation. *@
+<section class="search-workbench-tool" aria-labelledby="search-workbench-tool-title">
+    <header class="search-workbench-tool__header">
+        <p class="search-workbench-tool__eyebrow">Search module</p>
+        <h1 id="search-workbench-tool-title">Search workspace</h1>
+        <p>
+            This dummy tool publishes runtime menu, toolbar, and status-bar contributions while it is active,
+            and it updates its title, icon, badge, and selection through the bounded <code>ToolContext</code> contract.
+        </p>
+    </header>
+
+    <div class="search-workbench-tool__content">
+        <section>
+            <h2>Command-driven tool actions</h2>
+            <p>Use the buttons below or the active-view shell surfaces above to drive the same Search commands.</p>
+            <div class="search-workbench-tool__actions">
+                <button type="button" class="search-workbench-tool__action" @onclick="RunSampleCommandAsync">Run sample query</button>
+                <button type="button" class="search-workbench-tool__action search-workbench-tool__action--secondary" @onclick="ResetWorkspaceAsync">Reset Search workspace</button>
+            </div>
+        </section>
+
+        <section>
+            <h2>What this slice proves</h2>
+            <ul>
+                <li>Explorer items now route through declarative activation targets and command ids.</li>
+                <li>Hosted tool actions now route through the same command system as explorer, menu, and toolbar actions.</li>
+                <li>Runtime menu, toolbar, and status-bar contributions appear only while this Search tool is active.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Current fixed Workbench context</h2>
+            <dl class="search-workbench-tool__context-list">
+                @foreach (var contextEntry in ContextValues)
+                {
+                    <div>
+                        <dt>@contextEntry.Key</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(contextEntry.Value) ? "(empty)" : contextEntry.Value)</dd>
+                    </div>
+                }
+            </dl>
+        </section>
+    </div>
+</section>

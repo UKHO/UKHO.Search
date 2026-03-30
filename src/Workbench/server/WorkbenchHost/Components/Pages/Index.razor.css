@@ -1,0 +1,18 @@
+.workbench-tool-surface-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.75rem;
+    height: 100%;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.workbench-tool-surface-state h1,
+.workbench-tool-surface-state p {
+    margin: 0;
+}
+
+.workbench-tool-surface-state--error {
+    color: var(--rz-danger);
+}

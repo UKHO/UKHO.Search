@@ -5,6 +5,7 @@
 		<NuGetAuditMode>direct</NuGetAuditMode>
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -16,7 +17,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+        <None Update="modules.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\..\..\Hosts\UKHO.Search.ServiceDefaults\UKHO.Search.ServiceDefaults.csproj" />
+        <ProjectReference Include="..\UKHO.Workbench.Services\UKHO.Workbench.Services.csproj" />
+		<ProjectReference Include="..\UKHO.Workbench\UKHO.Workbench.csproj" />
 		<ProjectReference Include="..\UKHO.Workbench.Infrastructure\UKHO.Workbench.Infrastructure.csproj" />
 	</ItemGroup>
 </Project>

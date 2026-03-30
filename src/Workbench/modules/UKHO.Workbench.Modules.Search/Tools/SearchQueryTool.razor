@@ -1,0 +1,44 @@
+@* This exemplar Search query tool keeps the runtime shell-contribution demonstration within the broader multi-tool Search module slice. *@
+<section class="search-query-tool" aria-labelledby="search-query-tool-title">
+    <header class="search-query-tool__header">
+        <p class="search-query-tool__eyebrow">Search module</p>
+        <h1 id="search-query-tool-title">Search query</h1>
+        <p>
+            This dummy tool publishes runtime menu, toolbar, and status-bar contributions while it is active,
+            and it updates its title, icon, badge, and selection through the bounded <code>ToolContext</code> contract.
+        </p>
+    </header>
+
+    <div class="search-query-tool__content">
+        <section>
+            <h2>Command-driven query actions</h2>
+            <p>Use the buttons below or the active-view shell surfaces above to drive the same Search query commands.</p>
+            <div class="search-query-tool__actions">
+                <button type="button" class="search-query-tool__action" @onclick="RunSampleCommandAsync">Run sample query</button>
+                <button type="button" class="search-query-tool__action search-query-tool__action--secondary" @onclick="ResetQueryAsync">Reset Search query</button>
+            </div>
+        </section>
+
+        <section>
+            <h2>What this slice proves</h2>
+            <ul>
+                <li>The Search module now contributes multiple tools through the same bounded startup contract.</li>
+                <li>Hosted tool actions still route through the shared command system rather than direct shell manipulation.</li>
+                <li>Runtime menu, toolbar, and status-bar contributions appear only while this Search query tool is active.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Current fixed Workbench context</h2>
+            <dl class="search-query-tool__context-list">
+                @foreach (var contextEntry in ContextValues)
+                {
+                    <div>
+                        <dt>@contextEntry.Key</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(contextEntry.Value) ? "(empty)" : contextEntry.Value)</dd>
+                    </div>
+                }
+            </dl>
+        </section>
+    </div>
+</section>

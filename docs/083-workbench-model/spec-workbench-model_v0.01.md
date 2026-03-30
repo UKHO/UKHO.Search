@@ -136,6 +136,8 @@ After this work package is adopted as the specification baseline:
 - the first real functional module is `UKHO.Workbench.Modules.Search`
 - the `Search` module is the first intended fully implemented module, but that delivery is deferred to a later work package and is represented only by dummy or exemplar UI in the scope of this specification
 - `UKHO.Workbench.Modules.PKS`, `UKHO.Workbench.Modules.FileShare`, and `UKHO.Workbench.Modules.Admin` are present initially with dummy tools so the Workbench can prove module discovery and composition before all domain functionality exists
+- the initial dummy tool map is `Search ingestion`, `Search query`, `Ingestion rule editor`, `PKS operations`, `File Share workspace`, and `Administration`
+- startup diagnostics identify the probe root, assembly path, and startup stage for module discovery and load failures while user-facing notifications remain high level
 
 ### 2.3 Assumptions
 
@@ -297,9 +299,9 @@ After this work package is adopted as the specification baseline:
 48. The system shall separate module startup registration from runtime tool participation.
 49. Each module assembly shall provide one bounded module registration entry point suitable for startup discovery.
 50. `UKHO.Workbench.Modules.Search` shall initially contribute three tools: search ingestion, search query, and ingestion rule editing.
-51. `UKHO.Workbench.Modules.PKS` shall initially contribute dummy tools only.
-52. `UKHO.Workbench.Modules.FileShare` shall initially contribute dummy tools only.
-53. `UKHO.Workbench.Modules.Admin` shall initially contribute dummy admin tools only.
+51. `UKHO.Workbench.Modules.PKS` shall initially contribute the dummy `PKS operations` tool.
+52. `UKHO.Workbench.Modules.FileShare` shall initially contribute the dummy `File Share workspace` tool.
+53. `UKHO.Workbench.Modules.Admin` shall initially contribute the dummy `Administration` tool.
 54. Dummy tools shall still be openable and composable so module discovery and shell behavior can be verified before final domain implementation exists.
 55. The Workbench shall treat `module` as the packaging and registration boundary and `tool` as the hosted application unit.
 56. The Workbench shall support a single module contributing multiple tools.

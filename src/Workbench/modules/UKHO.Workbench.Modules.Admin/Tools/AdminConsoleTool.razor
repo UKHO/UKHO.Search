@@ -1,0 +1,35 @@
+@* This Admin dummy tool proves that a fourth module can contribute an independently openable singleton tool through the same Workbench contracts. *@
+<section class="admin-console-tool" aria-labelledby="admin-console-tool-title">
+    <header class="admin-console-tool__header">
+        <p class="admin-console-tool__eyebrow">Admin module</p>
+        <h1 id="admin-console-tool-title">Administration</h1>
+        <p>
+            This dummy administration surface reserves space for future administrative workflows while validating module discovery,
+            explorer placement, and shared singleton hosting inside the Workbench shell.
+        </p>
+    </header>
+
+    <div class="admin-console-tool__content">
+        <section>
+            <h2>Planned admin focus</h2>
+            <ul>
+                <li>Summarize cross-module operational administration views.</li>
+                <li>Expose future command-driven actions through the same bounded shell contracts.</li>
+                <li>Remain independently openable without bypassing the shared Workbench module model.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Current fixed Workbench context</h2>
+            <dl class="admin-console-tool__context-list">
+                @foreach (var contextEntry in ContextValues)
+                {
+                    <div>
+                        <dt>@contextEntry.Key</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(contextEntry.Value) ? "(empty)" : contextEntry.Value)</dd>
+                    </div>
+                }
+            </dl>
+        </section>
+    </div>
+</section>

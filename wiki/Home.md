@@ -39,6 +39,7 @@ flowchart LR
 - [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator)
 - [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder)
 - [Tools: `RulesWorkbench`](Tools-RulesWorkbench)
+- [Workbench shell](Workbench-Shell)
 - [Ingestion pipeline](Ingestion-Pipeline)
 - [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard)
 - [How to write ingestion rules](Ingestion-Rules)
@@ -55,6 +56,7 @@ flowchart LR
 - `src/Hosts/AppHost` — Aspire orchestration and `runmode` switching
 - `src/Hosts/IngestionServiceHost` — ingestion host and bootstrap/runtime wiring
 - `src/Hosts/QueryServiceHost` — query-side host
+- `src/workbench/server/WorkbenchHost` — Workbench shell host for modular tool composition across Search, PKS, File Share, and Admin dummy modules
 - `tools/FileShareEmulator` — local File Share emulator UI/API
 - `tools/RulesWorkbench` — rule inspection, evaluation, and checker tooling
 

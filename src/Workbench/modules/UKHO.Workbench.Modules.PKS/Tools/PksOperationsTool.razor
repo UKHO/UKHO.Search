@@ -1,0 +1,35 @@
+@* This PKS dummy tool proves that a second module can contribute an independently openable singleton tool through the same Workbench contracts. *@
+<section class="pks-operations-tool" aria-labelledby="pks-operations-tool-title">
+    <header class="pks-operations-tool__header">
+        <p class="pks-operations-tool__eyebrow">PKS module</p>
+        <h1 id="pks-operations-tool-title">PKS operations</h1>
+        <p>
+            This dummy PKS surface reserves space for future PKS-focused workflows while validating module discovery,
+            explorer placement, and shared singleton hosting inside the Workbench shell.
+        </p>
+    </header>
+
+    <div class="pks-operations-tool__content">
+        <section>
+            <h2>Planned PKS focus</h2>
+            <ul>
+                <li>Summarize PKS-specific operational views and supporting workflows.</li>
+                <li>Expose future command-driven actions through the same bounded shell contracts.</li>
+                <li>Remain independently openable without bypassing the shared Workbench module model.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Current fixed Workbench context</h2>
+            <dl class="pks-operations-tool__context-list">
+                @foreach (var contextEntry in ContextValues)
+                {
+                    <div>
+                        <dt>@contextEntry.Key</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(contextEntry.Value) ? "(empty)" : contextEntry.Value)</dd>
+                    </div>
+                }
+            </dl>
+        </section>
+    </div>
+</section>

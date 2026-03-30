@@ -1,0 +1,28 @@
+@* This exemplar tool intentionally stays host-owned so the bootstrap shell can prove centered tool hosting before module discovery is added. *@
+<section class="workbench-overview-tool" aria-labelledby="workbench-overview-title">
+    <header class="workbench-overview-tool__header">
+        <p class="workbench-overview-tool__eyebrow">Bootstrap slice</p>
+        <h1 id="workbench-overview-title">Workbench overview</h1>
+        <p class="workbench-overview-tool__summary">
+            This first host-owned tool proves the desktop-like shell can open, host, and re-focus a singleton tool instance without duplicating it.
+        </p>
+    </header>
+
+    <div class="workbench-overview-tool__cards" role="list">
+        @* Each card explains one part of the shell so the exemplar tool doubles as a visible implementation checklist for the bootstrap slice. *@
+        <RadzenCard class="workbench-overview-tool__card" role="listitem">
+            <h2>Desktop-like shell</h2>
+            <p>The full-width menu bar, activity rail, explorer, toolbar, status bar, and center tool surface are now rendered by the Workbench host instead of the starter template.</p>
+        </RadzenCard>
+
+        <RadzenCard class="workbench-overview-tool__card" role="listitem">
+            <h2>Singleton hosting</h2>
+            <p>Reopen this tool from the explorer and the shell will focus the existing instance rather than creating another hosted copy.</p>
+        </RadzenCard>
+
+        <RadzenCard class="workbench-overview-tool__card" role="listitem">
+            <h2>Layout foundation</h2>
+            <p>The shell uses the Workbench grid and splitter primitives so future module work can grow from the intended layout model.</p>
+        </RadzenCard>
+    </div>
+</section>

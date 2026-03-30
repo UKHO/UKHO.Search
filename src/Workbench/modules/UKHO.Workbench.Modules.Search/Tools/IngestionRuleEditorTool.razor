@@ -1,0 +1,35 @@
+@* This exemplar ingestion rule editor proves the Search module can contribute a second lightweight planning surface through the same singleton activation policy. *@
+<section class="ingestion-rule-editor-tool" aria-labelledby="ingestion-rule-editor-tool-title">
+    <header class="ingestion-rule-editor-tool__header">
+        <p class="ingestion-rule-editor-tool__eyebrow">Search module</p>
+        <h1 id="ingestion-rule-editor-tool-title">Ingestion rule editor</h1>
+        <p>
+            This dummy rule-editing surface reserves space for future rule authoring workflows while validating
+            explorer placement, bounded tool activation, and active-tool status-bar participation.
+        </p>
+    </header>
+
+    <div class="ingestion-rule-editor-tool__content">
+        <section>
+            <h2>Planned rule-editing focus</h2>
+            <ul>
+                <li>Inspect rule definitions and author rule changes through the Workbench shell.</li>
+                <li>Surface validation and publish status through bounded runtime shell contributions.</li>
+                <li>Share Search module services while remaining independently openable from the explorer.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Current fixed Workbench context</h2>
+            <dl class="ingestion-rule-editor-tool__context-list">
+                @foreach (var contextEntry in ContextValues)
+                {
+                    <div>
+                        <dt>@contextEntry.Key</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(contextEntry.Value) ? "(empty)" : contextEntry.Value)</dd>
+                    </div>
+                }
+            </dl>
+        </section>
+    </div>
+</section>

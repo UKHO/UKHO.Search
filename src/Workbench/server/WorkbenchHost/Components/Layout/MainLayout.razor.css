@@ -1,0 +1,238 @@
+.workbench-shell {
+    height: 100vh;
+    padding: 0.5rem;
+    box-sizing: border-box;
+}
+
+.workbench-shell__menu-bar,
+.workbench-shell__toolbar,
+.workbench-shell__explorer,
+.workbench-shell__tool-surface,
+.workbench-shell__status-bar,
+.workbench-shell__activity-rail {
+    box-sizing: border-box;
+}
+
+.workbench-shell__menu-bar,
+.workbench-shell__toolbar,
+.workbench-shell__status-bar,
+.workbench-shell__activity-rail,
+.workbench-shell__explorer,
+.workbench-shell__tool-surface {
+    background: var(--rz-base-background-color);
+    border: 1px solid var(--rz-base-300);
+    border-radius: var(--rz-border-radius);
+}
+
+.workbench-shell__menu-bar,
+.workbench-shell__toolbar,
+.workbench-shell__status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0 1rem;
+}
+
+.workbench-shell__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.workbench-shell__menu-items {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.workbench-shell__menu-button,
+.workbench-shell__activity-button,
+.workbench-shell__tool-button {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+}
+
+.workbench-shell__menu-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.65rem;
+    border-radius: var(--rz-border-radius);
+}
+
+.workbench-shell__menu-button:hover,
+.workbench-shell__activity-button:hover,
+.workbench-shell__tool-button:hover,
+.workbench-shell__menu-button:focus-visible,
+.workbench-shell__activity-button:focus-visible,
+.workbench-shell__tool-button:focus-visible {
+    background: var(--rz-base-200);
+    outline: none;
+}
+
+.workbench-shell__toolbar-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.workbench-shell__toolbar-title-group p,
+.workbench-shell__toolbar-title-group strong {
+    margin: 0;
+}
+
+.workbench-shell__toolbar-eyebrow {
+    color: var(--rz-text-secondary-color);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.workbench-shell__toolbar-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--rz-text-secondary-color);
+}
+
+.workbench-shell__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: var(--rz-primary-lighter);
+    color: var(--rz-primary-darker);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.workbench-shell__activity-rail {
+    height: 100%;
+    padding: 0.5rem;
+}
+
+.workbench-shell__activity-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 0.25rem;
+    border-radius: var(--rz-border-radius);
+}
+
+.workbench-shell__activity-button--active,
+.workbench-shell__tool-button--active {
+    background: var(--rz-base-200);
+}
+
+.workbench-shell__activity-button span {
+    font-size: 0.75rem;
+}
+
+.workbench-shell__explorer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0.75rem;
+    overflow: auto;
+}
+
+.workbench-shell__explorer-header {
+    margin-bottom: 0.75rem;
+}
+
+.workbench-shell__explorer-header p,
+.workbench-shell__explorer-header h2 {
+    margin: 0;
+}
+
+.workbench-shell__explorer-header p {
+    color: var(--rz-text-secondary-color);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.workbench-shell__explorer-header h2 {
+    font-size: 1rem;
+}
+
+.workbench-shell__explorer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.workbench-shell__explorer-section h3 {
+    margin: 0;
+    color: var(--rz-text-secondary-color);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.workbench-shell__tool-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.workbench-shell__tool-button {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: var(--rz-border-radius);
+    text-align: left;
+}
+
+.workbench-shell__tool-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.workbench-shell__tool-copy strong,
+.workbench-shell__tool-copy span {
+    overflow-wrap: anywhere;
+}
+
+.workbench-shell__tool-copy span {
+    color: var(--rz-text-secondary-color);
+    font-size: 0.875rem;
+}
+
+.workbench-shell__tool-surface {
+    height: 100%;
+    overflow: hidden;
+}
+
+.workbench-shell__status-bar {
+    justify-content: flex-start;
+    gap: 1.5rem;
+    color: var(--rz-text-secondary-color);
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.workbench-shell__status-bar span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

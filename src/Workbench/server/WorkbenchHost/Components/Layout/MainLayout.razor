@@ -1,38 +1,208 @@
 @inherits LayoutComponentBase
-@inject CookieThemeService CookieThemeService
+
 <RadzenComponents />
 
-<RadzenLayout>
-    <RadzenHeader>
-        <RadzenRow JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Gap="0">
-            <RadzenColumn Size="5">
-                <RadzenSidebarToggle Click="@SidebarToggleClick"></RadzenSidebarToggle>
-            </RadzenColumn>
-            <RadzenColumn Size="7">
-                <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem" class="rz-px-2">
-                    <RadzenAppearanceToggle />
-                </RadzenStack>
-            </RadzenColumn>
-        </RadzenRow>
-    </RadzenHeader>
-    <RadzenBody Expanded="@sidebarExpanded">
-        <RadzenRow class="rz-mx-auto rz-px-4 rz-pt-2 rz-pt-md-4 rz-pt-lg-6 rz-pt-xl-12 rz-pb-2 rz-pb-lg-12" Style="max-width: 1440px;">
-            <RadzenColumn Size="12">
-            @Body
-            </RadzenColumn>
-        </RadzenRow>
-    </RadzenBody>
-    <RadzenSidebar @bind-Expanded="@sidebarExpanded">
-        <RadzenStack AlignItems="Radzen.AlignItems.Center" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding); border-bottom: var(--rz-panel-menu-item-border);">
-            <RadzenImage Path="images/logo.png"  style="width: 48px; height: 48px;" AlternateText="Application logo"></RadzenImage>
-            <RadzenText Text="WorkbenchHost" TextStyle="Radzen.Blazor.TextStyle.Subtitle1" class="rz-mb-0" style="color: var(--rz-sidebar-color);" />
-        </RadzenStack>
-        <RadzenPanelMenu>
-            <RadzenPanelMenuItem Text="Home" Path="" />
-        </RadzenPanelMenu>
-        <RadzenStack AlignItems="Radzen.AlignItems.Center" Gap="0" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding);">
-            <RadzenText Text="WorkbenchHost v1.0.0" TextStyle="Radzen.Blazor.TextStyle.Caption" TagName="Radzen.Blazor.TagName.P" TextAlign="Radzen.TextAlign.Center" />
-            <RadzenText Text="Copyright Ⓒ 2026" TextStyle="Radzen.Blazor.TextStyle.Caption" class="rz-mb-0" TagName="Radzen.Blazor.TagName.P" TextAlign="Radzen.TextAlign.Center" />
-        </RadzenStack>
-    </RadzenSidebar>
-</RadzenLayout>
+@* The Workbench shell now renders explorers, commands, and runtime shell surfaces from contributed models rather than hard-coded navigation markup. *@
+<div class="workbench-shell">
+    <Grid>
+        <ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </ColumnDefinitions>
+        <RowDefinitions>
+            <RowDefinition Height="48" />
+            <RowDefinition Height="44" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </RowDefinitions>
+        <Content>
+            @if (IsRegionVisible(WorkbenchShellRegion.MenuBar))
+            {
+                <GridElement Row="1" Column="1">
+                    <header class="workbench-shell__menu-bar" data-region="menu-bar">
+                        <div class="workbench-shell__brand">
+                            <RadzenIcon Icon="dashboard_customize" />
+                            <span>Workbench</span>
+                        </div>
+
+                        <nav aria-label="Workbench menu">
+                            <ul class="workbench-shell__menu-items">
+                                @foreach (var menuContribution in MenuContributions)
+                                {
+                                    <li>
+                                        <button type="button" class="workbench-shell__menu-button" @onclick="() => ExecuteCommandAsync(menuContribution.CommandId)">
+                                            @if (!string.IsNullOrWhiteSpace(menuContribution.Icon))
+                                            {
+                                                <RadzenIcon Icon="@menuContribution.Icon" />
+                                            }
+
+                                            <span>@menuContribution.DisplayName</span>
+                                        </button>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+
+                        <div class="workbench-shell__menu-actions">
+                            <RadzenAppearanceToggle />
+                        </div>
+                    </header>
+                </GridElement>
+            }
+
+            @if (IsRegionVisible(WorkbenchShellRegion.ActiveToolToolbar))
+            {
+                <GridElement Row="2" Column="1">
+                    <section class="workbench-shell__toolbar" data-region="toolbar" aria-label="Active tool toolbar">
+                        <div class="workbench-shell__toolbar-title-group">
+                            <RadzenIcon Icon="@(ActiveTool?.Icon ?? ActiveTool?.Definition.Icon ?? "dashboard_customize")" />
+                            <div>
+                                <p class="workbench-shell__toolbar-eyebrow">Active tool</p>
+                                <strong>@(ActiveTool?.Title ?? "No active tool")</strong>
+                            </div>
+                        </div>
+
+                        <div class="workbench-shell__toolbar-meta">
+                            @if (!string.IsNullOrWhiteSpace(ActiveTool?.Badge))
+                            {
+                                <span class="workbench-shell__badge">@ActiveTool.Badge</span>
+                            }
+
+                            @foreach (var toolbarContribution in ToolbarContributions)
+                            {
+                                <button type="button" class="workbench-shell__menu-button" @onclick="() => ExecuteCommandAsync(toolbarContribution.CommandId)">
+                                    @if (!string.IsNullOrWhiteSpace(toolbarContribution.Icon))
+                                    {
+                                        <RadzenIcon Icon="@toolbarContribution.Icon" />
+                                    }
+
+                                    <span>@toolbarContribution.DisplayName</span>
+                                </button>
+                            }
+                        </div>
+                    </section>
+                </GridElement>
+            }
+
+            <GridElement Row="3" Column="1">
+                @* The nested grid keeps the working-area splitters isolated so full-width shell chrome does not occupy splitter tracks. *@
+                <Grid>
+                    <ColumnDefinitions>
+                        <ColumnDefinition Width="64" />
+                        <SplitterColumnDefinition />
+                        <ColumnDefinition Width="280" MinWidth="16" />
+                        <SplitterColumnDefinition />
+                        <ColumnDefinition Width="*" />
+                    </ColumnDefinitions>
+                    <RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </RowDefinitions>
+                    <Content>
+                        @if (IsRegionVisible(WorkbenchShellRegion.ActivityRail))
+                        {
+                            <GridElement Row="1" Column="1">
+                                <aside class="workbench-shell__activity-rail" data-region="activity-rail" aria-label="Explorer selector">
+                                    @foreach (var explorer in Explorers)
+                                    {
+                                        <button type="button"
+                                                class="@GetActivityButtonCss(explorer.Id)"
+                                                aria-pressed="@IsExplorerActive(explorer.Id)"
+                                                @onclick="() => SelectExplorerAsync(explorer.Id)">
+                                            <RadzenIcon Icon="@explorer.Icon" />
+                                            <span>@explorer.DisplayName</span>
+                                        </button>
+                                    }
+                                </aside>
+                            </GridElement>
+                        }
+
+                        @if (IsRegionVisible(WorkbenchShellRegion.Explorer))
+                        {
+                            <GridElement Row="1" Column="3">
+                                <aside class="workbench-shell__explorer" data-region="explorer" aria-label="Workbench explorer">
+                                    <header class="workbench-shell__explorer-header">
+                                        <p>Explorer</p>
+                                        <h2>@ActiveExplorerDisplayName</h2>
+                                    </header>
+
+                                    @foreach (var explorerSection in ActiveExplorerSections)
+                                    {
+                                        <section class="workbench-shell__explorer-section" aria-labelledby="@explorerSection.Id">
+                                            <h3 id="@explorerSection.Id">@explorerSection.DisplayName</h3>
+                                            <ul class="workbench-shell__tool-list">
+                                                @foreach (var explorerItem in GetExplorerItems(explorerSection.Id))
+                                                {
+                                                    <li>
+                                                        <button type="button"
+                                                                class="@GetExplorerItemButtonCss(explorerItem)"
+                                                                aria-current="@(IsExplorerItemActive(explorerItem) ? "page" : null)"
+                                                                @onclick="() => ExecuteCommandAsync(explorerItem.CommandId)">
+                                                            <RadzenIcon Icon="@explorerItem.Icon" />
+                                                            <span class="workbench-shell__tool-copy">
+                                                                <strong>@explorerItem.DisplayName</strong>
+                                                                @if (!string.IsNullOrWhiteSpace(explorerItem.Description))
+                                                                {
+                                                                    <span>@explorerItem.Description</span>
+                                                                }
+                                                            </span>
+                                                        </button>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </section>
+                                    }
+                                </aside>
+                            </GridElement>
+                        }
+
+                        @if (IsRegionVisible(WorkbenchShellRegion.ToolSurface))
+                        {
+                            <GridElement Row="1" Column="5">
+                                <main class="workbench-shell__tool-surface" data-region="tool-surface">
+                                    @Body
+                                </main>
+                            </GridElement>
+                        }
+                    </Content>
+                </Grid>
+            </GridElement>
+
+            @if (IsRegionVisible(WorkbenchShellRegion.StatusBar))
+            {
+                <GridElement Row="4" Column="1">
+                    <footer class="workbench-shell__status-bar" data-region="status-bar" role="status" aria-live="polite">
+                        @foreach (var statusContribution in StatusBarContributions)
+                        {
+                            @if (!string.IsNullOrWhiteSpace(statusContribution.CommandId))
+                            {
+                                <button type="button" class="workbench-shell__menu-button" @onclick="() => ExecuteCommandAsync(statusContribution.CommandId!)">
+                                    @if (!string.IsNullOrWhiteSpace(statusContribution.Icon))
+                                    {
+                                        <RadzenIcon Icon="@statusContribution.Icon" />
+                                    }
+
+                                    <span>@statusContribution.Text</span>
+                                </button>
+                            }
+                            else
+                            {
+                                <span>
+                                    @if (!string.IsNullOrWhiteSpace(statusContribution.Icon))
+                                    {
+                                        <RadzenIcon Icon="@statusContribution.Icon" />
+                                    }
+
+                                    @statusContribution.Text
+                                </span>
+                            }
+                        }
+
+                        @foreach (var contextEntry in ContextValues)
+                        {
+                            <span>@contextEntry.Key: @(string.IsNullOrWhiteSpace(contextEntry.Value) ? "(empty)" : contextEntry.Value)</span>
+                        }
+                    </footer>
+                </GridElement>
+            }
+        </Content>
+    </Grid>
+</div>

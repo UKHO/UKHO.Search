@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using UKHO.Workbench.Services;
+using UKHO.Workbench.Infrastructure.Modules;
 
 namespace UKHO.Workbench.Infrastructure
 {
@@ -21,7 +22,12 @@ namespace UKHO.Workbench.Infrastructure
             // Compose the inward layer now so later infrastructure registrations can remain centralized here.
             services.AddWorkbenchServices();
 
-            // No concrete infrastructure services are required for the hello-world bootstrap slice.
+            // Module discovery services remain singleton because host startup uses them as one coordinated registration pipeline.
+            services.AddSingleton<ModulesConfigurationReader>();
+            services.AddSingleton<ModuleAssemblyScanner>();
+            services.AddSingleton<ModuleLoader>();
+
+            // Returning the service collection preserves the infrastructure composition seam for later work items.
             return services;
         }
     }

@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="8.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,6 +30,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\src\Workbench\server\WorkbenchHost\WorkbenchHost.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Workbench\modules\UKHO.Workbench.Modules.Admin\UKHO.Workbench.Modules.Admin.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Workbench\modules\UKHO.Workbench.Modules.FileShare\UKHO.Workbench.Modules.FileShare.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Workbench\modules\UKHO.Workbench.Modules.PKS\UKHO.Workbench.Modules.PKS.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Workbench\modules\UKHO.Workbench.Modules.Search\UKHO.Workbench.Modules.Search.csproj" />
+    <ProjectReference Include="..\..\..\..\src\workbench\server\UKHO.Workbench.Infrastructure\UKHO.Workbench.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\..\src\workbench\server\UKHO.Workbench.Services\UKHO.Workbench.Services.csproj" />
+    <ProjectReference Include="..\..\..\..\src\workbench\server\UKHO.Workbench\UKHO.Workbench.csproj" />
   </ItemGroup>
 
 </Project>
