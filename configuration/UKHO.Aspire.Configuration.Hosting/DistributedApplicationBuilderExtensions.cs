@@ -74,7 +74,7 @@ namespace UKHO.Aspire.Configuration.Hosting
                 project.WithReference(emulator);
                 project.WaitFor(emulator);
 
-                project.WaitFor(seederService);
+                project.WaitForCompletion(seederService);
                 project.WithEnvironment(WellKnownConfigurationName.AddsEnvironmentName, AddsEnvironment.Local.Value);
             }
 
