@@ -59,6 +59,13 @@ Rules:
 - For ingestion, keep queue/client wiring in `UKHO.Search.Infrastructure.Ingestion`, but place file-share-specific pipeline nodes (parsing/enrichment of file-share data) in `UKHO.Search.Ingestion.Providers.FileShare` (provider project).
 - Prefer a single, obvious public entrypoint for queue-backed ingestion; avoid multiple builder APIs. Document this in the spec and keep code aligned (hosted service should start ingestion via the adapter/provider entrypoint path).
 - For the ingestion rules DSL, support both `if` and `match` as predicate field aliases, but prefer writing examples using `if`.
+- For the WorkbenchHost architecture discussions, include runtime menu contributions and status bar contributions from tools in the preferred lightweight slice.
+- For Workbench architecture in this repository: put module/tool-accessible contracts and models in `UKHO.Workbench`; services in `UKHO.Workbench.Services`; infrastructure in `UKHO.Workbench.Infrastructure`; and overall composition/UI in `WorkbenchHost`.
+
+## Workbench Modules
+- `UKHO.Workbench.Modules.Search` is the first real functional module conceptually, but its full implementation belongs to a later work package; this spec expects dummy/exemplar UI only.
+- `UKHO.Workbench.Modules.PKS` and `UKHO.Workbench.Modules.FileShare` contain dummy tools for now.
+- `UKHO.Workbench.Modules.Admin` contains common admin tools, also dummy initially.
 
 ## FileShare Enrichment
 - For FileShare ZIP extraction enrichment, use `CanonicalDocument.SetContent()` to append content naturally. Additionally, call `CanonicalDocument.SetKeyword()` for each extracted file name (without extension).
@@ -114,6 +121,8 @@ Refer to specialized instruction files for full detail:
 - When fixing the Workbench shell, do not introduce a workaround; implement the issue properly with the intended Radzen components.
 
 ## Aspire Orchestration Guidelines
-- When reasoning about Aspire orchestration in this repo, use `WaitForCompleted()` when dependent services must wait for a short-lived seeder to finish; `WaitFor()` only waits for process start. 
+- When reasoning about Aspire orchestration in this repo, use `WaitForCompleted()` when dependent services must wait for a short-lived seeder to finish; `WaitFor()` only waits for process start.
 
-All original guidance now resides in one of these files. Do not duplicate; update the relevant file when changing practices.
+## Workbench UI Guidelines
+- For the `083-workbench-model` specification, ensure the Workbench UI is designed to be desktop-like rather than web-like.
+- Utilize the `UKHO.Workbench.Layout` `Layouts` namespace to implement a WPF-like grid layout model with splitters.

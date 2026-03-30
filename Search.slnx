@@ -24,6 +24,12 @@
   <Folder Name="/04 Workbench/@radzen/">
     <Project Path="src/Workbench/radzen-blazor/Radzen.Blazor/Radzen.Blazor.csproj" />
   </Folder>
+  <Folder Name="/04 Workbench/modules/">
+    <Project Path="src/Workbench/modules/UKHO.Workbench.Modules.Admin/UKHO.Workbench.Modules.Admin.csproj" Id="7a453e9c-250e-4897-9f8b-317878ad4140" />
+    <Project Path="src/Workbench/modules/UKHO.Workbench.Modules.FileShare/UKHO.Workbench.Modules.FileShare.csproj" Id="bf70c113-9468-4e11-a413-15a1f851242e" />
+    <Project Path="src/Workbench/modules/UKHO.Workbench.Modules.PKS/UKHO.Workbench.Modules.PKS.csproj" Id="3fac7b76-fbaf-47d3-8e09-5df075574a41" />
+    <Project Path="src/Workbench/modules/UKHO.Workbench.Modules.Search/UKHO.Workbench.Modules.Search.csproj" Id="83a26656-b32c-4268-9d4f-fec996385dfa" />
+  </Folder>
   <Folder Name="/04 Workbench/samples/">
     <Project Path="src/Workbench/samples/LayoutSample/LayoutSample.csproj" />
   </Folder>
