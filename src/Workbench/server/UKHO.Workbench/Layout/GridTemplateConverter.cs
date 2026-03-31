@@ -11,7 +11,7 @@ namespace UKHO.Workbench.Layout
 	{
       private static readonly Regex FixedSizePattern = new Regex("^[0-9]+(\\.[0-9]+)?$", RegexOptions.Compiled);
 		private static readonly Regex PixelSizePattern = new Regex("^[0-9]+(\\.[0-9]+)?px$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-		private static readonly Regex ProportionPattern = new Regex("^[0-9]*\\*$", RegexOptions.Compiled);
+      private static readonly Regex ProportionPattern = new Regex("^[0-9]+(\\.[0-9]+)?\\*$|^\\*$", RegexOptions.Compiled);
 		private readonly List<string> _convertedData = new List<string>();
 
 		/// <summary>
@@ -111,6 +111,7 @@ namespace UKHO.Workbench.Layout
 
 			if (ProportionPattern.IsMatch(data!))
 			{
+             // Splitter persistence can now emit fractional star weights, so proportional tracks must accept both integer and decimal star tokens.
 				return data.Replace("*", "fr");
 			}
 

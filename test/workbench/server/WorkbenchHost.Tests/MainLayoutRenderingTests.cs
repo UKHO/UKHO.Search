@@ -119,12 +119,12 @@ namespace WorkbenchHost.Tests
         }
 
         /// <summary>
-        /// Confirms the opened panel renders the compact toolbar actions required for the session-state slice.
+        /// Confirms the opened panel renders a single panel-local toolbar directly above a single terminal host.
         /// </summary>
         [Fact]
-        public async Task RenderTheOutputToolbarWhenThePanelIsVisible()
+        public async Task RenderOnePanelLocalToolbarAndOneTerminalHostWhenThePanelIsVisible()
         {
-            // The second slice turns the panel into a usable output surface, so the toolbar actions should render only when the panel is open.
+            // The XtermBlazor migration should replace the row surface with one shell-owned toolbar and one deterministic terminal host wrapper.
             await using var serviceProvider = CreateServiceProvider();
             var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
             var outputService = serviceProvider.GetRequiredService<IWorkbenchOutputService>();
@@ -135,18 +135,71 @@ namespace WorkbenchHost.Tests
 
             var renderer = new HtmlRenderer(serviceProvider, serviceProvider.GetRequiredService<ILoggerFactory>());
             var html = await RenderLayoutAsync(renderer);
+            var toolbarIndex = html.IndexOf("aria-label=\"Output panel actions\"", StringComparison.Ordinal);
+            var terminalHostIndex = html.IndexOf("data-role=\"output-terminal-host\"", StringComparison.Ordinal);
 
             html.ShouldContain("data-region=\"output-panel\"");
-            html.ShouldContain("data-output-surface=\"editor-like\"");
-            html.ShouldContain("data-output-wrap-mode=\"nowrap\"");
-            html.ShouldContain("data-output-selection-mode=\"text-first\"");
-            html.ShouldContain("data-output-density=\"dense\"");
-            html.ShouldContain("data-output-theme-scope=\"shell-tokens\"");
-            html.ShouldContain("workbench-shell__output-stream--editor-like");
+            html.ShouldContain("data-output-surface=\"terminal\"");
+            html.ShouldContain("data-output-history-mode=\"retained\"");
+            html.ShouldContain("data-output-order=\"chronological\"");
+            html.ShouldContain("data-role=\"output-copy-selected\"");
+            html.ShouldContain("data-role=\"output-find\"");
             html.ShouldContain("data-role=\"output-clear\"");
             html.ShouldContain("data-role=\"output-auto-scroll\"");
             html.ShouldContain("data-role=\"output-scroll-to-end\"");
-            html.ShouldContain("data-role=\"output-wrap\"");
+            html.ShouldContain("data-output-selection-active=\"false\"");
+            html.ShouldContain("disabled");
+            html.ShouldNotContain("data-role=\"output-wrap\"");
+            CountOccurrences(html, "aria-label=\"Output panel actions\"").ShouldBe(1);
+            CountOccurrences(html, "data-role=\"output-terminal-host\"").ShouldBe(1);
+            toolbarIndex.ShouldBeGreaterThanOrEqualTo(0);
+            terminalHostIndex.ShouldBeGreaterThan(toolbarIndex);
+        }
+
+        /// <summary>
+        /// Confirms terminal selection notifications drive the enabled state for the copy-selected toolbar action.
+        /// </summary>
+        [Fact]
+        public async Task EnableCopySelectedOnlyWhenTheTerminalReportsAnActiveSelection()
+        {
+            // Copy state should stay terminal-driven so the toolbar remains disabled until the hosted read-only surface exposes a real text selection.
+            using var serviceProvider = CreateServiceProvider();
+            var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
+            SeedHostShell(shellManager);
+            var layout = CreateLayoutInstance(serviceProvider, shellManager);
+
+            GetPrivatePropertyValue<bool>(layout, "IsOutputSelectionAvailable").ShouldBeFalse();
+
+            await InvokePrivateMethodAsync(layout, "NotifyOutputSelectionStateAsync", true);
+
+            GetPrivatePropertyValue<bool>(layout, "IsOutputSelectionAvailable").ShouldBeTrue();
+
+            await InvokePrivateMethodAsync(layout, "NotifyOutputSelectionStateAsync", false);
+
+            GetPrivatePropertyValue<bool>(layout, "IsOutputSelectionAvailable").ShouldBeFalse();
+        }
+
+        /// <summary>
+        /// Confirms the find surface opens when the terminal shortcut is raised and can be closed again by the layout.
+        /// </summary>
+        [Fact]
+        public async Task OpenAndCloseTheTerminalFindSurfaceThroughTheLayoutShortcutHandlers()
+        {
+            // Ctrl+F should route through the layout so the shell can reveal the terminal-native find workflow without introducing a second browser-owned UI.
+            using var serviceProvider = CreateServiceProvider();
+            var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
+            SeedHostShell(shellManager);
+            var layout = CreateLayoutInstance(serviceProvider, shellManager);
+
+            GetPrivatePropertyValue<bool>(layout, "IsOutputFindVisible").ShouldBeFalse();
+
+            await InvokePrivateMethodAsync(layout, "NotifyOutputFindShortcutAsync");
+
+            GetPrivatePropertyValue<bool>(layout, "IsOutputFindVisible").ShouldBeTrue();
+
+            await InvokePrivateMethodAsync(layout, "CloseOutputFindAsync");
+
+            GetPrivatePropertyValue<bool>(layout, "IsOutputFindVisible").ShouldBeFalse();
         }
 
         /// <summary>
@@ -172,182 +225,99 @@ namespace WorkbenchHost.Tests
         }
 
         /// <summary>
-        /// Confirms collapsed structured rows keep the compact line format while exposing the subtle gutter treatment for foldable entries.
+        /// Confirms additional hidden output promotes the collapsed indicator to the most severe unseen level while the panel remains closed.
         /// </summary>
         [Fact]
-        public async Task RenderCompactCollapsedOutputRowsWithTheFoldableGutterButWithoutExpandedDetailsOrEventCodes()
+        public async Task PromoteTheHiddenIndicatorWhenMoreSevereOutputArrivesWhileThePanelIsClosed()
         {
-            // Foldable rows should keep the same visible text contract while moving expansion affordance and severity cues into the editor-like gutter.
+            // Hidden output should keep accumulating severity through the shared panel state so reopening the panel later starts from an accurate unseen indicator.
             await using var serviceProvider = CreateServiceProvider();
             var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
             var outputService = serviceProvider.GetRequiredService<IWorkbenchOutputService>();
             SeedHostShell(shellManager);
-            outputService.Clear();
             shellManager.ActivateTool(ActivationTarget.CreateToolSurfaceTarget(OverviewToolId));
-            outputService.SetPanelVisibility(true);
-
-            var outputEntry = CreateOutputEntry(
-                "entry-collapsed",
-                OutputLevel.Warning,
-                "Module loader",
-                "Search module loaded with warnings.",
-                "The module emitted additional diagnostic detail.",
-                "WB-103");
-            outputService.Write(outputEntry);
+            outputService.Write(OutputLevel.Info, "Shell", "An informational message was written while the panel was collapsed.");
+            outputService.Write(OutputLevel.Error, "Shell", "An error was written while the panel was collapsed.");
 
             var renderer = new HtmlRenderer(serviceProvider, serviceProvider.GetRequiredService<ILoggerFactory>());
             var html = await RenderLayoutAsync(renderer);
 
-            html.ShouldContain("data-role=\"output-entry-toggle\"");
-            html.ShouldContain($"data-output-entry-id=\"{outputEntry.Id}\"");
-            html.ShouldContain("data-output-foldable=\"true\"");
-            html.ShouldContain($"data-output-level=\"{outputEntry.Level.ToString().ToLowerInvariant()}\"");
-            html.ShouldContain("data-role=\"output-gutter-marker\"");
-            html.ShouldContain(outputEntry.TimestampUtc.ToLocalTime().ToString("HH:mm:ss"));
-            html.ShouldContain(outputEntry.Source);
-            html.ShouldContain(outputEntry.Summary);
-            html.ShouldNotContain(outputEntry.Details!);
-            html.ShouldNotContain($"Event code: {outputEntry.EventCode}");
-            html.ShouldNotContain("data-role=\"output-copy-entry\"");
+            html.ShouldContain("data-output-toggle-state=\"collapsed\"");
+            html.ShouldContain("data-output-unseen-level=\"error\"");
+            html.ShouldNotContain("data-region=\"output-panel\"");
         }
 
         /// <summary>
-        /// Confirms multiple rows can remain expanded simultaneously and render inline details beneath their main lines.
+        /// Confirms the retained output projection keeps the current summary-line ordering contract.
         /// </summary>
         [Fact]
-        public async Task KeepMultipleOutputRowsExpandedAtTheSameTimeAndRenderTheirInlineDetails()
+        public void ProjectRetainedOutputHistoryIntoTerminalTextInChronologicalOrder()
         {
-            // The disclosure control owns expansion, and the shell should allow several diagnostics to stay open together without reintroducing row-action chrome.
-            await using var serviceProvider = CreateServiceProvider();
-            var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
-            var outputService = serviceProvider.GetRequiredService<IWorkbenchOutputService>();
-            SeedHostShell(shellManager);
-            outputService.Clear();
-            outputService.SetPanelVisibility(true);
-
+            // The baseline terminal projection should preserve the existing timestamp, source, and summary order while appending newer entries last.
             var firstEntry = CreateOutputEntry(
-                "entry-expanded-1",
+                "entry-terminal-1",
                 OutputLevel.Info,
                 "Shell",
-                "Workbench overview activated.",
-                "Overview tab restored its previous state.",
-                "WB-201");
+                "Workbench overview restored.");
             var secondEntry = CreateOutputEntry(
-                "entry-expanded-2",
+                "entry-terminal-2",
+                OutputLevel.Warning,
+                "Module loader",
+                "Search module loaded with warnings.");
+
+            var projection = InvokeStaticPrivateMethod(
+                typeof(MainLayout),
+                "BuildOutputTerminalProjection",
+                [new[] { firstEntry, secondEntry }]) as string;
+
+            projection.ShouldNotBeNull();
+
+            var firstSummaryLine = $"{firstEntry.TimestampUtc.ToLocalTime():HH:mm:ss} {firstEntry.Source} {firstEntry.Summary}";
+            var secondSummaryLine = $"{secondEntry.TimestampUtc.ToLocalTime():HH:mm:ss} {secondEntry.Source} {secondEntry.Summary}";
+            var firstSummaryIndex = projection.IndexOf(firstSummaryLine, StringComparison.Ordinal);
+            var secondSummaryIndex = projection.IndexOf(secondSummaryLine, StringComparison.Ordinal);
+
+            firstSummaryIndex.ShouldBeGreaterThanOrEqualTo(0);
+            secondSummaryIndex.ShouldBeGreaterThan(firstSummaryIndex);
+        }
+
+        /// <summary>
+        /// Confirms details and event-code text render inline beneath the related summary line in the terminal projection.
+        /// </summary>
+        [Fact]
+        public void ProjectDetailsAndEventCodesInlineBeneathTheirSummaryLine()
+        {
+            // The retained terminal stream should flatten structured entry data into a readable multi-line block without changing output ownership.
+            var outputEntry = CreateOutputEntry(
+                "entry-terminal-details",
                 OutputLevel.Error,
                 "Module loader",
                 "Administration module failed to initialise.",
-                "The module assembly could not load a dependent service.",
+                "The module assembly could not load a dependent service.\nA fallback service was not available.",
                 "WB-202");
-            outputService.Write(firstEntry);
-            outputService.Write(secondEntry);
 
-            var layout = CreateLayoutInstance(serviceProvider, shellManager);
-            await InvokePrivateMethodAsync(layout, "ToggleOutputEntryExpansionAsync", firstEntry);
-            await InvokePrivateMethodAsync(layout, "ToggleOutputEntryExpansionAsync", secondEntry);
+            var projection = InvokeStaticPrivateMethod(
+                typeof(MainLayout),
+                "BuildOutputTerminalProjection",
+                [new[] { outputEntry }]) as string;
 
-            var renderer = new HtmlRenderer(serviceProvider, serviceProvider.GetRequiredService<ILoggerFactory>());
-            var html = await RenderLayoutAsync(renderer);
+            projection.ShouldNotBeNull();
 
-            outputService.PanelState.ExpandedEntryIds.ShouldBe([firstEntry.Id, secondEntry.Id]);
-            html.ShouldContain($"data-output-entry-id=\"{firstEntry.Id}\"");
-            html.ShouldContain($"data-output-entry-id=\"{secondEntry.Id}\"");
-            html.ShouldContain("data-output-expanded=\"true\"");
-            html.ShouldContain("data-role=\"output-entry-details\"");
-            html.ShouldContain("data-role=\"output-detail-line\"");
-            html.ShouldContain(firstEntry.Details!);
-            html.ShouldContain(secondEntry.Details!);
-            html.ShouldContain($"Event code: {firstEntry.EventCode}");
-            html.ShouldContain($"Event code: {secondEntry.EventCode}");
-            html.ShouldNotContain("data-role=\"output-copy-entry\"");
+            var summaryLine = $"{outputEntry.TimestampUtc.ToLocalTime():HH:mm:ss} {outputEntry.Source} {outputEntry.Summary}";
+            var detailsLine = "  The module assembly could not load a dependent service.";
+            var secondDetailsLine = "  A fallback service was not available.";
+            var eventCodeLine = $"  Event code: {outputEntry.EventCode}";
+            var summaryIndex = projection.IndexOf(summaryLine, StringComparison.Ordinal);
+            var detailsIndex = projection.IndexOf(detailsLine, StringComparison.Ordinal);
+            var secondDetailsIndex = projection.IndexOf(secondDetailsLine, StringComparison.Ordinal);
+            var eventCodeIndex = projection.IndexOf(eventCodeLine, StringComparison.Ordinal);
+
+            summaryIndex.ShouldBeGreaterThanOrEqualTo(0);
+            detailsIndex.ShouldBeGreaterThan(summaryIndex);
+            secondDetailsIndex.ShouldBeGreaterThan(detailsIndex);
+            eventCodeIndex.ShouldBeGreaterThan(secondDetailsIndex);
         }
 
-        /// <summary>
-        /// Confirms expanded details follow the shared wrap toggle and expose the output scroll mode required for long diagnostic content.
-        /// </summary>
-        [Fact]
-        public async Task ApplyTheSharedWrapModeToExpandedOutputDetailsAndScrollState()
-        {
-            // Wrap is a global output-surface setting, so both the summary row and inline details should switch modes together.
-            await using var serviceProvider = CreateServiceProvider();
-            var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
-            var outputService = serviceProvider.GetRequiredService<IWorkbenchOutputService>();
-            SeedHostShell(shellManager);
-            outputService.Clear();
-            outputService.SetPanelVisibility(true);
-
-            var outputEntry = CreateOutputEntry(
-                "entry-wrap",
-                OutputLevel.Debug,
-                "Shell",
-                "Long diagnostic summary for wrap verification.",
-                "First detail line.\nSecond detail line with additional diagnostic content.",
-                "WB-301");
-            outputService.Write(outputEntry);
-            outputService.SetExpandedEntryIds([outputEntry.Id]);
-
-            var renderer = new HtmlRenderer(serviceProvider, serviceProvider.GetRequiredService<ILoggerFactory>());
-            var nowrapHtml = await RenderLayoutAsync(renderer);
-
-            nowrapHtml.ShouldContain("data-output-scroll-mode=\"horizontal\"");
-            nowrapHtml.ShouldContain("data-output-wrap-mode=\"nowrap\"");
-            nowrapHtml.ShouldContain("data-output-selection-mode=\"text-first\"");
-            nowrapHtml.ShouldContain("data-output-density=\"dense\"");
-            nowrapHtml.ShouldContain("data-output-theme-scope=\"shell-tokens\"");
-            nowrapHtml.ShouldNotContain("workbench-shell__output-stream--wrapped");
-
-            var layout = CreateLayoutInstance(serviceProvider, shellManager);
-            await InvokePrivateMethodAsync(layout, "ToggleWordWrapAsync");
-
-            var wrappedHtml = await RenderLayoutAsync(renderer);
-
-            wrappedHtml.ShouldContain("data-output-scroll-mode=\"wrapped\"");
-            wrappedHtml.ShouldContain("data-output-wrap-mode=\"wrapped\"");
-            wrappedHtml.ShouldContain("data-output-selection-mode=\"text-first\"");
-            wrappedHtml.ShouldContain("data-output-density=\"dense\"");
-            wrappedHtml.ShouldContain("data-output-theme-scope=\"shell-tokens\"");
-            wrappedHtml.ShouldContain("workbench-shell__output-stream--wrapped");
-            wrappedHtml.ShouldContain("First detail line.");
-            wrappedHtml.ShouldContain("Second detail line with additional diagnostic content.");
-        }
-
-        /// <summary>
-        /// Confirms only entries with expandable content render the disclosure affordance while every row keeps the subtle severity gutter marker.
-        /// </summary>
-        [Fact]
-        public async Task RenderTheFoldAffordanceOnlyForEntriesThatExposeInlineDetails()
-        {
-            // Non-foldable rows should keep gutter alignment without surfacing a redundant toggle, while foldable rows still expose the disclosure control.
-            await using var serviceProvider = CreateServiceProvider();
-            var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
-            var outputService = serviceProvider.GetRequiredService<IWorkbenchOutputService>();
-            SeedHostShell(shellManager);
-            outputService.SetPanelVisibility(true);
-
-            var foldableEntry = CreateOutputEntry(
-                "entry-foldable",
-                OutputLevel.Info,
-                "Shell",
-                "Foldable output row.",
-                "Inline detail text.",
-                "WB-320");
-            var flatEntry = CreateOutputEntry(
-                "entry-flat",
-                OutputLevel.Debug,
-                "Shell",
-                "Flat output row without extra detail.");
-            outputService.Write(foldableEntry);
-            outputService.Write(flatEntry);
-
-            var renderer = new HtmlRenderer(serviceProvider, serviceProvider.GetRequiredService<ILoggerFactory>());
-            var html = await RenderLayoutAsync(renderer);
-
-            html.ShouldContain($"data-output-entry-id=\"{foldableEntry.Id}\"");
-            html.ShouldContain($"data-output-entry-id=\"{flatEntry.Id}\"");
-            html.ShouldContain("data-output-foldable=\"true\"");
-            html.ShouldContain("data-output-foldable=\"false\"");
-            html.ShouldContain("data-role=\"output-gutter-marker\"");
-        }
 
         /// <summary>
         /// Confirms session resize memory and auto-scroll state transitions are coordinated through the layout handlers.
@@ -355,7 +325,7 @@ namespace WorkbenchHost.Tests
         [Fact]
         public async Task RestoreTheResizedPanelHeightAndToggleAutoScrollThroughTheLayoutHandlers()
         {
-            // The shell should preserve the user's in-session splitter size and should disable or re-enable auto-scroll through the expected interaction paths.
+            // The shell should preserve the user's in-session splitter ratio and should disable or re-enable auto-scroll through the expected interaction paths.
             using var serviceProvider = CreateServiceProvider();
             var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
             var outputService = serviceProvider.GetRequiredService<IWorkbenchOutputService>();
@@ -376,14 +346,14 @@ namespace WorkbenchHost.Tests
                     "48px 44px 640px 4px 160px 30px"));
             await InvokePrivateMethodAsync(layout, "NotifyOutputViewportStateAsync", false);
 
-            outputService.PanelState.CenterPaneHeight.ShouldBe("640px");
-            outputService.PanelState.OutputPaneHeight.ShouldBe("160px");
+            outputService.PanelState.CenterPaneHeight.ShouldBe("4*");
+            outputService.PanelState.OutputPaneHeight.ShouldBe("1*");
             outputService.PanelState.IsAutoScrollEnabled.ShouldBeFalse();
 
             await InvokePrivateMethodAsync(layout, "ToggleOutputPanelAsync");
             await InvokePrivateMethodAsync(layout, "ToggleOutputPanelAsync");
 
-            outputService.PanelState.OutputPaneHeight.ShouldBe("160px");
+            outputService.PanelState.OutputPaneHeight.ShouldBe("1*");
 
             await InvokePrivateMethodAsync(layout, "ScrollOutputToEndAsync");
 
@@ -442,14 +412,17 @@ namespace WorkbenchHost.Tests
             var activeSearchHtml = await RenderLayoutAsync(renderer);
 
             activeSearchHtml.ShouldContain("Run sample query");
-            activeSearchHtml.ShouldContain("Sample query executed");
+            activeSearchHtml.ShouldContain("data-role=\"output-terminal-host\"");
             activeSearchHtml.ShouldNotContain("workbench-shell__status-bar-items");
+            outputService.Entries.ShouldContain(entry => entry.Source == "tool.module.search.query"
+                && entry.Summary == "Sample query executed"
+                && entry.Level == OutputLevel.Debug);
 
             shellManager.ActivateTool(ActivationTarget.CreateToolSurfaceTarget(OverviewToolId));
             var activeOverviewHtml = await RenderLayoutAsync(renderer);
 
             activeOverviewHtml.ShouldNotContain("Run sample query");
-            activeOverviewHtml.ShouldContain("Sample query executed");
+            activeOverviewHtml.ShouldContain("data-role=\"output-terminal-host\"");
             activeOverviewHtml.ShouldNotContain("Workbench shell ready");
             activeOverviewHtml.ShouldNotContain("workbench.activeTool:");
         }

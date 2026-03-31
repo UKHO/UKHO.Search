@@ -11,6 +11,8 @@ using UKHO.Workbench.Tools;
 using UKHO.Workbench.WorkbenchShell;
 using WorkbenchHost.Components.WorkbenchShell;
 using WorkbenchHost.Services;
+using XtermBlazor;
+using XtermBlazorTheme = XtermBlazor.Theme;
 
 namespace WorkbenchHost.Components.Layout
 {
@@ -20,11 +22,29 @@ namespace WorkbenchHost.Components.Layout
     public partial class MainLayout : IDisposable, IAsyncDisposable
     {
         private const string OutputPanelModulePath = "./Components/Layout/MainLayout.razor.js";
+        private const string OutputTerminalFitAddonId = "addon-fit";
+        private const string OutputTerminalSearchAddonId = "addon-search";
+        private const string OutputTerminalSeverityReset = "\u001b[0m";
+        private static readonly string[] OutputDetailLineSeparators = ["\r\n", "\n", "\r"];
         private readonly Dictionary<string, string> _projectedStatusContributionTexts = new(StringComparer.Ordinal);
+        private readonly HashSet<string> _outputTerminalAddons = [OutputTerminalFitAddonId, OutputTerminalSearchAddonId];
+        private readonly List<OutputEntry> _pendingOutputTerminalEntries = [];
+        private readonly TerminalOptions _outputTerminalOptions = CreateOutputTerminalOptions();
         private IReadOnlyDictionary<string, string> _lastProjectedContextValues = new Dictionary<string, string>(StringComparer.Ordinal);
+        private IReadOnlyList<string> _projectedOutputEntryIds = [];
         private DotNetObjectReference<MainLayout>? _dotNetObjectReference;
+        private Xterm? _outputTerminal;
+        private ElementReference _outputFindInput = default;
         private ElementReference _outputStreamElement = default;
         private IJSObjectReference? _outputPanelModule;
+        private bool _isOutputFindSurfaceVisible;
+        private bool _isOutputSelectionAvailable;
+        private bool _isOutputTerminalReady;
+        private bool _outputFindInputShouldReceiveFocus;
+        private string _outputFindText = string.Empty;
+        private bool _outputTerminalNeedsPresentationRefresh = true;
+        private bool _outputTerminalNeedsRebuild = true;
+        private int _outputTerminalRenderKey;
         private bool _pendingScrollToEnd;
 
         [Inject]
@@ -150,21 +170,19 @@ namespace WorkbenchHost.Components.Layout
         private OutputLevel? HiddenUnseenLevel => OutputPanelState.IsVisible ? null : OutputPanelState.HiddenUnseenLevel;
 
         /// <summary>
-        /// Gets the CSS class applied to the output stream according to the current editor-like wrap mode.
+        /// Gets the terminal options used for the read-only Workbench output surface.
         /// </summary>
-        private string OutputStreamCss => OutputPanelState.IsWordWrapEnabled
-            ? "workbench-shell__output-stream workbench-shell__output-stream--editor-like workbench-shell__output-stream--wrapped"
-            : "workbench-shell__output-stream workbench-shell__output-stream--editor-like";
+        private TerminalOptions OutputTerminalOptions => _outputTerminalOptions;
 
         /// <summary>
-        /// Gets the scroll-mode token rendered for the current output viewport state.
+        /// Gets a value indicating whether the hosted terminal currently exposes an active text selection.
         /// </summary>
-        private string OutputScrollMode => OutputPanelState.IsWordWrapEnabled ? "wrapped" : "horizontal";
+        private bool IsOutputSelectionAvailable => _isOutputSelectionAvailable;
 
         /// <summary>
-        /// Gets the wrap-mode token rendered for the current output surface contract.
+        /// Gets a value indicating whether the panel-local find workflow is currently visible.
         /// </summary>
-        private string OutputWrapMode => OutputPanelState.IsWordWrapEnabled ? "wrapped" : "nowrap";
+        private bool IsOutputFindVisible => _isOutputFindSurfaceVisible;
 
         /// <summary>
         /// Gets the currently active explorer contribution when one is selected.
@@ -249,13 +267,18 @@ namespace WorkbenchHost.Components.Layout
             {
                 await EnsureOutputPanelInteropAsync();
 
-                if (_pendingScrollToEnd && OutputPanelState.IsAutoScrollEnabled)
+                // Terminal synchronization is deferred until both the Blazor component reference and the browser-side terminal instance are ready.
+                if (_isOutputTerminalReady)
                 {
-                    // Deferred scrolling happens after render so the newest output row exists in the DOM before the browser is asked to move the viewport.
-                    await _outputPanelModule!.InvokeVoidAsync("scrollToEnd", _outputStreamElement);
+                    await SynchronizeOutputTerminalAsync();
                 }
 
-                _pendingScrollToEnd = false;
+                // Find input focus happens after the panel re-renders so both toolbar and Ctrl+F can reveal a usable search field immediately.
+                if (_outputFindInputShouldReceiveFocus && IsOutputFindVisible)
+                {
+                    await _outputFindInput.FocusAsync();
+                    _outputFindInputShouldReceiveFocus = false;
+                }
             }
             catch (JSDisconnectedException)
             {
@@ -307,11 +330,14 @@ namespace WorkbenchHost.Components.Layout
             {
                 if (OutputPanelState.IsVisible)
                 {
+                    ResetOutputTerminalProjectionState();
                     await DisposeOutputPanelInteropAsync();
                     WorkbenchOutputService.SetPanelVisibility(false);
                     return;
                 }
 
+                InvalidateOutputTerminalProjection();
+                _outputTerminalNeedsPresentationRefresh = true;
                 WorkbenchOutputService.SetPanelVisibility(true);
                 _pendingScrollToEnd = OutputPanelState.IsAutoScrollEnabled;
             }
@@ -322,14 +348,70 @@ namespace WorkbenchHost.Components.Layout
         }
 
         /// <summary>
+        /// Copies the currently selected terminal text to the clipboard when the hosted output surface reports an active selection.
+        /// </summary>
+        /// <returns>A task that completes when the copy request has been issued.</returns>
+        private async Task CopySelectedOutputAsync()
+        {
+            // Copy remains terminal-driven so the toolbar never guesses selection state and instead mirrors the hosted surface exactly.
+            if (_outputTerminal is null || !_isOutputTerminalReady || !IsOutputSelectionAvailable)
+            {
+                return;
+            }
+
+            var selectedText = await _outputTerminal.GetSelection();
+            if (string.IsNullOrWhiteSpace(selectedText))
+            {
+                _isOutputSelectionAvailable = false;
+                await RequestLayoutRefreshAsync();
+                return;
+            }
+
+            await EnsureOutputPanelInteropAsync();
+
+            if (_outputPanelModule is null)
+            {
+                return;
+            }
+
+            await _outputPanelModule.InvokeVoidAsync("copyTextToClipboard", selectedText);
+        }
+
+        /// <summary>
         /// Clears every retained output entry from the current Workbench session.
         /// </summary>
         /// <returns>A completed task because clearing the in-memory stream is handled synchronously by the shared output service.</returns>
         private Task ClearOutputAsync()
         {
             // Clear is intentionally destructive and silent because the specification requires an empty panel with no synthetic replacement entry.
+            _isOutputSelectionAvailable = false;
             WorkbenchOutputService.Clear();
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Opens the terminal-native find workflow from the panel toolbar.
+        /// </summary>
+        /// <returns>A task that completes when the find surface has been made visible.</returns>
+        private Task OpenOutputFindAsync()
+        {
+            // Toolbar and keyboard search both route through one helper so the panel always reveals the same terminal-focused find experience.
+            _isOutputFindSurfaceVisible = true;
+            _outputFindInputShouldReceiveFocus = true;
+            return RequestLayoutRefreshAsync();
+        }
+
+        /// <summary>
+        /// Closes the terminal-native find workflow and clears any active terminal search decorations.
+        /// </summary>
+        /// <returns>A task that completes when the find workflow has been dismissed.</returns>
+        private async Task CloseOutputFindAsync()
+        {
+            // Closing find hides the panel-local chrome and removes stale highlights so later searches start from a clean terminal state.
+            _isOutputFindSurfaceVisible = false;
+            _outputFindInputShouldReceiveFocus = false;
+            await ClearOutputTerminalFindDecorationsAsync();
+            await RequestLayoutRefreshAsync();
         }
 
         /// <summary>
@@ -352,57 +434,273 @@ namespace WorkbenchHost.Components.Layout
             // Scroll-to-end is the explicit recovery path after a user has manually moved away from the newest entries.
             WorkbenchOutputService.SetAutoScrollEnabled(true);
             _pendingScrollToEnd = true;
-            return Task.CompletedTask;
+            return RequestLayoutRefreshAsync();
         }
 
         /// <summary>
-        /// Toggles whether long output content should wrap within the panel viewport.
+        /// Updates the find text from the panel-local search input and triggers incremental terminal searching when meaningful text is present.
         /// </summary>
-        /// <returns>A completed task because the wrap toggle only updates shared session state.</returns>
-        private Task ToggleWordWrapAsync()
+        /// <param name="changeEventArgs">The change payload raised by the search input.</param>
+        /// <returns>A task that completes when any incremental search request has been issued.</returns>
+        private async Task HandleOutputFindInputAsync(ChangeEventArgs changeEventArgs)
         {
-            // Wrap remains a global panel toggle so both compact rows and later expanded details follow the same presentation mode.
-            WorkbenchOutputService.SetWordWrapEnabled(!OutputPanelState.IsWordWrapEnabled);
-            return Task.CompletedTask;
-        }
+            // Incremental search keeps the first-delivery find workflow lightweight by moving directly to visible matches as the user types.
+            ArgumentNullException.ThrowIfNull(changeEventArgs);
 
-        /// <summary>
-        /// Determines whether the supplied output entry is currently expanded in the shell output surface.
-        /// </summary>
-        /// <param name="outputEntry">The output entry to evaluate.</param>
-        /// <returns><see langword="true"/> when the supplied entry is expanded; otherwise, <see langword="false"/>.</returns>
-        private bool IsOutputEntryExpanded(OutputEntry outputEntry)
-        {
-            // Expansion state is tracked by entry identifier so multiple rows can remain open without mutating the immutable output entries.
-            ArgumentNullException.ThrowIfNull(outputEntry);
+            _outputFindText = changeEventArgs.Value?.ToString() ?? string.Empty;
 
-            return OutputPanelState.ExpandedEntryIds.Contains(outputEntry.Id, StringComparer.Ordinal);
-        }
-
-        /// <summary>
-        /// Toggles the expanded detail state for one structured output row.
-        /// </summary>
-        /// <param name="outputEntry">The output entry whose details should be expanded or collapsed.</param>
-        /// <returns>A completed task because the shared panel-state update is handled synchronously.</returns>
-        private Task ToggleOutputEntryExpansionAsync(OutputEntry outputEntry)
-        {
-            // The shared panel state keeps expansion centralized so closing and reopening the panel can reset the view consistently.
-            ArgumentNullException.ThrowIfNull(outputEntry);
-
-            var expandedEntryIds = OutputPanelState.ExpandedEntryIds.ToList();
-            var expandedEntryIndex = expandedEntryIds.FindIndex(entryId => string.Equals(entryId, outputEntry.Id, StringComparison.Ordinal));
-
-            if (expandedEntryIndex >= 0)
+            if (string.IsNullOrWhiteSpace(_outputFindText))
             {
-                expandedEntryIds.RemoveAt(expandedEntryIndex);
-            }
-            else
-            {
-                expandedEntryIds.Add(outputEntry.Id);
+                await ClearOutputTerminalFindDecorationsAsync();
+                return;
             }
 
-            WorkbenchOutputService.SetExpandedEntryIds(expandedEntryIds);
+            await FindNextOutputMatchAsync();
+        }
+
+        /// <summary>
+        /// Handles keyboard shortcuts inside the panel-local search input.
+        /// </summary>
+        /// <param name="keyboardEventArgs">The keyboard event raised by the search input.</param>
+        /// <returns>A task that completes when the requested find action has finished.</returns>
+        private Task HandleOutputFindKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
+        {
+            // Enter repeats the active search while Escape dismisses the find surface so keyboard-only users do not need to leave the terminal workflow.
+            ArgumentNullException.ThrowIfNull(keyboardEventArgs);
+
+            if (string.Equals(keyboardEventArgs.Key, "Enter", StringComparison.OrdinalIgnoreCase))
+            {
+                return keyboardEventArgs.ShiftKey
+                    ? FindPreviousOutputMatchAsync()
+                    : FindNextOutputMatchAsync();
+            }
+
+            if (string.Equals(keyboardEventArgs.Key, "Escape", StringComparison.OrdinalIgnoreCase))
+            {
+                return CloseOutputFindAsync();
+            }
+
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Finds the next terminal match for the current search text.
+        /// </summary>
+        /// <returns>A task that completes when the search addon has processed the request.</returns>
+        private Task FindNextOutputMatchAsync()
+        {
+            // Forward search remains the default toolbar and Enter behavior so repeated search requests keep moving deeper into the retained stream.
+            return SearchOutputAsync(searchBackward: false);
+        }
+
+        /// <summary>
+        /// Finds the previous terminal match for the current search text.
+        /// </summary>
+        /// <returns>A task that completes when the search addon has processed the request.</returns>
+        private Task FindPreviousOutputMatchAsync()
+        {
+            // Reverse search gives the toolbar and Shift+Enter path a clean way to walk back through historical matches.
+            return SearchOutputAsync(searchBackward: true);
+        }
+
+        /// <summary>
+        /// Searches the hosted terminal for the current search text by using the official xterm.js search addon.
+        /// </summary>
+        /// <param name="searchBackward"><see langword="true"/> to search toward older output; otherwise, <see langword="false"/> to search toward newer output.</param>
+        /// <returns>A task that completes when the search addon has processed the request.</returns>
+        private async Task SearchOutputAsync(bool searchBackward)
+        {
+            // Search requests stay terminal-native so match navigation uses the addon that already understands wrapped terminal content and viewport focus.
+            if (_outputTerminal is null || !_isOutputTerminalReady || string.IsNullOrWhiteSpace(_outputFindText))
+            {
+                return;
+            }
+
+            var searchOptions = CreateOutputTerminalSearchOptions();
+            if (searchBackward)
+            {
+                await _outputTerminal.Addon(OutputTerminalSearchAddonId).InvokeAsync<bool>("findPrevious", _outputFindText, searchOptions);
+                return;
+            }
+
+            await _outputTerminal.Addon(OutputTerminalSearchAddonId).InvokeAsync<bool>("findNext", _outputFindText, searchOptions);
+        }
+
+        /// <summary>
+        /// Clears any active terminal search decorations when the panel-local find workflow is dismissed or reset.
+        /// </summary>
+        /// <returns>A task that completes when the search addon has cleared its active highlights.</returns>
+        private async Task ClearOutputTerminalFindDecorationsAsync()
+        {
+            // Clearing addon decorations keeps the next search honest and avoids leaving stale highlight state behind after the find strip closes.
+            if (_outputTerminal is null || !_isOutputTerminalReady)
+            {
+                return;
+            }
+
+            await _outputTerminal.Addon(OutputTerminalSearchAddonId).InvokeVoidAsync("clearDecorations");
+        }
+
+        /// <summary>
+        /// Writes the current retained Workbench output history into the newly rendered terminal instance.
+        /// </summary>
+        /// <returns>A task that completes when the retained terminal projection has been written.</returns>
+        private async Task HandleOutputTerminalFirstRenderAsync()
+        {
+            // The terminal becomes ready only after the child component finishes its own first render, so the layout records readiness before rebuilding from shared state.
+            if (_outputTerminal is null)
+            {
+                return;
+            }
+
+            _isOutputTerminalReady = true;
+            _outputTerminalNeedsRebuild = true;
+
+            // The initial terminal mount needs an immediate sync because the parent layout does not automatically re-render when the child first-render callback completes.
+            try
+            {
+                await EnsureOutputPanelInteropAsync();
+                await SynchronizeOutputTerminalAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Blazor Server can disconnect during the initial mount path, which should not surface as a user-facing error.
+            }
+            catch (TaskCanceledException)
+            {
+                // Initial interop work can be cancelled during navigation or shutdown.
+            }
+            catch (ObjectDisposedException)
+            {
+                // The JS runtime can already be disposed during teardown before the first terminal sync completes.
+            }
+            catch (Exception exception)
+            {
+                Logger.LogError(exception, "The Workbench output terminal could not complete its initial fit and synchronization pass.");
+            }
+        }
+
+        /// <summary>
+        /// Receives browser-reported terminal selection-state changes so the copy toolbar action can enable only when a real selection exists.
+        /// </summary>
+        /// <param name="hasSelection"><see langword="true"/> when the terminal currently exposes selected text; otherwise, <see langword="false"/>.</param>
+        /// <returns>A task that completes when the layout has applied the selection-state change.</returns>
+        [JSInvokable]
+        public Task NotifyOutputSelectionStateAsync(bool hasSelection)
+        {
+            // Selection changes are presentation-only state, so the layout simply mirrors the terminal state and re-renders the toolbar when needed.
+            if (_isOutputSelectionAvailable == hasSelection)
+            {
+                return Task.CompletedTask;
+            }
+
+            _isOutputSelectionAvailable = hasSelection;
+            return RequestLayoutRefreshAsync();
+        }
+
+        /// <summary>
+        /// Copies the current terminal selection when the browser forwards the standard keyboard copy shortcut from the focused output surface.
+        /// </summary>
+        /// <returns>A task that completes when the copy request has finished.</returns>
+        [JSInvokable]
+        public Task NotifyOutputCopyShortcutAsync()
+        {
+            // Keyboard copy should reuse the same terminal-backed selection path as the toolbar so both entry points stay behaviorally identical.
+            return CopySelectedOutputAsync();
+        }
+
+        /// <summary>
+        /// Probes the hosted terminal for its current selection state after browser gestures such as mouse drag selection complete.
+        /// </summary>
+        /// <returns>A task that completes when the terminal-backed selection state has been refreshed.</returns>
+        [JSInvokable]
+        public Task ProbeOutputSelectionStateAsync()
+        {
+            // Browser gesture notifications can arrive even when DOM selection text is unavailable, so the shell re-queries xterm directly here.
+            return HandleOutputTerminalSelectionChangedAsync();
+        }
+
+        /// <summary>
+        /// Mirrors the hosted terminal's selection state into the output toolbar by querying the terminal directly.
+        /// </summary>
+        /// <returns>A task that completes when the selection state has been refreshed.</returns>
+        private async Task HandleOutputTerminalSelectionChangedAsync()
+        {
+            // Native xterm selection notifications are more reliable than DOM-selection heuristics, so the layout queries the terminal itself before updating the toolbar.
+            if (_outputTerminal is null || !_isOutputTerminalReady)
+            {
+                return;
+            }
+
+            var hasSelection = await _outputTerminal.HasSelection();
+            if (_isOutputSelectionAvailable == hasSelection)
+            {
+                return;
+            }
+
+            _isOutputSelectionAvailable = hasSelection;
+            await RequestLayoutRefreshAsync();
+        }
+
+        /// <summary>
+        /// Receives the Ctrl+F keyboard shortcut from the hosted terminal surface and opens the panel-local find workflow.
+        /// </summary>
+        /// <returns>A task that completes when the find workflow has been revealed.</returns>
+        [JSInvokable]
+        public Task NotifyOutputFindShortcutAsync()
+        {
+            // The browser forwards Ctrl+F here so the shell, not ad-hoc JavaScript, remains responsible for showing and managing the find UI.
+            return OpenOutputFindAsync();
+        }
+
+        /// <summary>
+        /// Receives browser-reported shell-theme changes so the hosted terminal can refresh its palette without becoming the source of truth for theme state.
+        /// </summary>
+        /// <returns>A task that completes when the layout has queued the presentation refresh.</returns>
+        [JSInvokable]
+        public Task NotifyOutputThemeStateChangedAsync()
+        {
+            // Theme changes are handled as presentation-only refreshes so the retained output stream and shared panel state remain untouched.
+            _outputTerminalNeedsPresentationRefresh = true;
+            return InvokeAsync(StateHasChanged);
+        }
+
+        /// <summary>
+        /// Receives browser-reported host resize notifications so the terminal can refit against the latest output-panel dimensions.
+        /// </summary>
+        /// <returns>A task that completes when the layout has queued the fit refresh.</returns>
+        [JSInvokable]
+        public Task NotifyOutputHostResizedAsync()
+        {
+            // Browser-driven resize notifications should only refit the hosted terminal, because forcing a full layout re-render on every resize creates unnecessary shell churn.
+            return InvokeAsync(async () =>
+            {
+                if (!OutputPanelState.IsVisible || !_isOutputTerminalReady)
+                {
+                    return;
+                }
+
+                try
+                {
+                    await FitOutputTerminalAsync();
+                }
+                catch (JSDisconnectedException)
+                {
+                    // Blazor Server can disconnect while resize-driven interop is in flight.
+                }
+                catch (TaskCanceledException)
+                {
+                    // Resize-driven fit work can be cancelled during navigation or shutdown.
+                }
+                catch (ObjectDisposedException)
+                {
+                    // The JS runtime can be disposed before a queued resize notification finishes.
+                }
+                catch (Exception exception)
+                {
+                    Logger.LogError(exception, "The Workbench output terminal could not refit after a host resize notification.");
+                }
+            });
         }
 
         /// <summary>
@@ -424,8 +722,14 @@ namespace WorkbenchHost.Components.Layout
             }
 
             WorkbenchOutputService.SetPaneHeights(
-                FormatPixelTrackToken(resizeNotification.PreviousTrackSizeInPixels),
-                FormatPixelTrackToken(resizeNotification.NextTrackSizeInPixels));
+                FormatProportionalTrackToken(
+                    resizeNotification.PreviousTrackSizeInPixels,
+                    resizeNotification.PreviousTrackSizeInPixels,
+                    resizeNotification.NextTrackSizeInPixels),
+                FormatProportionalTrackToken(
+                    resizeNotification.NextTrackSizeInPixels,
+                    resizeNotification.PreviousTrackSizeInPixels,
+                    resizeNotification.NextTrackSizeInPixels));
 
             return Task.CompletedTask;
         }
@@ -1039,10 +1343,463 @@ namespace WorkbenchHost.Components.Layout
         /// </summary>
         /// <param name="sizeInPixels">The pixel size reported by the Workbench splitter interop.</param>
         /// <returns>The pixel token used by the shell grid state.</returns>
-        private static string FormatPixelTrackToken(double sizeInPixels)
+        private static string FormatProportionalTrackToken(double trackSizeInPixels, double firstTrackSizeInPixels, double secondTrackSizeInPixels)
         {
-            // Persisting pixel tokens preserves the user's exact in-session splitter adjustment without introducing cross-session layout storage.
-            return $"{Math.Round(sizeInPixels, 2):0.##}px";
+            // Persisting proportional star tokens lets the shell remember the splitter ratio while still allowing the grid to absorb later browser resizes without clipping the status bar.
+            var smallestTrackSize = Math.Min(firstTrackSizeInPixels, secondTrackSizeInPixels);
+            if (trackSizeInPixels <= 0 || smallestTrackSize <= 0)
+            {
+                return "1*";
+            }
+
+            var normalizedWeight = trackSizeInPixels / smallestTrackSize;
+            return $"{Math.Round(normalizedWeight, 3):0.###}*";
+        }
+
+        /// <summary>
+        /// Builds the full retained terminal projection used by the Workbench output surface.
+        /// </summary>
+        /// <param name="outputEntries">The retained output entries that should be projected into terminal text.</param>
+        /// <returns>The newline-delimited terminal projection text for the supplied retained output entries.</returns>
+        private static string BuildOutputTerminalProjection(IReadOnlyList<OutputEntry> outputEntries)
+        {
+            // The baseline projection keeps retained-history formatting deterministic for tests and future append/rebuild work without changing shared output ownership.
+            ArgumentNullException.ThrowIfNull(outputEntries);
+
+            return string.Join(
+                Environment.NewLine,
+                outputEntries.SelectMany(BuildOutputTerminalLines));
+        }
+
+        /// <summary>
+        /// Builds the renderable terminal lines for one retained output entry, including ANSI severity styling for the summary line.
+        /// </summary>
+        /// <param name="outputEntry">The retained output entry that should be projected into renderable terminal lines.</param>
+        /// <returns>The projected terminal lines ready to be written to the terminal surface.</returns>
+        private static IReadOnlyList<string> BuildOutputTerminalRenderableLines(OutputEntry outputEntry)
+        {
+            // The renderable projection keeps the plain-text contract intact for tests while layering ANSI styling onto the terminal-only summary line.
+            ArgumentNullException.ThrowIfNull(outputEntry);
+
+            var projectedLines = BuildOutputTerminalLines(outputEntry).ToArray();
+            projectedLines[0] = ApplyOutputTerminalSeverityStyling(outputEntry.Level, projectedLines[0]);
+            return projectedLines;
+        }
+
+        /// <summary>
+        /// Builds the terminal lines for one retained output entry.
+        /// </summary>
+        /// <param name="outputEntry">The retained output entry that should be projected into terminal lines.</param>
+        /// <returns>The projected terminal lines for the supplied output entry.</returns>
+        private static IReadOnlyList<string> BuildOutputTerminalLines(OutputEntry outputEntry)
+        {
+            // Each entry becomes one summary line followed by any inline details and optional event code so the terminal stays chronological and scan-friendly.
+            ArgumentNullException.ThrowIfNull(outputEntry);
+
+            var projectedLines = new List<string>
+            {
+                BuildOutputTerminalSummaryLine(outputEntry)
+            };
+
+            projectedLines.AddRange(BuildOutputTerminalDetailLines(outputEntry.Details));
+
+            if (!string.IsNullOrWhiteSpace(outputEntry.EventCode))
+            {
+                // Event codes remain visually grouped with their related summary line by using the same inline indentation contract as detail text.
+                projectedLines.Add($"  Event code: {outputEntry.EventCode}");
+            }
+
+            return projectedLines;
+        }
+
+        /// <summary>
+        /// Builds the summary line for one retained output entry.
+        /// </summary>
+        /// <param name="outputEntry">The retained output entry that should be converted into a summary line.</param>
+        /// <returns>The projected summary line for the supplied output entry.</returns>
+        private static string BuildOutputTerminalSummaryLine(OutputEntry outputEntry)
+        {
+            // The summary line preserves the existing timestamp, source, and summary ordering contract while moving the presentation into a terminal surface.
+            ArgumentNullException.ThrowIfNull(outputEntry);
+
+            return $"{outputEntry.TimestampUtc.ToLocalTime():HH:mm:ss} {outputEntry.Source} {outputEntry.Summary}";
+        }
+
+        /// <summary>
+        /// Builds the inline terminal detail lines for one retained output detail payload.
+        /// </summary>
+        /// <param name="details">The optional detail payload that should be projected beneath the related summary line.</param>
+        /// <returns>The ordered inline terminal detail lines for the supplied payload.</returns>
+        private static IReadOnlyList<string> BuildOutputTerminalDetailLines(string? details)
+        {
+            // Supported newline variants are normalized once so retained diagnostic detail renders consistently regardless of the originating platform.
+            if (string.IsNullOrWhiteSpace(details))
+            {
+                return Array.Empty<string>();
+            }
+
+            return details
+                .Split(OutputDetailLineSeparators, StringSplitOptions.None)
+                .Select(detailLine => $"  {detailLine}")
+                .ToArray();
+        }
+
+        /// <summary>
+        /// Applies ANSI severity styling to a terminal summary line while preserving the existing summary text contract.
+        /// </summary>
+        /// <param name="level">The severity level that should control the rendered styling.</param>
+        /// <param name="summaryLine">The plain summary line text that should be wrapped with ANSI styling.</param>
+        /// <returns>The ANSI-styled summary line for terminal rendering.</returns>
+        private static string ApplyOutputTerminalSeverityStyling(OutputLevel level, string summaryLine)
+        {
+            // ANSI styling keeps the textual summary contract unchanged while making severity visually distinct inside the terminal surface.
+            ArgumentException.ThrowIfNullOrWhiteSpace(summaryLine);
+
+            var severityEscapeSequence = level switch
+            {
+                OutputLevel.Debug => "\u001b[90m",
+                OutputLevel.Info => "\u001b[94m",
+                OutputLevel.Warning => "\u001b[93;1m",
+                OutputLevel.Error => "\u001b[91;1m",
+                _ => OutputTerminalSeverityReset
+            };
+
+            return string.Concat(severityEscapeSequence, summaryLine, OutputTerminalSeverityReset);
+        }
+
+        /// <summary>
+        /// Creates the search options used by the official xterm.js search addon for the Workbench output panel.
+        /// </summary>
+        /// <returns>The terminal search options used for panel-local find operations.</returns>
+        private static IReadOnlyDictionary<string, object> CreateOutputTerminalSearchOptions()
+        {
+            // The first-delivery search experience stays intentionally lightweight by using incremental, case-insensitive literal matching.
+            return new Dictionary<string, object>
+            {
+                ["caseSensitive"] = false,
+                ["incremental"] = true,
+                ["regex"] = false,
+                ["wholeWord"] = false
+            };
+        }
+
+        /// <summary>
+        /// Returns the append-only output entries that can be written directly to the terminal, or <see langword="null"/> when the terminal must rebuild from retained shared state.
+        /// </summary>
+        /// <param name="currentEntries">The current retained output entries owned by the shared output service.</param>
+        /// <param name="projectedEntryIds">The entry identifiers already projected into the terminal, including any queued appends.</param>
+        /// <returns>The append-only entries that can be written directly, or <see langword="null"/> when a rebuild is required.</returns>
+        private static IReadOnlyList<OutputEntry>? BuildOutputTerminalAppendEntries(
+            IReadOnlyList<OutputEntry> currentEntries,
+            IReadOnlyList<string> projectedEntryIds)
+        {
+            // Direct appends are safe only when the retained history still starts with the entries already written to the terminal.
+            ArgumentNullException.ThrowIfNull(currentEntries);
+            ArgumentNullException.ThrowIfNull(projectedEntryIds);
+
+            if (currentEntries.Count < projectedEntryIds.Count)
+            {
+                return null;
+            }
+
+            for (var entryIndex = 0; entryIndex < projectedEntryIds.Count; entryIndex++)
+            {
+                if (!string.Equals(currentEntries[entryIndex].Id, projectedEntryIds[entryIndex], StringComparison.Ordinal))
+                {
+                    return null;
+                }
+            }
+
+            return currentEntries
+                .Skip(projectedEntryIds.Count)
+                .ToArray();
+        }
+
+        /// <summary>
+        /// Creates the terminal options used by the read-only Workbench output surface.
+        /// </summary>
+        /// <returns>The terminal options used for the Workbench output projection.</returns>
+        private static TerminalOptions CreateOutputTerminalOptions(IReadOnlyDictionary<string, string>? themeValues = null)
+        {
+            // The output terminal remains read-only and shell-aligned, while optional theme values let the host follow the active Radzen light or dark appearance.
+            var terminalOptions = new TerminalOptions
+            {
+                CursorBlink = false,
+                DisableStdin = true,
+                FontFamily = "Consolas, \"Courier New\", monospace",
+                FontSize = 12,
+                Theme = BuildOutputTerminalTheme(themeValues)
+            };
+
+            return terminalOptions;
+        }
+
+        /// <summary>
+        /// Builds the terminal theme that keeps the output surface aligned with the current shell appearance tokens.
+        /// </summary>
+        /// <param name="themeValues">The browser-derived terminal theme values, or <see langword="null"/> to use package defaults until browser values are available.</param>
+        /// <returns>The terminal theme that should be applied to the hosted output surface.</returns>
+        private static XtermBlazorTheme BuildOutputTerminalTheme(IReadOnlyDictionary<string, string>? themeValues)
+        {
+            // The theme helper maps browser-derived shell tokens into xterm.js palette values so ANSI severity colors remain readable in both light and dark modes.
+            return new XtermBlazorTheme
+            {
+                Background = GetOutputTerminalThemeValue(themeValues, "background"),
+                Foreground = GetOutputTerminalThemeValue(themeValues, "foreground"),
+                Cursor = GetOutputTerminalThemeValue(themeValues, "cursor"),
+                CursorAccent = GetOutputTerminalThemeValue(themeValues, "cursorAccent"),
+                SelectionBackground = GetOutputTerminalThemeValue(themeValues, "selectionBackground"),
+                SelectionInactiveBackground = GetOutputTerminalThemeValue(themeValues, "selectionInactiveBackground"),
+                ScrollbarSliderBackground = GetOutputTerminalThemeValue(themeValues, "scrollbarSliderBackground"),
+                ScrollbarSliderHoverBackground = GetOutputTerminalThemeValue(themeValues, "scrollbarSliderHoverBackground"),
+                ScrollbarSliderActiveBackground = GetOutputTerminalThemeValue(themeValues, "scrollbarSliderActiveBackground"),
+                Black = GetOutputTerminalThemeValue(themeValues, "black"),
+                Red = GetOutputTerminalThemeValue(themeValues, "red"),
+                Green = GetOutputTerminalThemeValue(themeValues, "green"),
+                Yellow = GetOutputTerminalThemeValue(themeValues, "yellow"),
+                Blue = GetOutputTerminalThemeValue(themeValues, "blue"),
+                Magenta = GetOutputTerminalThemeValue(themeValues, "magenta"),
+                Cyan = GetOutputTerminalThemeValue(themeValues, "cyan"),
+                White = GetOutputTerminalThemeValue(themeValues, "white"),
+                BrightBlack = GetOutputTerminalThemeValue(themeValues, "brightBlack"),
+                BrightRed = GetOutputTerminalThemeValue(themeValues, "brightRed"),
+                BrightGreen = GetOutputTerminalThemeValue(themeValues, "brightGreen"),
+                BrightYellow = GetOutputTerminalThemeValue(themeValues, "brightYellow"),
+                BrightBlue = GetOutputTerminalThemeValue(themeValues, "brightBlue"),
+                BrightMagenta = GetOutputTerminalThemeValue(themeValues, "brightMagenta"),
+                BrightCyan = GetOutputTerminalThemeValue(themeValues, "brightCyan"),
+                BrightWhite = GetOutputTerminalThemeValue(themeValues, "brightWhite")
+            };
+        }
+
+        /// <summary>
+        /// Returns one browser-derived terminal theme value or an empty string when the browser has not yet supplied that value.
+        /// </summary>
+        /// <param name="themeValues">The browser-derived theme values, if available.</param>
+        /// <param name="key">The terminal theme key that should be read.</param>
+        /// <returns>The requested terminal theme value, or an empty string when no value is available yet.</returns>
+        private static string GetOutputTerminalThemeValue(IReadOnlyDictionary<string, string>? themeValues, string key)
+        {
+            // Empty-string fallbacks let the initial terminal mount succeed before the browser reports the active shell palette.
+            ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+            if (themeValues is null)
+            {
+                return string.Empty;
+            }
+
+            return themeValues.TryGetValue(key, out var value)
+                ? value
+                : string.Empty;
+        }
+
+        /// <summary>
+        /// Invalidates the current terminal instance so the next render rebuilds retained history into a fresh terminal surface.
+        /// </summary>
+        private void InvalidateOutputTerminalProjection()
+        {
+            // Recreating the terminal component remains the clean rebuild path when the DOM host is remounted by panel open or close transitions.
+            ResetOutputTerminalProjectionState();
+            _outputTerminalRenderKey++;
+        }
+
+        /// <summary>
+        /// Resets the layout-owned terminal projection state without touching the shared retained output stream.
+        /// </summary>
+        private void ResetOutputTerminalProjectionState()
+        {
+            // Resetting the projection state keeps rebuild responsibility in the layout while preserving the shared output service as the only source of truth.
+            _outputTerminal = null;
+            _isOutputSelectionAvailable = false;
+            _isOutputTerminalReady = false;
+            _outputFindInputShouldReceiveFocus = false;
+            _pendingOutputTerminalEntries.Clear();
+            _projectedOutputEntryIds = [];
+            _outputTerminalNeedsRebuild = true;
+            _outputTerminalNeedsPresentationRefresh = true;
+        }
+
+        /// <summary>
+        /// Synchronizes the hosted terminal with the retained output stream, current shell theme, and panel fit requirements.
+        /// </summary>
+        /// <returns>A task that completes when any pending rebuild, append, theme, fit, and deferred scroll work has finished.</returns>
+        private async Task SynchronizeOutputTerminalAsync()
+        {
+            // Synchronization runs after render so the layout can choose the lightest safe path: append when history only grows at the tail, otherwise rebuild from retained state.
+            if (_outputTerminal is null || !_isOutputTerminalReady)
+            {
+                return;
+            }
+
+            if (_outputTerminalNeedsRebuild)
+            {
+                await RebuildOutputTerminalFromSharedStateAsync();
+            }
+            else if (_pendingOutputTerminalEntries.Count > 0)
+            {
+                await AppendPendingOutputEntriesToTerminalAsync();
+            }
+
+            if (_outputTerminalNeedsPresentationRefresh)
+            {
+                await RefreshOutputTerminalPresentationAsync();
+            }
+
+            await FitOutputTerminalAsync();
+
+            if (_pendingScrollToEnd && OutputPanelState.IsAutoScrollEnabled && _outputPanelModule is not null)
+            {
+                // Deferred scrolling happens after the terminal update and fit work so the viewport moves against the final rendered buffer height.
+                await _outputTerminal.ScrollToBottom();
+            }
+
+            _pendingScrollToEnd = false;
+        }
+
+        /// <summary>
+        /// Rebuilds the hosted terminal buffer from the retained shared output state.
+        /// </summary>
+        /// <returns>A task that completes when the full retained history has been written to the terminal.</returns>
+        private async Task RebuildOutputTerminalFromSharedStateAsync()
+        {
+            // Rebuilds are used when the terminal is first created or when retained history changed outside the simple append-only path.
+            if (_outputTerminal is null)
+            {
+                return;
+            }
+
+            var currentEntries = OutputEntries;
+            await _outputTerminal.Reset();
+
+            foreach (var outputEntry in currentEntries)
+            {
+                // Each retained entry is projected into styled terminal lines so the shell preserves chronological text while surfacing severity visually.
+                foreach (var terminalLine in BuildOutputTerminalRenderableLines(outputEntry))
+                {
+                    await _outputTerminal.WriteLine(terminalLine);
+                }
+            }
+
+            _projectedOutputEntryIds = currentEntries
+                .Select(outputEntry => outputEntry.Id)
+                .ToArray();
+            _pendingOutputTerminalEntries.Clear();
+            _outputTerminalNeedsRebuild = false;
+        }
+
+        /// <summary>
+        /// Appends the queued tail entries to the hosted terminal without replaying the full retained stream.
+        /// </summary>
+        /// <returns>A task that completes when every queued append entry has been written.</returns>
+        private async Task AppendPendingOutputEntriesToTerminalAsync()
+        {
+            // Append mode avoids terminal resets during normal live output flow while still deferring to rebuilds when ordering assumptions no longer hold.
+            if (_outputTerminal is null || _pendingOutputTerminalEntries.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var outputEntry in _pendingOutputTerminalEntries)
+            {
+                // Appended entries use the same styled line projection as retained-history rebuilds so both code paths stay visually identical.
+                foreach (var terminalLine in BuildOutputTerminalRenderableLines(outputEntry))
+                {
+                    await _outputTerminal.WriteLine(terminalLine);
+                }
+            }
+
+            _projectedOutputEntryIds = _projectedOutputEntryIds
+                .Concat(_pendingOutputTerminalEntries.Select(outputEntry => outputEntry.Id))
+                .ToArray();
+            _pendingOutputTerminalEntries.Clear();
+        }
+
+        /// <summary>
+        /// Refreshes the terminal options that depend on browser-derived shell appearance values.
+        /// </summary>
+        /// <returns>A task that completes when the current terminal options have been refreshed.</returns>
+        private async Task RefreshOutputTerminalPresentationAsync()
+        {
+            // Theme refresh stays browser-driven because the Radzen appearance toggle ultimately changes CSS tokens that only the browser can read accurately.
+            if (_outputTerminal is null || _outputPanelModule is null)
+            {
+                return;
+            }
+
+            var themeValues = await _outputPanelModule.InvokeAsync<Dictionary<string, string>>("readOutputTerminalTheme", _outputStreamElement);
+            await _outputTerminal.SetOptions(CreateOutputTerminalOptions(themeValues));
+            _outputTerminalNeedsPresentationRefresh = false;
+        }
+
+        /// <summary>
+        /// Fits the hosted terminal to the current output-panel dimensions by using the official xterm.js fit addon.
+        /// </summary>
+        /// <returns>A task that completes when the fit request has been issued.</returns>
+        private async Task FitOutputTerminalAsync()
+        {
+            // The fit addon keeps the terminal sizing logic minimal in .NET while letting xterm.js calculate rows and columns from the current host dimensions.
+            if (_outputTerminal is null)
+            {
+                return;
+            }
+
+            await _outputTerminal
+                .Addon(OutputTerminalFitAddonId)
+                .InvokeVoidAsync("fit");
+        }
+
+        /// <summary>
+        /// Returns the entry identifiers already projected into the terminal, including any queued append entries that have not yet been flushed to the browser.
+        /// </summary>
+        /// <returns>The effective projected output-entry identifiers.</returns>
+        private IReadOnlyList<string> GetEffectiveProjectedOutputEntryIds()
+        {
+            // Queued append identifiers are included so repeated output changes before the next render do not cause duplicate appends.
+            if (_pendingOutputTerminalEntries.Count == 0)
+            {
+                return _projectedOutputEntryIds;
+            }
+
+            return _projectedOutputEntryIds
+                .Concat(_pendingOutputTerminalEntries.Select(outputEntry => outputEntry.Id))
+                .ToArray();
+        }
+
+        /// <summary>
+        /// Queues either append-only terminal writes or a retained-history rebuild according to how the shared output stream changed.
+        /// </summary>
+        /// <param name="currentEntries">The current retained output entries owned by the shared output service.</param>
+        private void QueueOutputTerminalProjectionUpdate(IReadOnlyList<OutputEntry> currentEntries)
+        {
+            // Hidden or not-yet-ready terminal paths always fall back to rebuild so reopening the panel projects the latest retained history without trusting stale terminal state.
+            ArgumentNullException.ThrowIfNull(currentEntries);
+
+            if (!OutputPanelState.IsVisible || !_isOutputTerminalReady || _outputTerminal is null)
+            {
+                _pendingOutputTerminalEntries.Clear();
+                _outputTerminalNeedsRebuild = true;
+                return;
+            }
+
+            if (_outputTerminalNeedsRebuild)
+            {
+                return;
+            }
+
+            var appendedEntries = BuildOutputTerminalAppendEntries(currentEntries, GetEffectiveProjectedOutputEntryIds());
+            if (appendedEntries is null)
+            {
+                _pendingOutputTerminalEntries.Clear();
+                _outputTerminalNeedsRebuild = true;
+                return;
+            }
+
+            if (appendedEntries.Count == 0)
+            {
+                return;
+            }
+
+            _pendingOutputTerminalEntries.AddRange(appendedEntries);
         }
 
         /// <summary>
@@ -1051,14 +1808,13 @@ namespace WorkbenchHost.Components.Layout
         /// <returns>A task that completes when the browser helper has been initialized.</returns>
         private async Task EnsureOutputPanelInteropAsync()
         {
-            // The module is loaded lazily so collapsed panels do not pay any browser-side setup cost.
-            if (_outputPanelModule is not null)
+            // The module is loaded lazily so collapsed panels do not pay any browser-side setup cost, then reinitialized so terminal remounts keep scroll tracking attached.
+            if (_outputPanelModule is null)
             {
-                return;
+                _outputPanelModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", OutputPanelModulePath);
             }
 
-            _outputPanelModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", OutputPanelModulePath);
-            _dotNetObjectReference = DotNetObjectReference.Create(this);
+            _dotNetObjectReference ??= DotNetObjectReference.Create(this);
             await _outputPanelModule.InvokeVoidAsync("initializeOutputPanel", _outputStreamElement, _dotNetObjectReference);
         }
 
@@ -1097,6 +1853,23 @@ namespace WorkbenchHost.Components.Layout
         }
 
         /// <summary>
+        /// Requests a layout refresh when the component is interactive and silently skips the refresh when tests exercise the layout without an assigned render handle.
+        /// </summary>
+        /// <returns>A task that completes when the refresh request has been processed or intentionally skipped.</returns>
+        private Task RequestLayoutRefreshAsync()
+        {
+            // Direct interaction tests instantiate the layout without a renderer, so refresh requests must tolerate the missing render handle while real interactive renders still update normally.
+            try
+            {
+                return InvokeAsync(StateHasChanged);
+            }
+            catch (InvalidOperationException)
+            {
+                return Task.CompletedTask;
+            }
+        }
+
+        /// <summary>
         /// Responds to output-stream changes by requesting a shell re-render.
         /// </summary>
         /// <param name="sender">The object that raised the change notification.</param>
@@ -1109,6 +1882,8 @@ namespace WorkbenchHost.Components.Layout
                 _pendingScrollToEnd = true;
             }
 
+            QueueOutputTerminalProjectionUpdate(OutputEntries);
+
             _ = InvokeAsync(StateHasChanged);
         }
 
@@ -1120,6 +1895,18 @@ namespace WorkbenchHost.Components.Layout
         private void HandleOutputPanelStateChanged(object? sender, EventArgs e)
         {
             // Panel-state changes can affect layout rows, toolbar pressed states, and hidden severity indicators, so the shell re-renders from one place.
+            if (!OutputPanelState.IsVisible)
+            {
+                // Closing the panel removes the terminal from the render tree, so the cached component reference is cleared immediately.
+                _isOutputFindSurfaceVisible = false;
+                ResetOutputTerminalProjectionState();
+            }
+            else
+            {
+                // Visible panel-state changes can affect fit and theme application, so the next render refreshes terminal presentation from browser-derived values.
+                _outputTerminalNeedsPresentationRefresh = true;
+            }
+
             _ = InvokeAsync(StateHasChanged);
         }
 

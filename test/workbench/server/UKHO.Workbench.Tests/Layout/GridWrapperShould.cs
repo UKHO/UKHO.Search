@@ -141,6 +141,27 @@ namespace UKHO.Workbench.Layout.Tests
                 wrapper.Css);
         }
 
+        /// <summary>
+        /// Confirms the wrapper accepts fractional star track tokens when proportional splitter ratios are restored after browser resizing.
+        /// </summary>
+        [Fact]
+        public void PreserveFractionalStarTrackTokensWhenReopeningAResizedLayout()
+        {
+            // Browser resize handling now persists splitter ratios as fractional star tracks so the shell can scale with the viewport while keeping the original pane ratio.
+            var wrapper = new GridWrapper();
+
+            wrapper.AddRow("48");
+            wrapper.AddRow("44");
+            wrapper.AddRow("1.303*");
+            wrapper.AddSplitterRow("4");
+            wrapper.AddRow("1*");
+            wrapper.AddRow("30");
+
+            Assert.Equal(
+                "display: grid; width: 100%; height: 100%; grid-template-rows: 48px 44px 1.303fr 4px 1fr 30px;",
+                wrapper.Css);
+        }
+
         private class GenerateColumnsTemplatesData : TheoryData<List<string>, string>
         {
             public GenerateColumnsTemplatesData()

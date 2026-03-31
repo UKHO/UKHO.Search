@@ -9,6 +9,7 @@
     <RadzenTheme Theme="material-dark" />
     <link rel="stylesheet" href="css/site.css" />
     <link rel="stylesheet" href="@Assets["WorkbenchHost.styles.css"]" />
+    <link rel="stylesheet" href="_content/XtermBlazor/XtermBlazor.min.css" />
     <link rel="icon" href="favicon.ico" />
     <HeadOutlet @rendermode="@InteractiveServer" />
 </head>
@@ -16,7 +17,12 @@
 <body>
     <Routes @rendermode="@InteractiveServer" />
     <ReconnectModal />
+    @* The output panel uses the official xterm.js fit and search addons so the hosted terminal can resize and search cleanly without shell-specific hacks. *@
+    <script src="@OutputTerminalFitAddonScript"></script>
+    <script src="@OutputTerminalSearchAddonScript"></script>
     <script src="_framework/blazor.web.js"></script>
+    <script src="_content/XtermBlazor/XtermBlazor.min.js"></script>
+    <script>XtermBlazor.registerAddons({"addon-fit": new FitAddon.FitAddon(), "addon-search": new SearchAddon.SearchAddon()});</script>
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
 </body>
 
@@ -29,8 +35,15 @@
     [Inject]
     private ThemeService ThemeService { get; set; }
 
+    @* The output panel loads the official fit addon from the package author's documented CDN path so the hosted terminal can resize cleanly. *@
+    private static string OutputTerminalFitAddonScript => "https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.11.0/lib/addon-fit.min.js";
+
+    @* The terminal-native find workflow uses the official search addon so the shell does not need custom text-search logic. *@
+    private static string OutputTerminalSearchAddonScript => "https://cdn.jsdelivr.net/npm/@xterm/addon-search@0.15.0/lib/addon-search.min.js";
+
     protected override void OnInitialized()
     {
+        // Theme initialization remains cookie-driven so the interactive shell starts in the same Radzen light or dark theme the user previously selected.
         base.OnInitialized();
 
         if (HttpContext != null)
