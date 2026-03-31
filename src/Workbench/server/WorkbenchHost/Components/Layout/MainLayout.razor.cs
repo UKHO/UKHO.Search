@@ -675,14 +675,15 @@ namespace WorkbenchHost.Components.Layout
             // Browser-driven resize notifications should only refit the hosted terminal, because forcing a full layout re-render on every resize creates unnecessary shell churn.
             return InvokeAsync(async () =>
             {
-                if (!OutputPanelState.IsVisible || !_isOutputTerminalReady)
+                var outputTerminal = _outputTerminal;
+                if (!IsCurrentOutputTerminal(outputTerminal))
                 {
                     return;
                 }
 
                 try
                 {
-                    await FitOutputTerminalAsync();
+                    await FitOutputTerminalAsync(outputTerminal);
                 }
                 catch (JSDisconnectedException)
                 {
@@ -1620,37 +1621,65 @@ namespace WorkbenchHost.Components.Layout
         }
 
         /// <summary>
+        /// Determines whether a captured terminal reference still represents the currently visible output terminal.
+        /// </summary>
+        /// <param name="outputTerminal">The captured terminal reference that an in-flight async operation wants to keep using.</param>
+        /// <returns><see langword="true"/> when the captured terminal is still the live visible terminal; otherwise, <see langword="false"/>.</returns>
+        private bool IsCurrentOutputTerminal(Xterm? outputTerminal)
+        {
+            // Async terminal work snapshots the component reference, so later awaits must stop when the panel closes or a new terminal instance replaces the old one.
+            return outputTerminal is not null
+                && OutputPanelState.IsVisible
+                && _isOutputTerminalReady
+                && ReferenceEquals(_outputTerminal, outputTerminal);
+        }
+
+        /// <summary>
         /// Synchronizes the hosted terminal with the retained output stream, current shell theme, and panel fit requirements.
         /// </summary>
         /// <returns>A task that completes when any pending rebuild, append, theme, fit, and deferred scroll work has finished.</returns>
         private async Task SynchronizeOutputTerminalAsync()
         {
             // Synchronization runs after render so the layout can choose the lightest safe path: append when history only grows at the tail, otherwise rebuild from retained state.
-            if (_outputTerminal is null || !_isOutputTerminalReady)
+            var outputTerminal = _outputTerminal;
+            if (!IsCurrentOutputTerminal(outputTerminal))
             {
                 return;
             }
 
             if (_outputTerminalNeedsRebuild)
             {
-                await RebuildOutputTerminalFromSharedStateAsync();
+                await RebuildOutputTerminalFromSharedStateAsync(outputTerminal);
             }
             else if (_pendingOutputTerminalEntries.Count > 0)
             {
-                await AppendPendingOutputEntriesToTerminalAsync();
+                await AppendPendingOutputEntriesToTerminalAsync(outputTerminal);
+            }
+
+            if (!IsCurrentOutputTerminal(outputTerminal))
+            {
+                return;
             }
 
             if (_outputTerminalNeedsPresentationRefresh)
             {
-                await RefreshOutputTerminalPresentationAsync();
+                await RefreshOutputTerminalPresentationAsync(outputTerminal);
             }
 
-            await FitOutputTerminalAsync();
+            if (!IsCurrentOutputTerminal(outputTerminal))
+            {
+                return;
+            }
 
-            if (_pendingScrollToEnd && OutputPanelState.IsAutoScrollEnabled && _outputPanelModule is not null)
+            await FitOutputTerminalAsync(outputTerminal);
+
+            if (_pendingScrollToEnd
+                && OutputPanelState.IsAutoScrollEnabled
+                && _outputPanelModule is not null
+                && IsCurrentOutputTerminal(outputTerminal))
             {
                 // Deferred scrolling happens after the terminal update and fit work so the viewport moves against the final rendered buffer height.
-                await _outputTerminal.ScrollToBottom();
+                await outputTerminal.ScrollToBottom();
             }
 
             _pendingScrollToEnd = false;
@@ -1660,24 +1689,41 @@ namespace WorkbenchHost.Components.Layout
         /// Rebuilds the hosted terminal buffer from the retained shared output state.
         /// </summary>
         /// <returns>A task that completes when the full retained history has been written to the terminal.</returns>
-        private async Task RebuildOutputTerminalFromSharedStateAsync()
+        private async Task RebuildOutputTerminalFromSharedStateAsync(Xterm outputTerminal)
         {
             // Rebuilds are used when the terminal is first created or when retained history changed outside the simple append-only path.
-            if (_outputTerminal is null)
+            ArgumentNullException.ThrowIfNull(outputTerminal);
+
+            if (!IsCurrentOutputTerminal(outputTerminal))
             {
                 return;
             }
 
             var currentEntries = OutputEntries;
-            await _outputTerminal.Reset();
+            await outputTerminal.Reset();
+
+            if (!IsCurrentOutputTerminal(outputTerminal))
+            {
+                return;
+            }
 
             foreach (var outputEntry in currentEntries)
             {
                 // Each retained entry is projected into styled terminal lines so the shell preserves chronological text while surfacing severity visually.
                 foreach (var terminalLine in BuildOutputTerminalRenderableLines(outputEntry))
                 {
-                    await _outputTerminal.WriteLine(terminalLine);
+                    if (!IsCurrentOutputTerminal(outputTerminal))
+                    {
+                        return;
+                    }
+
+                    await outputTerminal.WriteLine(terminalLine);
                 }
+            }
+
+            if (!IsCurrentOutputTerminal(outputTerminal))
+            {
+                return;
             }
 
             _projectedOutputEntryIds = currentEntries
@@ -1691,10 +1737,12 @@ namespace WorkbenchHost.Components.Layout
         /// Appends the queued tail entries to the hosted terminal without replaying the full retained stream.
         /// </summary>
         /// <returns>A task that completes when every queued append entry has been written.</returns>
-        private async Task AppendPendingOutputEntriesToTerminalAsync()
+        private async Task AppendPendingOutputEntriesToTerminalAsync(Xterm outputTerminal)
         {
             // Append mode avoids terminal resets during normal live output flow while still deferring to rebuilds when ordering assumptions no longer hold.
-            if (_outputTerminal is null || _pendingOutputTerminalEntries.Count == 0)
+            ArgumentNullException.ThrowIfNull(outputTerminal);
+
+            if (!IsCurrentOutputTerminal(outputTerminal) || _pendingOutputTerminalEntries.Count == 0)
             {
                 return;
             }
@@ -1705,8 +1753,18 @@ namespace WorkbenchHost.Components.Layout
                 // Appended entries use the same styled line projection as retained-history rebuilds so both code paths stay visually identical.
                 foreach (var terminalLine in BuildOutputTerminalRenderableLines(outputEntry))
                 {
-                    await _outputTerminal.WriteLine(terminalLine);
+                    if (!IsCurrentOutputTerminal(outputTerminal))
+                    {
+                        return;
+                    }
+
+                    await outputTerminal.WriteLine(terminalLine);
                 }
+            }
+
+            if (!IsCurrentOutputTerminal(outputTerminal))
+            {
+                return;
             }
 
             _projectedOutputEntryIds = _projectedOutputEntryIds
@@ -1750,16 +1808,30 @@ namespace WorkbenchHost.Components.Layout
         /// Refreshes the terminal options that depend on browser-derived shell appearance values.
         /// </summary>
         /// <returns>A task that completes when the current terminal options have been refreshed.</returns>
-        private async Task RefreshOutputTerminalPresentationAsync()
+        private async Task RefreshOutputTerminalPresentationAsync(Xterm outputTerminal)
         {
             // Theme refresh stays browser-driven because the Radzen appearance toggle ultimately changes CSS tokens that only the browser can read accurately.
-            if (_outputTerminal is null || _outputPanelModule is null)
+            ArgumentNullException.ThrowIfNull(outputTerminal);
+
+            var outputPanelModule = _outputPanelModule;
+            if (!IsCurrentOutputTerminal(outputTerminal) || outputPanelModule is null)
             {
                 return;
             }
 
-            var themeValues = await _outputPanelModule.InvokeAsync<Dictionary<string, string>>("readOutputTerminalTheme", _outputStreamElement);
-            await _outputTerminal.SetOptions(CreateOutputTerminalOptions(themeValues));
+            var themeValues = await outputPanelModule.InvokeAsync<Dictionary<string, string>>("readOutputTerminalTheme", _outputStreamElement);
+            if (!IsCurrentOutputTerminal(outputTerminal))
+            {
+                return;
+            }
+
+            await outputTerminal.SetOptions(CreateOutputTerminalOptions(themeValues));
+
+            if (!IsCurrentOutputTerminal(outputTerminal))
+            {
+                return;
+            }
+
             _outputTerminalNeedsPresentationRefresh = false;
         }
 
@@ -1767,15 +1839,17 @@ namespace WorkbenchHost.Components.Layout
         /// Fits the hosted terminal to the current output-panel dimensions by using the official xterm.js fit addon.
         /// </summary>
         /// <returns>A task that completes when the fit request has been issued.</returns>
-        private async Task FitOutputTerminalAsync()
+        private async Task FitOutputTerminalAsync(Xterm outputTerminal)
         {
             // The fit addon keeps the terminal sizing logic minimal in .NET while letting xterm.js calculate rows and columns from the current host dimensions.
-            if (_outputTerminal is null)
+            ArgumentNullException.ThrowIfNull(outputTerminal);
+
+            if (!IsCurrentOutputTerminal(outputTerminal))
             {
                 return;
             }
 
-            await _outputTerminal
+            await outputTerminal
                 .Addon(OutputTerminalFitAddonId)
                 .InvokeVoidAsync("fit");
         }

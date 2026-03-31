@@ -94,6 +94,124 @@
                 </GridElement>
             }
 
+            @if (OutputPanelState.IsVisible)
+            {
+                <GridElement Row="@OutputPanelRow" Column="1">
+                    <section class="workbench-shell__output-panel" data-region="output-panel" aria-label="Workbench output">
+                        <div class="workbench-shell__output-toolbar" role="toolbar" aria-label="Output panel actions">
+                            <button type="button"
+                                    class="workbench-shell__menu-button"
+                                    data-role="output-copy-selected"
+                                    disabled="@(!IsOutputSelectionAvailable)"
+                                    @onclick="CopySelectedOutputAsync">
+                                <RadzenIcon Icon="content_copy" />
+                                <span>Copy selected</span>
+                            </button>
+
+                            <button type="button"
+                                    class="workbench-shell__menu-button"
+                                    data-role="output-find"
+                                    aria-pressed="@IsOutputFindVisible"
+                                    @onclick="OpenOutputFindAsync">
+                                <RadzenIcon Icon="search" />
+                                <span>Find</span>
+                            </button>
+
+                            <button type="button"
+                                    class="workbench-shell__menu-button"
+                                    data-role="output-clear"
+                                    @onclick="ClearOutputAsync">
+                                <RadzenIcon Icon="delete_sweep" />
+                                <span>Clear</span>
+                            </button>
+
+                            <button type="button"
+                                    class="workbench-shell__menu-button"
+                                    data-role="output-auto-scroll"
+                                    aria-pressed="@OutputPanelState.IsAutoScrollEnabled"
+                                    @onclick="ToggleAutoScrollAsync">
+                                <RadzenIcon Icon="vertical_align_bottom" />
+                                <span>Auto-scroll</span>
+                            </button>
+
+                            <button type="button"
+                                    class="workbench-shell__menu-button"
+                                    data-role="output-scroll-to-end"
+                                    @onclick="ScrollOutputToEndAsync">
+                                <RadzenIcon Icon="arrow_downward" />
+                                <span>Scroll to end</span>
+                            </button>
+                        </div>
+
+                        @if (IsOutputFindVisible)
+                        {
+                            @* The find strip stays panel-local so keyboard and toolbar search both drive one terminal-native workflow above the hosted surface. *@
+                            <div class="workbench-shell__output-find-surface" data-role="output-find-surface">
+                                <label class="workbench-shell__output-find-label" for="workbench-output-find-input">Find</label>
+                                <input id="workbench-output-find-input"
+                                       class="workbench-shell__output-find-input"
+                                       data-role="output-find-input"
+                                       type="text"
+                                       value="@_outputFindText"
+                                       aria-label="Find output text"
+                                       placeholder="Find in output"
+                                       @ref="_outputFindInput"
+                                       @oninput="HandleOutputFindInputAsync"
+                                       @onkeydown="HandleOutputFindKeyDownAsync" />
+                                <button type="button"
+                                        class="workbench-shell__menu-button"
+                                        data-role="output-find-previous"
+                                        disabled="@string.IsNullOrWhiteSpace(_outputFindText)"
+                                        @onclick="FindPreviousOutputMatchAsync">
+                                    <RadzenIcon Icon="keyboard_arrow_up" />
+                                    <span>Previous</span>
+                                </button>
+                                <button type="button"
+                                        class="workbench-shell__menu-button"
+                                        data-role="output-find-next"
+                                        disabled="@string.IsNullOrWhiteSpace(_outputFindText)"
+                                        @onclick="FindNextOutputMatchAsync">
+                                    <RadzenIcon Icon="keyboard_arrow_down" />
+                                    <span>Next</span>
+                                </button>
+                                <button type="button"
+                                        class="workbench-shell__menu-button"
+                                        data-role="output-find-close"
+                                        @onclick="CloseOutputFindAsync">
+                                    <RadzenIcon Icon="close" />
+                                    <span>Close find</span>
+                                </button>
+                            </div>
+                        }
+
+                        @* The output panel now hosts one deterministic terminal wrapper so the shell can project retained history into a single read-only stream. *@
+                        <div class="workbench-shell__output-terminal-container">
+                            <div class="workbench-shell__output-terminal-host"
+                                 data-role="output-terminal-host"
+                                  data-output-find-state="@(IsOutputFindVisible ? "visible" : "hidden")"
+                                  data-output-selection-active="@IsOutputSelectionAvailable.ToString().ToLowerInvariant()"
+                                 data-output-surface="terminal"
+                                 data-output-history-mode="retained"
+                                 data-output-order="chronological"
+                                 data-output-selection-mode="text-first"
+                                 data-output-density="dense"
+                                 data-output-theme-scope="shell-tokens"
+                                 tabindex="0"
+                                 @key="_outputTerminalRenderKey"
+                                 @ref="_outputStreamElement">
+                                <Xterm @ref="_outputTerminal"
+                                       Class="workbench-shell__output-terminal-surface"
+                                       Style="display:block;width:100%;height:100%;"
+                                       Options="@OutputTerminalOptions"
+                                       Addons="@_outputTerminalAddons"
+                                       OnSelectionChange="HandleOutputTerminalSelectionChangedAsync"
+                                       OnFirstRender="HandleOutputTerminalFirstRenderAsync" />
+                            </div>
+                        </div>
+                    </section>
+                </GridElement>
+            }
+
             <GridElement Row="@WorkingAreaRow" Column="1">
                 @* The nested grid keeps the working-area splitters isolated so full-width shell chrome does not occupy splitter tracks. *@
                 <Grid>
@@ -278,124 +396,6 @@
                     </Content>
                 </Grid>
             </GridElement>
-
-            @if (OutputPanelState.IsVisible)
-            {
-                <GridElement Row="@OutputPanelRow" Column="1">
-                    <section class="workbench-shell__output-panel" data-region="output-panel" aria-label="Workbench output">
-                        <div class="workbench-shell__output-toolbar" role="toolbar" aria-label="Output panel actions">
-                            <button type="button"
-                                    class="workbench-shell__menu-button"
-                                    data-role="output-copy-selected"
-                                    disabled="@(!IsOutputSelectionAvailable)"
-                                    @onclick="CopySelectedOutputAsync">
-                                <RadzenIcon Icon="content_copy" />
-                                <span>Copy selected</span>
-                            </button>
-
-                            <button type="button"
-                                    class="workbench-shell__menu-button"
-                                    data-role="output-find"
-                                    aria-pressed="@IsOutputFindVisible"
-                                    @onclick="OpenOutputFindAsync">
-                                <RadzenIcon Icon="search" />
-                                <span>Find</span>
-                            </button>
-
-                            <button type="button"
-                                    class="workbench-shell__menu-button"
-                                    data-role="output-clear"
-                                    @onclick="ClearOutputAsync">
-                                <RadzenIcon Icon="delete_sweep" />
-                                <span>Clear</span>
-                            </button>
-
-                            <button type="button"
-                                    class="workbench-shell__menu-button"
-                                    data-role="output-auto-scroll"
-                                    aria-pressed="@OutputPanelState.IsAutoScrollEnabled"
-                                    @onclick="ToggleAutoScrollAsync">
-                                <RadzenIcon Icon="vertical_align_bottom" />
-                                <span>Auto-scroll</span>
-                            </button>
-
-                            <button type="button"
-                                    class="workbench-shell__menu-button"
-                                    data-role="output-scroll-to-end"
-                                    @onclick="ScrollOutputToEndAsync">
-                                <RadzenIcon Icon="arrow_downward" />
-                                <span>Scroll to end</span>
-                            </button>
-                        </div>
-
-                        @if (IsOutputFindVisible)
-                        {
-                            @* The find strip stays panel-local so keyboard and toolbar search both drive one terminal-native workflow above the hosted surface. *@
-                            <div class="workbench-shell__output-find-surface" data-role="output-find-surface">
-                                <label class="workbench-shell__output-find-label" for="workbench-output-find-input">Find</label>
-                                <input id="workbench-output-find-input"
-                                       class="workbench-shell__output-find-input"
-                                       data-role="output-find-input"
-                                       type="text"
-                                       value="@_outputFindText"
-                                       aria-label="Find output text"
-                                       placeholder="Find in output"
-                                       @ref="_outputFindInput"
-                                       @oninput="HandleOutputFindInputAsync"
-                                       @onkeydown="HandleOutputFindKeyDownAsync" />
-                                <button type="button"
-                                        class="workbench-shell__menu-button"
-                                        data-role="output-find-previous"
-                                        disabled="@string.IsNullOrWhiteSpace(_outputFindText)"
-                                        @onclick="FindPreviousOutputMatchAsync">
-                                    <RadzenIcon Icon="keyboard_arrow_up" />
-                                    <span>Previous</span>
-                                </button>
-                                <button type="button"
-                                        class="workbench-shell__menu-button"
-                                        data-role="output-find-next"
-                                        disabled="@string.IsNullOrWhiteSpace(_outputFindText)"
-                                        @onclick="FindNextOutputMatchAsync">
-                                    <RadzenIcon Icon="keyboard_arrow_down" />
-                                    <span>Next</span>
-                                </button>
-                                <button type="button"
-                                        class="workbench-shell__menu-button"
-                                        data-role="output-find-close"
-                                        @onclick="CloseOutputFindAsync">
-                                    <RadzenIcon Icon="close" />
-                                    <span>Close find</span>
-                                </button>
-                            </div>
-                        }
-
-                        @* The output panel now hosts one deterministic terminal wrapper so the shell can project retained history into a single read-only stream. *@
-                        <div class="workbench-shell__output-terminal-container">
-                            <div class="workbench-shell__output-terminal-host"
-                                 data-role="output-terminal-host"
-                                  data-output-find-state="@(IsOutputFindVisible ? "visible" : "hidden")"
-                                  data-output-selection-active="@IsOutputSelectionAvailable.ToString().ToLowerInvariant()"
-                                 data-output-surface="terminal"
-                                 data-output-history-mode="retained"
-                                 data-output-order="chronological"
-                                 data-output-selection-mode="text-first"
-                                 data-output-density="dense"
-                                 data-output-theme-scope="shell-tokens"
-                                 tabindex="0"
-                                 @key="_outputTerminalRenderKey"
-                                 @ref="_outputStreamElement">
-                                <Xterm @ref="_outputTerminal"
-                                       Class="workbench-shell__output-terminal-surface"
-                                       Style="display:block;width:100%;height:100%;"
-                                       Options="@OutputTerminalOptions"
-                                       Addons="@_outputTerminalAddons"
-                                       OnSelectionChange="HandleOutputTerminalSelectionChangedAsync"
-                                       OnFirstRender="HandleOutputTerminalFirstRenderAsync" />
-                            </div>
-                        </div>
-                    </section>
-                </GridElement>
-            }
 
             @if (IsRegionVisible(WorkbenchShellRegion.StatusBar))
             {

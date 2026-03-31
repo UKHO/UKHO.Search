@@ -17,6 +17,7 @@ using UKHO.Workbench.WorkbenchShell;
 using WorkbenchHost.Components.Layout;
 using WorkbenchHost.Components.Tools;
 using WorkbenchHost.Services;
+using XtermBlazor;
 using Xunit;
 
 namespace WorkbenchHost.Tests
@@ -116,6 +117,54 @@ namespace WorkbenchHost.Tests
             outputPaneHeight.ShouldBe("1*");
             outputPanelRow.ShouldBeGreaterThan(workingAreaRow);
             statusBarRow.ShouldBeGreaterThan(outputPanelRow);
+        }
+
+        /// <summary>
+        /// Confirms the working-area markup is rendered after the opened output panel so tab overflow popups can layer above the pane.
+        /// </summary>
+        [Fact]
+        public async Task RenderTheWorkingAreaAfterTheOpenedOutputPanelToPreserveTabOverflowLayering()
+        {
+            // The overflow dropdown must stay usable while the bottom pane is open, so the working area should own the higher stacking order in the shared outer grid.
+            await using var serviceProvider = CreateServiceProvider();
+            var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
+            var outputService = serviceProvider.GetRequiredService<IWorkbenchOutputService>();
+            SeedHostShell(shellManager);
+            outputService.SetPanelVisibility(true);
+            _ = shellManager.ActivateTool(ActivationTarget.CreateToolSurfaceTarget(OverviewToolId));
+
+            var renderer = new HtmlRenderer(serviceProvider, serviceProvider.GetRequiredService<ILoggerFactory>());
+            var html = await RenderLayoutAsync(renderer);
+            var outputPanelIndex = html.IndexOf("data-region=\"output-panel\"", StringComparison.Ordinal);
+            var toolSurfaceIndex = html.IndexOf("data-region=\"tool-surface\"", StringComparison.Ordinal);
+
+            outputPanelIndex.ShouldBeGreaterThanOrEqualTo(0);
+            toolSurfaceIndex.ShouldBeGreaterThan(outputPanelIndex);
+        }
+
+        /// <summary>
+        /// Confirms a terminal captured by an in-flight update is treated as stale once the output panel closes.
+        /// </summary>
+        [Fact]
+        public void TreatTheCapturedTerminalAsInactiveAfterTheOutputPanelCloses()
+        {
+            // Closing the panel resets the live terminal state, so any async rebuild that captured the previous terminal must stop using it immediately.
+            using var serviceProvider = CreateServiceProvider();
+            var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
+            var outputService = serviceProvider.GetRequiredService<IWorkbenchOutputService>();
+            var layout = CreateLayoutInstance(serviceProvider, shellManager);
+            var outputTerminal = new Xterm();
+
+            outputService.SetPanelVisibility(true);
+            SetPrivateFieldValue(layout, "_outputTerminal", outputTerminal);
+            SetPrivateFieldValue(layout, "_isOutputTerminalReady", true);
+
+            ((bool)InvokePrivateMethod(layout, "IsCurrentOutputTerminal", [outputTerminal])!).ShouldBeTrue();
+
+            outputService.SetPanelVisibility(false);
+            InvokePrivateMethod(layout, "ResetOutputTerminalProjectionState", []);
+
+            ((bool)InvokePrivateMethod(layout, "IsCurrentOutputTerminal", [outputTerminal])!).ShouldBeFalse();
         }
 
         /// <summary>
@@ -951,6 +1000,25 @@ namespace WorkbenchHost.Tests
             }
 
             propertyInfo.SetValue(layout, value);
+        }
+
+        /// <summary>
+        /// Sets one private field value on the supplied layout instance through reflection for focused state-based tests.
+        /// </summary>
+        /// <param name="layout">The layout instance whose field should be populated.</param>
+        /// <param name="fieldName">The private field name to populate.</param>
+        /// <param name="value">The value that should be assigned to the field.</param>
+        private static void SetPrivateFieldValue(MainLayout layout, string fieldName, object? value)
+        {
+            // Focused layout-state tests sometimes need to simulate renderer-owned fields directly without promoting those fields into the component surface.
+            var fieldInfo = typeof(MainLayout).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+
+            if (fieldInfo is null)
+            {
+                throw new InvalidOperationException($"The field '{fieldName}' was not found on {nameof(MainLayout)}.");
+            }
+
+            fieldInfo.SetValue(layout, value);
         }
 
         /// <summary>
