@@ -137,6 +137,12 @@ namespace WorkbenchHost.Tests
             var html = await RenderLayoutAsync(renderer);
 
             html.ShouldContain("data-region=\"output-panel\"");
+            html.ShouldContain("data-output-surface=\"editor-like\"");
+            html.ShouldContain("data-output-wrap-mode=\"nowrap\"");
+            html.ShouldContain("data-output-selection-mode=\"text-first\"");
+            html.ShouldContain("data-output-density=\"dense\"");
+            html.ShouldContain("data-output-theme-scope=\"shell-tokens\"");
+            html.ShouldContain("workbench-shell__output-stream--editor-like");
             html.ShouldContain("data-role=\"output-clear\"");
             html.ShouldContain("data-role=\"output-auto-scroll\"");
             html.ShouldContain("data-role=\"output-scroll-to-end\"");
@@ -166,16 +172,17 @@ namespace WorkbenchHost.Tests
         }
 
         /// <summary>
-        /// Confirms collapsed structured rows render only the compact timestamp, source, summary, and visual severity marker content.
+        /// Confirms collapsed structured rows keep the compact line format while exposing the subtle gutter treatment for foldable entries.
         /// </summary>
         [Fact]
-        public async Task RenderCompactCollapsedOutputRowsWithoutExpandedDetailsOrEventCodes()
+        public async Task RenderCompactCollapsedOutputRowsWithTheFoldableGutterButWithoutExpandedDetailsOrEventCodes()
         {
-            // The structured row slice keeps collapsed rows dense, so only the timestamp, source, summary, and disclosure affordance should render by default.
+            // Foldable rows should keep the same visible text contract while moving expansion affordance and severity cues into the editor-like gutter.
             await using var serviceProvider = CreateServiceProvider();
             var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
             var outputService = serviceProvider.GetRequiredService<IWorkbenchOutputService>();
             SeedHostShell(shellManager);
+            outputService.Clear();
             shellManager.ActivateTool(ActivationTarget.CreateToolSurfaceTarget(OverviewToolId));
             outputService.SetPanelVisibility(true);
 
@@ -193,7 +200,9 @@ namespace WorkbenchHost.Tests
 
             html.ShouldContain("data-role=\"output-entry-toggle\"");
             html.ShouldContain($"data-output-entry-id=\"{outputEntry.Id}\"");
+            html.ShouldContain("data-output-foldable=\"true\"");
             html.ShouldContain($"data-output-level=\"{outputEntry.Level.ToString().ToLowerInvariant()}\"");
+            html.ShouldContain("data-role=\"output-gutter-marker\"");
             html.ShouldContain(outputEntry.TimestampUtc.ToLocalTime().ToString("HH:mm:ss"));
             html.ShouldContain(outputEntry.Source);
             html.ShouldContain(outputEntry.Summary);
@@ -203,16 +212,17 @@ namespace WorkbenchHost.Tests
         }
 
         /// <summary>
-        /// Confirms multiple rows can remain expanded simultaneously and render inline details plus copy actions.
+        /// Confirms multiple rows can remain expanded simultaneously and render inline details beneath their main lines.
         /// </summary>
         [Fact]
-        public async Task KeepMultipleOutputRowsExpandedAtTheSameTimeAndRenderTheirDetails()
+        public async Task KeepMultipleOutputRowsExpandedAtTheSameTimeAndRenderTheirInlineDetails()
         {
-            // The disclosure control owns expansion, and the shell should allow several diagnostics to stay open together without introducing row selection state.
+            // The disclosure control owns expansion, and the shell should allow several diagnostics to stay open together without reintroducing row-action chrome.
             await using var serviceProvider = CreateServiceProvider();
             var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
             var outputService = serviceProvider.GetRequiredService<IWorkbenchOutputService>();
             SeedHostShell(shellManager);
+            outputService.Clear();
             outputService.SetPanelVisibility(true);
 
             var firstEntry = CreateOutputEntry(
@@ -243,11 +253,13 @@ namespace WorkbenchHost.Tests
             html.ShouldContain($"data-output-entry-id=\"{firstEntry.Id}\"");
             html.ShouldContain($"data-output-entry-id=\"{secondEntry.Id}\"");
             html.ShouldContain("data-output-expanded=\"true\"");
+            html.ShouldContain("data-role=\"output-entry-details\"");
+            html.ShouldContain("data-role=\"output-detail-line\"");
             html.ShouldContain(firstEntry.Details!);
             html.ShouldContain(secondEntry.Details!);
             html.ShouldContain($"Event code: {firstEntry.EventCode}");
             html.ShouldContain($"Event code: {secondEntry.EventCode}");
-            CountOccurrences(html, "data-role=\"output-copy-entry\"").ShouldBe(2);
+            html.ShouldNotContain("data-role=\"output-copy-entry\"");
         }
 
         /// <summary>
@@ -261,6 +273,7 @@ namespace WorkbenchHost.Tests
             var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
             var outputService = serviceProvider.GetRequiredService<IWorkbenchOutputService>();
             SeedHostShell(shellManager);
+            outputService.Clear();
             outputService.SetPanelVisibility(true);
 
             var outputEntry = CreateOutputEntry(
@@ -278,6 +291,9 @@ namespace WorkbenchHost.Tests
 
             nowrapHtml.ShouldContain("data-output-scroll-mode=\"horizontal\"");
             nowrapHtml.ShouldContain("data-output-wrap-mode=\"nowrap\"");
+            nowrapHtml.ShouldContain("data-output-selection-mode=\"text-first\"");
+            nowrapHtml.ShouldContain("data-output-density=\"dense\"");
+            nowrapHtml.ShouldContain("data-output-theme-scope=\"shell-tokens\"");
             nowrapHtml.ShouldNotContain("workbench-shell__output-stream--wrapped");
 
             var layout = CreateLayoutInstance(serviceProvider, shellManager);
@@ -287,9 +303,50 @@ namespace WorkbenchHost.Tests
 
             wrappedHtml.ShouldContain("data-output-scroll-mode=\"wrapped\"");
             wrappedHtml.ShouldContain("data-output-wrap-mode=\"wrapped\"");
+            wrappedHtml.ShouldContain("data-output-selection-mode=\"text-first\"");
+            wrappedHtml.ShouldContain("data-output-density=\"dense\"");
+            wrappedHtml.ShouldContain("data-output-theme-scope=\"shell-tokens\"");
             wrappedHtml.ShouldContain("workbench-shell__output-stream--wrapped");
             wrappedHtml.ShouldContain("First detail line.");
             wrappedHtml.ShouldContain("Second detail line with additional diagnostic content.");
+        }
+
+        /// <summary>
+        /// Confirms only entries with expandable content render the disclosure affordance while every row keeps the subtle severity gutter marker.
+        /// </summary>
+        [Fact]
+        public async Task RenderTheFoldAffordanceOnlyForEntriesThatExposeInlineDetails()
+        {
+            // Non-foldable rows should keep gutter alignment without surfacing a redundant toggle, while foldable rows still expose the disclosure control.
+            await using var serviceProvider = CreateServiceProvider();
+            var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
+            var outputService = serviceProvider.GetRequiredService<IWorkbenchOutputService>();
+            SeedHostShell(shellManager);
+            outputService.SetPanelVisibility(true);
+
+            var foldableEntry = CreateOutputEntry(
+                "entry-foldable",
+                OutputLevel.Info,
+                "Shell",
+                "Foldable output row.",
+                "Inline detail text.",
+                "WB-320");
+            var flatEntry = CreateOutputEntry(
+                "entry-flat",
+                OutputLevel.Debug,
+                "Shell",
+                "Flat output row without extra detail.");
+            outputService.Write(foldableEntry);
+            outputService.Write(flatEntry);
+
+            var renderer = new HtmlRenderer(serviceProvider, serviceProvider.GetRequiredService<ILoggerFactory>());
+            var html = await RenderLayoutAsync(renderer);
+
+            html.ShouldContain($"data-output-entry-id=\"{foldableEntry.Id}\"");
+            html.ShouldContain($"data-output-entry-id=\"{flatEntry.Id}\"");
+            html.ShouldContain("data-output-foldable=\"true\"");
+            html.ShouldContain("data-output-foldable=\"false\"");
+            html.ShouldContain("data-role=\"output-gutter-marker\"");
         }
 
         /// <summary>

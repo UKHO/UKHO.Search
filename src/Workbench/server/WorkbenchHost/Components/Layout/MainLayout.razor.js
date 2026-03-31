@@ -45,9 +45,3 @@ export function scrollToEnd(outputElement) {
 
     outputElement.scrollTop = outputElement.scrollHeight;
 }
-
-// Copies text into the clipboard using the browser's clipboard API.
-export async function copyText(text) {
-    // Clipboard support intentionally stays narrow and text-only for the Workbench output panel.
-    await navigator.clipboard.writeText(text ?? "");
-}

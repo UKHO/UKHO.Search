@@ -319,14 +319,21 @@
                             </button>
                         </div>
 
-                        <div class="@OutputStreamCss" data-output-scroll-mode="@OutputScrollMode" @ref="_outputStreamElement">
+                        @* The output stream exposes a stable editor-like surface hook so tests and future styling slices can preserve the read-only text-area contract. *@
+                        <div class="@OutputStreamCss"
+                             data-output-scroll-mode="@OutputScrollMode"
+                             data-output-wrap-mode="@OutputWrapMode"
+                             data-output-surface="editor-like"
+                             data-output-selection-mode="text-first"
+                             data-output-density="dense"
+                             data-output-theme-scope="shell-tokens"
+                             @ref="_outputStreamElement">
                             @foreach (var outputEntry in OutputEntries)
                             {
                                 <WorkbenchOutputRow Entry="outputEntry"
                                                     IsExpanded="@IsOutputEntryExpanded(outputEntry)"
                                                     IsWordWrapEnabled="@OutputPanelState.IsWordWrapEnabled"
-                                                    ExpansionToggled="ToggleOutputEntryExpansionAsync"
-                                                    CopyRequested="CopyOutputEntryAsync" />
+                                                    ExpansionToggled="ToggleOutputEntryExpansionAsync" />
                             }
                         </div>
                     </section>

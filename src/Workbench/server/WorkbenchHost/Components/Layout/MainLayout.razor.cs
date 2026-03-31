@@ -150,16 +150,21 @@ namespace WorkbenchHost.Components.Layout
         private OutputLevel? HiddenUnseenLevel => OutputPanelState.IsVisible ? null : OutputPanelState.HiddenUnseenLevel;
 
         /// <summary>
-        /// Gets the CSS class applied to the output stream according to the current wrap mode.
+        /// Gets the CSS class applied to the output stream according to the current editor-like wrap mode.
         /// </summary>
         private string OutputStreamCss => OutputPanelState.IsWordWrapEnabled
-            ? "workbench-shell__output-stream workbench-shell__output-stream--wrapped"
-            : "workbench-shell__output-stream";
+            ? "workbench-shell__output-stream workbench-shell__output-stream--editor-like workbench-shell__output-stream--wrapped"
+            : "workbench-shell__output-stream workbench-shell__output-stream--editor-like";
 
         /// <summary>
         /// Gets the scroll-mode token rendered for the current output viewport state.
         /// </summary>
         private string OutputScrollMode => OutputPanelState.IsWordWrapEnabled ? "wrapped" : "horizontal";
+
+        /// <summary>
+        /// Gets the wrap-mode token rendered for the current output surface contract.
+        /// </summary>
+        private string OutputWrapMode => OutputPanelState.IsWordWrapEnabled ? "wrapped" : "nowrap";
 
         /// <summary>
         /// Gets the currently active explorer contribution when one is selected.
@@ -234,7 +239,7 @@ namespace WorkbenchHost.Components.Layout
                 }
             }
 
-            // Output interop is only required while the panel is visible because scroll tracking and copy support are panel-local behaviors.
+            // Output interop is only required while the panel is visible because scroll tracking is a panel-local behavior.
             if (!OutputPanelState.IsVisible)
             {
                 return;
@@ -398,39 +403,6 @@ namespace WorkbenchHost.Components.Layout
 
             WorkbenchOutputService.SetExpandedEntryIds(expandedEntryIds);
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Copies the supplied output entry into the clipboard using the Workbench-owned browser helper.
-        /// </summary>
-        /// <param name="outputEntry">The output entry that should be copied.</param>
-        /// <returns>A task that completes when the copy request has been issued to the browser.</returns>
-        private async Task CopyOutputEntryAsync(OutputEntry outputEntry)
-        {
-            // Copy support stays shell-owned and lightweight so the panel remains a structured output surface rather than a free-form console.
-            ArgumentNullException.ThrowIfNull(outputEntry);
-
-            try
-            {
-                await EnsureOutputPanelInteropAsync();
-                await _outputPanelModule!.InvokeVoidAsync("copyText", BuildCopiedOutputText(outputEntry));
-            }
-            catch (JSException exception)
-            {
-                Logger.LogWarning(exception, "The Workbench output entry could not be copied to the clipboard.");
-            }
-            catch (JSDisconnectedException)
-            {
-                // Blazor Server can disconnect before the browser receives the copy request.
-            }
-            catch (TaskCanceledException)
-            {
-                // Copy requests can be cancelled during navigation or shutdown.
-            }
-            catch (ObjectDisposedException)
-            {
-                // The component or JS runtime was disposed before the browser received the copy request.
-            }
         }
 
         /// <summary>
@@ -1071,40 +1043,6 @@ namespace WorkbenchHost.Components.Layout
         {
             // Persisting pixel tokens preserves the user's exact in-session splitter adjustment without introducing cross-session layout storage.
             return $"{Math.Round(sizeInPixels, 2):0.##}px";
-        }
-
-        /// <summary>
-        /// Builds the clipboard payload for one output entry.
-        /// </summary>
-        /// <param name="outputEntry">The output entry that should be converted into a copyable text payload.</param>
-        /// <returns>The text payload written to the clipboard.</returns>
-        private static string BuildCopiedOutputText(OutputEntry outputEntry)
-        {
-            // Clipboard text includes the row's visible metadata and any optional details so copied diagnostics remain useful outside the shell.
-            ArgumentNullException.ThrowIfNull(outputEntry);
-
-            var builder = new System.Text.StringBuilder()
-                .Append('[')
-                .Append(outputEntry.TimestampUtc.ToLocalTime().ToString("HH:mm:ss"))
-                .Append("] ")
-                .Append(outputEntry.Source)
-                .Append(": ")
-                .Append(outputEntry.Summary);
-
-            if (!string.IsNullOrWhiteSpace(outputEntry.Details))
-            {
-                builder.AppendLine();
-                builder.Append(outputEntry.Details);
-            }
-
-            if (!string.IsNullOrWhiteSpace(outputEntry.EventCode))
-            {
-                builder.AppendLine();
-                builder.Append("Event code: ");
-                builder.Append(outputEntry.EventCode);
-            }
-
-            return builder.ToString();
         }
 
         /// <summary>
