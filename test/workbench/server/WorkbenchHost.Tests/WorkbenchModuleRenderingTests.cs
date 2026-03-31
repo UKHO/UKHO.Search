@@ -29,8 +29,8 @@ namespace WorkbenchHost.Tests
     /// </summary>
     public class WorkbenchModuleRenderingTests
     {
-        private const string BootstrapExplorerId = "explorer.bootstrap";
-        private const string BootstrapExplorerDisplayName = "Workbench";
+        private const string FallbackExplorerId = "explorer.host.overview";
+        private const string FallbackExplorerDisplayName = "Workbench";
         private const string HostToolsSectionId = "explorer.section.host.tools";
         private const string OverviewToolId = "tool.bootstrap.overview";
         private const string OverviewCommandId = "command.host.open-overview";
@@ -55,6 +55,7 @@ namespace WorkbenchHost.Tests
                 });
 
             moduleContributions.ToolDefinitions.Count.ShouldBe(6);
+            moduleContributions.ExplorerContributions.Count.ShouldBe(6);
             moduleContributions.ExplorerItems.Count.ShouldBe(6);
             moduleContributions.ToolDefinitions.Select(toolDefinition => toolDefinition.DisplayName).ShouldContain("Search ingestion");
             moduleContributions.ToolDefinitions.Select(toolDefinition => toolDefinition.DisplayName).ShouldContain("Search query");
@@ -62,6 +63,12 @@ namespace WorkbenchHost.Tests
             moduleContributions.ToolDefinitions.Select(toolDefinition => toolDefinition.DisplayName).ShouldContain("PKS operations");
             moduleContributions.ToolDefinitions.Select(toolDefinition => toolDefinition.DisplayName).ShouldContain("File Share workspace");
             moduleContributions.ToolDefinitions.Select(toolDefinition => toolDefinition.DisplayName).ShouldContain("Administration");
+            moduleContributions.ExplorerContributions.Select(explorerContribution => explorerContribution.DisplayName).ShouldContain("Query");
+            moduleContributions.ExplorerContributions.Select(explorerContribution => explorerContribution.DisplayName).ShouldContain("Ingestion");
+            moduleContributions.ExplorerContributions.Select(explorerContribution => explorerContribution.DisplayName).ShouldContain("Rule Editor");
+            moduleContributions.ExplorerContributions.Select(explorerContribution => explorerContribution.DisplayName).ShouldContain("PKS operations");
+            moduleContributions.ExplorerContributions.Select(explorerContribution => explorerContribution.DisplayName).ShouldContain("File Share workspace");
+            moduleContributions.ExplorerContributions.Select(explorerContribution => explorerContribution.DisplayName).ShouldContain("Administration");
 
             var shellManager = CreateShellManager(moduleContributions);
 
@@ -72,12 +79,12 @@ namespace WorkbenchHost.Tests
             await AssertSingletonActivationAsync(shellManager, "command.module.fileshare.open-workspace", "File Share workspace");
             await AssertSingletonActivationAsync(shellManager, "command.module.admin.open-console", "Administration");
 
-            // Rendering the shell after activation should expose every enabled module tool in the explorer chrome.
+            // Rendering the shell after activation should expose every enabled module explorer in the activity rail.
             var html = await RenderLayoutAsync(shellManager);
 
-            html.ShouldContain("Search ingestion");
-            html.ShouldContain("Search query");
-            html.ShouldContain("Ingestion rule editor");
+            html.ShouldContain("Query");
+            html.ShouldContain("Ingestion");
+            html.ShouldContain("Rule Editor");
             html.ShouldContain("PKS operations");
             html.ShouldContain("File Share workspace");
             html.ShouldContain("Administration");
@@ -103,12 +110,12 @@ namespace WorkbenchHost.Tests
 
             var shellManager = CreateShellManager(moduleContributions);
 
-            // Rendering the shell should show only the enabled module tools alongside the host-owned overview tool.
+            // Rendering the shell should show only the enabled module explorers when modules are available.
             var html = await RenderLayoutAsync(shellManager);
 
-            html.ShouldContain("Search ingestion");
-            html.ShouldContain("Search query");
-            html.ShouldContain("Ingestion rule editor");
+            html.ShouldContain("Query");
+            html.ShouldContain("Ingestion");
+            html.ShouldContain("Rule Editor");
             html.ShouldContain("Administration");
             html.ShouldNotContain("PKS operations");
             html.ShouldNotContain("File Share workspace");
@@ -218,13 +225,21 @@ namespace WorkbenchHost.Tests
                     OverviewToolId,
                     "Workbench overview",
                     typeof(WorkbenchOverviewTool),
-                    BootstrapExplorerId,
+                    FallbackExplorerId,
                     "dashboard",
                     "Shows the first host-owned tool."));
-            shellManager.RegisterExplorer(new ExplorerContribution(BootstrapExplorerId, BootstrapExplorerDisplayName, "dashboard_customize", 0));
-            shellManager.RegisterExplorerSection(new ExplorerSectionContribution(HostToolsSectionId, BootstrapExplorerId, "Host tools", 100));
+            if (moduleContributions.ExplorerContributions.Count == 0)
+            {
+                shellManager.RegisterExplorer(new ExplorerContribution(FallbackExplorerId, FallbackExplorerDisplayName, "dashboard_customize", 0));
+                shellManager.RegisterExplorerSection(new ExplorerSectionContribution(HostToolsSectionId, FallbackExplorerId, "Host tools", 100));
+            }
             shellManager.RegisterCommand(new CommandContribution(OverviewCommandId, "Open Workbench overview", CommandScope.Host, activationTarget: ActivationTarget.CreateToolSurfaceTarget(OverviewToolId)));
-            shellManager.RegisterExplorerItem(new ExplorerItem("explorer.item.host.overview", BootstrapExplorerId, HostToolsSectionId, "Workbench overview", OverviewCommandId, ActivationTarget.CreateToolSurfaceTarget(OverviewToolId), "dashboard", "Shows the first host-owned tool.", 100));
+
+            if (moduleContributions.ExplorerContributions.Count == 0)
+            {
+                shellManager.RegisterExplorerItem(new ExplorerItem("explorer.item.host.overview", FallbackExplorerId, HostToolsSectionId, "Workbench overview", OverviewCommandId, ActivationTarget.CreateToolSurfaceTarget(OverviewToolId), "dashboard", "Shows the first host-owned tool.", 100));
+            }
+
             shellManager.RegisterMenu(new MenuContribution(OverviewMenuId, "Overview", OverviewCommandId, icon: "dashboard", order: 100));
             shellManager.RegisterToolbar(new ToolbarContribution(OverviewToolbarId, "Overview", OverviewCommandId, icon: "dashboard", order: 100));
             shellManager.RegisterStatusBar(new StatusBarContribution(HostReadyStatusId, "Workbench shell ready", icon: "check_circle", order: 100));
@@ -270,7 +285,13 @@ namespace WorkbenchHost.Tests
                 shellManager.RegisterStatusBar(statusBarContribution);
             }
 
-            shellManager.SetActiveExplorer(BootstrapExplorerId);
+            var initialExplorerId = shellManager.Explorers.FirstOrDefault()?.Id;
+
+            if (!string.IsNullOrWhiteSpace(initialExplorerId))
+            {
+                shellManager.SetActiveExplorer(initialExplorerId);
+            }
+
             shellManager.ActivateTool(
                 ActivationTarget.CreateToolSurfaceTarget(
                     moduleContributions.ToolDefinitions.FirstOrDefault()?.Id ?? OverviewToolId));

@@ -23,8 +23,8 @@ namespace WorkbenchHost.Tests
     /// </summary>
     public class MainLayoutRenderingTests
     {
-        private const string BootstrapExplorerId = "explorer.bootstrap";
-        private const string BootstrapExplorerDisplayName = "Workbench";
+        private const string FallbackExplorerId = "explorer.host.overview";
+        private const string FallbackExplorerDisplayName = "Workbench";
         private const string HostToolsSectionId = "explorer.section.host.tools";
         private const string OverviewToolId = "tool.bootstrap.overview";
         private const string OverviewCommandId = "command.host.open-overview";
@@ -130,11 +130,11 @@ namespace WorkbenchHost.Tests
                     OverviewToolId,
                     "Workbench overview",
                     typeof(WorkbenchOverviewTool),
-                    BootstrapExplorerId,
+                    FallbackExplorerId,
                     "dashboard",
                     "Shows the first host-owned tool."));
-            shellManager.RegisterExplorer(new ExplorerContribution(BootstrapExplorerId, BootstrapExplorerDisplayName, "dashboard_customize", 0));
-            shellManager.RegisterExplorerSection(new ExplorerSectionContribution(HostToolsSectionId, BootstrapExplorerId, "Host tools", 100));
+            shellManager.RegisterExplorer(new ExplorerContribution(FallbackExplorerId, FallbackExplorerDisplayName, "dashboard_customize", 0));
+            shellManager.RegisterExplorerSection(new ExplorerSectionContribution(HostToolsSectionId, FallbackExplorerId, "Host tools", 100));
             shellManager.RegisterCommand(
                 new CommandContribution(
                     OverviewCommandId,
@@ -144,7 +144,7 @@ namespace WorkbenchHost.Tests
             shellManager.RegisterExplorerItem(
                 new ExplorerItem(
                     "explorer.item.host.overview",
-                    BootstrapExplorerId,
+                    FallbackExplorerId,
                     HostToolsSectionId,
                     "Workbench overview",
                     OverviewCommandId,
@@ -155,7 +155,7 @@ namespace WorkbenchHost.Tests
             shellManager.RegisterMenu(new MenuContribution(OverviewMenuId, "Overview", OverviewCommandId, icon: "dashboard", order: 100));
             shellManager.RegisterToolbar(new ToolbarContribution(OverviewToolbarId, "Overview", OverviewCommandId, icon: "dashboard", order: 100));
             shellManager.RegisterStatusBar(new StatusBarContribution(HostReadyStatusId, "Workbench shell ready", icon: "check_circle", order: 100));
-            shellManager.SetActiveExplorer(BootstrapExplorerId);
+            shellManager.SetActiveExplorer(FallbackExplorerId);
         }
 
         /// <summary>
@@ -165,10 +165,11 @@ namespace WorkbenchHost.Tests
         private static void SeedSearchShell(WorkbenchShellManager shellManager)
         {
             // The helper provides the same Search explorer and command shape that the module contributes at runtime.
-            shellManager.RegisterTool(new ToolDefinition("tool.module.search.query", "Search query", typeof(WorkbenchOverviewTool), BootstrapExplorerId, "manage_search", "Search module dummy tool."));
-            shellManager.RegisterExplorerSection(new ExplorerSectionContribution("explorer.section.search.tools", BootstrapExplorerId, "Search tools", 200));
+            shellManager.RegisterTool(new ToolDefinition("tool.module.search.query", "Search query", typeof(WorkbenchOverviewTool), "explorer.module.search.query", "manage_search", "Search module dummy tool."));
+            shellManager.RegisterExplorer(new ExplorerContribution("explorer.module.search.query", "Query", "manage_search", 100));
+            shellManager.RegisterExplorerSection(new ExplorerSectionContribution("explorer.section.search.query", "explorer.module.search.query", "Search module", 100));
             shellManager.RegisterCommand(new CommandContribution("command.module.search.open-query", "Open Search query", CommandScope.Host, activationTarget: ActivationTarget.CreateToolSurfaceTarget("tool.module.search.query")));
-            shellManager.RegisterExplorerItem(new ExplorerItem("explorer.item.search.query", BootstrapExplorerId, "explorer.section.search.tools", "Search query", "command.module.search.open-query", ActivationTarget.CreateToolSurfaceTarget("tool.module.search.query"), "manage_search", "Search module dummy tool.", 100));
+            shellManager.RegisterExplorerItem(new ExplorerItem("explorer.item.search.query", "explorer.module.search.query", "explorer.section.search.query", "Search query", "command.module.search.open-query", ActivationTarget.CreateToolSurfaceTarget("tool.module.search.query"), "manage_search", "Search module dummy tool.", 100));
         }
 
         /// <summary>

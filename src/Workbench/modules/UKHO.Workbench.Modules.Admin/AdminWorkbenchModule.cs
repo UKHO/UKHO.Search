@@ -11,7 +11,7 @@ namespace UKHO.Workbench.Modules.Admin
     /// </summary>
     public class AdminWorkbenchModule : IWorkbenchModule
     {
-        private const string BootstrapExplorerId = "explorer.bootstrap";
+        private const string AdminExplorerId = "explorer.module.admin.console";
         private const string AdminSectionId = "explorer.section.admin.tools";
         private const string AdminConsoleToolId = "tool.module.admin.console";
         private const string OpenAdminConsoleCommandId = "command.module.admin.open-console";
@@ -33,16 +33,18 @@ namespace UKHO.Workbench.Modules.Admin
             // The Admin module contributes a single dummy tool so the first repository-specific module map can validate multi-module discovery.
             ArgumentNullException.ThrowIfNull(context);
 
+            context.AddExplorer(new ExplorerContribution(AdminExplorerId, "Administration", "admin_panel_settings", 400));
+
             context.AddTool(
                 new ToolDefinition(
                     AdminConsoleToolId,
                     "Administration",
                     typeof(AdminConsoleTool),
-                    BootstrapExplorerId,
+                    AdminExplorerId,
                     "admin_panel_settings",
                     "Dummy admin tool used to validate multi-module shell composition."));
 
-            context.AddExplorerSection(new ExplorerSectionContribution(AdminSectionId, BootstrapExplorerId, "Administration", 500));
+            context.AddExplorerSection(new ExplorerSectionContribution(AdminSectionId, AdminExplorerId, "Admin module", 100));
             context.AddCommand(
                 new CommandContribution(
                     OpenAdminConsoleCommandId,
@@ -54,7 +56,7 @@ namespace UKHO.Workbench.Modules.Admin
             context.AddExplorerItem(
                 new ExplorerItem(
                     "explorer.item.admin.console",
-                    BootstrapExplorerId,
+                    AdminExplorerId,
                     AdminSectionId,
                     "Administration",
                     OpenAdminConsoleCommandId,

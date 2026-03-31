@@ -13,8 +13,12 @@ namespace UKHO.Workbench.Modules.Search
     /// </summary>
     public class SearchWorkbenchModule : IWorkbenchModule
     {
-        private const string BootstrapExplorerId = "explorer.bootstrap";
-        private const string SearchSectionId = "explorer.section.search.tools";
+        private const string QueryExplorerId = "explorer.module.search.query";
+        private const string IngestionExplorerId = "explorer.module.search.ingestion";
+        private const string RuleEditorExplorerId = "explorer.module.search.rule-editor";
+        private const string QuerySectionId = "explorer.section.search.query";
+        private const string IngestionSectionId = "explorer.section.search.ingestion";
+        private const string RuleEditorSectionId = "explorer.section.search.rule-editor";
         private const string SearchIngestionToolId = "tool.module.search.ingestion";
         private const string SearchQueryToolId = "tool.module.search.query";
         private const string IngestionRuleEditorToolId = "tool.module.search.rule-editor";
@@ -44,12 +48,27 @@ namespace UKHO.Workbench.Modules.Search
             // A marker service proves the module can participate in the host service collection before DI finalization.
             context.Services.AddSingleton<SearchModuleRegistrationMarker>();
 
-            // The Search module groups its exemplar tools into one explorer section while still sharing the host-owned Workbench explorer surface.
-            context.AddExplorerSection(new ExplorerSectionContribution(SearchSectionId, BootstrapExplorerId, "Search tools", 200));
+            RegisterExplorers(context);
 
             RegisterSearchIngestionTool(context);
             RegisterSearchQueryTool(context);
             RegisterIngestionRuleEditorTool(context);
+        }
+
+        /// <summary>
+        /// Registers the activity-rail explorers used to keep the Search module's three exemplar tools separate.
+        /// </summary>
+        /// <param name="context">The bounded module registration context supplied by the host.</param>
+        private static void RegisterExplorers(ModuleRegistrationContext context)
+        {
+            // Each Search capability gets its own explorer so the rail mirrors the requested composition rather than grouping everything under one shared node.
+            context.AddExplorer(new ExplorerContribution(QueryExplorerId, "Query", "manage_search", 100));
+            context.AddExplorer(new ExplorerContribution(IngestionExplorerId, "Ingestion", "publish", 110));
+            context.AddExplorer(new ExplorerContribution(RuleEditorExplorerId, "Rule Editor", "rule", 120));
+
+            context.AddExplorerSection(new ExplorerSectionContribution(QuerySectionId, QueryExplorerId, "Search module", 100));
+            context.AddExplorerSection(new ExplorerSectionContribution(IngestionSectionId, IngestionExplorerId, "Search module", 100));
+            context.AddExplorerSection(new ExplorerSectionContribution(RuleEditorSectionId, RuleEditorExplorerId, "Search module", 100));
         }
 
         /// <summary>
@@ -64,7 +83,7 @@ namespace UKHO.Workbench.Modules.Search
                     SearchIngestionToolId,
                     "Search ingestion",
                     typeof(SearchIngestionTool),
-                    BootstrapExplorerId,
+                    IngestionExplorerId,
                     "publish",
                     "Dummy Search ingestion tool used to validate multi-tool module composition."));
 
@@ -80,8 +99,8 @@ namespace UKHO.Workbench.Modules.Search
             context.AddExplorerItem(
                 new ExplorerItem(
                     "explorer.item.search.ingestion",
-                    BootstrapExplorerId,
-                    SearchSectionId,
+                    IngestionExplorerId,
+                    IngestionSectionId,
                     "Search ingestion",
                     OpenSearchIngestionCommandId,
                     ActivationTarget.CreateToolSurfaceTarget(SearchIngestionToolId),
@@ -102,7 +121,7 @@ namespace UKHO.Workbench.Modules.Search
                     SearchQueryToolId,
                     "Search query",
                     typeof(SearchQueryTool),
-                    BootstrapExplorerId,
+                    QueryExplorerId,
                     "manage_search",
                     "Dummy Search query tool used to verify runtime shell participation."));
 
@@ -183,8 +202,8 @@ namespace UKHO.Workbench.Modules.Search
             context.AddExplorerItem(
                 new ExplorerItem(
                     "explorer.item.search.query",
-                    BootstrapExplorerId,
-                    SearchSectionId,
+                    QueryExplorerId,
+                    QuerySectionId,
                     "Search query",
                     OpenSearchQueryCommandId,
                     ActivationTarget.CreateToolSurfaceTarget(SearchQueryToolId),
@@ -205,7 +224,7 @@ namespace UKHO.Workbench.Modules.Search
                     IngestionRuleEditorToolId,
                     "Ingestion rule editor",
                     typeof(IngestionRuleEditorTool),
-                    BootstrapExplorerId,
+                    RuleEditorExplorerId,
                     "rule",
                     "Dummy ingestion rule editor used to validate multi-tool Search module discovery."));
 
@@ -221,8 +240,8 @@ namespace UKHO.Workbench.Modules.Search
             context.AddExplorerItem(
                 new ExplorerItem(
                     "explorer.item.search.rule-editor",
-                    BootstrapExplorerId,
-                    SearchSectionId,
+                    RuleEditorExplorerId,
+                    RuleEditorSectionId,
                     "Ingestion rule editor",
                     OpenIngestionRuleEditorCommandId,
                     ActivationTarget.CreateToolSurfaceTarget(IngestionRuleEditorToolId),

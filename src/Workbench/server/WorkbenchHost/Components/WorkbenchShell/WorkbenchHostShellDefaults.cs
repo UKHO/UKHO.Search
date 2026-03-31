@@ -6,14 +6,14 @@ namespace WorkbenchHost.Components.WorkbenchShell
     internal static class WorkbenchHostShellDefaults
     {
         /// <summary>
-        /// Gets the identifier of the only explorer rendered by the bootstrap shell.
+        /// Gets the identifier of the fallback explorer rendered when no module explorers are available.
         /// </summary>
-        internal const string BootstrapExplorerId = "explorer.bootstrap";
+        internal const string FallbackExplorerId = "explorer.host.overview";
 
         /// <summary>
-        /// Gets the display label of the only explorer rendered by the bootstrap shell.
+        /// Gets the display label of the fallback explorer rendered when no module explorers are available.
         /// </summary>
-        internal const string BootstrapExplorerDisplayName = "Workbench";
+        internal const string FallbackExplorerDisplayName = "Workbench";
 
         /// <summary>
         /// Gets the identifier of the host-owned explorer section that groups the overview tool.

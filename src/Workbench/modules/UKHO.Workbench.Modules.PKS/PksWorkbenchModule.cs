@@ -11,7 +11,7 @@ namespace UKHO.Workbench.Modules.PKS
     /// </summary>
     public class PksWorkbenchModule : IWorkbenchModule
     {
-        private const string BootstrapExplorerId = "explorer.bootstrap";
+        private const string PksExplorerId = "explorer.module.pks.operations";
         private const string PksSectionId = "explorer.section.pks.tools";
         private const string PksOperationsToolId = "tool.module.pks.operations";
         private const string OpenPksOperationsCommandId = "command.module.pks.open-operations";
@@ -33,16 +33,18 @@ namespace UKHO.Workbench.Modules.PKS
             // The PKS module contributes a single dummy tool so the first repository-specific module map can validate multi-module discovery.
             ArgumentNullException.ThrowIfNull(context);
 
+            context.AddExplorer(new ExplorerContribution(PksExplorerId, "PKS operations", "hub", 200));
+
             context.AddTool(
                 new ToolDefinition(
                     PksOperationsToolId,
                     "PKS operations",
                     typeof(PksOperationsTool),
-                    BootstrapExplorerId,
+                    PksExplorerId,
                     "hub",
                     "Dummy PKS tool used to validate multi-module shell composition."));
 
-            context.AddExplorerSection(new ExplorerSectionContribution(PksSectionId, BootstrapExplorerId, "PKS", 300));
+            context.AddExplorerSection(new ExplorerSectionContribution(PksSectionId, PksExplorerId, "PKS module", 100));
             context.AddCommand(
                 new CommandContribution(
                     OpenPksOperationsCommandId,
@@ -54,7 +56,7 @@ namespace UKHO.Workbench.Modules.PKS
             context.AddExplorerItem(
                 new ExplorerItem(
                     "explorer.item.pks.operations",
-                    BootstrapExplorerId,
+                    PksExplorerId,
                     PksSectionId,
                     "PKS operations",
                     OpenPksOperationsCommandId,

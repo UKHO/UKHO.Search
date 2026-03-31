@@ -11,7 +11,7 @@ namespace UKHO.Workbench.Modules.FileShare
     /// </summary>
     public class FileShareWorkbenchModule : IWorkbenchModule
     {
-        private const string BootstrapExplorerId = "explorer.bootstrap";
+        private const string FileShareExplorerId = "explorer.module.fileshare.workspace";
         private const string FileShareSectionId = "explorer.section.fileshare.tools";
         private const string FileShareWorkspaceToolId = "tool.module.fileshare.workspace";
         private const string OpenFileShareWorkspaceCommandId = "command.module.fileshare.open-workspace";
@@ -33,16 +33,18 @@ namespace UKHO.Workbench.Modules.FileShare
             // The File Share module contributes a single dummy tool so the first repository-specific module map can validate multi-module discovery.
             ArgumentNullException.ThrowIfNull(context);
 
+            context.AddExplorer(new ExplorerContribution(FileShareExplorerId, "File Share workspace", "folder_shared", 300));
+
             context.AddTool(
                 new ToolDefinition(
                     FileShareWorkspaceToolId,
                     "File Share workspace",
                     typeof(FileShareWorkspaceTool),
-                    BootstrapExplorerId,
+                    FileShareExplorerId,
                     "folder_shared",
                     "Dummy File Share tool used to validate multi-module shell composition."));
 
-            context.AddExplorerSection(new ExplorerSectionContribution(FileShareSectionId, BootstrapExplorerId, "File Share", 400));
+            context.AddExplorerSection(new ExplorerSectionContribution(FileShareSectionId, FileShareExplorerId, "File Share module", 100));
             context.AddCommand(
                 new CommandContribution(
                     OpenFileShareWorkspaceCommandId,
@@ -54,7 +56,7 @@ namespace UKHO.Workbench.Modules.FileShare
             context.AddExplorerItem(
                 new ExplorerItem(
                     "explorer.item.fileshare.workspace",
-                    BootstrapExplorerId,
+                    FileShareExplorerId,
                     FileShareSectionId,
                     "File Share workspace",
                     OpenFileShareWorkspaceCommandId,

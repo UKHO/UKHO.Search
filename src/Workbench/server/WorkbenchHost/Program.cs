@@ -265,19 +265,26 @@ namespace WorkbenchHost
 
             try
             {
-                // The bootstrap explorer always exposes the host-owned overview tool so the shell remains useful even when module loading fails.
+                // The host-owned overview tool remains available even when the activity rail is primarily driven by module explorers.
                 shellManager.RegisterTool(
                     new ToolDefinition(
                         WorkbenchHostShellDefaults.OverviewToolId,
                         "Workbench overview",
                         typeof(WorkbenchOverviewTool),
-                        WorkbenchHostShellDefaults.BootstrapExplorerId,
+                        WorkbenchHostShellDefaults.FallbackExplorerId,
                         "dashboard",
                         "Shows the first host-owned Workbench tool."));
 
-                // The host owns the primary explorer shell surface and its baseline command/menu/toolbar/status contributions.
-                shellManager.RegisterExplorer(new ExplorerContribution(WorkbenchHostShellDefaults.BootstrapExplorerId, WorkbenchHostShellDefaults.BootstrapExplorerDisplayName, "dashboard_customize", 0));
-                shellManager.RegisterExplorerSection(new ExplorerSectionContribution(WorkbenchHostShellDefaults.HostToolsSectionId, WorkbenchHostShellDefaults.BootstrapExplorerId, "Host tools", 100));
+                var hasModuleExplorers = contributionRegistry.ExplorerContributions.Count > 0;
+
+                // The host only contributes its fallback explorer when no module explorer is available to populate the activity rail.
+                if (!hasModuleExplorers)
+                {
+                    shellManager.RegisterExplorer(new ExplorerContribution(WorkbenchHostShellDefaults.FallbackExplorerId, WorkbenchHostShellDefaults.FallbackExplorerDisplayName, "dashboard_customize", 0));
+                    shellManager.RegisterExplorerSection(new ExplorerSectionContribution(WorkbenchHostShellDefaults.HostToolsSectionId, WorkbenchHostShellDefaults.FallbackExplorerId, "Host tools", 100));
+                }
+
+                // Host menu, toolbar, and status contributions remain available regardless of whether the rail is module-driven.
                 shellManager.RegisterCommand(
                     new CommandContribution(
                         WorkbenchHostShellDefaults.OverviewCommandId,
@@ -286,17 +293,20 @@ namespace WorkbenchHost
                         icon: "dashboard",
                         description: "Opens the host-owned overview tool.",
                         activationTarget: ActivationTarget.CreateToolSurfaceTarget(WorkbenchHostShellDefaults.OverviewToolId)));
-                shellManager.RegisterExplorerItem(
-                    new ExplorerItem(
-                        "explorer.item.host.overview",
-                        WorkbenchHostShellDefaults.BootstrapExplorerId,
-                        WorkbenchHostShellDefaults.HostToolsSectionId,
-                        "Workbench overview",
-                        WorkbenchHostShellDefaults.OverviewCommandId,
-                        ActivationTarget.CreateToolSurfaceTarget(WorkbenchHostShellDefaults.OverviewToolId),
-                        "dashboard",
-                        "Host-owned exemplar tool that explains the current Workbench slice.",
-                        100));
+                if (!hasModuleExplorers)
+                {
+                    shellManager.RegisterExplorerItem(
+                        new ExplorerItem(
+                            "explorer.item.host.overview",
+                            WorkbenchHostShellDefaults.FallbackExplorerId,
+                            WorkbenchHostShellDefaults.HostToolsSectionId,
+                            "Workbench overview",
+                            WorkbenchHostShellDefaults.OverviewCommandId,
+                            ActivationTarget.CreateToolSurfaceTarget(WorkbenchHostShellDefaults.OverviewToolId),
+                            "dashboard",
+                            "Host-owned exemplar tool that explains the current Workbench slice.",
+                            100));
+                }
                 shellManager.RegisterMenu(new MenuContribution(WorkbenchHostShellDefaults.OverviewMenuId, "Overview", WorkbenchHostShellDefaults.OverviewCommandId, icon: "dashboard", order: 100));
                 shellManager.RegisterToolbar(new ToolbarContribution(WorkbenchHostShellDefaults.OverviewToolbarId, "Overview", WorkbenchHostShellDefaults.OverviewCommandId, icon: "dashboard", order: 100));
                 shellManager.RegisterStatusBar(new StatusBarContribution(WorkbenchHostShellDefaults.HostReadyStatusId, "Workbench shell ready", icon: "check_circle", order: 100));
@@ -342,7 +352,12 @@ namespace WorkbenchHost
                     shellManager.RegisterStatusBar(statusBarContribution);
                 }
 
-                shellManager.SetActiveExplorer(WorkbenchHostShellDefaults.BootstrapExplorerId);
+                var initialExplorerId = shellManager.Explorers.FirstOrDefault()?.Id;
+
+                if (!string.IsNullOrWhiteSpace(initialExplorerId))
+                {
+                    shellManager.SetActiveExplorer(initialExplorerId);
+                }
 
                 // When a module contributes a tool, the first contributed tool becomes the initial focus to prove end-to-end discovery and activation.
                 var initialToolId = contributionRegistry.ToolDefinitions.FirstOrDefault()?.Id
