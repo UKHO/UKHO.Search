@@ -65,6 +65,26 @@ namespace UKHO.Workbench.Layout.Tests
         }
 
         /// <summary>
+        /// Ensures authored proportional star-sized columns are preserved in the generated CSS template.
+        /// </summary>
+        [Fact]
+        public void GenerateAColumnTemplateThatPreservesProportionalStarSizing()
+        {
+            // Arrange a grid that mirrors the Workbench startup layout where the fixed activity rail sits beside a 1:4 explorer-center split.
+            var wrapper = new GridWrapper();
+            wrapper.AddColumn("64");
+            wrapper.AddColumn("*");
+            wrapper.AddSplitterColumn(null);
+            wrapper.AddColumn("4*");
+
+            // Act by asking the wrapper for the generated CSS template.
+            var css = wrapper.Css;
+
+            // Assert that the activity rail stays fixed while the explorer-center proportional star values remain intact.
+            css.ShouldBe("display: grid; width: 100%; height: 100%; grid-template-columns: 64px 1fr 4px 4fr;");
+        }
+
+        /// <summary>
         /// Ensures an omitted splitter height falls back to the documented 4px gutter thickness for rows.
         /// </summary>
         [Fact]

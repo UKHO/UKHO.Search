@@ -55,8 +55,40 @@ namespace WorkbenchHost.Tests
             html.ShouldContain("data-region=\"tab-strip\"");
             html.ShouldContain("data-region=\"status-bar\"");
             html.ShouldContain("Workbench overview");
-            html.ShouldContain("Overview");
+            html.ShouldContain("Home");
+            html.ShouldContain("aria-label=\"Workbench\"");
+            html.ShouldNotContain("Active tab");
             html.ShouldContain("BodyMarker");
+        }
+
+        /// <summary>
+        /// Confirms the activity rail uses the Radzen tooltip service so icon-only rail items still expose their labels.
+        /// </summary>
+        [Fact]
+        public void UseTheRadzenTooltipServiceForActivityRailHoverInteractions()
+        {
+            // The compact icon rail still needs discoverable names, so hover should open the same Radzen tooltip service used elsewhere in the shell.
+            using var serviceProvider = CreateServiceProvider();
+            var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
+            var tooltipService = serviceProvider.GetRequiredService<TooltipService>();
+            var layout = CreateLayoutInstance(serviceProvider, shellManager);
+            var openedTitles = new List<string>();
+            var closeCount = 0;
+
+            tooltipService.OnOpen += (_, _, options) =>
+            {
+                if (!string.IsNullOrWhiteSpace(options.Text))
+                {
+                    openedTitles.Add(options.Text);
+                }
+            };
+            tooltipService.OnClose += () => closeCount++;
+
+            InvokePrivateMethod(layout, "ShowActivityRailTooltip", [default(ElementReference), "Workbench"]);
+            InvokePrivateMethod(layout, "HideTitleTooltip", [default(ElementReference)]);
+
+            openedTitles.ShouldBe(["Workbench"]);
+            closeCount.ShouldBe(1);
         }
 
         /// <summary>
@@ -236,6 +268,54 @@ namespace WorkbenchHost.Tests
             html.ShouldContain("workbench-shell__overflow-entry-title");
             html.ShouldNotContain("rz-dropdown-filter-container");
             html.ShouldNotContain("data-overflow-close");
+        }
+
+        /// <summary>
+        /// Confirms the center tab host renders flush on the top, bottom, and left edges without the removed intermediate wrapper.
+        /// </summary>
+        [Fact]
+        public async Task RenderAFlushCenterTabHostWithoutTheRemovedPaddingWrapper()
+        {
+            // The spacing refinement should be owned by the shell itself, so the tab host now renders with explicit flush metadata and without the extra tool-area wrapper.
+            await using var serviceProvider = CreateServiceProvider();
+            var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
+            SeedHostShell(shellManager);
+
+            _ = shellManager.ActivateTool(ActivationTarget.CreateToolSurfaceTarget(OverviewToolId));
+
+            var renderer = new HtmlRenderer(serviceProvider, serviceProvider.GetRequiredService<ILoggerFactory>());
+            var html = await RenderLayoutAsync(renderer);
+
+            html.ShouldContain("data-tab-strip-spacing=\"flush-top-bottom-left\"");
+            html.ShouldNotContain("workbench-shell__tool-area");
+        }
+
+        /// <summary>
+        /// Confirms the overflow affordance remains rendered after the flush spacing change and stays anchored at the right side of the tab strip.
+        /// </summary>
+        [Fact]
+        public async Task KeepTheOverflowAffordanceAnchoredToTheRightSideOfTheTabStrip()
+        {
+            // The flush spacing change must not disturb overflow placement, so the rendered strip keeps the overflow host after the main tab-list content.
+            await using var serviceProvider = CreateServiceProvider();
+            var shellManager = serviceProvider.GetRequiredService<WorkbenchShellManager>();
+            SeedHostShell(shellManager);
+            SeedSearchShell(shellManager);
+            shellManager.RegisterTool(new ToolDefinition("tool.module.admin.long", "Administration workbench tool with a deliberately long title", typeof(WorkbenchOverviewTool), "explorer.bootstrap", "admin_panel_settings"));
+
+            _ = shellManager.ActivateTool(ActivationTarget.CreateToolSurfaceTarget(OverviewToolId));
+            _ = shellManager.ActivateTool(ActivationTarget.CreateToolSurfaceTarget("tool.module.search.query"));
+            _ = shellManager.ActivateTool(ActivationTarget.CreateToolSurfaceTarget("tool.module.admin.long"));
+
+            var renderer = new HtmlRenderer(serviceProvider, serviceProvider.GetRequiredService<ILoggerFactory>());
+            var html = await RenderLayoutAsync(renderer);
+            var contentIndex = html.IndexOf("workbench-shell__tab-strip-content", StringComparison.Ordinal);
+            var overflowIndex = html.IndexOf("data-tab-strip-overflow-anchor=\"right\"", StringComparison.Ordinal);
+
+            html.ShouldContain("data-region=\"tab-strip-overflow\"");
+            html.ShouldContain("data-tab-strip-overflow-anchor=\"right\"");
+            contentIndex.ShouldBeGreaterThanOrEqualTo(0);
+            overflowIndex.ShouldBeGreaterThan(contentIndex);
         }
 
         /// <summary>
@@ -456,8 +536,8 @@ namespace WorkbenchHost.Tests
                     "dashboard",
                     "Shows the first host-owned tool.",
                     100));
-            shellManager.RegisterMenu(new MenuContribution(OverviewMenuId, "Overview", OverviewCommandId, icon: "dashboard", order: 100));
-            shellManager.RegisterToolbar(new ToolbarContribution(OverviewToolbarId, "Overview", OverviewCommandId, icon: "dashboard", order: 100));
+            shellManager.RegisterMenu(new MenuContribution(OverviewMenuId, "Home", OverviewCommandId, icon: "dashboard", order: 100));
+            shellManager.RegisterToolbar(new ToolbarContribution(OverviewToolbarId, "Home", OverviewCommandId, icon: "dashboard", order: 100));
             shellManager.RegisterStatusBar(new StatusBarContribution(HostReadyStatusId, "Workbench shell ready", icon: "check_circle", order: 100));
             shellManager.SetActiveExplorer(FallbackExplorerId);
         }

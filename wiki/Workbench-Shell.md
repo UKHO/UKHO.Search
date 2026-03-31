@@ -49,6 +49,15 @@ The `083-workbench-model` bootstrap slice introduces the first runnable Workbenc
 - both visible-strip tab titles and overflow entry titles now truncate with ellipsis and open a Radzen tooltip on every hover so long runtime titles remain readable without changing the stock Material look and feel
 - overflow selection now flows through the shared shell activation path, which keeps diagnostics, active-tab composition, and visible-window adjustments aligned with the rest of the tab lifecycle
 
+## What the shell style refinement slice adds
+
+- the outer shell now renders flush with the browser viewport instead of using decorative outer padding, which makes the Workbench read more like a desktop surface than a padded web page
+- the second-row toolbar no longer shows an `Active tab` eyebrow label and now surfaces the host-owned `Home` action in that leading position
+- the activity rail now renders as an icon-only strip, while hover and focus use the shared Radzen tooltip service so explorer labels remain discoverable without persistent rail text
+- the host-owned `Overview` menu and toolbar action is now labeled `Home` to match the refined shell chrome
+- the working area now keeps the activity rail fixed at `64px` with no splitter between that rail and the explorer, leaving only the explorer-to-centre boundary resizeable
+- the centre tab host now removes its extra top, bottom, and left shell padding so the tab strip sits flush with the content surface while the always-visible overflow affordance stays anchored to the right edge
+
 ## Project responsibilities
 
 | Project | Responsibility |

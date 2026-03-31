@@ -25,7 +25,7 @@ Be concise but complete. Prefer current research (Microsoft Learn) for Microsoft
 - When asked to create specification documents for a work package, create only one document containing everything needed; do not split across multiple documents. If multiple were created, merge into one and delete the extras.
 - Use appropriate prompt family & phase from `.github/prompts/`.
 - When asking open questions from a spec, record each answer directly in that same spec file and do not create a new version.
-- When collaborating on specifications in this repository, do not repeat the draft spec in chat before clarification questions; ask the next question directly and keep the evolving draft in the spec file instead.
+- When collaborating on specifications in this repository, do not repeat the draft spec in chat before clarification questions; ask the next question directly and keep the evolving draft in the spec file instead. If remaining questions are about look and feel only, use sensible defaults and revisit later instead of continuing to ask those presentation questions.
 - When documentation references repository wiki pages, prefer proper markdown links rather than inline code-formatted URLs or plain page names.
 - Repository documentation standards should be captured in `.github/instructions/documentation-pass.instructions.md` and referenced as a non-negotiable requirement from planning and execution prompts so they are enforced in every coding task.
 
@@ -128,3 +128,6 @@ Refer to specialized instruction files for full detail:
 ## Workbench UI Guidelines
 - For the `083-workbench-model` specification, ensure the Workbench UI is designed to be desktop-like rather than web-like.
 - Utilize the `UKHO.Workbench.Layout` `Layouts` namespace to implement a WPF-like grid layout model with splitters.
+
+## Workbench Planning
+- Define the full output panel feature up front in the spec and let the work-package planning prompt split implementation. Existing module-loading messages currently shown in the status bar should be lifted into the output panel, likely as Debug-level entries.

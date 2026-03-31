@@ -5,6 +5,7 @@ using UKHO.Workbench.Explorers;
 using UKHO.Workbench.Services.Shell;
 using UKHO.Workbench.Tools;
 using UKHO.Workbench.WorkbenchShell;
+using WorkbenchHost.Components.WorkbenchShell;
 using WorkbenchHost.Services;
 
 namespace WorkbenchHost.Components.Layout
@@ -58,6 +59,19 @@ namespace WorkbenchHost.Components.Layout
         /// Gets the current toolbar contributions visible for the active tool.
         /// </summary>
         private IReadOnlyList<ToolbarContribution> ToolbarContributions => ShellManager.ToolbarContributions;
+
+        /// <summary>
+        /// Gets the host-owned toolbar contribution that should surface as the persistent Home action.
+        /// </summary>
+        private ToolbarContribution? HomeToolbarContribution => ToolbarContributions.FirstOrDefault(toolbarContribution =>
+            string.Equals(toolbarContribution.Id, WorkbenchHostShellDefaults.OverviewToolbarId, StringComparison.Ordinal));
+
+        /// <summary>
+        /// Gets the remaining toolbar contributions after the persistent Home action has been removed from the trailing toolbar collection.
+        /// </summary>
+        private IReadOnlyList<ToolbarContribution> VisibleToolbarContributions => ToolbarContributions
+            .Where(toolbarContribution => !string.Equals(toolbarContribution.Id, WorkbenchHostShellDefaults.OverviewToolbarId, StringComparison.Ordinal))
+            .ToArray();
 
         /// <summary>
         /// Gets the current status-bar contributions visible for the active tool.
@@ -238,10 +252,23 @@ namespace WorkbenchHost.Components.Layout
         /// <returns>The CSS class string for the button.</returns>
         private string GetActivityButtonCss(string explorerId)
         {
-            // The selected explorer button keeps a distinct style so the activity rail behaves like a desktop workbench selector strip.
+            // The selected explorer button keeps a distinct style so the compact icon rail still behaves like a desktop workbench selector strip.
             return IsExplorerActive(explorerId)
                 ? "workbench-shell__activity-button workbench-shell__activity-button--active"
                 : "workbench-shell__activity-button";
+        }
+
+        /// <summary>
+        /// Opens a Radzen tooltip for the supplied activity-rail label.
+        /// </summary>
+        /// <param name="element">The rendered activity-rail button that should anchor the tooltip.</param>
+        /// <param name="displayName">The explorer display name that should be shown in the tooltip.</param>
+        private void ShowActivityRailTooltip(ElementReference element, string displayName)
+        {
+            // The compact icon-only rail still needs discoverable labels, so hover and focus use the shared Radzen tooltip service.
+            ArgumentException.ThrowIfNullOrWhiteSpace(displayName);
+
+            TooltipService.Open(element, displayName);
         }
 
         /// <summary>

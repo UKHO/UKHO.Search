@@ -52,13 +52,19 @@
             @if (IsRegionVisible(WorkbenchShellRegion.ActiveToolToolbar))
             {
                 <GridElement Row="2" Column="1">
-                    <section class="workbench-shell__toolbar" data-region="toolbar" aria-label="Active tool toolbar">
-                        <div class="workbench-shell__toolbar-title-group">
-                            <RadzenIcon Icon="@(ActiveTool?.Icon ?? ActiveTool?.Definition.Icon ?? "dashboard_customize")" />
-                            <div>
-                                    <p class="workbench-shell__toolbar-eyebrow">Active tab</p>
-                                    <strong>@(ActiveTool?.Title ?? "No open tab")</strong>
-                            </div>
+                    <section class="workbench-shell__toolbar" data-region="toolbar" aria-label="Workbench toolbar">
+                        <div class="workbench-shell__toolbar-home">
+                            @if (HomeToolbarContribution is not null)
+                            {
+                                <button type="button" class="workbench-shell__menu-button workbench-shell__toolbar-home-button" @onclick="() => ExecuteCommandAsync(HomeToolbarContribution.CommandId)">
+                                    @if (!string.IsNullOrWhiteSpace(HomeToolbarContribution.Icon))
+                                    {
+                                        <RadzenIcon Icon="@HomeToolbarContribution.Icon" />
+                                    }
+
+                                    <span>@HomeToolbarContribution.DisplayName</span>
+                                </button>
+                            }
                         </div>
 
                         <div class="workbench-shell__toolbar-meta">
@@ -67,7 +73,7 @@
                                 <span class="workbench-shell__badge">@ActiveTool.Badge</span>
                             }
 
-                            @foreach (var toolbarContribution in ToolbarContributions)
+                            @foreach (var toolbarContribution in VisibleToolbarContributions)
                             {
                                 <button type="button" class="workbench-shell__menu-button" @onclick="() => ExecuteCommandAsync(toolbarContribution.CommandId)">
                                     @if (!string.IsNullOrWhiteSpace(toolbarContribution.Icon))
@@ -88,10 +94,9 @@
                 <Grid>
                     <ColumnDefinitions>
                         <ColumnDefinition Width="64" />
+                        <ColumnDefinition Width="*" MinWidth="16" />
                         <SplitterColumnDefinition />
-                        <ColumnDefinition Width="280" MinWidth="16" />
-                        <SplitterColumnDefinition />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="4*" />
                     </ColumnDefinitions>
                     <RowDefinitions>
                         <RowDefinition Height="*" />
@@ -105,10 +110,12 @@
                                     {
                                         <button type="button"
                                                 class="@GetActivityButtonCss(explorer.Id)"
+                                                aria-label="@explorer.DisplayName"
                                                 aria-pressed="@IsExplorerActive(explorer.Id)"
                                                 @onclick="() => SelectExplorerAsync(explorer.Id)">
-                                            <RadzenIcon Icon="@explorer.Icon" />
-                                            <span>@explorer.DisplayName</span>
+                                            <RadzenIcon Icon="@explorer.Icon"
+                                                        MouseEnter="element => ShowActivityRailTooltip(element, explorer.DisplayName)"
+                                                        MouseLeave="HideTitleTooltip" />
                                         </button>
                                     }
                                 </aside>
@@ -117,7 +124,7 @@
 
                         @if (IsRegionVisible(WorkbenchShellRegion.Explorer))
                         {
-                            <GridElement Row="1" Column="3">
+                            <GridElement Row="1" Column="2">
                                 <aside class="workbench-shell__explorer" data-region="explorer" aria-label="Workbench explorer">
                                     <header class="workbench-shell__explorer-header">
                                         <p>Explorer</p>
@@ -159,103 +166,106 @@
 
                         @if (IsRegionVisible(WorkbenchShellRegion.ToolSurface))
                         {
-                            <GridElement Row="1" Column="5">
+                            <GridElement Row="1" Column="4">
                                 <main class="workbench-shell__tool-surface" data-region="tool-surface">
-                                    <div class="workbench-shell__tool-area">
-                                        <section class="workbench-shell__tab-strip" data-region="tab-strip" aria-label="Open Workbench tabs">
-                                            <div class="workbench-shell__tab-strip-content">
-                                                @if (OpenTabs.Count == 0)
-                                                {
-                                                    <span class="workbench-shell__tab-strip-empty">No open tabs</span>
-                                                }
-                                                else
-                                                {
-                                                    <ul class="workbench-shell__tab-list">
-                                                        @foreach (var openTab in VisibleTabs)
-                                                        {
-                                                            <li class="workbench-shell__tab-list-item" data-tab-id="@openTab.Id">
-                                                                <div class="workbench-shell__tab-entry">
+                                    <section class="workbench-shell__tab-strip"
+                                             data-region="tab-strip"
+                                             data-tab-strip-spacing="flush-top-bottom-left"
+                                             aria-label="Open Workbench tabs">
+                                        <div class="workbench-shell__tab-strip-content">
+                                            @if (OpenTabs.Count == 0)
+                                            {
+                                                <span class="workbench-shell__tab-strip-empty">No open tabs</span>
+                                            }
+                                            else
+                                            {
+                                                <ul class="workbench-shell__tab-list">
+                                                    @foreach (var openTab in VisibleTabs)
+                                                    {
+                                                        <li class="workbench-shell__tab-list-item" data-tab-id="@openTab.Id">
+                                                            <div class="workbench-shell__tab-entry">
+                                                                <button type="button"
+                                                                        class="@GetTabButtonCss(openTab)"
+                                                                        aria-pressed="@IsTabActive(openTab)"
+                                                                        aria-haspopup="menu"
+                                                                        @onclick="() => ActivateTabAsync(openTab.Id)"
+                                                                        @onauxclick="IgnoreAuxiliaryClickAsync"
+                                                                        @oncontextmenu="args => OpenTabContextMenuAsync(openTab, args)"
+                                                                        @oncontextmenu:preventDefault="true">
+                                                                    <RadzenIcon Icon="@openTab.Icon" />
+                                                                    @* RadzenText provides a stable component-owned ElementReference so the tooltip service receives a real DOM target on each hover. *@
+                                                                    <RadzenText Text="@openTab.Title"
+                                                                                TagName="TagName.Span"
+                                                                                TextStyle="TextStyle.Body2"
+                                                                                class="workbench-shell__tab-title"
+                                                                                MouseEnter="element => ShowTitleTooltip(element, openTab.Title)"
+                                                                                MouseLeave="HideTitleTooltip" />
+                                                                </button>
+
+                                                                @if (IsTabActive(openTab) && openTab.IsClosable)
+                                                                {
                                                                     <button type="button"
-                                                                            class="@GetTabButtonCss(openTab)"
-                                                                            aria-pressed="@IsTabActive(openTab)"
-                                                                            aria-haspopup="menu"
-                                                                            @onclick="() => ActivateTabAsync(openTab.Id)"
-                                                                            @onauxclick="IgnoreAuxiliaryClickAsync"
-                                                                            @oncontextmenu="args => OpenTabContextMenuAsync(openTab, args)"
-                                                                            @oncontextmenu:preventDefault="true">
-                                                                        <RadzenIcon Icon="@openTab.Icon" />
-                                                                        @* RadzenText provides a stable component-owned ElementReference so the tooltip service receives a real DOM target on each hover. *@
-                                                                        <RadzenText Text="@openTab.Title"
-                                                                                    TagName="TagName.Span"
-                                                                                    TextStyle="TextStyle.Body2"
-                                                                                    class="workbench-shell__tab-title"
-                                                                                    MouseEnter="element => ShowTitleTooltip(element, openTab.Title)"
-                                                                                    MouseLeave="HideTitleTooltip" />
+                                                                            class="workbench-shell__tab-close"
+                                                                            aria-label="Close @openTab.Title"
+                                                                            @onclick="() => CloseTabAsync(openTab.Id)"
+                                                                            @onclick:stopPropagation="true">
+                                                                        <RadzenIcon Icon="close" />
                                                                     </button>
-
-                                                                    @if (IsTabActive(openTab) && openTab.IsClosable)
-                                                                    {
-                                                                        <button type="button"
-                                                                                class="workbench-shell__tab-close"
-                                                                                aria-label="Close @openTab.Title"
-                                                                                @onclick="() => CloseTabAsync(openTab.Id)"
-                                                                                @onclick:stopPropagation="true">
-                                                                            <RadzenIcon Icon="close" />
-                                                                        </button>
-                                                                    }
-                                                                </div>
-                                                            </li>
-                                                        }
-                                                    </ul>
-                                                }
-                                            </div>
-
-                                            @* The overflow dropdown remains visible at all times so users always have a stable path to the full open-tab list. *@
-                                            <div class="workbench-shell__tab-overflow" data-region="tab-strip-overflow">
-                                                <RadzenDropDown TValue="string"
-                                                                Data="@OpenTabs"
-                                                                TextProperty="Title"
-                                                                ValueProperty="Id"
-                                                                Value="@(ShellManager.State.ActiveTab?.Id)"
-                                                                Placeholder="All tabs"
-                                                                Disabled="@(OpenTabs.Count == 0)"
-                                                                AllowClear="false"
-                                                                Change="SelectOverflowTabAsync"
-                                                                ItemRender="ConfigureOverflowItemAttributes"
-                                                                class="workbench-shell__tab-overflow-dropdown"
-                                                                aria-label="All open Workbench tabs">
-                                                    <ValueTemplate Context="selectedOverflowTab">
-                                                        <span class="workbench-shell__tab-overflow-label">
-                                                            <RadzenIcon Icon="more_horiz" />
-                                                            <span>All tabs</span>
-                                                        </span>
-                                                    </ValueTemplate>
-                                                    <Template Context="overflowTabContext">
-                                                        @{ var overflowTab = (WorkbenchTab)overflowTabContext; }
-
-                                                        <div class="@GetOverflowEntryCss(overflowTab)"
-                                                             data-overflow-tab-id="@overflowTab.Id"
-                                                             data-overflow-active="@IsTabActive(overflowTab).ToString().ToLowerInvariant()">
-                                                            <RadzenText Text="@overflowTab.Title"
-                                                                        TagName="TagName.Span"
-                                                                        TextStyle="TextStyle.Body2"
-                                                                        class="workbench-shell__overflow-entry-title"
-                                                                        MouseEnter="element => ShowTitleTooltip(element, overflowTab.Title)"
-                                                                        MouseLeave="HideTitleTooltip" />
-
-                                                            @if (IsTabActive(overflowTab))
-                                                            {
-                                                                <span class="workbench-shell__overflow-entry-state">Active</span>
-                                                            }
-                                                        </div>
-                                                    </Template>
-                                                </RadzenDropDown>
-                                            </div>
-                                        </section>
-
-                                        <div class="workbench-shell__tool-body">
-                                            @Body
+                                                                }
+                                                            </div>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            }
                                         </div>
+
+                                        @* The overflow dropdown remains visible at all times so users always have a stable path to the full open-tab list. *@
+                                        <div class="workbench-shell__tab-overflow"
+                                             data-region="tab-strip-overflow"
+                                             data-tab-strip-overflow-anchor="right">
+                                            <RadzenDropDown TValue="string"
+                                                            Data="@OpenTabs"
+                                                            TextProperty="Title"
+                                                            ValueProperty="Id"
+                                                            Value="@(ShellManager.State.ActiveTab?.Id)"
+                                                            Placeholder="All tabs"
+                                                            Disabled="@(OpenTabs.Count == 0)"
+                                                            AllowClear="false"
+                                                            Change="SelectOverflowTabAsync"
+                                                            ItemRender="ConfigureOverflowItemAttributes"
+                                                            class="workbench-shell__tab-overflow-dropdown"
+                                                            aria-label="All open Workbench tabs">
+                                                <ValueTemplate Context="selectedOverflowTab">
+                                                    <span class="workbench-shell__tab-overflow-label">
+                                                        <RadzenIcon Icon="more_horiz" />
+                                                        <span>All tabs</span>
+                                                    </span>
+                                                </ValueTemplate>
+                                                <Template Context="overflowTabContext">
+                                                    @{ var overflowTab = (WorkbenchTab)overflowTabContext; }
+
+                                                    <div class="@GetOverflowEntryCss(overflowTab)"
+                                                         data-overflow-tab-id="@overflowTab.Id"
+                                                         data-overflow-active="@IsTabActive(overflowTab).ToString().ToLowerInvariant()">
+                                                        <RadzenText Text="@overflowTab.Title"
+                                                                    TagName="TagName.Span"
+                                                                    TextStyle="TextStyle.Body2"
+                                                                    class="workbench-shell__overflow-entry-title"
+                                                                    MouseEnter="element => ShowTitleTooltip(element, overflowTab.Title)"
+                                                                    MouseLeave="HideTitleTooltip" />
+
+                                                        @if (IsTabActive(overflowTab))
+                                                        {
+                                                            <span class="workbench-shell__overflow-entry-state">Active</span>
+                                                        }
+                                                    </div>
+                                                </Template>
+                                            </RadzenDropDown>
+                                        </div>
+                                    </section>
+
+                                    <div class="workbench-shell__tool-body">
+                                        @Body
                                     </div>
                                 </main>
                             </GridElement>

@@ -313,8 +313,8 @@ namespace WorkbenchHost
                             "Host-owned exemplar tool that explains the current Workbench slice.",
                             100));
                 }
-                shellManager.RegisterMenu(new MenuContribution(WorkbenchHostShellDefaults.OverviewMenuId, "Overview", WorkbenchHostShellDefaults.OverviewCommandId, icon: "dashboard", order: 100));
-                shellManager.RegisterToolbar(new ToolbarContribution(WorkbenchHostShellDefaults.OverviewToolbarId, "Overview", WorkbenchHostShellDefaults.OverviewCommandId, icon: "dashboard", order: 100));
+                shellManager.RegisterMenu(new MenuContribution(WorkbenchHostShellDefaults.OverviewMenuId, "Home", WorkbenchHostShellDefaults.OverviewCommandId, icon: "dashboard", order: 100));
+                shellManager.RegisterToolbar(new ToolbarContribution(WorkbenchHostShellDefaults.OverviewToolbarId, "Home", WorkbenchHostShellDefaults.OverviewCommandId, icon: "dashboard", order: 100));
                 shellManager.RegisterStatusBar(new StatusBarContribution(WorkbenchHostShellDefaults.HostReadyStatusId, "Workbench shell ready", icon: "check_circle", order: 100));
 
                 // Module-contributed tools and shell surfaces use the same registration path as host-owned contributions.
