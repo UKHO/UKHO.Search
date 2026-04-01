@@ -1,0 +1,312 @@
+# Implementation Plan
+
+**Target output path:** `docs/090-wiki-overhaul/implementation-plan.md`
+
+## Wiki information architecture and execution baseline
+
+- [ ] Work Item 1: Audit the current wiki and publish the target information architecture for the overhaul
+  - **Purpose**: Establish the exact current-state source material, define the final book-like page structure, and create the execution baseline for the rest of the documentation overhaul without losing valid existing content.
+  - **Acceptance Criteria**:
+    - Every existing page under `wiki/` is inventoried and mapped to a retain, rewrite, split, absorb, or retire outcome.
+    - A target wiki naming convention and reading order are defined for the final page set.
+    - The plan for preserving valid information while removing phase-oriented wording is explicit.
+    - The mandatory wiki review and update completion gate is stated for the work package.
+  - **Definition of Done**:
+    - Current `wiki/` content inventory completed and recorded in working notes for implementation.
+    - Final target page map agreed within the work package and reflected in the files to be created or updated.
+    - Markdown-only scope preserved; no source-code behavior changes introduced.
+    - If any source-code file is touched while executing this work item, `./.github/instructions/documentation-pass.instructions.md` must be followed in full as a hard gate.
+    - Can verify end-to-end via: open `wiki/Home.md`, inspect the declared reading paths, and confirm the mapped section structure covers architecture, setup, ingestion, Workbench, glossary, troubleshooting, appendices, and maintenance guidance.
+  - [ ] Task 1.1: Audit the existing wiki corpus
+    - [ ] Step 1: Review every current markdown page under `wiki/` and capture its topic, strengths, outdated wording, Mermaid usage, and links.
+    - [ ] Step 2: Identify pages that can remain as a single page, pages that should be expanded, pages that should be split into narrative plus walkthrough content, and pages whose content should be absorbed elsewhere.
+    - [ ] Step 3: Mark `wiki/Workbench-Shell.md` for redistribution into the new Workbench guide structure and retirement once its useful content has been absorbed.
+  - [ ] Task 1.2: Define the target wiki information architecture
+    - [ ] Step 1: Choose the final book-like naming convention for the redesigned wiki page set.
+    - [ ] Step 2: Define top-level reading paths from `wiki/Home.md` into architecture, setup, ingestion, Workbench, troubleshooting, glossary, and appendix material.
+    - [ ] Step 3: Decide which major topics need paired overview and walkthrough pages.
+  - [ ] Task 1.3: Set execution rules for the work package
+    - [ ] Step 1: State that the overhaul is documentation-only except for markdown prompt and instruction updates required by the specification.
+    - [ ] Step 2: Carry forward the requirement that `./.github/instructions/documentation-pass.instructions.md` remains mandatory for any incidental code-writing task, even though this plan does not schedule source-code changes.
+    - [ ] Step 3: Define the final work item as the mandatory wiki review result record for the work package.
+  - **Files**:
+    - `wiki/Home.md`: update later to reflect the agreed reading paths and final information architecture.
+    - `wiki/*.md`: inventory and mapping source set for the overhaul.
+    - `docs/090-wiki-overhaul/implementation-plan.md`: implementation plan with the agreed sequence and completion gates.
+  - **Work Item Dependencies**: None.
+  - **Run / Verification Instructions**:
+    - Open the `wiki/` folder and confirm each current page is represented in the audit.
+    - Verify the target structure covers all required major areas from the specification.
+  - **User Instructions**: No manual action required.
+
+## Start-here, architecture, and glossary slices
+
+- [ ] Work Item 2: Deliver the start-here experience, glossary, and architecture learning path
+  - **Purpose**: Give new contributors a trustworthy entry point into the repository and a coherent route from overview to deeper architecture understanding.
+  - **Acceptance Criteria**:
+    - `wiki/Home.md` becomes a richer start-here page with audience guidance, reading paths, summaries of major areas, and one `current as of` note.
+    - The wiki includes one central glossary or terminology page.
+    - Architecture content is rewritten into current-state narrative material with a dedicated walkthrough page.
+    - Existing valid architecture information is preserved while phase-based wording is removed.
+    - Relevant Mermaid diagrams are refreshed and remain GitHub-renderable.
+  - **Definition of Done**:
+    - Updated markdown pages provide an end-to-end onboarding path from landing page to architecture deep dive.
+    - Cross-links between overview, glossary, and architecture walkthrough pages are present and valid.
+    - Diagrams reviewed and corrected where needed.
+    - Markdown-only scope preserved; if execution adds any code-writing work unexpectedly, `./.github/instructions/documentation-pass.instructions.md` must be followed in full.
+    - Can verify end-to-end via: open `wiki/Home.md`, follow the architecture reading path, and confirm glossary-backed terminology remains consistent across the updated pages.
+  - [ ] Task 2.1: Rewrite the landing page
+    - [ ] Step 1: Expand `wiki/Home.md` into a current-state start-here guide with audience-specific reading routes.
+    - [ ] Step 2: Add concise summaries for architecture, setup, ingestion, Workbench, troubleshooting, glossary, and appendices.
+    - [ ] Step 3: Add one `current as of` note at the bottom of `wiki/Home.md` and avoid page-level currency markers elsewhere.
+  - [ ] Task 2.2: Create the shared terminology reference
+    - [ ] Step 1: Create a central glossary page covering repository and Workbench terms used across the wiki.
+    - [ ] Step 2: Standardize terminology in the rewritten landing and architecture pages to match the glossary.
+    - [ ] Step 3: Add cross-links from the glossary to the main reading paths where useful.
+  - [ ] Task 2.3: Overhaul architecture guidance
+    - [ ] Step 1: Rewrite the current architecture overview into present-tense, current-state language.
+    - [ ] Step 2: Create a dedicated architecture walkthrough page that explains major repository flows in more code-oriented terms without turning the overview page into a reference dump.
+    - [ ] Step 3: Validate and refresh Mermaid diagrams for solution composition, high-level subsystem interactions, and contributor reading flow where they add value.
+  - [ ] Task 2.4: Add architecture troubleshooting and navigation cues
+    - [ ] Step 1: Add guidance for common architecture-reading pitfalls for new contributors.
+    - [ ] Step 2: Add explicit next-page links from architecture overview to walkthrough, ingestion, and Workbench sections.
+  - **Files**:
+    - `wiki/Home.md`: start-here landing page, reading paths, audience guidance, current-state note.
+    - `wiki/Glossary.md` or equivalent final-naming page: central terminology reference.
+    - `wiki/Solution-Architecture.md` or renamed architecture overview page: current-state narrative architecture guidance.
+    - `wiki/Architecture-Walkthrough.md` or equivalent final-naming page: deeper architecture walkthrough.
+  - **Work Item Dependencies**: Work Item 1.
+  - **Run / Verification Instructions**:
+    - Open `wiki/Home.md` in markdown preview.
+    - Follow the architecture path into the glossary and architecture walkthrough pages.
+    - Confirm Mermaid diagrams render cleanly in a GitHub-compatible markdown viewer.
+  - **User Instructions**: No manual action required.
+
+## Setup narrative, walkthrough, troubleshooting, and command reference
+
+- [ ] Work Item 3: Deliver the setup section as a guided current-state onboarding flow
+  - **Purpose**: Turn setup documentation into a reliable developer journey that explains the repository setup process, preserves critical commands verbatim, and supports troubleshooting.
+  - **Acceptance Criteria**:
+    - Setup guidance is split into a narrative overview plus one or more detailed walkthrough pages where that improves clarity.
+    - Critical setup and operational commands are preserved verbatim and in full where operational accuracy matters.
+    - Practical command examples are included throughout the setup section.
+    - Setup troubleshooting covers common and moderately advanced issues.
+    - Links from `wiki/Home.md` and related pages route readers clearly into setup content.
+  - **Definition of Done**:
+    - A new contributor can follow the setup reading path from overview to walkthrough to troubleshooting and command reference.
+    - Verbatim-sensitive commands remain unchanged in syntax and completeness.
+    - Cross-links to architecture, ingestion, and Workbench sections are present where helpful.
+    - Markdown-only scope preserved; if any source-code task becomes necessary, `./.github/instructions/documentation-pass.instructions.md` is a hard gate.
+    - Can verify end-to-end via: open the setup overview page, follow the walkthrough path, and confirm the troubleshooting and appendix pages support the same setup journey.
+  - [ ] Task 3.1: Rewrite setup overview content
+    - [ ] Step 1: Rewrite `wiki/Project-Setup.md` or its renamed replacement into current-state narrative form.
+    - [ ] Step 2: Explain setup concepts before individual commands so the section reads like a guide rather than a flat checklist.
+    - [ ] Step 3: Keep all critical commands verbatim and in full where exact syntax is operationally significant.
+  - [ ] Task 3.2: Add setup walkthrough material
+    - [ ] Step 1: Create a dedicated setup walkthrough page for more detailed step-by-step developer execution.
+    - [ ] Step 2: Add practical examples for common repository setup workflows.
+    - [ ] Step 3: Cross-link the walkthrough to glossary, architecture context, and relevant troubleshooting guidance.
+  - [ ] Task 3.3: Add troubleshooting and appendix support
+    - [ ] Step 1: Create or expand setup troubleshooting guidance for common and moderately advanced issues.
+    - [ ] Step 2: Create an appendix-style command reference page only for high-value reference content that supports the main setup narrative without replacing it.
+    - [ ] Step 3: Verify that command examples remain safe for publication and do not introduce secrets.
+  - **Files**:
+    - `wiki/Project-Setup.md` or final renamed setup overview page: narrative setup guidance.
+    - `wiki/Setup-Walkthrough.md` or equivalent final-naming page: detailed setup execution guide.
+    - `wiki/Setup-Troubleshooting.md` or equivalent final-naming page: setup issue diagnosis and fixes.
+    - `wiki/Appendix-Command-Reference.md` or equivalent final-naming page: verbatim command reference support.
+  - **Work Item Dependencies**: Work Item 2.
+  - **Run / Verification Instructions**:
+    - Open the setup overview page and follow the linked walkthrough and troubleshooting pages.
+    - Spot-check verbatim-sensitive commands against their current documented source text.
+    - Confirm links from `wiki/Home.md` reach the setup section correctly.
+  - **User Instructions**: No manual action required.
+
+## Ingestion narrative, rule-engine deep dive, and syntax reference
+
+- [ ] Work Item 4: Deliver the ingestion section with a full rules-engine deep dive
+  - **Purpose**: Make ingestion understandable to new and existing contributors through a layered narrative that explains concepts first, then practical workflows, then rules-engine syntax and examples in depth.
+  - **Acceptance Criteria**:
+    - Ingestion pages are rewritten into current-state, cross-linked narrative guidance.
+    - There is a dedicated ingestion walkthrough page.
+    - The rules engine receives especially deep documentation covering syntax, semantics, supported constructs, and worked examples.
+    - The wiki includes practical command examples and troubleshooting guidance for ingestion.
+    - Mermaid diagrams are used where they materially improve understanding of ingestion flows.
+  - **Definition of Done**:
+    - A reader can move from ingestion overview to walkthrough to rules-engine deep dive to quick reference without losing context.
+    - Existing valid ingestion information is preserved and reorganized rather than discarded.
+    - Rule syntax examples cover the syntax supported by the current implementation.
+    - Markdown-only scope preserved; any unplanned code-writing work must comply with `./.github/instructions/documentation-pass.instructions.md` in full.
+    - Can verify end-to-end via: follow the ingestion reading path from `wiki/Home.md`, confirm the deep-dive and reference pages are linked, and spot-check syntax examples against current implementation behavior.
+  - [ ] Task 4.1: Rewrite the ingestion overview and supporting provider context
+    - [ ] Step 1: Rewrite `wiki/Ingestion-Pipeline.md`, `wiki/Ingestion-Rules.md`, `wiki/Ingestion-Service-Provider-Mechanism.md`, and related ingestion pages into a current-state narrative structure.
+    - [ ] Step 2: Preserve valid provider and pipeline details while removing phase-history wording from the main narrative.
+    - [ ] Step 3: Refresh any ingestion diagrams so they reflect current implementation reality.
+  - [ ] Task 4.2: Create the ingestion walkthrough page
+    - [ ] Step 1: Add a code-oriented walkthrough page that explains how ingestion flows through the repository in practice.
+    - [ ] Step 2: Include practical examples and developer recipes for tracing or extending ingestion-related behavior.
+    - [ ] Step 3: Link the walkthrough back to architecture, setup, troubleshooting, and rules-engine material.
+  - [ ] Task 4.3: Create the rules-engine deep dive and quick reference
+    - [ ] Step 1: Expand rules documentation into a deep narrative guide covering syntax, semantics, evaluation concepts, and supported patterns.
+    - [ ] Step 2: Provide worked examples covering all syntax areas supported by the current implementation.
+    - [ ] Step 3: Create an appendix-style quick reference page for rule syntax so contributors can look up forms without interrupting the main narrative flow.
+  - [ ] Task 4.4: Add ingestion troubleshooting
+    - [ ] Step 1: Document common and moderately advanced ingestion issues.
+    - [ ] Step 2: Add troubleshooting paths that help contributors move from symptoms to likely causes and relevant wiki sections.
+  - **Files**:
+    - `wiki/Ingestion-Pipeline.md` and/or final renamed ingestion overview page: narrative ingestion overview.
+    - `wiki/Ingestion-Walkthrough.md` or equivalent final-naming page: detailed ingestion walkthrough.
+    - `wiki/Ingestion-Rules.md` and/or split deep-dive pages: rules-engine narrative guide.
+    - `wiki/Appendix-Rule-Syntax-Quick-Reference.md` or equivalent final-naming page: rule-syntax quick reference.
+    - `wiki/Ingestion-Troubleshooting.md` or equivalent final-naming page: ingestion troubleshooting guidance.
+    - `wiki/FileShare-Provider.md`, `wiki/Provider-Metadata-and-Split-Registration.md`, `wiki/CanonicalDocument-and-Discovery-Taxonomy.md`: current-state alignment where these pages support ingestion understanding.
+  - **Work Item Dependencies**: Work Item 2 and Work Item 3.
+  - **Run / Verification Instructions**:
+    - Open the ingestion overview and follow the linked walkthrough, deep-dive, troubleshooting, and appendix pages.
+    - Spot-check rule syntax examples against the repository implementation areas they describe.
+    - Confirm Mermaid diagrams render and match the written explanation.
+  - **User Instructions**: No manual action required.
+
+## Workbench guide overhaul
+
+- [ ] Work Item 5: Deliver a multi-page `Developer's Guide to Workbench` and retire the standalone shell page
+  - **Purpose**: Create the richer Workbench documentation set requested by the specification so new contributors can understand what Workbench is, why it is structured as it is, and how to use and extend it.
+  - **Acceptance Criteria**:
+    - Workbench documentation is expanded into a multi-page guide with narrative flow.
+    - The guide covers introduction, architecture, shell, modules, contribution model, commands and tool activation, tabs and layout, output and notifications, extension guidance, examples or tutorials, and troubleshooting.
+    - Existing useful content from `wiki/Workbench-Shell.md` is redistributed into the new guide and the standalone page is retired.
+    - Workbench content remains current-state, explanatory, and newcomer-friendly.
+    - Relevant Mermaid diagrams are added or refreshed where they materially improve comprehension.
+  - **Definition of Done**:
+    - A contributor can follow the Workbench reading path from introduction through architecture, extension, and troubleshooting without relying on old standalone pages.
+    - The guide explains both concepts and practical developer recipes.
+    - Cross-links connect Workbench guidance to architecture, glossary, and setup pages where helpful.
+    - Markdown-only scope preserved; any incidental code-writing work must fully comply with `./.github/instructions/documentation-pass.instructions.md`.
+    - Can verify end-to-end via: open the Workbench introduction page from `wiki/Home.md`, follow the guide sequence through extension/tutorial content, and confirm `wiki/Workbench-Shell.md` is no longer required as a standalone destination.
+  - [ ] Task 5.1: Create the guide framework
+    - [ ] Step 1: Create the top-level Workbench guide introduction page and define its internal reading order.
+    - [ ] Step 2: Add audience guidance for new contributors versus maintainers extending modules or contribution points.
+    - [ ] Step 3: Align terminology with the central glossary and wider architecture guidance.
+  - [ ] Task 5.2: Document Workbench concepts and runtime model
+    - [ ] Step 1: Create pages covering Workbench architecture, shell composition, module boundaries, and the contribution-based model.
+    - [ ] Step 2: Explain why the model works the way it does, not just what classes or components exist.
+    - [ ] Step 3: Refresh or add Mermaid diagrams for composition, extension points, and common user flows where helpful.
+  - [ ] Task 5.3: Document practical Workbench usage and extension
+    - [ ] Step 1: Create pages for commands and tool activation, tabs and layout, and output and notifications.
+    - [ ] Step 2: Add worked examples or tutorials for extending Workbench modules and contribution points.
+    - [ ] Step 3: Add troubleshooting content covering common and moderately advanced Workbench issues.
+  - [ ] Task 5.4: Absorb and retire the old shell page
+    - [ ] Step 1: Redistribute useful material from `wiki/Workbench-Shell.md` into the new guide pages.
+    - [ ] Step 2: Update all links to point to the new guide structure.
+    - [ ] Step 3: Remove or retire the standalone shell page once all valid content has been preserved elsewhere.
+  - **Files**:
+    - `wiki/Workbench-Introduction.md` or equivalent final-naming page: start page for the Workbench guide.
+    - `wiki/Workbench-Architecture.md` or equivalent final-naming page: Workbench architecture and composition.
+    - `wiki/Workbench-Shell-Guide.md` or equivalent final-naming page: shell concepts absorbed from the standalone shell page.
+    - `wiki/Workbench-Modules-and-Contributions.md` or equivalent final-naming page: module and contribution model.
+    - `wiki/Workbench-Commands-and-Tools.md` or equivalent final-naming page: commands and activation guidance.
+    - `wiki/Workbench-Tabs-and-Layout.md` or equivalent final-naming page: tabs, panels, and layout concepts.
+    - `wiki/Workbench-Output-and-Notifications.md` or equivalent final-naming page: output and notification behavior.
+    - `wiki/Workbench-Tutorials.md` or equivalent final-naming page: practical extension examples.
+    - `wiki/Workbench-Troubleshooting.md` or equivalent final-naming page: issue diagnosis and fixes.
+    - `wiki/Workbench-Shell.md`: retire after content absorption and link replacement.
+  - **Work Item Dependencies**: Work Item 2.
+  - **Run / Verification Instructions**:
+    - Open the Workbench introduction page from `wiki/Home.md`.
+    - Follow the internal guide sequence through concept, tutorial, and troubleshooting pages.
+    - Confirm all references that previously targeted `wiki/Workbench-Shell.md` now point to the new guide structure.
+  - **User Instructions**: No manual action required.
+
+## Repository wiki maintenance rules and prompt obligations
+
+- [ ] Work Item 6: Codify mandatory wiki maintenance in repository instructions and work-package prompts
+  - **Purpose**: Make future wiki review and update behavior explicit, repeatable, and enforced through the repository's planning and execution workflow.
+  - **Acceptance Criteria**:
+    - `.github/instructions/wiki.instructions.md` is created as a comprehensive repository instruction file.
+    - `.github/prompts/spec.execute.prompt.md` explicitly requires mandatory end-of-work-package wiki review and relevant updates, including recording when no update is needed.
+    - `.github/prompts/spec.plan.prompt.md` explicitly requires wiki review and update expectations to be carried into future implementation plans both within each work item's Definition of Done and as a final explicit wiki review or update work item.
+    - The new guidance makes GitHub Copilot responsible for carrying out the wiki review/update step before work-package completion.
+    - The relationship to `./.github/instructions/documentation-pass.instructions.md` is preserved correctly: wiki maintenance is mandatory and slightly lighter-weight, while documentation-pass remains a hard gate for source-code documentation work.
+  - **Definition of Done**:
+    - Repository instruction and prompt files are updated in a way that future planning and execution workflows clearly enforce wiki obligations.
+    - The new instruction file covers maintenance workflow, current-state rules, walkthrough standards, Mermaid standards, reporting expectations, and practical examples.
+    - Prompt updates preserve the existing mandatory role of `./.github/instructions/documentation-pass.instructions.md` wherever source-code work is planned or executed.
+    - Can verify end-to-end via: open the updated instruction and prompt files, trace the wiki obligations from planning through execution, and confirm the reporting requirement is explicit.
+  - [ ] Task 6.1: Create the wiki maintenance instruction file
+    - [ ] Step 1: Add `.github/instructions/wiki.instructions.md` with sections for purpose, ownership, mandatory triggers, current-state rules, narrative structure standards, walkthrough standards, Mermaid standards, maintenance workflow, reporting requirements, and examples.
+    - [ ] Step 2: State that wiki review is mandatory for every work package and that actual wiki edits are required whenever developer-facing behavior, architecture, workflows, or concepts change.
+    - [ ] Step 3: Define how to record the result when review concludes that no wiki change is needed.
+  - [ ] Task 6.2: Update the execution prompt
+    - [ ] Step 1: Update `.github/prompts/spec.execute.prompt.md` so the mandatory wiki review is explicit, sequential, and a completion gate.
+    - [ ] Step 2: Require GitHub Copilot to record which wiki pages were updated or why no update was necessary in the final work item or final summary.
+    - [ ] Step 3: Keep the existing `./.github/instructions/documentation-pass.instructions.md` requirement intact for coding tasks.
+  - [ ] Task 6.3: Update the planning prompt
+    - [ ] Step 1: Update `.github/prompts/spec.plan.prompt.md` so future plans must include wiki obligations in each work item's Definition of Done where relevant.
+    - [ ] Step 2: Require future plans to include a final explicit wiki review or update work item.
+    - [ ] Step 3: Preserve the current mandatory treatment of `./.github/instructions/documentation-pass.instructions.md` for any planned source-code work.
+  - **Files**:
+    - `.github/instructions/wiki.instructions.md`: canonical repository guidance for wiki maintenance.
+    - `.github/prompts/spec.execute.prompt.md`: execution workflow updated with mandatory wiki review and reporting requirements.
+    - `.github/prompts/spec.plan.prompt.md`: planning workflow updated with mandatory wiki review planning requirements.
+  - **Work Item Dependencies**: Work Item 1.
+  - **Run / Verification Instructions**:
+    - Open `.github/instructions/wiki.instructions.md` and both prompt files.
+    - Confirm the wiki review obligation flows consistently from planning to execution.
+    - Confirm the prompts still explicitly require `./.github/instructions/documentation-pass.instructions.md` for coding tasks.
+  - **User Instructions**: No manual action required.
+
+## Final quality review, whole-wiki validation, and completion record
+
+- [ ] Work Item 7: Validate the overhauled wiki end-to-end and record the mandatory wiki review result
+  - **Purpose**: Ensure the finished wiki behaves like a coherent current-state developer guide, all required pages and links are in place, diagrams are correct, and the work package records the wiki review outcome explicitly.
+  - **Acceptance Criteria**:
+    - All updated and new wiki pages are cross-linked and follow the agreed reading paths.
+    - Phase-oriented wording has been removed or rewritten into current-state guidance across the overhauled pages.
+    - Mermaid diagrams have been reviewed for accuracy and renderability.
+    - The final work package record states which wiki pages were updated or why no additional wiki edit was required.
+    - Validation includes the documentation-based checks from the specification and the repository execution expectations.
+  - **Definition of Done**:
+    - Final pass confirms Home, architecture, setup, ingestion, Workbench, troubleshooting, glossary, appendix, and maintenance instruction areas are internally consistent.
+    - All replaced links point to the new structure; obsolete bridge navigation is not left behind.
+    - Spot-checks against current implementation are completed for Workbench, architecture, setup, ingestion, and prompt/instruction workflow changes.
+    - Execution records the wiki review result clearly in the final work item or summary.
+    - If the execution workflow requires build and test validation for documentation-heavy work, those runs are completed or any unrelated pre-existing failures are explained explicitly.
+    - Can verify end-to-end via: start at `wiki/Home.md`, follow each major reading path, render the affected Mermaid diagrams, and review the final recorded wiki review result.
+  - [ ] Task 7.1: Perform whole-wiki cross-link and narrative review
+    - [ ] Step 1: Walk the major reader journeys from `wiki/Home.md` into architecture, setup, ingestion, Workbench, troubleshooting, glossary, and appendices.
+    - [ ] Step 2: Replace any remaining outdated links, names, or references to retired page structure.
+    - [ ] Step 3: Confirm that the wiki reads as a guided current-state technical book rather than a set of disconnected reference pages.
+  - [ ] Task 7.2: Perform current-state accuracy and diagram review
+    - [ ] Step 1: Spot-check rewritten pages against current repository implementation areas and prompt/instruction files.
+    - [ ] Step 2: Verify all Mermaid diagrams touched by the work are current, readable, and GitHub-compatible.
+    - [ ] Step 3: Confirm that valid existing information has been preserved somewhere in the new structure.
+  - [ ] Task 7.3: Record the mandatory wiki review result and final validation status
+    - [ ] Step 1: Record which wiki pages were updated, created, retired, or intentionally left unchanged.
+    - [ ] Step 2: Record the outcome of the mandatory wiki review as part of the final work item or final summary.
+    - [ ] Step 3: Complete any required repository validation runs for documentation-heavy work and document unrelated pre-existing failures if they occur.
+  - **Files**:
+    - `wiki/Home.md`: final reading-path verification anchor.
+    - `wiki/*.md`: final cross-link, terminology, and narrative consistency review surface.
+    - `.github/instructions/wiki.instructions.md`: confirm final maintenance guidance matches the completed wiki structure.
+    - `.github/prompts/spec.execute.prompt.md`: confirm final reporting requirement is present.
+    - `.github/prompts/spec.plan.prompt.md`: confirm final planning requirement is present.
+  - **Work Item Dependencies**: Work Item 2, Work Item 3, Work Item 4, Work Item 5, and Work Item 6.
+  - **Run / Verification Instructions**:
+    - Open `wiki/Home.md` and follow each reading path.
+    - Render affected Mermaid diagrams in a GitHub-compatible markdown viewer.
+    - Review the final summary entry for the mandatory wiki review result.
+    - If required by execution standards, run the repository build and test validations and record outcomes.
+  - **User Instructions**: No manual action required.
+
+## Summary
+
+This plan delivers the wiki overhaul as a sequence of documentation-first vertical slices: establish the target information architecture, ship the start-here and architecture path, overhaul setup, deepen ingestion guidance, build a multi-page Workbench guide, codify mandatory wiki maintenance in repository instructions and prompts, and finish with whole-wiki validation plus the mandatory wiki review record.
+
+Key implementation considerations:
+- Preserve all valid current information while removing phase-oriented wording from the main narrative.
+- Use a book-like structure with explicit reading paths, overview-plus-walkthrough pairs where helpful, and strong cross-linking.
+- Prioritize Workbench depth without neglecting setup, architecture, ingestion, glossary, troubleshooting, and appendix support.
+- Preserve verbatim-sensitive setup and operational commands exactly where required.
+- Keep Mermaid diagrams accurate, useful, and GitHub-renderable.
+- Treat wiki maintenance as a completion gate for future work packages through `.github/instructions/wiki.instructions.md`, `.github/prompts/spec.execute.prompt.md`, and `.github/prompts/spec.plan.prompt.md`.
+- Treat `./.github/instructions/documentation-pass.instructions.md` as mandatory for any incidental source-code work even though this plan is intentionally documentation-only.
