@@ -1,12 +1,12 @@
 # Workbench tabs and layout
 
-Read this page after [Workbench commands and tools](Workbench-Commands-and-Tools.md) when you want to understand what happens after a command resolves to an activation target: which tab opens, when an existing tab is reused, why inactive views remain mounted, and how the desktop-like shell layout supports that behavior.
+Read this page after [Workbench commands and tools](Workbench-Commands-and-Tools) when you want to understand what happens after a command resolves to an activation target: which tab opens, when an existing tab is reused, why inactive views remain mounted, and how the desktop-like shell layout supports that behavior.
 
 This chapter sits at the point where Workbench stops being an abstract composition model and starts feeling like a real desktop tool host.
 
 ## Tabs are logical identities, not just visible labels
 
-The current shell does not treat a tab as “whatever is currently rendered.” It treats a tab as the visible representation of a stable logical target.
+The current shell does not treat a tab as â€œwhatever is currently rendered.â€ It treats a tab as the visible representation of a stable logical target.
 
 That logical identity comes from `ActivationTarget.CreateTabIdentity()` in `src/workbench/server/UKHO.Workbench/Tools/ActivationTarget.cs`. The identity combines:
 
@@ -102,13 +102,13 @@ The shell keeps recognizable regions for menu, rail, explorer, center work surfa
 
 The Workbench layout primitives allow the center surface and output surface to behave like real panes. The output panel remembers session height through shared panel state, and the explorer-to-center boundary is resizeable without requiring each tool to know anything about pane mechanics.
 
-For the component-level layout API, continue to [Workbench layout](Workbench-Layout.md). That page is the deeper reference for `Grid`, definitions, splitters, and the standalone layout sample.
+For the component-level layout API, continue to [Workbench layout](Workbench-Layout). That page is the deeper reference for `Grid`, definitions, splitters, and the standalone layout sample.
 
 ## A practical example: same tool, different identities
 
 Today most exemplar tools use one obvious logical identity, so reopening them focuses the same tab. The `ActivationTarget` model already supports a richer pattern when a tool should open separate tabs for different logical records or contexts.
 
-If you pass a `parameterIdentity`, the default logical key becomes `toolId::parameterIdentity`. That means the shell can treat “same tool, different target” as several valid open tabs without weakening the reuse rules for the ordinary same-target case.
+If you pass a `parameterIdentity`, the default logical key becomes `toolId::parameterIdentity`. That means the shell can treat â€œsame tool, different targetâ€ as several valid open tabs without weakening the reuse rules for the ordinary same-target case.
 
 This is a useful design detail for contributors because it shows the intended extension path. Workbench does not need ad hoc tab rules for each future module. It already has a bounded identity model.
 
@@ -128,6 +128,6 @@ Visible tab rendering happens in the host, but reuse rules live in activation an
 
 ## Recommended next pages
 
-- Continue to [Workbench output and notifications](Workbench-Output-and-Notifications.md) for the shell-owned historical trace that sits beneath the working surface.
-- Continue to [Workbench tutorials](Workbench-Tutorials.md) for extension recipes that combine activation targets, commands, and modules.
-- Return to [Workbench shell guide](Workbench-Shell-Guide.md) if you need the visible shell-region explanation again.
+- Continue to [Workbench output and notifications](Workbench-Output-and-Notifications) for the shell-owned historical trace that sits beneath the working surface.
+- Continue to [Workbench tutorials](Workbench-Tutorials) for extension recipes that combine activation targets, commands, and modules.
+- Return to [Workbench shell guide](Workbench-Shell-Guide) if you need the visible shell-region explanation again.

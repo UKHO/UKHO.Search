@@ -1,6 +1,6 @@
 # `UKHO.Search.Ingestion.Providers.FileShare`
 
-This page is the provider-specific companion to [Ingestion pipeline](Ingestion-Pipeline.md) and [Ingestion walkthrough](Ingestion-Walkthrough.md).
+This page is the provider-specific companion to [Ingestion pipeline](Ingestion-Pipeline) and [Ingestion walkthrough](Ingestion-Walkthrough).
 
 It documents the current concrete ingestion provider, the File Share processing graph it owns, and the provider-specific enrichment behavior that turns File Share batches into canonical discovery documents.
 
@@ -273,9 +273,9 @@ If you understand this provider, you understand most of the repository's ingesti
 
 ## Related pages
 
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [Ingestion walkthrough](Ingestion-Walkthrough.md)
-- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism.md)
-- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md)
-- [Ingestion rules](Ingestion-Rules.md)
-- [Ingestion troubleshooting](Ingestion-Troubleshooting.md)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [Ingestion walkthrough](Ingestion-Walkthrough)
+- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism)
+- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy)
+- [Ingestion rules](Ingestion-Rules)
+- [Ingestion troubleshooting](Ingestion-Troubleshooting)

@@ -4,18 +4,18 @@ This glossary defines the repository terms that appear repeatedly across the wik
 
 ## Use this page with the main reading paths
 
-- [Home](Home.md) for the repository start-here path
-- [Solution architecture](Solution-Architecture.md) for the current repository map
-- [Architecture walkthrough](Architecture-Walkthrough.md) for code-oriented runtime flows
-- [Project setup](Project-Setup.md) for local environment setup
-- [Ingestion pipeline](Ingestion-Pipeline.md) for message-processing detail
-- [Workbench introduction](Workbench-Introduction.md) for the current Workbench guide
+- [Home](Home) for the repository start-here path
+- [Solution architecture](Solution-Architecture) for the current repository map
+- [Architecture walkthrough](Architecture-Walkthrough) for code-oriented runtime flows
+- [Project setup](Project-Setup) for local environment setup
+- [Ingestion pipeline](Ingestion-Pipeline) for message-processing detail
+- [Workbench introduction](Workbench-Introduction) for the current Workbench guide
 
 ## Repository and runtime terms
 
 ### AppHost
 
-The Aspire-based host at `src/Hosts/AppHost` that starts and coordinates the local developer environment, including storage, search, authentication, service hosts, and tool processes. See [Project setup](Project-Setup.md).
+The Aspire-based host at `src/Hosts/AppHost` that starts and coordinates the local developer environment, including storage, search, authentication, service hosts, and tool processes. See [Project setup](Project-Setup).
 
 ### Aspire dashboard
 
@@ -23,7 +23,7 @@ The local Aspire UI used to inspect resources, parameters, logs, and links for t
 
 ### CanonicalDocument
 
-The shared discovery contract produced by ingestion and indexed into Elasticsearch. Providers transform source-specific data into this provider-agnostic search model. See [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md).
+The shared discovery contract produced by ingestion and indexed into Elasticsearch. Providers transform source-specific data into this provider-agnostic search model. See [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy).
 
 ### Canonical index projection
 
@@ -35,7 +35,7 @@ An executable outer-layer project that wires together services, infrastructure, 
 
 ### Onion Architecture
 
-The repository architecture rule that keeps dependencies moving inward: `Hosts / UI -> Infrastructure -> Services -> Domain`. The inner layers define contracts and behaviour, while outer layers provide integrations and composition. See [Solution architecture](Solution-Architecture.md).
+The repository architecture rule that keeps dependencies moving inward: `Hosts / UI -> Infrastructure -> Services -> Domain`. The inner layers define contracts and behaviour, while outer layers provide integrations and composition. See [Solution architecture](Solution-Architecture).
 
 ### Provider
 
@@ -47,7 +47,7 @@ The shared metadata, identity, and registration surface in `src/UKHO.Search.Prov
 
 ### Run mode
 
-The AppHost execution mode that selects which local workflow to start, such as `import`, `services`, or `export`. See [Project setup](Project-Setup.md).
+The AppHost execution mode that selects which local workflow to start, such as `import`, `services`, or `export`. See [Project setup](Project-Setup).
 
 ## Ingestion terms
 
@@ -77,11 +77,11 @@ One ordered partition of the ingestion pipeline. Messages with the same key are 
 
 ### Rule
 
-A repository-managed mapping or enrichment rule evaluated during ingestion to derive canonical document fields without hard-coding every mapping in C#. See [Ingestion rules](Ingestion-Rules.md).
+A repository-managed mapping or enrichment rule evaluated during ingestion to derive canonical document fields without hard-coding every mapping in C#. See [Ingestion rules](Ingestion-Rules).
 
 ### RulesWorkbench
 
-The dedicated local tool for inspecting, evaluating, and checking ingestion rules. See [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md).
+The dedicated local tool for inspecting, evaluating, and checking ingestion rules. See [Tools: `RulesWorkbench`](Tools-RulesWorkbench).
 
 ## Workbench terms
 
@@ -145,7 +145,7 @@ A text-based diagram block rendered by GitHub markdown viewers. This wiki uses M
 
 ## Where to go next
 
-- Return to [Home](Home.md) for the full reading-path overview.
-- Continue to [Solution architecture](Solution-Architecture.md) for the repository-wide structure.
-- Continue to [Architecture walkthrough](Architecture-Walkthrough.md) if you want to trace the main code paths rather than just the project map.
-- Continue to [Ingestion pipeline](Ingestion-Pipeline.md) or [Workbench introduction](Workbench-Introduction.md) when you are ready to move into a specific subsystem.
+- Return to [Home](Home) for the full reading-path overview.
+- Continue to [Solution architecture](Solution-Architecture) for the repository-wide structure.
+- Continue to [Architecture walkthrough](Architecture-Walkthrough) if you want to trace the main code paths rather than just the project map.
+- Continue to [Ingestion pipeline](Ingestion-Pipeline) or [Workbench introduction](Workbench-Introduction) when you are ready to move into a specific subsystem.

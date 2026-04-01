@@ -1,6 +1,6 @@
 # Appendix: command reference
 
-Use this page as the exact-command companion to [Project setup](Project-Setup.md) and [Setup walkthrough](Setup-Walkthrough.md).
+Use this page as the exact-command companion to [Project setup](Project-Setup) and [Setup walkthrough](Setup-Walkthrough).
 
 This appendix keeps the high-value operational commands together so the main setup pages can stay narrative-first without losing verbatim accuracy.
 
@@ -142,8 +142,8 @@ Operational notes:
 
 ## Related pages
 
-- [Project setup](Project-Setup.md)
-- [Setup walkthrough](Setup-Walkthrough.md)
-- [Setup troubleshooting](Setup-Troubleshooting.md)
-- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator.md)
-- [Keycloak and Workbench integration](keycloak-workbench-integration.md)
+- [Project setup](Project-Setup)
+- [Setup walkthrough](Setup-Walkthrough)
+- [Setup troubleshooting](Setup-Troubleshooting)
+- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator)
+- [Keycloak and Workbench integration](keycloak-workbench-integration)

@@ -8,7 +8,7 @@ If the other ingestion pages are meant to read like a guided tour through a work
 
 ## Reading path
 
-Start with [Ingestion pipeline](Ingestion-Pipeline.md) for the overall ingestion narrative. Then read this page when you want the architectural basis behind the runtime terms used there. Continue to [Ingestion walkthrough](Ingestion-Walkthrough.md) when you are ready to see those ideas expressed in the concrete File Share graph.
+Start with [Ingestion pipeline](Ingestion-Pipeline) for the overall ingestion narrative. Then read this page when you want the architectural basis behind the runtime terms used there. Continue to [Ingestion walkthrough](Ingestion-Walkthrough) when you are ready to see those ideas expressed in the concrete File Share graph.
 
 ## The problem this runtime is trying to solve
 
@@ -36,7 +36,7 @@ The important areas are:
 | `src/UKHO.Search/Pipelines/Retry` | retry policy contracts and backoff helpers |
 | `src/UKHO.Search/Pipelines/DeadLetter` | dead-letter metadata and payload diagnostic helpers |
 
-That list matters because it shows that the runtime is not just “some helper classes”. It is a coherent subsystem with its own message model, lifecycle model, instrumentation model, and error model.
+That list matters because it shows that the runtime is not just â€œsome helper classesâ€. It is a coherent subsystem with its own message model, lifecycle model, instrumentation model, and error model.
 
 ## A conceptual picture of the runtime before any provider-specific graph exists
 
@@ -69,7 +69,7 @@ A channel lets one part of the system write work while another part reads that w
 
 Channels also make handoff points real. When a message passes from one node to another through a channel, the code has a concrete place where capacity can be enforced, where queue depth can be observed, and where operational questions can be answered. If the pipeline used little more than chained async methods, the handoff boundaries would still exist in reality, but they would be much harder to see and much harder to measure.
 
-This is why the result is not merely “async code”. It is a runtime with explicit seams.
+This is why the result is not merely â€œasync codeâ€. It is a runtime with explicit seams.
 
 ## Why the channels are bounded rather than unbounded
 
@@ -110,7 +110,7 @@ Two methods on `Envelope<T>` are especially important for understanding how the 
 
 First, `MapPayload<TOut>(...)` creates a new envelope with a different payload type while preserving message identity, attempt count, headers, context, status, and error. That is how transform nodes can change payload shape without losing the runtime metadata that later nodes still need.
 
-Second, methods such as `MarkFailed(...)`, `MarkRetrying(...)`, `MarkOk()`, and `MarkDropped(...)` make message state transitions explicit. A message does not merely “have an exception somewhere”. It has a pipeline-level state that later nodes and metrics can observe.
+Second, methods such as `MarkFailed(...)`, `MarkRetrying(...)`, `MarkOk()`, and `MarkDropped(...)` make message state transitions explicit. A message does not merely â€œhave an exception somewhereâ€. It has a pipeline-level state that later nodes and metrics can observe.
 
 ## Message context and breadcrumbs
 
@@ -122,7 +122,7 @@ This is a recurring architectural theme in the graph library: provider-specific 
 
 A **node** in this runtime is a single processing stage with an explicit input/output contract, explicit metrics, explicit cancellation behavior, and explicit lifetime management.
 
-The generic base classes in `src/UKHO.Search/Pipelines/Nodes` are the runtime’s real skeleton. The concrete nodes matter, but these base classes explain how the graph is built.
+The generic base classes in `src/UKHO.Search/Pipelines/Nodes` are the runtimeâ€™s real skeleton. The concrete nodes matter, but these base classes explain how the graph is built.
 
 Before looking at the individual base classes, it helps to understand the architectural promise they all share. A node in this runtime is not just a function plus a queue. Every node has a standard lifecycle, a standard completion surface, a standard metric surface, and a standard error-reporting path. That consistency is one of the most valuable things the library provides.
 
@@ -170,7 +170,7 @@ That is an important design choice. It means every node in the graph is not rein
 
 There are several details in `NodeBase<TIn, TOut>` that are especially important to understand.
 
-First, `StartAsync(...)` does not run the work inline. It creates a background task that owns the node’s run loop. This is why the supervisor can start a whole graph and then coordinate completion externally.
+First, `StartAsync(...)` does not run the work inline. It creates a background task that owns the nodeâ€™s run loop. This is why the supervisor can start a whole graph and then coordinate completion externally.
 
 Second, the run loop is built around `WaitToReadAsync(...)` followed by `TryRead(...)`. That pattern matters because it avoids unnecessary allocations and lets one readiness check drain all currently available items before awaiting again.
 
@@ -192,7 +192,7 @@ This is why queue-ingress nodes can still look like first-class members of the g
 
 `SinkNodeBase<TIn>` is the mirror image for terminal nodes that consume input without writing to a normal downstream output.
 
-A sink still participates in the same lifecycle and instrumentation model. The graph runtime therefore treats “the last step” as just another node boundary instead of as a place where structure disappears.
+A sink still participates in the same lifecycle and instrumentation model. The graph runtime therefore treats â€œthe last stepâ€ as just another node boundary instead of as a place where structure disappears.
 
 That matters for dead-letter sinks, diagnostics sinks, and acknowledgement sinks. Even though they are terminal destinations, they still need metrics, consistent cancellation behavior, and fatal-error reporting.
 
@@ -204,7 +204,7 @@ This class is particularly important because it shows that the runtime is not ju
 
 This is what allows merge-style nodes to be built without each implementation inventing its own concurrency and fairness rules.
 
-The fairness point is worth slowing down for. A naïve two-input merge often ends up preferring whichever input is already busy, which can starve the quieter side. `MultiInputNodeBase<T1, T2, TOut>` deliberately alternates preference and waits on both readers when needed. In other words, fairness is not accidental here. It is designed into the base class.
+The fairness point is worth slowing down for. A naÃ¯ve two-input merge often ends up preferring whichever input is already busy, which can starve the quieter side. `MultiInputNodeBase<T1, T2, TOut>` deliberately alternates preference and waits on both readers when needed. In other words, fairness is not accidental here. It is designed into the base class.
 
 ## The node taxonomy the runtime provides
 
@@ -220,7 +220,7 @@ This is a subtle but important pattern in the graph library. Validation does not
 
 `TransformNode<TIn, TOut>` changes payload shape while preserving the surrounding envelope contract. Because it uses `MapPayload(...)`, the graph keeps message identity and context intact even as the payload type changes.
 
-This is one of the key building blocks for turning one stage’s domain object into the next stage’s domain object without losing runtime metadata.
+This is one of the key building blocks for turning one stageâ€™s domain object into the next stageâ€™s domain object without losing runtime metadata.
 
 ### `RetryingTransformNode<TIn, TOut>`
 
@@ -246,7 +246,7 @@ This is the generic runtime answer to the tension between per-item semantics and
 
 `MergeNode<TIn>` is a straightforward concrete use of `MultiInputNodeBase`. It forwards envelopes from either input into one output while preserving message context and breadcrumbs.
 
-The point of the node is less about complexity and more about discipline. Even a simple “join these two streams” operation is expressed as a proper node with completion, fairness, and metrics rather than as an ad hoc task.
+The point of the node is less about complexity and more about discipline. Even a simple â€œjoin these two streamsâ€ operation is expressed as a proper node with completion, fairness, and metrics rather than as an ad hoc task.
 
 ### `BroadcastNode<TIn>`
 
@@ -256,7 +256,7 @@ The point of the node is less about complexity and more about discipline. Even a
 
 `RouteNode<TIn>` chooses an output channel from a route key derived from the current envelope. If the route does not exist, it can mark the message failed and send it to an error output.
 
-This is the runtime’s generic “branch by key” facility, distinct from hash partitioning.
+This is the runtimeâ€™s generic â€œbranch by keyâ€ facility, distinct from hash partitioning.
 
 ### `BulkIndexNode<TDocument>`
 
@@ -368,7 +368,7 @@ Notice what that means architecturally. The node is both a unit of processing an
 
 This is one reason the graph can be explained clearly in documentation. The code, the topology, and the telemetry all share the same boundaries.
 
-It also explains why the runtime can support meaningful operational conversations. A developer can say “the queue depth before partitioning is growing” or “the microbatch node is spending longer per flush” and those statements correspond to real runtime constructs rather than vague impressions.
+It also explains why the runtime can support meaningful operational conversations. A developer can say â€œthe queue depth before partitioning is growingâ€ or â€œthe microbatch node is spending longer per flushâ€ and those statements correspond to real runtime constructs rather than vague impressions.
 
 ## A second conceptual diagram: how the reusable node shapes combine
 
@@ -487,8 +487,8 @@ Most importantly, you can make better changes. You can tell the difference betwe
 
 ## Related pages
 
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [Ingestion walkthrough](Ingestion-Walkthrough.md)
-- [Ingestion troubleshooting](Ingestion-Troubleshooting.md)
-- [File Share provider](FileShare-Provider.md)
-- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [Ingestion walkthrough](Ingestion-Walkthrough)
+- [Ingestion troubleshooting](Ingestion-Troubleshooting)
+- [File Share provider](FileShare-Provider)
+- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard)

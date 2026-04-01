@@ -7,9 +7,9 @@ It explains what the setup flow is trying to achieve, how `AppHost` orchestrates
 ## Setup reading path
 
 - Read this page first for the concepts, prerequisites, and run-mode model.
-- Continue to [Setup walkthrough](Setup-Walkthrough.md) for the step-by-step execution path.
-- Use [Setup troubleshooting](Setup-Troubleshooting.md) if the local environment does not behave as expected.
-- Keep [Appendix: command reference](Appendix-Command-Reference.md) nearby when you need the exact operational commands without extra narrative around them.
+- Continue to [Setup walkthrough](Setup-Walkthrough) for the step-by-step execution path.
+- Use [Setup troubleshooting](Setup-Troubleshooting) if the local environment does not behave as expected.
+- Keep [Appendix: command reference](Appendix-Command-Reference) nearby when you need the exact operational commands without extra narrative around them.
 
 This split is deliberate. The setup story in this repository is too broad to fit well on one page without becoming either overwhelming or overly terse. Contributors need one page that explains the shape of the local environment and why the workflow is divided into different loops, one page that gives the practical bring-up sequence, one page that helps diagnose the common failure modes, and one page that preserves verbatim-sensitive commands. Treat those pages as one setup chapter sequence rather than as disconnected notes.
 
@@ -127,7 +127,7 @@ It starts:
 - SQL Server
 - `FileShareImageBuilder` as an explicit-start resource
 
-Use this mode only when you are intentionally creating a new data image from a remote File Share environment. For that deeper workflow, see [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder.md).
+Use this mode only when you are intentionally creating a new data image from a remote File Share environment. For that deeper workflow, see [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder).
 
 ## How the setup journey fits together
 
@@ -204,7 +204,7 @@ Once the services stack is running, the most useful local checks are:
 - `FileShareEmulator` indexing page can submit batches, clear queues, and delete indexes.
 - Kibana is reachable from the Aspire dashboard for inspecting indexes, running queries, and checking Elasticsearch state.
 - Kibana credentials are `kibana_admin` plus the `elastic-password` parameter value from the Aspire dashboard **Parameters** tab.
-- Aspire metrics show the custom ingestion meter described in [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md).
+- Aspire metrics show the custom ingestion meter described in [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard).
 - dead-letter blobs appear under the configured dead-letter container and prefix.
 
 If Workbench access matters to the task you are starting, add one more check: open the Keycloak admin UI from the **HTTP** endpoint exposed by Aspire, not the HTTPS endpoint, and confirm that the expected local realm bootstrap is present. That simple validation often surfaces stale-volume or mapper drift issues early, before they look like unrelated Workbench authorization failures.
@@ -227,18 +227,18 @@ Some newer matching test projects currently contain placeholder smoke tests so t
 
 ## Next pages
 
-- Continue to [Setup walkthrough](Setup-Walkthrough.md) for the step-by-step execution path.
-- Use [Setup troubleshooting](Setup-Troubleshooting.md) when the local environment does not match the expected flow.
-- Use [Appendix: command reference](Appendix-Command-Reference.md) for the exact ACR and AppHost commands.
-- Keep [Solution architecture](Solution-Architecture.md), [Architecture walkthrough](Architecture-Walkthrough.md), and [Ingestion pipeline](Ingestion-Pipeline.md) nearby when you need to understand why the services are arranged this way.
+- Continue to [Setup walkthrough](Setup-Walkthrough) for the step-by-step execution path.
+- Use [Setup troubleshooting](Setup-Troubleshooting) when the local environment does not match the expected flow.
+- Use [Appendix: command reference](Appendix-Command-Reference) for the exact ACR and AppHost commands.
+- Keep [Solution architecture](Solution-Architecture), [Architecture walkthrough](Architecture-Walkthrough), and [Ingestion pipeline](Ingestion-Pipeline) nearby when you need to understand why the services are arranged this way.
 
 ## Related pages
 
-- [Setup walkthrough](Setup-Walkthrough.md)
-- [Setup troubleshooting](Setup-Troubleshooting.md)
-- [Appendix: command reference](Appendix-Command-Reference.md)
-- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator.md)
-- [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder.md)
-- [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md)
-- [Keycloak and Workbench integration](keycloak-workbench-integration.md)
-- [Ingestion pipeline](Ingestion-Pipeline.md)
+- [Setup walkthrough](Setup-Walkthrough)
+- [Setup troubleshooting](Setup-Troubleshooting)
+- [Appendix: command reference](Appendix-Command-Reference)
+- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator)
+- [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder)
+- [Tools: `RulesWorkbench`](Tools-RulesWorkbench)
+- [Keycloak and Workbench integration](keycloak-workbench-integration)
+- [Ingestion pipeline](Ingestion-Pipeline)

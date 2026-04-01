@@ -168,7 +168,7 @@ The output service retains entries, but the panel can show a filtered subset. Th
 ### What to check
 
 1. Confirm the component uses the injected `ToolContext` for title, badge, status, selection, or notifications.
-2. Check logs for “tool instance was not tracked by the shell.”
+2. Check logs for â€œtool instance was not tracked by the shell.â€
 3. Verify the update happens while the tab is still open.
 
 ### Why this works
@@ -177,6 +177,6 @@ The shell only trusts updates from tracked runtime instances. Local component ch
 
 ## When to leave this page
 
-- Return to [Workbench architecture](Workbench-Architecture.md) if you realize the problem is really about startup ownership or module loading boundaries.
-- Return to [Workbench commands and tools](Workbench-Commands-and-Tools.md) if the failure is really command registration or tool-scoped ownership.
-- Return to [Workbench output and notifications](Workbench-Output-and-Notifications.md) if the problem is about historical visibility rather than action execution itself.
+- Return to [Workbench architecture](Workbench-Architecture) if you realize the problem is really about startup ownership or module loading boundaries.
+- Return to [Workbench commands and tools](Workbench-Commands-and-Tools) if the failure is really command registration or tool-scoped ownership.
+- Return to [Workbench output and notifications](Workbench-Output-and-Notifications) if the problem is about historical visibility rather than action execution itself.

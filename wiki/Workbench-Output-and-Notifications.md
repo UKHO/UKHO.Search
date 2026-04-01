@@ -1,6 +1,6 @@
 # Workbench output and notifications
 
-Read this page after [Workbench tabs and layout](Workbench-Tabs-and-Layout.md) when you want to understand how the shell reports what happened during startup and throughout the session, why the output panel is now the durable history surface, and how user-safe notifications relate to that output stream.
+Read this page after [Workbench tabs and layout](Workbench-Tabs-and-Layout) when you want to understand how the shell reports what happened during startup and throughout the session, why the output panel is now the durable history surface, and how user-safe notifications relate to that output stream.
 
 This chapter matters because Workbench deliberately separates two ideas that are easy to blur together.
 
@@ -47,7 +47,7 @@ Startup output is buffered before the interactive shell is ready. `Program.cs` w
 
 Runtime output is simpler. Once the shell is interactive, notifications, context updates, status updates, and later diagnostics write directly into the shared output service.
 
-The result is one continuous session story instead of a split between “messages from startup” and “messages from later.”
+The result is one continuous session story instead of a split between â€œmessages from startupâ€ and â€œmessages from later.â€
 
 ```mermaid
 flowchart TD
@@ -108,20 +108,20 @@ That sequence shows the full handoff from host startup into shell-owned session 
 
 ## Common misunderstandings
 
-### “The output panel is empty, so nothing happened.”
+### â€œThe output panel is empty, so nothing happened.â€
 
 The panel may be collapsed, filtered above the entry level you expect, or simply showing retained output after the first interactive render. Check visibility and the minimum visible level first.
 
-### “If I saw the toast, I do not need to check output.”
+### â€œIf I saw the toast, I do not need to check output.â€
 
 Toasts are the transient surface. Output is the historical surface. If you need to understand the session later, the panel is the authoritative record.
 
-### “The status bar should show all of this directly.”
+### â€œThe status bar should show all of this directly.â€
 
 The current design intentionally moved durable shell history out of the status bar and into the output panel. The lighter status bar is part of the model, not a missing implementation step.
 
 ## Recommended next pages
 
-- Continue to [Workbench tutorials](Workbench-Tutorials.md) for recipes that raise notifications and participate in shell output correctly.
-- Continue to [Workbench troubleshooting](Workbench-Troubleshooting.md) when the panel looks empty or module-load diagnostics do not match what you expected.
-- Return to [Workbench shell guide](Workbench-Shell-Guide.md) if you need the surrounding layout and ownership context again.
+- Continue to [Workbench tutorials](Workbench-Tutorials) for recipes that raise notifications and participate in shell output correctly.
+- Continue to [Workbench troubleshooting](Workbench-Troubleshooting) when the panel looks empty or module-load diagnostics do not match what you expected.
+- Return to [Workbench shell guide](Workbench-Shell-Guide) if you need the surrounding layout and ownership context again.

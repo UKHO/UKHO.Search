@@ -13,7 +13,7 @@ Use this page as the start of the repository reading path. It explains what the 
 - an **Aspire AppHost** that orchestrates the local developer environment
 - a set of **developer tools** that make File Share workflows, rule authoring, and Workbench exploration practical during day-to-day development
 
-The repository's central contract is the [`CanonicalDocument`](Glossary.md#canonicaldocument). Providers build or enrich that shared model, the infrastructure layer projects it into Elasticsearch, and the query side reads the indexed result.
+The repository's central contract is the [`CanonicalDocument`](Glossary#canonicaldocument). Providers build or enrich that shared model, the infrastructure layer projects it into Elasticsearch, and the query side reads the indexed result.
 
 ```mermaid
 flowchart LR
@@ -43,41 +43,41 @@ flowchart LR
 
 | If you are... | Start with | Then continue to |
 |---|---|---|
-| New to the repository | [Glossary](Glossary.md) | [Solution architecture](Solution-Architecture.md) -> [Architecture walkthrough](Architecture-Walkthrough.md) -> [Project setup](Project-Setup.md) |
-| Setting up the local stack | [Project setup](Project-Setup.md) | [Setup walkthrough](Setup-Walkthrough.md) -> [Setup troubleshooting](Setup-Troubleshooting.md) -> [Appendix: command reference](Appendix-Command-Reference.md) -> [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator.md) |
-| Working on ingestion | [Ingestion pipeline](Ingestion-Pipeline.md) | [Ingestion graph runtime foundations](Ingestion-Graph-Runtime.md) -> [Ingestion walkthrough](Ingestion-Walkthrough.md) -> [Ingestion rules](Ingestion-Rules.md) -> [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md) -> [Ingestion troubleshooting](Ingestion-Troubleshooting.md) |
-| Working on Workbench or Blazor UI | [Solution architecture](Solution-Architecture.md) | [Architecture walkthrough](Architecture-Walkthrough.md) -> [Workbench introduction](Workbench-Introduction.md) -> [Workbench architecture](Workbench-Architecture.md) -> [Workbench commands and tools](Workbench-Commands-and-Tools.md) -> [Workbench tabs and layout](Workbench-Tabs-and-Layout.md) |
-| Tracing repository history or design background | [Documentation source map](Documentation-Source-Map.md) | Related work-package documents in `docs/` |
+| New to the repository | [Glossary](Glossary) | [Solution architecture](Solution-Architecture) -> [Architecture walkthrough](Architecture-Walkthrough) -> [Project setup](Project-Setup) |
+| Setting up the local stack | [Project setup](Project-Setup) | [Setup walkthrough](Setup-Walkthrough) -> [Setup troubleshooting](Setup-Troubleshooting) -> [Appendix: command reference](Appendix-Command-Reference) -> [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator) |
+| Working on ingestion | [Ingestion pipeline](Ingestion-Pipeline) | [Ingestion graph runtime foundations](Ingestion-Graph-Runtime) -> [Ingestion walkthrough](Ingestion-Walkthrough) -> [Ingestion rules](Ingestion-Rules) -> [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference) -> [Ingestion troubleshooting](Ingestion-Troubleshooting) |
+| Working on Workbench or Blazor UI | [Solution architecture](Solution-Architecture) | [Architecture walkthrough](Architecture-Walkthrough) -> [Workbench introduction](Workbench-Introduction) -> [Workbench architecture](Workbench-Architecture) -> [Workbench commands and tools](Workbench-Commands-and-Tools) -> [Workbench tabs and layout](Workbench-Tabs-and-Layout) |
+| Tracing repository history or design background | [Documentation source map](Documentation-Source-Map) | Related work-package documents in `docs/` |
 
 ## Major areas of the wiki
 
 ### Architecture
 
-Start with [Solution architecture](Solution-Architecture.md) for the current repository shape, project responsibilities, and runtime boundaries. Then continue to [Architecture walkthrough](Architecture-Walkthrough.md) for a code-oriented explanation of how requests, tools, and startup flows move through the solution.
+Start with [Solution architecture](Solution-Architecture) for the current repository shape, project responsibilities, and runtime boundaries. Then continue to [Architecture walkthrough](Architecture-Walkthrough) for a code-oriented explanation of how requests, tools, and startup flows move through the solution.
 
 ### Setup
 
-[Project setup](Project-Setup.md) is the narrative entry point for the local AppHost-driven workflow, the `runmode` model, and the File Share data-image loop. Follow it with [Setup walkthrough](Setup-Walkthrough.md), [Setup troubleshooting](Setup-Troubleshooting.md), and [Appendix: command reference](Appendix-Command-Reference.md) when you need the full guided onboarding path.
+[Project setup](Project-Setup) is the narrative entry point for the local AppHost-driven workflow, the `runmode` model, and the File Share data-image loop. Follow it with [Setup walkthrough](Setup-Walkthrough), [Setup troubleshooting](Setup-Troubleshooting), and [Appendix: command reference](Appendix-Command-Reference) when you need the full guided onboarding path.
 
 ### Ingestion
 
-[Ingestion pipeline](Ingestion-Pipeline.md) is the conceptual entry point for the message-processing path. Follow it with [Ingestion graph runtime foundations](Ingestion-Graph-Runtime.md) for the generic base library and terminology, then [Ingestion walkthrough](Ingestion-Walkthrough.md), [Ingestion rules](Ingestion-Rules.md), [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md), and [Ingestion troubleshooting](Ingestion-Troubleshooting.md) when you need to understand runtime flow, rule evaluation, canonical indexing, and failure handling.
+[Ingestion pipeline](Ingestion-Pipeline) is the conceptual entry point for the message-processing path. Follow it with [Ingestion graph runtime foundations](Ingestion-Graph-Runtime) for the generic base library and terminology, then [Ingestion walkthrough](Ingestion-Walkthrough), [Ingestion rules](Ingestion-Rules), [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference), and [Ingestion troubleshooting](Ingestion-Troubleshooting) when you need to understand runtime flow, rule evaluation, canonical indexing, and failure handling.
 
 ### Workbench
 
-[Workbench introduction](Workbench-Introduction.md) is the entry point for the full Workbench guide. Follow it into [Workbench architecture](Workbench-Architecture.md), [Workbench shell guide](Workbench-Shell-Guide.md), [Workbench modules and contributions](Workbench-Modules-and-Contributions.md), [Workbench commands and tools](Workbench-Commands-and-Tools.md), [Workbench tabs and layout](Workbench-Tabs-and-Layout.md), [Workbench output and notifications](Workbench-Output-and-Notifications.md), [Workbench tutorials](Workbench-Tutorials.md), and [Workbench troubleshooting](Workbench-Troubleshooting.md) when you need the current shell model, extension rules, practical recipes, and diagnostics guidance.
+[Workbench introduction](Workbench-Introduction) is the entry point for the full Workbench guide. Follow it into [Workbench architecture](Workbench-Architecture), [Workbench shell guide](Workbench-Shell-Guide), [Workbench modules and contributions](Workbench-Modules-and-Contributions), [Workbench commands and tools](Workbench-Commands-and-Tools), [Workbench tabs and layout](Workbench-Tabs-and-Layout), [Workbench output and notifications](Workbench-Output-and-Notifications), [Workbench tutorials](Workbench-Tutorials), and [Workbench troubleshooting](Workbench-Troubleshooting) when you need the current shell model, extension rules, practical recipes, and diagnostics guidance.
 
 ### Troubleshooting and observability
 
-[Setup troubleshooting](Setup-Troubleshooting.md) covers environment bring-up issues, [Ingestion troubleshooting](Ingestion-Troubleshooting.md) covers queue, rules, and dead-letter symptoms, and [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md) remains the runtime visibility companion for local orchestration, indexing, and performance symptoms.
+[Setup troubleshooting](Setup-Troubleshooting) covers environment bring-up issues, [Ingestion troubleshooting](Ingestion-Troubleshooting) covers queue, rules, and dead-letter symptoms, and [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard) remains the runtime visibility companion for local orchestration, indexing, and performance symptoms.
 
 ### Glossary
 
-[Glossary](Glossary.md) centralizes repository vocabulary such as `CanonicalDocument`, provider model, Workbench module, explorer item, output panel, and AppHost terminology. Read it early if the repository-specific terms are unfamiliar.
+[Glossary](Glossary) centralizes repository vocabulary such as `CanonicalDocument`, provider model, Workbench module, explorer item, output panel, and AppHost terminology. Read it early if the repository-specific terms are unfamiliar.
 
 ### Appendices and supporting references
 
-Several pages are intentionally deeper reference material rather than first-read narrative pages. Useful starting points are [Appendix: command reference](Appendix-Command-Reference.md), [Documentation source map](Documentation-Source-Map.md), [Provider metadata and split registration](Provider-Metadata-and-Split-Registration.md), and the more specialized ingestion and tooling pages linked throughout this wiki.
+Several pages are intentionally deeper reference material rather than first-read narrative pages. Useful starting points are [Appendix: command reference](Appendix-Command-Reference), [Documentation source map](Documentation-Source-Map), [Provider metadata and split registration](Provider-Metadata-and-Split-Registration), and the more specialized ingestion and tooling pages linked throughout this wiki.
 
 ## Quick orientation
 
@@ -105,10 +105,10 @@ Several pages are intentionally deeper reference material rather than first-read
 
 ### Common first workflow
 
-1. Read the [Glossary](Glossary.md) if the repository terms are new.
-2. Read [Solution architecture](Solution-Architecture.md) for the stable current-state map.
-3. Read [Architecture walkthrough](Architecture-Walkthrough.md) to trace the main repository flows.
-4. Follow [Project setup](Project-Setup.md) and [Setup walkthrough](Setup-Walkthrough.md) if you need a local environment.
+1. Read the [Glossary](Glossary) if the repository terms are new.
+2. Read [Solution architecture](Solution-Architecture) for the stable current-state map.
+3. Read [Architecture walkthrough](Architecture-Walkthrough) to trace the main repository flows.
+4. Follow [Project setup](Project-Setup) and [Setup walkthrough](Setup-Walkthrough) if you need a local environment.
 5. Move into the ingestion or Workbench pages that match the area you are changing.
 
 ## Design themes that show up across the repository
@@ -122,18 +122,18 @@ Several pages are intentionally deeper reference material rather than first-read
 
 ## Related supporting pages
 
-- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md)
-- [Setup walkthrough](Setup-Walkthrough.md)
-- [Setup troubleshooting](Setup-Troubleshooting.md)
-- [Appendix: command reference](Appendix-Command-Reference.md)
-- [Ingestion graph runtime foundations](Ingestion-Graph-Runtime.md)
-- [Ingestion walkthrough](Ingestion-Walkthrough.md)
-- [Ingestion rules](Ingestion-Rules.md)
-- [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md)
-- [Ingestion troubleshooting](Ingestion-Troubleshooting.md)
-- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism.md)
-- [Provider metadata and split registration](Provider-Metadata-and-Split-Registration.md)
-- [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md)
-- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md)
+- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy)
+- [Setup walkthrough](Setup-Walkthrough)
+- [Setup troubleshooting](Setup-Troubleshooting)
+- [Appendix: command reference](Appendix-Command-Reference)
+- [Ingestion graph runtime foundations](Ingestion-Graph-Runtime)
+- [Ingestion walkthrough](Ingestion-Walkthrough)
+- [Ingestion rules](Ingestion-Rules)
+- [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference)
+- [Ingestion troubleshooting](Ingestion-Troubleshooting)
+- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism)
+- [Provider metadata and split registration](Provider-Metadata-and-Split-Registration)
+- [Tools: `RulesWorkbench`](Tools-RulesWorkbench)
+- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard)
 
 _Current as of 2026-04-01._

@@ -1,6 +1,6 @@
 # Workbench tutorials
 
-Read this page after [Workbench output and notifications](Workbench-Output-and-Notifications.md) when you want practical, code-oriented recipes for extending the current Workbench model.
+Read this page after [Workbench output and notifications](Workbench-Output-and-Notifications) when you want practical, code-oriented recipes for extending the current Workbench model.
 
 This page is intentionally tutorial-led rather than purely conceptual. The earlier chapters explain why the design exists. This chapter shows how to work within that design without bypassing the shell.
 
@@ -129,6 +129,6 @@ If a change seems to belong in both places, the design usually wants a startup d
 
 ## Recommended next pages
 
-- Continue to [Workbench troubleshooting](Workbench-Troubleshooting.md) for symptom-led help when these recipes do not behave as expected.
-- Return to [Workbench modules and contributions](Workbench-Modules-and-Contributions.md) if you need the bounded registration surface again.
-- Return to [Workbench commands and tools](Workbench-Commands-and-Tools.md) if you need to reason about command ownership and activation targets in more detail.
+- Continue to [Workbench troubleshooting](Workbench-Troubleshooting) for symptom-led help when these recipes do not behave as expected.
+- Return to [Workbench modules and contributions](Workbench-Modules-and-Contributions) if you need the bounded registration surface again.
+- Return to [Workbench commands and tools](Workbench-Commands-and-Tools) if you need to reason about command ownership and activation targets in more detail.

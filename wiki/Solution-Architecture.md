@@ -1,6 +1,6 @@
 # Solution architecture
 
-This page explains the current repository shape in narrative form. Read it after the [Glossary](Glossary.md) if the repository terms are unfamiliar, then continue to the [Architecture walkthrough](Architecture-Walkthrough.md) when you want a more code-oriented trace through the main runtime flows.
+This page explains the current repository shape in narrative form. Read it after the [Glossary](Glossary) if the repository terms are unfamiliar, then continue to the [Architecture walkthrough](Architecture-Walkthrough) when you want a more code-oriented trace through the main runtime flows.
 
 `UKHO.Search` follows **Onion Architecture**. The normal dependency direction is:
 
@@ -169,11 +169,11 @@ That mirroring is part of the architecture story rather than a separate test-onl
 - Do not treat `UKHO.Search.ProviderModel` as provider-specific implementation code. It is shared metadata and registration infrastructure.
 - Do not treat Workbench modules as shell owners. The shell stays in `WorkbenchHost` and `UKHO.Workbench*`; modules contribute bounded tools and services.
 - Do not assume query reads source payloads directly. Query reads the indexed canonical projection.
-- Do not assume all retained repository code is part of the active local workflow. Follow the active hosts and tools linked from [Home](Home.md).
+- Do not assume all retained repository code is part of the active local workflow. Follow the active hosts and tools linked from [Home](Home).
 
 ## Recommended next pages
 
-- Continue to the [Architecture walkthrough](Architecture-Walkthrough.md) for code-oriented runtime flows.
-- Follow the [Ingestion pipeline](Ingestion-Pipeline.md) path when you need the detailed processing graph and stage-by-stage runtime explanation.
-- Follow the current [Workbench introduction](Workbench-Introduction.md) guidance when you need shell composition, module loading, and tool activation detail.
-- Return to the [Glossary](Glossary.md) if repository-specific terms become ambiguous while reading.
+- Continue to the [Architecture walkthrough](Architecture-Walkthrough) for code-oriented runtime flows.
+- Follow the [Ingestion pipeline](Ingestion-Pipeline) path when you need the detailed processing graph and stage-by-stage runtime explanation.
+- Follow the current [Workbench introduction](Workbench-Introduction) guidance when you need shell composition, module loading, and tool activation detail.
+- Return to the [Glossary](Glossary) if repository-specific terms become ambiguous while reading.

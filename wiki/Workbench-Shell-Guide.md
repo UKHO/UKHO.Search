@@ -1,6 +1,6 @@
 # Workbench shell guide
 
-Read this page after [Workbench architecture](Workbench-Architecture.md) when you want to understand what the user actually sees in the current Workbench shell and why those surfaces are arranged the way they are.
+Read this page after [Workbench architecture](Workbench-Architecture) when you want to understand what the user actually sees in the current Workbench shell and why those surfaces are arranged the way they are.
 
 The current shell is intentionally desktop-like. That does not simply mean "it has panes." It means the shell behaves like a host environment for tools: it keeps navigation chrome stable, hosts multiple open tools, preserves in-memory state while tabs stay open, and separates long-lived session output from the active working surface.
 
@@ -150,7 +150,7 @@ The output panel is now the historical record of the session. If you ignore it, 
 
 ## Recommended next pages
 
-- Continue to [Workbench modules and contributions](Workbench-Modules-and-Contributions.md) for the bounded registration model that feeds the shell.
-- Continue to [Workbench tabs and layout](Workbench-Tabs-and-Layout.md) for the center-surface lifecycle and splitter behavior.
-- Continue to [Workbench output and notifications](Workbench-Output-and-Notifications.md) for the output-first runtime model.
-- Return to [Workbench architecture](Workbench-Architecture.md) if you need the project and startup map again.
+- Continue to [Workbench modules and contributions](Workbench-Modules-and-Contributions) for the bounded registration model that feeds the shell.
+- Continue to [Workbench tabs and layout](Workbench-Tabs-and-Layout) for the center-surface lifecycle and splitter behavior.
+- Continue to [Workbench output and notifications](Workbench-Output-and-Notifications) for the output-first runtime model.
+- Return to [Workbench architecture](Workbench-Architecture) if you need the project and startup map again.

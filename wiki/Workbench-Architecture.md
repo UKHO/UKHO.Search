@@ -1,6 +1,6 @@
 # Workbench architecture
 
-Read this page after [Workbench introduction](Workbench-Introduction.md) when you want the structural answer to three questions:
+Read this page after [Workbench introduction](Workbench-Introduction) when you want the structural answer to three questions:
 
 1. why Workbench is split across several projects instead of being one large Blazor host
 2. why module loading is host-controlled and deliberately bounded
@@ -108,7 +108,7 @@ The important thing to notice is that the shell manager is not the discovery mec
 
 Once the host finishes startup, responsibility shifts from infrastructure loading to service-layer orchestration.
 
-- `WorkbenchShellManager` becomes the host-facing façade for shell state and activation.
+- `WorkbenchShellManager` becomes the host-facing faÃ§ade for shell state and activation.
 - `CommandManager` owns command registration and execution routing.
 - `ExplorerManager` owns explorer, section, and item composition.
 - `RuntimeContributionManager` merges static and active-tool contributions for menus, toolbars, explorer toolbar content, and status surfaces.
@@ -155,7 +155,7 @@ When you need to add a tool, it is tempting to copy the nearest existing module 
 
 ## Recommended next pages
 
-- Continue to [Workbench shell guide](Workbench-Shell-Guide.md) for the visible shell surfaces and their ownership boundaries.
-- Continue to [Workbench modules and contributions](Workbench-Modules-and-Contributions.md) for the detailed registration model.
-- Continue to [Workbench commands and tools](Workbench-Commands-and-Tools.md) once you want the runtime action and activation path.
-- Return to [Workbench introduction](Workbench-Introduction.md) if you need the reading routes again.
+- Continue to [Workbench shell guide](Workbench-Shell-Guide) for the visible shell surfaces and their ownership boundaries.
+- Continue to [Workbench modules and contributions](Workbench-Modules-and-Contributions) for the detailed registration model.
+- Continue to [Workbench commands and tools](Workbench-Commands-and-Tools) once you want the runtime action and activation path.
+- Return to [Workbench introduction](Workbench-Introduction) if you need the reading routes again.

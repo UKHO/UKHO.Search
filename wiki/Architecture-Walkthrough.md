@@ -1,10 +1,10 @@
 # Architecture walkthrough
 
-This page turns the repository map from [Solution architecture](Solution-Architecture.md) into a set of practical reading paths. Use it when you want to answer questions such as "where does this request go?", "which project owns this behaviour?", or "where should a change live?"
+This page turns the repository map from [Solution architecture](Solution-Architecture) into a set of practical reading paths. Use it when you want to answer questions such as "where does this request go?", "which project owns this behaviour?", or "where should a change live?"
 
-If the repository vocabulary is unfamiliar, start with the [Glossary](Glossary.md) first.
+If the repository vocabulary is unfamiliar, start with the [Glossary](Glossary) first.
 
-This walkthrough exists because the stable project map on [Solution architecture](Solution-Architecture.md) is only half of the architectural story. Contributors also need to see how the repository behaves as a running system: which host starts first, where local dependencies enter the picture, where provider-specific behavior stops, and how the same canonical index later becomes the input for query and diagnostics. The sections below therefore follow runtime paths rather than just folder names.
+This walkthrough exists because the stable project map on [Solution architecture](Solution-Architecture) is only half of the architectural story. Contributors also need to see how the repository behaves as a running system: which host starts first, where local dependencies enter the picture, where provider-specific behavior stops, and how the same canonical index later becomes the input for query and diagnostics. The sections below therefore follow runtime paths rather than just folder names.
 
 ## How to use this page
 
@@ -102,7 +102,7 @@ This is one of the most important architectural boundaries in the repository. Wh
 
 The end result is not just a message-processing pipeline. It is a normalization boundary. Ingestion is where provider-specific reality is turned into a search-oriented shape that query, diagnostics, and tooling can all trust.
 
-For the full staged explanation, continue to [Ingestion pipeline](Ingestion-Pipeline.md). For rule behaviour, continue to [Ingestion rules](Ingestion-Rules.md).
+For the full staged explanation, continue to [Ingestion pipeline](Ingestion-Pipeline). For rule behaviour, continue to [Ingestion rules](Ingestion-Rules).
 
 ## 3. Trace the query path
 
@@ -160,7 +160,7 @@ If a Workbench problem looks like a UI issue, the real owner may be one of sever
 - module loading in `UKHO.Workbench.Infrastructure`
 - tool contribution code in a specific `UKHO.Workbench.Modules.*` project
 
-For the current shell behaviour and runtime details, continue to [Workbench introduction](Workbench-Introduction.md).
+For the current shell behaviour and runtime details, continue to [Workbench introduction](Workbench-Introduction).
 
 ## 5. Use the provider model correctly
 
@@ -210,8 +210,8 @@ Treat this table as a starting heuristic, not as a replacement for reading the s
 
 ## 8. Recommended next reads
 
-- Return to [Solution architecture](Solution-Architecture.md) for the stable project map.
-- Continue to [Project setup](Project-Setup.md) if you need to run the stack locally.
-- Continue to [Ingestion pipeline](Ingestion-Pipeline.md) for the detailed ingestion stages.
-- Continue to [Workbench introduction](Workbench-Introduction.md) for the current shell and module runtime details.
-- Continue to [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md) when you need runtime visibility and diagnostics.
+- Return to [Solution architecture](Solution-Architecture) for the stable project map.
+- Continue to [Project setup](Project-Setup) if you need to run the stack locally.
+- Continue to [Ingestion pipeline](Ingestion-Pipeline) for the detailed ingestion stages.
+- Continue to [Workbench introduction](Workbench-Introduction) for the current shell and module runtime details.
+- Continue to [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard) when you need runtime visibility and diagnostics.

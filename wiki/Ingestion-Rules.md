@@ -6,10 +6,10 @@ Use it when you need to understand how rules are loaded, how predicates and temp
 
 ## Reading path
 
-- Start with [Ingestion pipeline](Ingestion-Pipeline.md) for the wider runtime context.
-- Continue to [Ingestion walkthrough](Ingestion-Walkthrough.md) if you want to trace rules through the host and provider graph.
-- Keep [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md) nearby while writing JSON.
-- Use [Ingestion troubleshooting](Ingestion-Troubleshooting.md) when the runtime result does not match your expectation.
+- Start with [Ingestion pipeline](Ingestion-Pipeline) for the wider runtime context.
+- Continue to [Ingestion walkthrough](Ingestion-Walkthrough) if you want to trace rules through the host and provider graph.
+- Keep [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference) nearby while writing JSON.
+- Use [Ingestion troubleshooting](Ingestion-Troubleshooting) when the runtime result does not match your expectation.
 
 ## What the rules engine does
 
@@ -411,7 +411,7 @@ In those cases the rule simply does not add the derived output.
 
 1. Edit the relevant file under `rules/file-share/...`.
 2. Restart the services-mode AppHost stack so the configuration emulator reloads the repository rules.
-3. Open [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md) to validate and inspect the effective rule behavior.
+3. Open [Tools: `RulesWorkbench`](Tools-RulesWorkbench) to validate and inspect the effective rule behavior.
 4. Use `FileShareEmulator` or another local batch source to push a real message through the pipeline when ZIP-dependent enrichment also matters.
 5. Inspect the resulting indexed document or dead-letter payload.
 
@@ -447,10 +447,10 @@ dotnet test test/RulesWorkbench.Tests/RulesWorkbench.Tests.csproj
 
 ## Related pages
 
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [Ingestion walkthrough](Ingestion-Walkthrough.md)
-- [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md)
-- [Ingestion troubleshooting](Ingestion-Troubleshooting.md)
-- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md)
-- [File Share provider](FileShare-Provider.md)
-- [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [Ingestion walkthrough](Ingestion-Walkthrough)
+- [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference)
+- [Ingestion troubleshooting](Ingestion-Troubleshooting)
+- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy)
+- [File Share provider](FileShare-Provider)
+- [Tools: `RulesWorkbench`](Tools-RulesWorkbench)

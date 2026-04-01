@@ -1,14 +1,14 @@
 # Ingestion walkthrough
 
-Use this page after reading [Ingestion pipeline](Ingestion-Pipeline.md) when you want a code-oriented tour of how one File Share message moves through the current repository.
+Use this page after reading [Ingestion pipeline](Ingestion-Pipeline) when you want a code-oriented tour of how one File Share message moves through the current repository.
 
 ## Reading path
 
-- Start with [Ingestion pipeline](Ingestion-Pipeline.md) for the conceptual overview and the runtime stage map.
-- Read [Ingestion graph runtime foundations](Ingestion-Graph-Runtime.md) when you want the deeper explanation of the generic node/channel library that the concrete File Share graph is built on.
-- Keep [Ingestion rules](Ingestion-Rules.md) and [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md) nearby when the walkthrough reaches rules-driven enrichment.
-- Use [Ingestion troubleshooting](Ingestion-Troubleshooting.md) when a stage does not behave as expected.
-- Refer back to [Architecture walkthrough](Architecture-Walkthrough.md), [Project setup](Project-Setup.md), and [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md) when you need broader repository or local-tool context.
+- Start with [Ingestion pipeline](Ingestion-Pipeline) for the conceptual overview and the runtime stage map.
+- Read [Ingestion graph runtime foundations](Ingestion-Graph-Runtime) when you want the deeper explanation of the generic node/channel library that the concrete File Share graph is built on.
+- Keep [Ingestion rules](Ingestion-Rules) and [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference) nearby when the walkthrough reaches rules-driven enrichment.
+- Use [Ingestion troubleshooting](Ingestion-Troubleshooting) when a stage does not behave as expected.
+- Refer back to [Architecture walkthrough](Architecture-Walkthrough), [Project setup](Project-Setup), and [Tools: `RulesWorkbench`](Tools-RulesWorkbench) when you need broader repository or local-tool context.
 
 ## One-message mental model
 
@@ -60,7 +60,7 @@ In practice this means:
 - enabled providers are checked against metadata registration and runtime registration
 - unknown providers fail fast during load rather than surfacing later as mysterious routing problems
 
-Read [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism.md) and [Provider metadata and split registration](Provider-Metadata-and-Split-Registration.md) together when you are tracing this startup path.
+Read [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism) and [Provider metadata and split registration](Provider-Metadata-and-Split-Registration) together when you are tracing this startup path.
 
 ## 4. The File Share provider owns the long-lived graph
 
@@ -75,7 +75,7 @@ The provider keeps its own ingress channel and lazily starts the graph when work
 5. `MicroBatchNode<T>`
 6. bulk indexing and acknowledgement / dead-letter sinks
 
-The lane split matters because ordering is preserved per document key all the way through enrichment and indexing. If you want the generic architectural explanation of what a lane is and why the base runtime uses channels, bounded capacity, and fail-fast supervision, pause here and read [Ingestion graph runtime foundations](Ingestion-Graph-Runtime.md) before continuing with the concrete File Share path.
+The lane split matters because ordering is preserved per document key all the way through enrichment and indexing. If you want the generic architectural explanation of what a lane is and why the base runtime uses channels, bounded capacity, and fail-fast supervision, pause here and read [Ingestion graph runtime foundations](Ingestion-Graph-Runtime) before continuing with the concrete File Share path.
 
 ## 5. Dispatch creates the minimal `CanonicalDocument`
 
@@ -90,7 +90,7 @@ For an `IndexItem` request it creates the smallest useful `CanonicalDocument`:
 
 Everything user-searchable is added later by rules or enrichers. That separation is what keeps source mechanics out of the canonical search contract.
 
-See [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md) for the field-by-field meaning of that model.
+See [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy) for the field-by-field meaning of that model.
 
 ## 6. Enrichment is where File Share behavior becomes interesting
 
@@ -143,7 +143,7 @@ If no title survives:
 - the message goes to the index-operation dead-letter flow
 - the document is not indexed
 
-This is one of the most important runtime behaviors to remember while authoring rules. A ruleset that adds keywords but never produces a retained title is not “partially successful”; it is a failed ingestion outcome.
+This is one of the most important runtime behaviors to remember while authoring rules. A ruleset that adds keywords but never produces a retained title is not â€œpartially successfulâ€; it is a failed ingestion outcome.
 
 ## 9. Microbatching and bulk indexing keep ordering intact
 
@@ -181,7 +181,7 @@ This makes dead-letter storage a normal debugging surface rather than an excepti
 2. Submit or locate a batch in `FileShareEmulator`.
 3. Watch `IngestionServiceHost` logs and Aspire metrics.
 4. Check whether the batch produced an indexed document, a poison-queue symptom, or a dead-letter blob.
-5. If rules look suspicious, switch to [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md) and replay the payload through the shared rules engine.
+5. If rules look suspicious, switch to [Tools: `RulesWorkbench`](Tools-RulesWorkbench) and replay the payload through the shared rules engine.
 
 ### Add or change a rule safely
 
@@ -201,20 +201,20 @@ This makes dead-letter storage a normal debugging surface rather than an excepti
 
 | Change you want to make | Start reading here | Then continue to |
 |---|---|---|
-| New rule or rule fix | [Ingestion rules](Ingestion-Rules.md) | [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md) -> [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md) |
-| Queue / startup behavior | [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism.md) | [Ingestion pipeline](Ingestion-Pipeline.md) |
-| File Share enrichment or parsing | [File Share provider](FileShare-Provider.md) | [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md) |
-| Runtime failures | [Ingestion troubleshooting](Ingestion-Troubleshooting.md) | [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md) |
+| New rule or rule fix | [Ingestion rules](Ingestion-Rules) | [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference) -> [Tools: `RulesWorkbench`](Tools-RulesWorkbench) |
+| Queue / startup behavior | [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism) | [Ingestion pipeline](Ingestion-Pipeline) |
+| File Share enrichment or parsing | [File Share provider](FileShare-Provider) | [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy) |
+| Runtime failures | [Ingestion troubleshooting](Ingestion-Troubleshooting) | [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard) |
 
 ## Related pages
 
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [Ingestion graph runtime foundations](Ingestion-Graph-Runtime.md)
-- [Ingestion rules](Ingestion-Rules.md)
-- [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md)
-- [Ingestion troubleshooting](Ingestion-Troubleshooting.md)
-- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism.md)
-- [File Share provider](FileShare-Provider.md)
-- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md)
-- [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md)
-- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [Ingestion graph runtime foundations](Ingestion-Graph-Runtime)
+- [Ingestion rules](Ingestion-Rules)
+- [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference)
+- [Ingestion troubleshooting](Ingestion-Troubleshooting)
+- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism)
+- [File Share provider](FileShare-Provider)
+- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy)
+- [Tools: `RulesWorkbench`](Tools-RulesWorkbench)
+- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard)

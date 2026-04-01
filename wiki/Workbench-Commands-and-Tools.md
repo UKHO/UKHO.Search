@@ -1,6 +1,6 @@
 # Workbench commands and tools
 
-Read this page after [Workbench modules and contributions](Workbench-Modules-and-Contributions.md) when you want to understand how a Workbench action travels from a visible shell surface into one deterministic runtime path.
+Read this page after [Workbench modules and contributions](Workbench-Modules-and-Contributions) when you want to understand how a Workbench action travels from a visible shell surface into one deterministic runtime path.
 
 This chapter matters because Workbench deliberately does not let each surface invent its own behavior. Explorer items, menu items, toolbar buttons, and tool-local actions all converge on the same command model. That convergence is what keeps the shell predictable even when modules contribute new tools.
 
@@ -132,7 +132,7 @@ If a tool button directly reaches into host services to do shell work, the actio
 
 ### Do not make every command tool-scoped
 
-If the action is really just “open this tool,” keep it host-scoped. Tool scope should describe ownership, not merely proximity.
+If the action is really just â€œopen this tool,â€ keep it host-scoped. Tool scope should describe ownership, not merely proximity.
 
 ### Do not use unstable identifiers
 
@@ -140,6 +140,6 @@ The registry and managers assume ids are stable. If command ids drift casually, 
 
 ## Recommended next pages
 
-- Continue to [Workbench tabs and layout](Workbench-Tabs-and-Layout.md) to see how activation targets become tabs.
-- Continue to [Workbench tutorials](Workbench-Tutorials.md) for step-by-step extension recipes that apply this command model.
-- Continue to [Workbench troubleshooting](Workbench-Troubleshooting.md) if commands are registered but not behaving as expected.
+- Continue to [Workbench tabs and layout](Workbench-Tabs-and-Layout) to see how activation targets become tabs.
+- Continue to [Workbench tutorials](Workbench-Tutorials) for step-by-step extension recipes that apply this command model.
+- Continue to [Workbench troubleshooting](Workbench-Troubleshooting) if commands are registered but not behaving as expected.

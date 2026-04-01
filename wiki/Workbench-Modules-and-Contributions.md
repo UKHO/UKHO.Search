@@ -1,6 +1,6 @@
 # Workbench modules and contributions
 
-Read this page after [Workbench shell guide](Workbench-Shell-Guide.md) when you want to understand how the shell becomes populated with explorers, tools, commands, and shell surfaces without giving modules direct control over the host.
+Read this page after [Workbench shell guide](Workbench-Shell-Guide) when you want to understand how the shell becomes populated with explorers, tools, commands, and shell surfaces without giving modules direct control over the host.
 
 This chapter is the heart of the Workbench model. If you understand this page, most of the later command, tab, and tutorial material will make sense more quickly.
 
@@ -162,6 +162,6 @@ Startup registration is for declaring what exists. Runtime behavior belongs in c
 
 ## Recommended next pages
 
-- Continue to [Workbench commands and tools](Workbench-Commands-and-Tools.md) for the shared action and activation model that explorer items feed into.
-- Continue to [Workbench tutorials](Workbench-Tutorials.md) for worked examples that build on this contribution model.
-- Return to [Workbench architecture](Workbench-Architecture.md) if you need the host and infrastructure split again.
+- Continue to [Workbench commands and tools](Workbench-Commands-and-Tools) for the shared action and activation model that explorer items feed into.
+- Continue to [Workbench tutorials](Workbench-Tutorials) for worked examples that build on this contribution model.
+- Return to [Workbench architecture](Workbench-Architecture) if you need the host and infrastructure split again.

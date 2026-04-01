@@ -6,11 +6,11 @@ Use it when you want the current repository view of how a provider message becom
 
 ## Reading path
 
-- Read [Ingestion graph runtime foundations](Ingestion-Graph-Runtime.md) if you want the in-depth explanation of the generic node/channel runtime that sits underneath the concrete ingestion graph.
-- Continue to [Ingestion walkthrough](Ingestion-Walkthrough.md) for a code-oriented trace through the host, provider, rules, and indexing flow.
-- Read [Ingestion rules](Ingestion-Rules.md) and [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md) when the change you are making affects canonical enrichment logic.
-- Use [Ingestion troubleshooting](Ingestion-Troubleshooting.md) when the runtime does not behave as expected.
-- Keep [File Share provider](FileShare-Provider.md) and [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md) nearby when you need the provider-specific and canonical-model details.
+- Read [Ingestion graph runtime foundations](Ingestion-Graph-Runtime) if you want the in-depth explanation of the generic node/channel runtime that sits underneath the concrete ingestion graph.
+- Continue to [Ingestion walkthrough](Ingestion-Walkthrough) for a code-oriented trace through the host, provider, rules, and indexing flow.
+- Read [Ingestion rules](Ingestion-Rules) and [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference) when the change you are making affects canonical enrichment logic.
+- Use [Ingestion troubleshooting](Ingestion-Troubleshooting) when the runtime does not behave as expected.
+- Keep [File Share provider](FileShare-Provider) and [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy) nearby when you need the provider-specific and canonical-model details.
 
 ## What the ingestion runtime is trying to achieve
 
@@ -53,7 +53,7 @@ One risk in documentation like this is that the concrete File Share graph can cr
 
 The concrete graph is only half of the story. Underneath it sits the reusable node-and-channel runtime in `src/UKHO.Search`. That runtime gives the repository its vocabulary of nodes, channels, envelopes, supervision, queue-depth tracking, and metrics. Without that foundation, terms like `lane`, `hot key`, `backpressure`, and `lane-blocking retry` sound like local jargon. With the foundation in view, they become understandable design choices.
 
-If you want that deeper architectural layer explained in detail, read [Ingestion graph runtime foundations](Ingestion-Graph-Runtime.md) before continuing.
+If you want that deeper architectural layer explained in detail, read [Ingestion graph runtime foundations](Ingestion-Graph-Runtime) before continuing.
 
 ## Why the pipeline runtime is channel-based
 
@@ -232,7 +232,7 @@ The runtime emits metrics such as:
 
 Use the Aspire dashboard to inspect metrics by node and provider, and pair those metrics with dead-letter blobs and diagnostics output when the graph is misbehaving.
 
-For the full meter contract and local dashboard usage, see [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md).
+For the full meter contract and local dashboard usage, see [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard).
 
 ## Practical local commands
 
@@ -258,19 +258,19 @@ dotnet test test/UKHO.Search.Infrastructure.Ingestion.Tests/UKHO.Search.Infrastr
 
 | If you need to understand... | Read next |
 |---|---|
-| The code path from AppHost to provider graph | [Ingestion walkthrough](Ingestion-Walkthrough.md) |
-| Rule syntax, semantics, and authoring flow | [Ingestion rules](Ingestion-Rules.md) |
-| Fast syntax lookups while writing rules | [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md) |
-| Startup, dead-letter, or rules-mismatch symptoms | [Ingestion troubleshooting](Ingestion-Troubleshooting.md) |
+| The code path from AppHost to provider graph | [Ingestion walkthrough](Ingestion-Walkthrough) |
+| Rule syntax, semantics, and authoring flow | [Ingestion rules](Ingestion-Rules) |
+| Fast syntax lookups while writing rules | [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference) |
+| Startup, dead-letter, or rules-mismatch symptoms | [Ingestion troubleshooting](Ingestion-Troubleshooting) |
 
 ## Related pages
 
-- [Ingestion graph runtime foundations](Ingestion-Graph-Runtime.md)
-- [Ingestion walkthrough](Ingestion-Walkthrough.md)
-- [Ingestion rules](Ingestion-Rules.md)
-- [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md)
-- [Ingestion troubleshooting](Ingestion-Troubleshooting.md)
-- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism.md)
-- [File Share provider](FileShare-Provider.md)
-- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md)
-- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md)
+- [Ingestion graph runtime foundations](Ingestion-Graph-Runtime)
+- [Ingestion walkthrough](Ingestion-Walkthrough)
+- [Ingestion rules](Ingestion-Rules)
+- [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference)
+- [Ingestion troubleshooting](Ingestion-Troubleshooting)
+- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism)
+- [File Share provider](FileShare-Provider)
+- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy)
+- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard)

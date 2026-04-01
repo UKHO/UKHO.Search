@@ -1,17 +1,17 @@
 # Ingestion troubleshooting
 
-Use this page after reading [Ingestion pipeline](Ingestion-Pipeline.md) and [Ingestion walkthrough](Ingestion-Walkthrough.md).
+Use this page after reading [Ingestion pipeline](Ingestion-Pipeline) and [Ingestion walkthrough](Ingestion-Walkthrough).
 
 ## Quick symptom guide
 
 | Symptom | Likely cause | Next page |
 |---|---|---|
-| No documents are appearing in Elasticsearch | The message failed before indexing, the provider is not enabled, or rules/enrichment produced no title | [Ingestion walkthrough](Ingestion-Walkthrough.md) |
-| Startup fails with a rules validation error | Invalid JSON, missing `title`, unsupported path syntax, or unknown provider metadata | [Ingestion rules](Ingestion-Rules.md#fail-fast-validation-vs-runtime-tolerance) |
-| A rule works in JSON review but not in runtime evaluation | The active payload path does not resolve, or the rule depends on the wrong provider scope | [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md) |
-| RulesWorkbench shows changes but the host still behaves as if the old rules are loaded | The services-mode stack was not restarted after repository rule edits | [Project setup](Project-Setup.md#configuration-behavior-in-local-aspire) |
-| The batch dead-letters with `CANONICAL_TITLE_REQUIRED` | Enrichers and rules never produced a retained title | [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md#title) |
-| One key appears blocked while other work keeps flowing | A single partition lane is hot or downstream indexing for that lane is retrying | [Ingestion pipeline](Ingestion-Pipeline.md#channels-backpressure-and-lane-health) |
+| No documents are appearing in Elasticsearch | The message failed before indexing, the provider is not enabled, or rules/enrichment produced no title | [Ingestion walkthrough](Ingestion-Walkthrough) |
+| Startup fails with a rules validation error | Invalid JSON, missing `title`, unsupported path syntax, or unknown provider metadata | [Ingestion rules](Ingestion-Rules#fail-fast-validation-vs-runtime-tolerance) |
+| A rule works in JSON review but not in runtime evaluation | The active payload path does not resolve, or the rule depends on the wrong provider scope | [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference) |
+| RulesWorkbench shows changes but the host still behaves as if the old rules are loaded | The services-mode stack was not restarted after repository rule edits | [Project setup](Project-Setup#configuration-behavior-in-local-aspire) |
+| The batch dead-letters with `CANONICAL_TITLE_REQUIRED` | Enrichers and rules never produced a retained title | [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy#title) |
+| One key appears blocked while other work keeps flowing | A single partition lane is hot or downstream indexing for that lane is retrying | [Ingestion pipeline](Ingestion-Pipeline#channels-backpressure-and-lane-health) |
 
 ## Start with the boundary that owns the symptom
 
@@ -19,11 +19,11 @@ A fast way to avoid chasing the wrong layer is to ask which boundary owns the fa
 
 | Area | Owner | Typical files or pages |
 |---|---|---|
-| Queue polling, visibility, acknowledgements | Infrastructure | [Ingestion pipeline](Ingestion-Pipeline.md), `src/UKHO.Search.Infrastructure.Ingestion` |
-| Provider registration and startup validation | Provider model + host composition | [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism.md), [Provider metadata and split registration](Provider-Metadata-and-Split-Registration.md) |
-| ZIP parsing, file-content extraction, geo enrichment | File Share provider | [File Share provider](FileShare-Provider.md) |
-| Rule matching and canonical field mutation | Shared rules engine | [Ingestion rules](Ingestion-Rules.md), [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md) |
-| Search visibility after successful indexing | Elasticsearch / query path | [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md) |
+| Queue polling, visibility, acknowledgements | Infrastructure | [Ingestion pipeline](Ingestion-Pipeline), `src/UKHO.Search.Infrastructure.Ingestion` |
+| Provider registration and startup validation | Provider model + host composition | [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism), [Provider metadata and split registration](Provider-Metadata-and-Split-Registration) |
+| ZIP parsing, file-content extraction, geo enrichment | File Share provider | [File Share provider](FileShare-Provider) |
+| Rule matching and canonical field mutation | Shared rules engine | [Ingestion rules](Ingestion-Rules), [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference) |
+| Search visibility after successful indexing | Elasticsearch / query path | [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard) |
 
 ## Common issues
 
@@ -146,11 +146,11 @@ dotnet test test/RulesWorkbench.Tests/RulesWorkbench.Tests.csproj
 
 ## Related pages
 
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [Ingestion walkthrough](Ingestion-Walkthrough.md)
-- [Ingestion rules](Ingestion-Rules.md)
-- [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference.md)
-- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism.md)
-- [File Share provider](FileShare-Provider.md)
-- [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md)
-- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [Ingestion walkthrough](Ingestion-Walkthrough)
+- [Ingestion rules](Ingestion-Rules)
+- [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference)
+- [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism)
+- [File Share provider](FileShare-Provider)
+- [Tools: `RulesWorkbench`](Tools-RulesWorkbench)
+- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard)

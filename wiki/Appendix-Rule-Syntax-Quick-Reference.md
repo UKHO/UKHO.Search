@@ -1,6 +1,6 @@
 # Appendix: rule syntax quick reference
 
-Use this page as the short lookup companion to [Ingestion rules](Ingestion-Rules.md).
+Use this page as the short lookup companion to [Ingestion rules](Ingestion-Rules).
 
 ## File shapes used in this repository
 
@@ -244,7 +244,7 @@ They remain part of the accepted model and reporting surface, but the current `I
 
 ## Related pages
 
-- [Ingestion rules](Ingestion-Rules.md)
-- [Ingestion walkthrough](Ingestion-Walkthrough.md)
-- [Ingestion troubleshooting](Ingestion-Troubleshooting.md)
-- [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md)
+- [Ingestion rules](Ingestion-Rules)
+- [Ingestion walkthrough](Ingestion-Walkthrough)
+- [Ingestion troubleshooting](Ingestion-Troubleshooting)
+- [Tools: `RulesWorkbench`](Tools-RulesWorkbench)

@@ -1,6 +1,6 @@
 # Setup troubleshooting
 
-Use this page after you have read [Project setup](Project-Setup.md) and walked through the practical steps in [Setup walkthrough](Setup-Walkthrough.md).
+Use this page after you have read [Project setup](Project-Setup) and walked through the practical steps in [Setup walkthrough](Setup-Walkthrough).
 
 ## How to use this page
 
@@ -10,13 +10,13 @@ Start with the symptom that most closely matches what you are seeing, then follo
 
 | Symptom | Likely cause | Next page |
 |---|---|---|
-| `FileShareLoader` cannot find the image | The local Docker tag does not match `fss-data-<environment>` | [Appendix: command reference](Appendix-Command-Reference.md#image-naming-convention) |
-| The import run starts but nothing seems to happen | `FileShareLoader` was not started from the Aspire dashboard | [Setup walkthrough](Setup-Walkthrough.md#5-start-the-explicit-import-resource) |
-| The services stack is up but the emulator has little or no useful data | Import mode never seeded SQL/blob state, or it seeded the wrong `environment` | [Setup walkthrough](Setup-Walkthrough.md#workflow-1-bring-up-a-local-environment-from-the-shared-data-image) |
-| ACR pull or push fails | Azure sign-in, subscription selection, or PIM access is missing | [Appendix: command reference](Appendix-Command-Reference.md#acr-authentication-and-shared-image-pull) |
-| Kibana sign-in fails | The username or `elastic-password` value is wrong for the current Aspire run | [Project setup](Project-Setup.md#supporting-tools-and-post-start-checks) |
-| Rule changes are not reflected locally | The services-mode stack was not restarted after updating repository rules | [Project setup](Project-Setup.md#configuration-behavior-in-local-aspire) |
-| Workbench login or role-based behavior looks wrong | The local Keycloak realm, mapper, or persisted data volume does not match the expected bootstrap state | [Project setup](Project-Setup.md#why-keycloak-and-workbench-auth-belong-in-setup) |
+| `FileShareLoader` cannot find the image | The local Docker tag does not match `fss-data-<environment>` | [Appendix: command reference](Appendix-Command-Reference#image-naming-convention) |
+| The import run starts but nothing seems to happen | `FileShareLoader` was not started from the Aspire dashboard | [Setup walkthrough](Setup-Walkthrough#5-start-the-explicit-import-resource) |
+| The services stack is up but the emulator has little or no useful data | Import mode never seeded SQL/blob state, or it seeded the wrong `environment` | [Setup walkthrough](Setup-Walkthrough#workflow-1-bring-up-a-local-environment-from-the-shared-data-image) |
+| ACR pull or push fails | Azure sign-in, subscription selection, or PIM access is missing | [Appendix: command reference](Appendix-Command-Reference#acr-authentication-and-shared-image-pull) |
+| Kibana sign-in fails | The username or `elastic-password` value is wrong for the current Aspire run | [Project setup](Project-Setup#supporting-tools-and-post-start-checks) |
+| Rule changes are not reflected locally | The services-mode stack was not restarted after updating repository rules | [Project setup](Project-Setup#configuration-behavior-in-local-aspire) |
+| Workbench login or role-based behavior looks wrong | The local Keycloak realm, mapper, or persisted data volume does not match the expected bootstrap state | [Project setup](Project-Setup#why-keycloak-and-workbench-auth-belong-in-setup) |
 
 ## Common issues
 
@@ -37,7 +37,7 @@ If one of those values drifts away from the others, the import workflow can star
 
 Changing `environment` affects more than one moving part.
 
-The safest correction is to treat the environment label as a complete set of linked values, retag the image to match, and then rerun the import workflow from [Setup walkthrough](Setup-Walkthrough.md#workflow-1-bring-up-a-local-environment-from-the-shared-data-image).
+The safest correction is to treat the environment label as a complete set of linked values, retag the image to match, and then rerun the import workflow from [Setup walkthrough](Setup-Walkthrough#workflow-1-bring-up-a-local-environment-from-the-shared-data-image).
 
 ### You expected import mode to run automatically
 
@@ -103,7 +103,7 @@ If you need Keycloak to rebuild from the updated JSON:
 3. delete that volume intentionally
 4. restart Aspire so Keycloak imports the realm again from the repo `Realms` folder
 
-Use the exact inspection and deletion commands from [Appendix: command reference](Appendix-Command-Reference.md#keycloak-volume-inspection-and-clean-reimport).
+Use the exact inspection and deletion commands from [Appendix: command reference](Appendix-Command-Reference#keycloak-volume-inspection-and-clean-reimport).
 
 ### Realm export or import keeps failing unexpectedly
 
@@ -145,9 +145,9 @@ Before moving deeper into ingestion or provider debugging, confirm the basics in
 
 ## Related pages
 
-- [Project setup](Project-Setup.md)
-- [Setup walkthrough](Setup-Walkthrough.md)
-- [Appendix: command reference](Appendix-Command-Reference.md)
-- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator.md)
-- [Keycloak and Workbench integration](keycloak-workbench-integration.md)
-- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md)
+- [Project setup](Project-Setup)
+- [Setup walkthrough](Setup-Walkthrough)
+- [Appendix: command reference](Appendix-Command-Reference)
+- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator)
+- [Keycloak and Workbench integration](keycloak-workbench-integration)
+- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard)

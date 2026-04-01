@@ -16,7 +16,7 @@ Read this guide when you need to understand any of the following:
 - how commands, explorer items, tabs, output, and notifications fit together at runtime
 - how to add a new dummy or real tool without bypassing the bounded Workbench model
 
-If you are new to the repository, read [Glossary](Glossary.md), [Solution architecture](Solution-Architecture.md), and [Architecture walkthrough](Architecture-Walkthrough.md) first. Those pages explain the repository-wide language and layering that Workbench builds on.
+If you are new to the repository, read [Glossary](Glossary), [Solution architecture](Solution-Architecture), and [Architecture walkthrough](Architecture-Walkthrough) first. Those pages explain the repository-wide language and layering that Workbench builds on.
 
 ## What Workbench is today
 
@@ -57,39 +57,39 @@ flowchart TD
     Tabs --> Layout[Workbench layout]
 ```
 
-- [Workbench architecture](Workbench-Architecture.md) explains why the Workbench area is split across several projects and why the host insists on bounded module startup.
-- [Workbench shell guide](Workbench-Shell-Guide.md) explains the visible shell surfaces and the ownership rules behind them.
-- [Workbench modules and contributions](Workbench-Modules-and-Contributions.md) explains how modules register tools, explorers, commands, and contribution points.
-- [Workbench commands and tools](Workbench-Commands-and-Tools.md) explains command routing, activation targets, `ToolContext`, and the difference between host-owned and tool-scoped actions.
-- [Workbench tabs and layout](Workbench-Tabs-and-Layout.md) explains logical tab identity, explorer-driven opening, overflow behavior, and the relationship to the shared layout primitives.
-- [Workbench output and notifications](Workbench-Output-and-Notifications.md) explains the shell-wide session trace, output filtering, notification replay, and why the status bar is intentionally light.
-- [Workbench tutorials](Workbench-Tutorials.md) turns the concepts into concrete extension recipes.
-- [Workbench troubleshooting](Workbench-Troubleshooting.md) helps you move from symptoms to the right ownership layer when something behaves unexpectedly.
-- [Workbench layout](Workbench-Layout.md) remains the deeper component-level reference for the `UKHO.Workbench.Layout` grid and splitter primitives that the shell uses.
+- [Workbench architecture](Workbench-Architecture) explains why the Workbench area is split across several projects and why the host insists on bounded module startup.
+- [Workbench shell guide](Workbench-Shell-Guide) explains the visible shell surfaces and the ownership rules behind them.
+- [Workbench modules and contributions](Workbench-Modules-and-Contributions) explains how modules register tools, explorers, commands, and contribution points.
+- [Workbench commands and tools](Workbench-Commands-and-Tools) explains command routing, activation targets, `ToolContext`, and the difference between host-owned and tool-scoped actions.
+- [Workbench tabs and layout](Workbench-Tabs-and-Layout) explains logical tab identity, explorer-driven opening, overflow behavior, and the relationship to the shared layout primitives.
+- [Workbench output and notifications](Workbench-Output-and-Notifications) explains the shell-wide session trace, output filtering, notification replay, and why the status bar is intentionally light.
+- [Workbench tutorials](Workbench-Tutorials) turns the concepts into concrete extension recipes.
+- [Workbench troubleshooting](Workbench-Troubleshooting) helps you move from symptoms to the right ownership layer when something behaves unexpectedly.
+- [Workbench layout](Workbench-Layout) remains the deeper component-level reference for the `UKHO.Workbench.Layout` grid and splitter primitives that the shell uses.
 
 ## Reading routes by audience
 
 ### If you are new to Workbench
 
-Start with [Workbench architecture](Workbench-Architecture.md), then read [Workbench shell guide](Workbench-Shell-Guide.md) and [Workbench modules and contributions](Workbench-Modules-and-Contributions.md). That route explains the model before it asks you to think about specific command ids, activation targets, or output behaviors.
+Start with [Workbench architecture](Workbench-Architecture), then read [Workbench shell guide](Workbench-Shell-Guide) and [Workbench modules and contributions](Workbench-Modules-and-Contributions). That route explains the model before it asks you to think about specific command ids, activation targets, or output behaviors.
 
 Most new readers get lost when they start from a single `.razor` file and assume the visible shell markup owns everything. In this repository, the visible markup is only one layer. The command model, activation model, contribution model, and module-loading model all sit behind it. Read the conceptual pages first so the later runtime detail has somewhere to attach.
 
 ### If you are extending or maintaining the shell
 
-Start with [Workbench architecture](Workbench-Architecture.md), then move directly into [Workbench commands and tools](Workbench-Commands-and-Tools.md), [Workbench tabs and layout](Workbench-Tabs-and-Layout.md), and [Workbench output and notifications](Workbench-Output-and-Notifications.md).
+Start with [Workbench architecture](Workbench-Architecture), then move directly into [Workbench commands and tools](Workbench-Commands-and-Tools), [Workbench tabs and layout](Workbench-Tabs-and-Layout), and [Workbench output and notifications](Workbench-Output-and-Notifications).
 
 That route is better for maintainers because shell changes usually cross several boundaries at once. A change that looks like "just a button" often depends on command registration, active-tool recomposition, tab identity rules, and output or notification behavior. Reading the deeper runtime pages together makes those dependencies visible earlier.
 
 ### If you are contributing a module or tool
 
-Start with [Workbench modules and contributions](Workbench-Modules-and-Contributions.md), continue to [Workbench commands and tools](Workbench-Commands-and-Tools.md), and then read [Workbench tutorials](Workbench-Tutorials.md).
+Start with [Workbench modules and contributions](Workbench-Modules-and-Contributions), continue to [Workbench commands and tools](Workbench-Commands-and-Tools), and then read [Workbench tutorials](Workbench-Tutorials).
 
 This route matters because modules are intentionally not allowed to reach into `MainLayout` or host startup internals. The repository wants tool authors to think in bounded contributions and activation targets rather than in direct shell manipulation. The tutorial page shows that pattern in practice.
 
 ## Terminology that matters in this guide
 
-This guide intentionally uses the same terminology as [Glossary](Glossary.md) and the wider architecture pages.
+This guide intentionally uses the same terminology as [Glossary](Glossary) and the wider architecture pages.
 
 - A **module** is a loadable assembly implementing `IWorkbenchModule`.
 - A **tool** is an activatable capability hosted inside the shell.
@@ -113,7 +113,7 @@ That sentence explains most of the design choices that follow.
 
 ## Recommended next pages
 
-- Continue to [Workbench architecture](Workbench-Architecture.md) for the project map and startup model.
-- Continue to [Workbench shell guide](Workbench-Shell-Guide.md) if you already know the project split and want to understand the visible chrome.
-- Return to [Home](Home.md) if you need to switch back to a repository-wide reading path.
-- Return to [Glossary](Glossary.md) if any Workbench term still feels ambiguous.
+- Continue to [Workbench architecture](Workbench-Architecture) for the project map and startup model.
+- Continue to [Workbench shell guide](Workbench-Shell-Guide) if you already know the project split and want to understand the visible chrome.
+- Return to [Home](Home) if you need to switch back to a repository-wide reading path.
+- Return to [Glossary](Glossary) if any Workbench term still feels ambiguous.

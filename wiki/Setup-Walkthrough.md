@@ -1,13 +1,13 @@
 # Setup walkthrough
 
-Use this page when you want the practical execution path after reading [Project setup](Project-Setup.md).
+Use this page when you want the practical execution path after reading [Project setup](Project-Setup).
 
 ## Reading path
 
-- Start with [Project setup](Project-Setup.md) for the concepts, run modes, and repository-specific vocabulary that shape the local environment.
-- Keep [Appendix: command reference](Appendix-Command-Reference.md) nearby for the exact operational commands that must stay verbatim.
-- Use [Setup troubleshooting](Setup-Troubleshooting.md) if the workflow below does not behave as expected.
-- Refer back to [Glossary](Glossary.md), [Solution architecture](Solution-Architecture.md), and [Architecture walkthrough](Architecture-Walkthrough.md) when you need more context on the services that appear during startup.
+- Start with [Project setup](Project-Setup) for the concepts, run modes, and repository-specific vocabulary that shape the local environment.
+- Keep [Appendix: command reference](Appendix-Command-Reference) nearby for the exact operational commands that must stay verbatim.
+- Use [Setup troubleshooting](Setup-Troubleshooting) if the workflow below does not behave as expected.
+- Refer back to [Glossary](Glossary), [Solution architecture](Solution-Architecture), and [Architecture walkthrough](Architecture-Walkthrough) when you need more context on the services that appear during startup.
 
 ## Workflow 1: bring up a local environment from the shared data image
 
@@ -34,7 +34,7 @@ docker tag searchacr.azurecr.io/fss-data-vnext-e2e:latest fss-data-vnext-e2e:lat
 docker rmi searchacr.azurecr.io/fss-data-vnext-e2e:latest
 ```
 
-If your local `environment` parameter is not `vnext-e2e`, use the same naming pattern described in [Appendix: command reference](Appendix-Command-Reference.md#image-naming-convention).
+If your local `environment` parameter is not `vnext-e2e`, use the same naming pattern described in [Appendix: command reference](Appendix-Command-Reference#image-naming-convention).
 
 ### 3. Switch AppHost into import mode
 
@@ -58,7 +58,7 @@ That explicit-start step matters because import mode intentionally keeps the loa
 
 ### 6. Wait for import to complete
 
-Use the Aspire dashboard and [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md) guidance to confirm that the import has finished cleanly.
+Use the Aspire dashboard and [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard) guidance to confirm that the import has finished cleanly.
 
 When the import succeeds, `FileShareEmulator` should later show meaningful metadata statistics instead of an empty local state.
 
@@ -158,17 +158,17 @@ Instead:
 When you change local Keycloak users, roles, mappers, or other realm settings, keep the verification loop separate from ingestion debugging.
 
 1. Apply the change in Keycloak or update the realm JSON.
-2. If you changed the source-controlled realm file, follow the clean re-import guidance in [Setup troubleshooting](Setup-Troubleshooting.md).
+2. If you changed the source-controlled realm file, follow the clean re-import guidance in [Setup troubleshooting](Setup-Troubleshooting).
 3. Open the admin UI again through the Aspire HTTP endpoint.
 4. Force a fresh Workbench sign-in.
 5. Only after the auth flow looks correct should you continue with module, role, or tool-specific debugging.
 
 ## Related pages
 
-- [Project setup](Project-Setup.md)
-- [Setup troubleshooting](Setup-Troubleshooting.md)
-- [Appendix: command reference](Appendix-Command-Reference.md)
-- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator.md)
-- [Tools: `RulesWorkbench`](Tools-RulesWorkbench.md)
-- [Keycloak and Workbench integration](keycloak-workbench-integration.md)
-- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard.md)
+- [Project setup](Project-Setup)
+- [Setup troubleshooting](Setup-Troubleshooting)
+- [Appendix: command reference](Appendix-Command-Reference)
+- [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator)
+- [Tools: `RulesWorkbench`](Tools-RulesWorkbench)
+- [Keycloak and Workbench integration](keycloak-workbench-integration)
+- [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard)

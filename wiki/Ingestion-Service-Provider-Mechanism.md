@@ -2,7 +2,7 @@
 
 This page explains the boundary between the stable ingestion host/infrastructure path and the provider-owned runtime path.
 
-Read it after [Ingestion pipeline](Ingestion-Pipeline.md) when you need to understand why provider registration, queue ownership, and provider metadata are split the way they are.
+Read it after [Ingestion pipeline](Ingestion-Pipeline) when you need to understand why provider registration, queue ownership, and provider metadata are split the way they are.
 
 The current concrete provider is File Share, but the abstraction is intentionally broader than that single implementation.
 
@@ -208,9 +208,9 @@ sequenceDiagram
 
 ## Related pages
 
-- [Ingestion pipeline](Ingestion-Pipeline.md)
-- [Ingestion walkthrough](Ingestion-Walkthrough.md)
-- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy.md)
-- [File Share provider](FileShare-Provider.md)
-- [Provider metadata and split registration](Provider-Metadata-and-Split-Registration.md)
-- [Ingestion troubleshooting](Ingestion-Troubleshooting.md)
+- [Ingestion pipeline](Ingestion-Pipeline)
+- [Ingestion walkthrough](Ingestion-Walkthrough)
+- [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy)
+- [File Share provider](FileShare-Provider)
+- [Provider metadata and split registration](Provider-Metadata-and-Split-Registration)
+- [Ingestion troubleshooting](Ingestion-Troubleshooting)
