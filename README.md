@@ -1,5 +1,15 @@
 # UKHO Search Service
 
+> [!IMPORTANT]
+> ## STOP - READ THE WIKI
+> This `README.md` is intentionally only a front door.
+>
+> **If you want to understand this repository, you must go to the wiki.**
+> The real documentation for architecture, setup, ingestion, rules, Workbench, tooling, and repository reading paths now lives there.
+>
+> - **Start here:** [Wiki home](https://github.com/UKHO/UKHO.Search/wiki/Home)
+> - **Browse everything:** [GitHub wiki](https://github.com/UKHO/UKHO.Search/wiki)
+
 `UKHO.Search` is a modern search platform built around a strong architectural core: a provider-driven ingestion pipeline, a provider-independent canonical discovery model, and a local-first developer experience powered by .NET Aspire.
 
 This repository demonstrates a very deliberate engineering approach:
@@ -14,23 +24,36 @@ The result is a solution that is not just "a search service", but a well-structu
 
 The primary search backend is **Elasticsearch**.
 
-## Learn more in the wiki
+## Do not stop at this README
 
-This front page is intentionally short.
+This front page is intentionally short and deliberately incomplete.
 
-Detailed documentation for architecture, setup, tools, ingestion, rules, `CanonicalDocument`, the provider mechanism, and the File Share provider now lives in the project wiki:
+If you are exploring this repository, debugging it, setting it up locally, or trying to make a change, go to the wiki before going deeper into the codebase.
 
-- [GitHub wiki](https://github.com/UKHO/UKHO.Search/wiki)
+Detailed documentation for architecture, setup, tools, ingestion, rules, `CanonicalDocument`, the provider mechanism, the File Share provider, and the Workbench now lives in the project wiki:
+
 - [Wiki home](https://github.com/UKHO/UKHO.Search/wiki/Home)
+- [GitHub wiki](https://github.com/UKHO/UKHO.Search/wiki)
 
-Recommended starting points:
+## Recommended wiki reading routes
+
+### Start here first
 
 - [Home](https://github.com/UKHO/UKHO.Search/wiki/Home)
+- [Glossary](https://github.com/UKHO/UKHO.Search/wiki/Glossary)
 - [Solution architecture](https://github.com/UKHO/UKHO.Search/wiki/Solution-Architecture)
-- [Project setup](https://github.com/UKHO/UKHO.Search/wiki/Project-Setup)
-- [Ingestion pipeline](https://github.com/UKHO/UKHO.Search/wiki/Ingestion-Pipeline)
-- [Ingestion rules](https://github.com/UKHO/UKHO.Search/wiki/Ingestion-Rules)
-- [Tools: RulesWorkbench](https://github.com/UKHO/UKHO.Search/wiki/Tools-RulesWorkbench)
+
+### Then follow the route that matches your task
+
+- **Local setup:** [Project setup](https://github.com/UKHO/UKHO.Search/wiki/Project-Setup) -> [Setup walkthrough](https://github.com/UKHO/UKHO.Search/wiki/Setup-Walkthrough) -> [Setup troubleshooting](https://github.com/UKHO/UKHO.Search/wiki/Setup-Troubleshooting)
+- **Architecture:** [Solution architecture](https://github.com/UKHO/UKHO.Search/wiki/Solution-Architecture) -> [Architecture walkthrough](https://github.com/UKHO/UKHO.Search/wiki/Architecture-Walkthrough)
+- **Ingestion:** [Ingestion pipeline](https://github.com/UKHO/UKHO.Search/wiki/Ingestion-Pipeline) -> [Ingestion walkthrough](https://github.com/UKHO/UKHO.Search/wiki/Ingestion-Walkthrough) -> [Ingestion rules](https://github.com/UKHO/UKHO.Search/wiki/Ingestion-Rules)
+- **Workbench:** [Workbench introduction](https://github.com/UKHO/UKHO.Search/wiki/Workbench-Introduction) -> [Workbench architecture](https://github.com/UKHO/UKHO.Search/wiki/Workbench-Architecture)
+- **Tooling:** [Tools: `RulesWorkbench`](https://github.com/UKHO/UKHO.Search/wiki/Tools-RulesWorkbench) -> [Tools: `FileShareImageLoader` and `FileShareEmulator`](https://github.com/UKHO/UKHO.Search/wiki/Tools-FileShareImageLoader-and-FileShareEmulator)
+
+## Quick instruction for new readers
+
+If you read only one thing after opening this repository, read the [wiki home page](https://github.com/UKHO/UKHO.Search/wiki/Home). It is the curated entry point for the rest of the documentation.
 
 ## This repository is an Aspire project
 
