@@ -87,8 +87,11 @@ For an `IndexItem` request it creates the smallest useful `CanonicalDocument`:
 - `Provider`
 - defensive-copy `Source`
 - `Timestamp`
+- normalized canonical `SecurityTokens`
 
-Everything user-searchable is added later by rules or enrichers. That separation is what keeps source mechanics out of the canonical search contract.
+Everything else user-searchable is added later by rules or enrichers. That separation is what keeps source mechanics out of the canonical search contract without delaying the document's minimum security state.
+
+The `SecurityTokens` detail is easy to miss if you only think of dispatch as a lightweight copy stage. The request copy held in `Source` still preserves the original caller-supplied token casing for traceability, which means you can inspect the exact inbound payload later during diagnostics or dead-letter analysis. At the same time, dispatch immediately copies those values through the canonical mutation path so `CanonicalDocument.SecurityTokens` is already lowercase, trimmed, de-duplicated, and ready for exact-match indexing. In other words, the pipeline deliberately keeps both views of the same concept: the raw traceability copy and the normalized canonical filter surface.
 
 See [CanonicalDocument and discovery taxonomy](CanonicalDocument-and-Discovery-Taxonomy) for the field-by-field meaning of that model.
 
@@ -118,6 +121,7 @@ The rules engine evaluates the active request payload:
 
 For a matching `IndexItem`, the engine currently materializes these `CanonicalDocument` surfaces:
 
+- `SecurityTokens` can already be present from minimal creation, and enrichers may add more through the same canonical mutator path
 - `Title`
 - `Keywords`
 - `SearchText`
@@ -133,9 +137,14 @@ For a matching `IndexItem`, the engine currently materializes these `CanonicalDo
 
 That is why most rule-debugging starts from payload shape and matched values rather than from queue metadata.
 
-## 8. Missing-title validation is a real ingestion failure
+## 8. Missing canonical title or security tokens is a real ingestion failure
 
-After enrichers and rules finish, the pipeline verifies that the final canonical upsert document retained at least one title.
+After enrichers and rules finish, the pipeline verifies that the final canonical upsert document still retains the mandatory canonical fields needed for indexing.
+
+Today that means two checks happen together:
+
+- the document must retain at least one `Title`
+- the document must retain at least one canonical `SecurityTokens` value
 
 If no title survives:
 
@@ -143,7 +152,15 @@ If no title survives:
 - the message goes to the index-operation dead-letter flow
 - the document is not indexed
 
-This is one of the most important runtime behaviors to remember while authoring rules. A ruleset that adds keywords but never produces a retained title is not “partially successful”; it is a failed ingestion outcome.
+If no canonical security token survives:
+
+- the document is marked with `CANONICAL_SECURITY_TOKENS_REQUIRED`
+- the message goes to the same index-operation dead-letter flow
+- the document is not indexed
+
+This is one of the most important runtime behaviors to remember while authoring rules and enrichers. A ruleset that adds keywords but never produces a retained title is not “partially successful”; it is a failed ingestion outcome. The same is now true for canonical security state. Even if the inbound request originally contained valid security tokens, a document that reaches validation with an empty retained canonical `SecurityTokens` set is treated as failed ingestion and is dead-lettered rather than indexed.
+
+One practical way to reason about this is to separate **request validity** from **canonical validity**. Request validity answers the question "was the inbound payload structurally acceptable?" Canonical validity answers the later question "does the document still contain the mandatory normalized state that indexing relies on?" A payload can therefore pass request validation, enter enrichment, and still fail later if the retained canonical security-token set is emptied before indexing. That is why dead-letter analysis for this flow often needs both artifacts: the original request payload in the traceability copy and the failed canonical-validation record written by the pipeline.
 
 ## 9. Microbatching and bulk indexing keep ordering intact
 

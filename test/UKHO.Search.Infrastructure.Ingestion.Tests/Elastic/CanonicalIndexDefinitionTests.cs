@@ -9,8 +9,14 @@ using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests.Elastic
 {
+    /// <summary>
+    /// Verifies the canonical Elasticsearch index mapping emitted by the repository definition class.
+    /// </summary>
     public sealed class CanonicalIndexDefinitionTests
     {
+        /// <summary>
+        /// Confirms that the canonical mapping includes all exact-match and analyzed fields required by the ingestion pipeline.
+        /// </summary>
         [Fact]
         public void CreateIndex_request_includes_expected_mappings()
         {
@@ -51,6 +57,10 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
                       .GetString()
                       .ShouldBe("keyword");
             properties.GetProperty("keywords")
+                      .GetProperty("type")
+                      .GetString()
+                      .ShouldBe("keyword");
+            properties.GetProperty("securityTokens")
                       .GetProperty("type")
                       .GetString()
                       .ShouldBe("keyword");
@@ -110,6 +120,9 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
                       .ShouldBe("geo_shape");
         }
 
+        /// <summary>
+        /// Serializes the descriptor so the test can assert against the generated Elasticsearch request payload.
+        /// </summary>
         private static string Serialize(ElasticsearchClient client, CreateIndexRequestDescriptor descriptor)
         {
             using var ms = new MemoryStream();
@@ -124,6 +137,9 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
             return Encoding.UTF8.GetString(ms.ToArray());
         }
 
+        /// <summary>
+        /// Materializes a request object when the client library exposes one, while keeping compatibility with descriptor-serializing versions.
+        /// </summary>
         private static object MaterializeRequest(CreateIndexRequestDescriptor descriptor)
         {
             var requestType = typeof(CreateIndexRequest);
@@ -143,6 +159,9 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
             return request ?? descriptor;
         }
 
+        /// <summary>
+        /// Reads a property value by name from either the runtime type or one of its implemented interfaces.
+        /// </summary>
         private static object? GetAnyPropertyValue(object? instance, string propertyName)
         {
             if (instance is null)
@@ -171,6 +190,9 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
             return null;
         }
 
+        /// <summary>
+        /// Invokes the available serializer overload so the test remains resilient across Elastic client versions.
+        /// </summary>
         private static void InvokeSerialize(object serializer, object value, Stream stream)
         {
             var allSerializeMethods = serializer.GetType()

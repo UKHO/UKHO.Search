@@ -175,11 +175,17 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
             throw new InvalidOperationException($"Elasticsearch index '{_indexName}' did not return any field capabilities after retries.");
         }
 
+        /// <summary>
+        /// Validates that the canonical index exposes the exact field types expected by the bulk index client.
+        /// </summary>
+        /// <typeparam name="T">The field-capabilities payload value type.</typeparam>
+        /// <param name="fields">The field-capabilities payload keyed by field name.</param>
         internal static void ValidateExpectedFieldMappings<T>(IReadOnlyDictionary<string, IReadOnlyDictionary<string, T>> fields)
         {
             // These fields should be mapped explicitly (not default dynamic 'text' with '.keyword' multi-fields).
             EnsureHasType(fields, "provider", "keyword");
             EnsureHasType(fields, "keywords", "keyword");
+            EnsureHasType(fields, "securityTokens", "keyword");
             EnsureHasType(fields, "authority", "keyword");
             EnsureHasType(fields, "region", "keyword");
             EnsureHasType(fields, "format", "keyword");
@@ -194,10 +200,18 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
             // If the index was created via default dynamic mapping, these multi-fields will typically exist.
             EnsureAbsent(fields, "provider.keyword");
             EnsureAbsent(fields, "keywords.keyword");
+            EnsureAbsent(fields, "securityTokens.keyword");
             EnsureAbsent(fields, "searchText.keyword");
             EnsureAbsent(fields, "content.keyword");
         }
 
+        /// <summary>
+        /// Asserts that a field exposes a specific Elasticsearch type in the field-capabilities response.
+        /// </summary>
+        /// <typeparam name="T">The field-capabilities payload value type.</typeparam>
+        /// <param name="fields">The field-capabilities payload keyed by field name.</param>
+        /// <param name="fieldName">The field name that must be present.</param>
+        /// <param name="expectedType">The Elasticsearch type that must be exposed for the field.</param>
         private static void EnsureHasType<T>(IReadOnlyDictionary<string, IReadOnlyDictionary<string, T>> fields, string fieldName, string expectedType)
         {
             if (!fields.TryGetValue(fieldName, out var perType) || perType is null || !perType.ContainsKey(expectedType))
@@ -207,6 +221,12 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
             }
         }
 
+        /// <summary>
+        /// Asserts that an unexpected dynamic multi-field is absent from the field-capabilities response.
+        /// </summary>
+        /// <typeparam name="T">The field-capabilities payload value type.</typeparam>
+        /// <param name="fields">The field-capabilities payload keyed by field name.</param>
+        /// <param name="fieldName">The unexpected multi-field name.</param>
         private static void EnsureAbsent<T>(IReadOnlyDictionary<string, IReadOnlyDictionary<string, T>> fields, string fieldName)
         {
             if (fields.ContainsKey(fieldName))

@@ -8,17 +8,27 @@ using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests.Documents
 {
+    /// <summary>
+    /// Verifies that the canonical document JSON contract preserves the current canonical shape across serialization.
+    /// </summary>
     public sealed class CanonicalDocumentJsonRoundTripTests
     {
+        /// <summary>
+        /// Proves that System.Text.Json preserves canonical security tokens, normalized collections, and the traceability copy.
+        /// </summary>
         [Fact]
         public void CanonicalDocument_round_trips_via_system_text_json()
         {
+            // Build a request that preserves mixed-case source tokens so the test can verify
+            // the difference between the traceability copy and the normalized canonical set.
             var timestamp = new DateTimeOffset(2024, 01, 02, 03, 04, 05, TimeSpan.Zero);
             var source = new IndexRequest("doc-1", new[]
             {
                 new IngestionProperty { Name = "Category", Type = IngestionPropertyType.String, Value = "A" }
-            }, ["t"], timestamp, new IngestionFileList());
+            }, ["Token-B", "TOKEN-A"], timestamp, new IngestionFileList());
 
+            // Create and enrich the canonical document so the round-trip covers both minimal state
+            // and additive normalized discovery fields.
             var doc = CanonicalDocument.CreateMinimal("doc-1", "file-share", source, timestamp);
             doc.AddKeyword("Alpha");
             doc.AddKeyword("BETA");
@@ -43,6 +53,8 @@ namespace UKHO.Search.Ingestion.Tests.Documents
                   .ValueKind.ShouldBe(JsonValueKind.String);
             parsed.RootElement.GetProperty("Keywords")
                   .ValueKind.ShouldBe(JsonValueKind.Array);
+            parsed.RootElement.GetProperty("SecurityTokens")
+                  .ValueKind.ShouldBe(JsonValueKind.Array);
             parsed.RootElement.GetProperty("SearchText")
                   .ValueKind.ShouldBe(JsonValueKind.String);
             parsed.RootElement.GetProperty("Content")
@@ -63,9 +75,11 @@ namespace UKHO.Search.Ingestion.Tests.Documents
                         .Type.ShouldBe(IngestionPropertyType.String);
             roundTripped.Source.Properties[0]
                         .Value.ShouldBe("A");
+            roundTripped.Source.SecurityTokens.ShouldBe(["Token-B", "TOKEN-A"]);
             roundTripped.Timestamp.ShouldBe(timestamp);
 
             roundTripped.Keywords.ShouldBe(new[] { "alpha", "beta" });
+            roundTripped.SecurityTokens.ShouldBe(new[] { "token-a", "token-b" });
             roundTripped.SearchText.ShouldBe("hello world");
             roundTripped.Content.ShouldBe("hello body");
 

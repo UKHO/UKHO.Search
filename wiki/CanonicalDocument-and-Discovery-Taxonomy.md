@@ -18,6 +18,7 @@ The current model contains:
 - `Provider`
 - `Source` (`IndexRequest`)
 - `Timestamp`
+- `SecurityTokens`
 - `Title`
 - `Keywords`
 - `Authority`
@@ -70,13 +71,16 @@ These fields preserve the source record identity, the owning provider identity, 
 
 ### 2. Discovery half
 
+- `SecurityTokens`
 - `Keywords`
 - `SearchText`
 - `Content`
 - taxonomy fields (`Authority`, `Region`, `Format`, `Category`, `Series`, `Instance`, `MajorVersion`, `MinorVersion`)
 - `GeoPolygons`
 
-These fields exist for search, faceting, and filtering.
+These fields exist for search, faceting, filtering, and security trimming.
+
+`SecurityTokens` deserves special attention because it is not a display field and it is not intended for full-text analysis. It is the canonical exact-match security/filter surface that tells downstream systems which authorization tokens must line up before a document should be treated as visible. The ingestion request still preserves the original caller-supplied token casing inside `Source` for traceability, but the canonical `SecurityTokens` set is normalized to lowercase so filtering stays deterministic and case-insensitive.
 
 ## Normalization rules
 
@@ -88,6 +92,8 @@ String discovery values are normalized inside the mutator methods:
 - store set-based fields in sorted sets for deterministic ordering and de-duplication
 
 This is why `CanonicalDocument` is more than a DTO. It embeds index-shape discipline.
+
+`SecurityTokens` follows that same normalized-set pattern. If a request arrives with values such as `"Public"`, `" public "`, and `"PUBLIC"`, the traceability copy in `Source.SecurityTokens` still shows the caller's original values, but the canonical set retains one lowercase token: `public`. That distinction matters because contributors often need both views: the preserved source payload for investigation and the normalized canonical value for indexing behaviour.
 
 `Title` is the main exception to lowercase normalization. It is still trimmed, deduplicated, and deterministically ordered, but it preserves authored display casing because it is intended for user-facing display rather than normalized discovery matching.
 
@@ -103,6 +109,18 @@ It is populated by:
 - rule outputs
 - file-name-derived content extraction keywords
 - provider-specific enrichers such as S-101 classification
+
+### `SecurityTokens`
+
+`SecurityTokens` is the exact-match security/filter field carried on the canonical document.
+
+It is populated during minimal canonical creation from `IndexRequest.SecurityTokens`, which means the canonical document carries its security envelope before any later enricher or rules-driven shaping work begins. That early population point is deliberate. It ensures the canonical document already contains the minimum security context needed by downstream indexing logic, while still letting later enrichers add more retained tokens through the same canonical mutation path when the repository needs that behaviour.
+
+Unlike `Title`, `SearchText`, or `Content`, `SecurityTokens` is not a user-facing content surface. Contributors should think of it as part of the document's exact-match operational metadata: it helps express who can see the document, not what the document says.
+
+It is also a mandatory retained canonical field. The post-enrichment validation stage checks that the canonical `SecurityTokens` set is still non-empty before the document is allowed to proceed to indexing. That rule exists because the repository treats the canonical document, not only the original request payload, as the authoritative indexing contract. A valid request is therefore necessary but not sufficient: if later enrichment or document mutation leaves the retained canonical token set empty, the document is routed to dead-letter handling in the same family of failure as a missing title.
+
+A short worked example makes the distinction clearer. Imagine the caller sends `Source.SecurityTokens = ["Public", " UKHO-Internal "]`. Minimal canonical creation keeps that exact array in the traceability copy so a maintainer can later inspect what the caller really supplied. At the same time, the canonical mutator path produces `CanonicalDocument.SecurityTokens = ["public", "ukho-internal"]`. If a later enrichment stage accidentally clears that canonical set, the original request still exists for diagnostics, but the document is no longer considered indexable because the authoritative canonical filter surface has been lost.
 
 ### `Title`
 
@@ -164,16 +182,17 @@ The dispatch step creates a minimal document first:
 - provider
 - defensive copy of `Source`
 - timestamp
+- normalized `SecurityTokens` copied from `Source.SecurityTokens`
 
 Everything else is added by enrichers and rules.
 
-This is important because it keeps dispatch cheap and pushes source-specific enrichment into explicit enrichment stages.
+This is important because it keeps dispatch cheap and pushes source-specific enrichment into explicit enrichment stages, while still preserving the canonical security context that later indexing and validation steps depend on. The request copy in `Source` keeps the original casing and values for traceability, but the canonical `SecurityTokens` field is already normalized and ready for exact-match filtering.
 
 ## Elasticsearch projection
 
 `CanonicalDocument` is not sent directly as-is to Elasticsearch. Infrastructure creates a `CanonicalIndexDocument` that preserves the canonical fields and maps `GeoPolygons` into GeoJSON-compatible objects.
 
-That projection also preserves `Provider` as a `keyword` field so exact-match filtering and provenance inspection can distinguish which provider produced a document.
+That projection also preserves `Provider` as a `keyword` field so exact-match filtering and provenance inspection can distinguish which provider produced a document. `SecurityTokens` is projected as a `keyword` field for the same reason: Elasticsearch should treat the values as exact retained tokens, not as analyzed text.
 
 That projection lives in:
 

@@ -4,6 +4,9 @@ using UKHO.Search.Ingestion.Requests;
 
 namespace UKHO.Search.Infrastructure.Ingestion.Elastic
 {
+    /// <summary>
+    /// Represents the Elasticsearch-facing projection of the canonical document used for bulk indexing.
+    /// </summary>
     internal sealed class CanonicalIndexDocument
     {
         [JsonPropertyName("id")]
@@ -23,6 +26,9 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
 
         [JsonPropertyName("keywords")]
         public required IReadOnlyCollection<string> Keywords { get; init; }
+
+        [JsonPropertyName("securityTokens")]
+        public required IReadOnlyCollection<string> SecurityTokens { get; init; }
 
         [JsonPropertyName("authority")]
         public required IReadOnlyCollection<string> Authority { get; init; }
@@ -58,10 +64,16 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public object? GeoPolygons { get; init; }
 
+        /// <summary>
+        /// Creates the Elasticsearch payload from the canonical document.
+        /// </summary>
+        /// <param name="document">The canonical document to project.</param>
+        /// <returns>The Elasticsearch-facing payload that matches the canonical index mapping.</returns>
         public static CanonicalIndexDocument Create(CanonicalDocument document)
         {
             ArgumentNullException.ThrowIfNull(document);
 
+            // Copy the canonical fields into index payload shape without mutating the source document.
             return new CanonicalIndexDocument
             {
                 Id = document.Id,
@@ -70,6 +82,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
                 Title = document.Title.ToArray(),
                 Timestamp = document.Timestamp,
                 Keywords = document.Keywords.ToArray(),
+                SecurityTokens = document.SecurityTokens.ToArray(),
                 Authority = document.Authority.ToArray(),
                 Region = document.Region.ToArray(),
                 Format = document.Format.ToArray(),
@@ -80,6 +93,7 @@ namespace UKHO.Search.Infrastructure.Ingestion.Elastic
                 Instance = document.Instance.ToArray(),
                 SearchText = document.SearchText,
                 Content = document.Content,
+                // Convert geo primitives into the GeoJSON-like payload shape expected by Elasticsearch.
                 GeoPolygons = GeoJsonPolygonShapeMapper.Map(document.GeoPolygons)
             };
         }
