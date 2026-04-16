@@ -94,6 +94,14 @@ A repository-managed mapping or enrichment rule evaluated during ingestion to de
 
 The repository-owned contract in `src/UKHO.Search.Query` that captures normalized input, typed extracted signals, canonical query intent, residual default contributions, execution directives, and diagnostics before Elasticsearch execution. The query plan is the boundary between query interpretation and query execution.
 
+### Generated-plan baseline
+
+The most recent repository-owned `QueryPlan` produced from the raw-query path and then projected back into the Monaco editor as formatted JSON. In the current Query UI workspace, this baseline is kept separately from the current editable Monaco contents so contributors can experiment with plan changes and still reset the editor back to the last raw-query-generated starting point.
+
+### Edited-plan execution
+
+The developer workflow where the Query UI validates the current Monaco JSON as a repository-owned `QueryPlan` and then asks the application service to execute that supplied plan directly without regenerating it from raw query text first. This term is useful because it distinguishes “run the current plan as written” from the raw-query path, which still begins with free-form text and planning.
+
 ### Normalized query input
 
 The repository-owned input snapshot produced by the query normalizer before typed extraction and rule evaluation continue. In current runtime terms this is the `QueryInputSnapshot`, which preserves raw text, a normalized lowercase form, a cleaned text form, deterministic tokens, and the residual text surfaces later used by rule consumption and default matching.
@@ -125,6 +133,10 @@ The refresh-aware runtime service that loads, validates, caches, and exposes the
 ### Matched rule diagnostics
 
 The developer-facing diagnostics retained on `QueryPlanDiagnostics` that record which query rules matched and which filters, boosts, sorts, and rule-catalog timestamp shaped the final query plan. These diagnostics help contributors explain why the planner produced a particular request shape.
+
+### Transformation trace
+
+The compact staged explanation shown in the current Query UI insight column that walks a contributor from raw query input through normalization, extracted signals, planning diagnostics, and request execution. The transformation trace is not a second repository-owned contract; it is a host-side narrative projection built from existing repository-owned artifacts such as `QueryInputSnapshot`, `QueryExtractedSignals`, `QueryPlanDiagnostics`, and the enriched `QuerySearchResult`.
 
 ### Exact-match field
 

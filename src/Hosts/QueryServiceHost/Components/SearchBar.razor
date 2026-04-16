@@ -5,36 +5,45 @@
 
 @inject QueryUiState State
 
-<RadzenCard Variant="Variant.Outlined">
-    <RadzenStack Gap="0.5rem">
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="width: 100%;">
-            <RadzenTextBox @bind-Value="State.QueryText"
-                           Placeholder="Start typing to search the dataset"
-                           Style="flex: 1;"
-                           @onkeydown="OnQueryInputKeyDown" />
-            <RadzenButton Text="Search"
-                          ButtonStyle="ButtonStyle.Primary"
-                          Disabled="State.IsLoading"
-                          Click="OnSubmitAsync" />
-        </RadzenStack>
+<section class="search-bar">
+    <div class="search-bar__header">
+        <div>
+            <h1 class="search-bar__title">Query workspace</h1>
+            <p class="search-bar__subtitle">Run a raw query to regenerate the plan shown in the Monaco workspace.</p>
+        </div>
 
-        @if (Chips.Count > 0)
-        {
-            <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" Style="flex-wrap: wrap;">
-                @foreach (var chip in Chips)
-                {
-                    <RadzenBadge Style="display: inline-flex; align-items: center; gap: 0.25rem;">
-                        <span>@chip.Label</span>
-                        <RadzenButton Icon="close"
-                                      Size="ButtonSize.Small"
-                                      ButtonStyle="ButtonStyle.Light"
-                                      Click="(() => OnRemoveChipAsync(chip))" />
-                    </RadzenBadge>
-                }
-            </RadzenStack>
-        }
-    </RadzenStack>
-</RadzenCard>
+        <div class="search-bar__summary" role="status" aria-live="polite">
+            @GetRunSummaryText()
+        </div>
+    </div>
+
+    <div class="search-bar__command-row">
+        <RadzenTextBox @bind-Value="State.QueryText"
+                       class="search-bar__input"
+                       Placeholder="Enter raw query text to regenerate the plan"
+                       @onkeydown="OnQueryInputKeyDown" />
+        <RadzenButton Text="Run raw query"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Disabled="State.IsLoading"
+                      Click="OnSubmitAsync" />
+    </div>
+
+    @if (Chips.Count > 0)
+    {
+        <div class="search-bar__chips" aria-label="Selected filters">
+            @foreach (var chip in Chips)
+            {
+                <RadzenBadge class="search-bar__chip">
+                    <span>@chip.Label</span>
+                    <RadzenButton Icon="close"
+                                  Size="ButtonSize.Small"
+                                  ButtonStyle="ButtonStyle.Light"
+                                  Click="(() => OnRemoveChipAsync(chip))" />
+                </RadzenBadge>
+            }
+        </div>
+    }
+</section>
 
 @code
 {
@@ -77,5 +86,29 @@
     {
         // Re-render on shared state updates because this component reads injected state rather than receiving parameters.
         InvokeAsync(StateHasChanged);
+    }
+
+    private string GetRunSummaryText()
+    {
+        // Summarize the latest execution so the command bar communicates current state without forcing the user into a side panel.
+        if (State.IsLoading)
+        {
+            return State.IsExecutingEditedPlan
+                ? "Running edited plan from Monaco..."
+                : "Running raw query and regenerating the plan...";
+        }
+
+        if (!string.IsNullOrWhiteSpace(State.Error))
+        {
+            return State.Error!;
+        }
+
+        if (State.LastResponse is not null)
+        {
+            var executionPath = State.LastExecutionUsedEditedPlan ? "edited plan active" : (State.HasGeneratedPlan ? "generated plan ready" : "plan unavailable");
+            return $"{State.LastResponse.Total} results | {State.LastResponse.Duration.TotalMilliseconds:0} ms | {executionPath}";
+        }
+
+        return "Ready to generate a plan from raw query text.";
     }
 }

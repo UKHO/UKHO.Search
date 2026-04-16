@@ -1,0 +1,113 @@
+@using QueryServiceHost.State
+@implements IDisposable
+@inject QueryUiState State
+
+@* Renders the generated-plan Monaco workspace that sits beside the flat results list in the centre of the query shell. *@
+<section class="query-plan-panel">
+    <header class="query-plan-panel__header">
+        <div>
+            <h2 class="query-plan-panel__title">Generated query plan</h2>
+            <p class="query-plan-panel__subtitle">@GetPanelSubtitle()</p>
+        </div>
+
+        <div class="query-plan-panel__actions">
+            <RadzenButton Text="Search"
+                          ButtonStyle="ButtonStyle.Primary"
+                          Disabled="@IsSearchDisabled()"
+                          Click="OnExecuteEditedPlanAsync" />
+            <RadzenButton Text="Reset to generated plan"
+                          ButtonStyle="ButtonStyle.Light"
+                          Disabled="@IsResetDisabled()"
+                          Click="OnResetToGeneratedPlan" />
+        </div>
+    </header>
+
+    <div class="query-plan-panel__status">@GetPlanStatusText()</div>
+
+    <div class="query-plan-panel__body">
+        <JsonEditor Value="@State.EditablePlanText"
+                    ValueChanged="@OnEditorValueChanged"
+                    IsReadOnly="false"
+                    HostStyle="height: 100%; width: 100%;" />
+    </div>
+</section>
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        // Subscribe to shared state changes so the Monaco host refreshes when raw-query execution produces a new generated plan.
+        State.Changed += OnStateChanged;
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe when the component is disposed so the scoped state container does not retain stale callbacks.
+        State.Changed -= OnStateChanged;
+    }
+
+    private void OnEditorValueChanged(string value)
+    {
+        // Persist Monaco edits into shared state while leaving the generated-plan baseline untouched.
+        State.UpdateEditablePlanText(value);
+    }
+
+    private async Task OnExecuteEditedPlanAsync()
+    {
+        // Route pane-level execution through shared state so validation, logging, and result refresh behavior stay centralized.
+        await State.ExecuteEditedPlanAsync(CancellationToken.None);
+    }
+
+    private void OnResetToGeneratedPlan()
+    {
+        // Restore the editor working copy back to the most recent generated raw-query plan.
+        State.ResetEditablePlanTextToGeneratedPlan();
+    }
+
+    private bool IsSearchDisabled()
+    {
+        // Disable edited-plan execution only while another run is active or when the editor contains no plan text.
+        return State.IsLoading || string.IsNullOrWhiteSpace(State.EditablePlanText);
+    }
+
+    private bool IsResetDisabled()
+    {
+        // Disable reset until a generated baseline exists and the editor has diverged from it.
+        return State.IsLoading || !State.CanResetToGeneratedPlan;
+    }
+
+    private string GetPanelSubtitle()
+    {
+        // Explain the two execution paths clearly so the user can tell raw-query regeneration apart from edited-plan execution.
+        return State.LastExecutionUsedEditedPlan
+            ? "The current results came from the edited plan in Monaco. Use the top command bar to regenerate the baseline from raw query text."
+            : "The top command bar regenerates the baseline plan from raw query text, while the Search button executes the current Monaco contents directly.";
+    }
+
+    private string GetPlanStatusText()
+    {
+        // Explain whether the editor currently holds a generated plan or is waiting for the first successful raw-query run.
+        if (State.IsLoading)
+        {
+            return State.IsExecutingEditedPlan ? "Executing edited plan..." : "Generating plan from raw query...";
+        }
+
+        if (State.HasValidationErrors)
+        {
+            return "Edited plan validation failed. Review diagnostics and correct the plan.";
+        }
+
+        if (State.LastExecutionUsedEditedPlan)
+        {
+            return "Results currently reflect the edited plan.";
+        }
+
+        return State.HasGeneratedPlan ? "Generated plan ready for inspection or editing." : "Waiting for raw query";
+    }
+
+    private void OnStateChanged()
+    {
+        // Re-render on shared state updates because this component reads injected state rather than receiving parameters.
+        InvokeAsync(StateHasChanged);
+    }
+}

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using UKHO.Search.Query.Abstractions;
+using UKHO.Search.Query.Models;
 using UKHO.Search.Query.Results;
 using UKHO.Search.Services.Query.Abstractions;
 
@@ -42,16 +43,9 @@ namespace UKHO.Search.Services.Query.Execution
                 var plan = await _queryPlanService.PlanAsync(queryText, cancellationToken)
                     .ConfigureAwait(false);
 
-                // Execute the plan through the injected infrastructure adapter to keep the application-service boundary clean.
-                var result = await _queryPlanExecutor.SearchAsync(plan, cancellationToken)
+                // Reuse the shared execution path so raw-query and edited-plan execution produce the same orchestration and logging behavior.
+                return await ExecutePlanCoreAsync(plan, isSuppliedPlan: false, cancellationToken)
                     .ConfigureAwait(false);
-
-                _logger.LogInformation(
-                    "Executed query search. Total={Total} DurationMs={DurationMs}",
-                    result.Total,
-                    result.Duration.TotalMilliseconds);
-
-                return result;
             }
             catch (Exception ex)
             {
@@ -59,6 +53,52 @@ namespace UKHO.Search.Services.Query.Execution
                 _logger.LogError(ex, "Failed to execute a query search for the supplied query text.");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Executes a caller-supplied query plan without re-running the planning stage.
+        /// </summary>
+        /// <param name="plan">The repository-owned query plan supplied by the caller.</param>
+        /// <param name="cancellationToken">The cancellation token that stops execution when the caller no longer needs the result.</param>
+        /// <returns>The executed query result.</returns>
+        public async Task<QuerySearchResult> ExecutePlanAsync(QueryPlan plan, CancellationToken cancellationToken)
+        {
+            ArgumentNullException.ThrowIfNull(plan);
+
+            try
+            {
+                // Route supplied plans through the same execution adapter so the host never bypasses application-service orchestration.
+                return await ExecutePlanCoreAsync(plan, isSuppliedPlan: true, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                // Log supplied-plan failures distinctly so contributors can tell whether planning or direct execution was being exercised.
+                _logger.LogError(ex, "Failed to execute a caller-supplied query plan.");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Executes a query plan through the injected executor and emits a consistent structured log entry.
+        /// </summary>
+        /// <param name="plan">The repository-owned query plan that should be executed.</param>
+        /// <param name="isSuppliedPlan"><see langword="true"/> when the caller supplied the plan directly; otherwise <see langword="false"/>.</param>
+        /// <param name="cancellationToken">The cancellation token that stops execution when the caller no longer needs the result.</param>
+        /// <returns>The executed query result.</returns>
+        private async Task<QuerySearchResult> ExecutePlanCoreAsync(QueryPlan plan, bool isSuppliedPlan, CancellationToken cancellationToken)
+        {
+            // Execute the repository-owned plan through the injected infrastructure adapter so all host paths converge on the same runtime behavior.
+            var result = await _queryPlanExecutor.SearchAsync(plan, cancellationToken)
+                .ConfigureAwait(false);
+
+            _logger.LogInformation(
+                "Executed query search. Source={Source} Total={Total} DurationMs={DurationMs}",
+                isSuppliedPlan ? "edited-plan" : "raw-query",
+                result.Total,
+                result.Duration.TotalMilliseconds);
+
+            return result;
         }
     }
 }

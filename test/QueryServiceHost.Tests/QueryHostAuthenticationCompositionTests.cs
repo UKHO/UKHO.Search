@@ -63,8 +63,10 @@ namespace QueryServiceHost.Tests
             // Read the component sources directly because the regression is about component subscription wiring rather than runtime behavior under a test host.
             var searchBarSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "SearchBar.razor"));
             var resultsPanelSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "ResultsPanel.razor"));
-            var facetPanelSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "FacetPanel.razor"));
-            var detailsPanelSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "DetailsPanel.razor"));
+            var queryPlanPanelSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "QueryPlanPanel.razor"));
+            var queryInsightPanelSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "QueryInsightPanel.razor"));
+            var queryDiagnosticsPanelSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "QueryDiagnosticsPanel.razor"));
+            var resultExplainDrawerSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "ResultExplainDrawer.razor"));
 
             searchBarSource.ShouldContain("@implements IDisposable");
             searchBarSource.ShouldContain("State.Changed += OnStateChanged;");
@@ -72,12 +74,45 @@ namespace QueryServiceHost.Tests
             resultsPanelSource.ShouldContain("@implements IDisposable");
             resultsPanelSource.ShouldContain("State.Changed += OnStateChanged;");
             resultsPanelSource.ShouldContain("State.Changed -= OnStateChanged;");
-            facetPanelSource.ShouldContain("@implements IDisposable");
-            facetPanelSource.ShouldContain("State.Changed += OnStateChanged;");
-            facetPanelSource.ShouldContain("State.Changed -= OnStateChanged;");
-            detailsPanelSource.ShouldContain("@implements IDisposable");
-            detailsPanelSource.ShouldContain("State.Changed += OnStateChanged;");
-            detailsPanelSource.ShouldContain("State.Changed -= OnStateChanged;");
+            queryPlanPanelSource.ShouldContain("@implements IDisposable");
+            queryPlanPanelSource.ShouldContain("State.Changed += OnStateChanged;");
+            queryPlanPanelSource.ShouldContain("State.Changed -= OnStateChanged;");
+            queryInsightPanelSource.ShouldContain("@implements IDisposable");
+            queryInsightPanelSource.ShouldContain("State.Changed += OnStateChanged;");
+            queryInsightPanelSource.ShouldContain("State.Changed -= OnStateChanged;");
+            queryDiagnosticsPanelSource.ShouldContain("@implements IDisposable");
+            queryDiagnosticsPanelSource.ShouldContain("State.Changed += OnStateChanged;");
+            queryDiagnosticsPanelSource.ShouldContain("State.Changed -= OnStateChanged;");
+            resultExplainDrawerSource.ShouldContain("@implements IDisposable");
+            resultExplainDrawerSource.ShouldContain("State.Changed += OnStateChanged;");
+            resultExplainDrawerSource.ShouldContain("State.Changed -= OnStateChanged;");
+        }
+
+        /// <summary>
+        /// Verifies that the home page uses the new single-screen workspace shell, replaces the old details column, and loads the Monaco prerequisites.
+        /// </summary>
+        [Fact]
+        public void Home_page_uses_the_single_screen_workspace_shell_and_loads_monaco_prerequisites()
+        {
+            // Read the checked-in host sources directly because this regression is about shell composition and startup assets.
+            var homePageSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "Pages", "Home.razor"));
+            var searchBarSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "SearchBar.razor"));
+            var appSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "App.razor"));
+            var monacoInteropSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "wwwroot", "js", "monacoEditorInterop.js"));
+
+            homePageSource.ShouldContain("<QueryInsightPanel />");
+            homePageSource.ShouldContain("<QueryPlanPanel />");
+            homePageSource.ShouldContain("<ResultsPanel />");
+            homePageSource.ShouldContain("<QueryDiagnosticsPanel />");
+            homePageSource.ShouldContain("<ResultExplainDrawer />");
+            homePageSource.ShouldNotContain("<DetailsPanel />");
+            searchBarSource.ShouldContain("Text=\"Run raw query\"");
+            homePageSource.ShouldNotContain("State.EditablePlanText");
+            var queryPlanPanelSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "QueryPlanPanel.razor"));
+            queryPlanPanelSource.ShouldContain("Value=\"@State.EditablePlanText\"");
+            appSource.ShouldContain("require.min.js");
+            monacoInteropSource.ShouldContain("cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js");
+            monacoInteropSource.ShouldContain("monacoLoaderPromise = null;");
         }
 
         /// <summary>

@@ -1,0 +1,58 @@
+.result-explain-drawer {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--rz-base-300);
+    border-radius: 0.75rem;
+    background: rgba(15, 23, 42, 0.72);
+}
+
+.result-explain-drawer__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.result-explain-drawer__content {
+    margin-top: 0.75rem;
+}
+
+.result-explain-drawer__details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.result-explain-drawer__title,
+.result-explain-drawer__section-title {
+    margin: 0;
+}
+
+.result-explain-drawer__subtitle,
+.result-explain-drawer__metadata,
+.result-explain-drawer__placeholder,
+.result-explain-drawer__raw,
+.result-explain-drawer__list {
+    color: var(--rz-text-secondary-color);
+}
+
+.result-explain-drawer__subtitle {
+    margin: 0.25rem 0 0;
+}
+
+.result-explain-drawer__metadata {
+    margin: 0.25rem 0 0;
+}
+
+.result-explain-drawer__list {
+    margin: 0;
+    padding-left: 1.1rem;
+}
+
+.result-explain-drawer__raw {
+    margin: 0;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background: rgba(2, 6, 23, 0.75);
+    overflow: auto;
+    white-space: pre-wrap;
+}

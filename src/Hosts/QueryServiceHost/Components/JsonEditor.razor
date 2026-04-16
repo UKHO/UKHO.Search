@@ -1,0 +1,155 @@
+@using Microsoft.Extensions.Logging
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IJSRuntime JsRuntime
+@inject ILogger<JsonEditor> Logger
+
+@* Hosts the Monaco JSON editor inside an empty element so Blazor and Monaco do not compete to manage the same DOM subtree. *@
+<div class="json-editor">
+    @if (!string.IsNullOrWhiteSpace(_initializationError))
+    {
+        <RadzenAlert Variant="Variant.Flat" Severity="AlertSeverity.Error">@_initializationError</RadzenAlert>
+    }
+
+    <div class="json-editor__host" @ref="_host" style="@HostStyle"></div>
+</div>
+
+@code
+{
+    private ElementReference _host;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _editor;
+    private DotNetObjectReference<JsonEditor>? _dotNetReference;
+    private string? _lastAppliedValue;
+    private string? _initializationError;
+
+    // Receives the editor text currently stored in shared query UI state.
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    // Propagates Monaco edits back to the parent component and shared state container.
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    // Controls whether the Monaco instance accepts user edits.
+    [Parameter]
+    public bool IsReadOnly { get; set; }
+
+    // Allows the parent workspace to size the empty editor host element without mutating Monaco-owned DOM.
+    [Parameter]
+    public string HostStyle { get; set; } = "height: 100%; width: 100%;";
+
+    // Enables or disables Monaco code-folding affordances for the JSON payload.
+    [Parameter]
+    public bool EnableFolding { get; set; } = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Initialize Monaco only after the host element exists, then keep the editor value synchronized with state updates.
+        if (firstRender)
+        {
+            await InitializeEditorAsync();
+        }
+        else if (_editor is not null && _module is not null && _lastAppliedValue != Value)
+        {
+            try
+            {
+                await _module.InvokeVoidAsync("setValue", _editor, Value);
+                _lastAppliedValue = Value;
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignore circuit teardown because the component is already leaving the page.
+            }
+            catch (JSException ex)
+            {
+                // Record editor synchronization failures so the shell can surface the problem locally instead of failing silently.
+                Logger.LogError(ex, "The QueryServiceHost Monaco editor value could not be synchronized.");
+                _initializationError = "The query plan editor could not refresh its content. Reload the page and try again.";
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+
+        // Force Monaco to re-measure its container after each render because the split workspace can resize after state changes.
+        if (_editor is not null && _module is not null)
+        {
+            try
+            {
+                await _module.InvokeVoidAsync("layout", _editor);
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignore circuit teardown because the component is already leaving the page.
+            }
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnEditorValueChanged(string value)
+    {
+        // Store the latest editor text locally before forwarding it so subsequent renders do not push stale content back into Monaco.
+        _lastAppliedValue = value;
+        await ValueChanged.InvokeAsync(value);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // Dispose the Monaco editor and module references to avoid leaking browser-side and .NET-side interop objects.
+        if (_module is not null)
+        {
+            try
+            {
+                if (_editor is not null)
+                {
+                    try
+                    {
+                        await _module.InvokeVoidAsync("dispose", _editor);
+                    }
+                    catch (JSDisconnectedException)
+                    {
+                        // Ignore circuit teardown because the browser-side runtime is already gone.
+                    }
+                }
+            }
+            finally
+            {
+                try
+                {
+                    await _module.DisposeAsync();
+                }
+                catch (JSDisconnectedException)
+                {
+                    // Ignore circuit teardown because the browser-side runtime is already gone.
+                }
+            }
+        }
+
+        _dotNetReference?.Dispose();
+        _dotNetReference = null;
+    }
+
+    private async Task InitializeEditorAsync()
+    {
+        // Import the isolated Monaco module from the host static assets and create the editor only once for this component instance.
+        try
+        {
+            _module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/monacoEditorInterop.js");
+            _dotNetReference = DotNetObjectReference.Create(this);
+            _editor = await _module.InvokeAsync<IJSObjectReference>(
+                "createJsonEditor",
+                _host,
+                Value,
+                IsReadOnly,
+                EnableFolding,
+                _dotNetReference);
+            _lastAppliedValue = Value;
+        }
+        catch (JSException ex)
+        {
+            // Keep the shell alive when Monaco cannot initialize and surface a focused message in the plan workspace.
+            Logger.LogError(ex, "The QueryServiceHost Monaco editor could not be initialized.");
+            _initializationError = "The query plan editor could not be initialized. Reload the page and try again.";
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}

@@ -27,6 +27,8 @@ The current query plan is made of five closely related contract areas:
 
 Together they become `QueryPlan`, which is the boundary between query interpretation and query execution.
 
+The current diagnostics-first Query UI makes that boundary visible in a very direct way. The left insight column derives extracted signals and a staged transformation trace from the repository-owned `QueryPlan`, while the right diagnostics column shows the final Elasticsearch request JSON and execution timings returned after the executor has mapped and run that plan. Contributors therefore need to understand not only how the plan is shaped, but also how the executor preserves the mapped request as a developer-facing runtime artifact.
+
 ## 1. `QueryInputSnapshot`: what the planner actually saw
 
 `QueryInputSnapshot` is the immutable normalized view of the user query.
@@ -198,6 +200,23 @@ For executable plans, the mapper builds a bool query with these parts:
 - `sort` for explicit execution sorts when present
 
 That layout is more important than it may first appear.
+
+The current Query UI depends on that determinism. Because the host now shows the final Elasticsearch request JSON beside the generated plan, contributors can compare the repository-owned meaning in `QueryPlan` with the exact mapped request body without guessing whether the UI rebuilt anything itself. The host only reformats the returned JSON for readability; it does not invent or reorder the request.
+
+## How execution diagnostics return to the host
+
+`QuerySearchResult` is now more than a hit container. It is the repository-owned execution result contract that carries the artifacts the developer-facing host needs in order to explain what happened.
+
+In current behavior, the result can retain:
+
+- the executed `QueryPlan`
+- the final Elasticsearch request JSON produced by `ElasticsearchQueryMapper`
+- the total hit count and projected hits
+- the wall-clock duration measured around execution
+- the search-engine-reported duration when Elasticsearch returns the `took` field
+- non-blocking warnings, such as the explanation that execution was skipped because the plan contained no executable clauses
+
+This matters because request visibility is now part of the contributor workflow. A developer can run a raw query, inspect the generated plan in Monaco, inspect the mapped request JSON in the diagnostics column, then edit the plan and run it again to see how the request changes. The infrastructure layer remains the source of truth for both mapping and execution diagnostics, while the host remains only a reader and presenter of those inward artifacts.
 
 ## Repository-owned meaning of Elasticsearch bool terms
 

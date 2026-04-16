@@ -48,6 +48,9 @@ namespace UKHO.Search.Infrastructure.Query.Search
         {
             ArgumentNullException.ThrowIfNull(plan);
 
+            // Generate the deterministic request body up front so both executed and short-circuited paths can project the same diagnostics payload.
+            var requestBody = ElasticsearchQueryMapper.CreateRequestBody(plan);
+
             if (!HasExecutableClauses(plan))
             {
                 // Avoid issuing a broad query when the planner produced neither rule-driven canonical intent nor residual default contributions.
@@ -55,16 +58,16 @@ namespace UKHO.Search.Infrastructure.Query.Search
                 return new QuerySearchResult
                 {
                     Plan = plan,
+                    ElasticsearchRequestJson = requestBody,
                     Hits = Array.Empty<QuerySearchHit>(),
                     Total = 0,
-                    Duration = TimeSpan.Zero
+                    Duration = TimeSpan.Zero,
+                    Warnings = ["The query plan produced no executable clauses, so Elasticsearch execution was skipped."]
                 };
             }
 
             try
             {
-                // Translate the repository-owned query plan into the deterministic Elasticsearch request body.
-                var requestBody = ElasticsearchQueryMapper.CreateRequestBody(plan);
                 var endpoint = new EndpointPath(Elastic.Transport.HttpMethod.POST, $"/{Uri.EscapeDataString(_indexName)}/_search");
                 var stopwatch = Stopwatch.StartNew();
 
@@ -84,7 +87,7 @@ namespace UKHO.Search.Infrastructure.Query.Search
                     throw new InvalidOperationException("Elasticsearch query execution returned an invalid response.");
                 }
 
-                var result = ParseResponseBody(plan, response.Body, stopwatch.Elapsed);
+                var result = ParseResponseBody(plan, requestBody, response.Body, stopwatch.Elapsed);
                 _logger.LogInformation("Executed Elasticsearch query. IndexName={IndexName} Total={Total}", _indexName, result.Total);
 
                 return result;
@@ -128,12 +131,14 @@ namespace UKHO.Search.Infrastructure.Query.Search
         /// Parses an Elasticsearch search response body into the repository-owned search result shape.
         /// </summary>
         /// <param name="plan">The query plan that produced the response.</param>
+        /// <param name="requestBody">The raw Elasticsearch request body that was sent to the search engine.</param>
         /// <param name="responseBody">The raw Elasticsearch response body.</param>
         /// <param name="duration">The measured execution duration.</param>
         /// <returns>The parsed repository-owned search result.</returns>
-        internal static QuerySearchResult ParseResponseBody(QueryPlan plan, string responseBody, TimeSpan duration)
+        internal static QuerySearchResult ParseResponseBody(QueryPlan plan, string requestBody, string responseBody, TimeSpan duration)
         {
             ArgumentNullException.ThrowIfNull(plan);
+            ArgumentException.ThrowIfNullOrWhiteSpace(requestBody);
             ArgumentException.ThrowIfNullOrWhiteSpace(responseBody);
 
             // Deserialize the transport response into a focused internal envelope so the outer host never depends on Elasticsearch response types.
@@ -146,9 +151,11 @@ namespace UKHO.Search.Infrastructure.Query.Search
             return new QuerySearchResult
             {
                 Plan = plan,
+                ElasticsearchRequestJson = requestBody,
                 Hits = hits,
                 Total = total,
-                Duration = duration
+                Duration = duration,
+                SearchEngineDuration = envelope.TookMilliseconds is int tookMilliseconds ? TimeSpan.FromMilliseconds(tookMilliseconds) : null
             };
         }
 

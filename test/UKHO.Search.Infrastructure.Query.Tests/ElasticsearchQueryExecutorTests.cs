@@ -38,7 +38,7 @@ namespace UKHO.Search.Infrastructure.Query.Tests
         /// Verifies that the executor maps the Elasticsearch response body into repository-owned hits and preserves matched-field metadata.
         /// </summary>
         [Fact]
-        public void ParseResponseBody_when_response_contains_hits_maps_titles_regions_types_and_matched_fields()
+        public void ParseResponseBody_when_response_contains_hits_maps_titles_regions_types_matched_fields_and_execution_metrics()
         {
             // Build a minimal query plan because the parsed result retains the originating plan for later diagnostics.
             var plan = new QueryPlan
@@ -51,8 +51,11 @@ namespace UKHO.Search.Infrastructure.Query.Tests
                 Diagnostics = new QueryPlanDiagnostics()
             };
 
+            const string requestBody = "{\"query\":{\"bool\":{\"should\":[{\"terms\":{\"keywords\":[\"latest\",\"solas\"]}}]}}}";
+
             const string responseBody = """
                 {
+                  "took": 18,
                   "hits": {
                     "total": { "value": 2 },
                     "hits": [
@@ -78,11 +81,13 @@ namespace UKHO.Search.Infrastructure.Query.Tests
                 """;
 
             // Parse the response body so the repository-owned hit projection can be validated directly.
-            var result = ElasticsearchQueryExecutor.ParseResponseBody(plan, responseBody, TimeSpan.FromMilliseconds(42));
+            var result = ElasticsearchQueryExecutor.ParseResponseBody(plan, requestBody, responseBody, TimeSpan.FromMilliseconds(42));
 
             result.Plan.ShouldBe(plan);
+            result.ElasticsearchRequestJson.ShouldBe(requestBody);
             result.Total.ShouldBe(2);
             result.Duration.ShouldBe(TimeSpan.FromMilliseconds(42));
+            result.SearchEngineDuration.ShouldBe(TimeSpan.FromMilliseconds(18));
             result.Hits.Count.ShouldBe(2);
             result.Hits.ElementAt(0).Title.ShouldBe("Latest SOLAS notice");
             result.Hits.ElementAt(0).Region.ShouldBe("north sea");

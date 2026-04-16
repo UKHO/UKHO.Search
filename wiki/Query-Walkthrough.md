@@ -71,6 +71,18 @@ When you trace a query, you will move across four main project areas:
 
 That project split is important because it tells contributors where a change belongs. If a search behavior question is really about what a query means, it usually belongs in the query contracts or service layer. If the question is how the plan is loaded from configuration or translated into Elasticsearch JSON, it usually belongs in infrastructure.
 
+### What the current host shell now shows contributors
+
+The current `QueryServiceHost` home page is no longer best understood as a simple search-results screen. It is now a single-screen developer workspace built to keep the most useful read-side artifacts visible at the same time.
+
+At the top, `SearchBar.razor` remains the raw-query entry point, but it now labels that action explicitly as the raw-query path so contributors can see that this button regenerates the plan rather than reusing edited JSON. In the middle of the page, `Home.razor` keeps two centre panes visible together: `QueryPlanPanel.razor` on the left and `ResultsPanel.razor` on the right. That centre split matters because it shortens the most common developer feedback loop. A contributor can submit raw text, immediately inspect the generated repository-owned plan in Monaco, and compare it with the projected result rows without switching tabs or moving to a second page.
+
+Around that centre loop, the host now keeps supporting context in flatter shell regions instead of piling more nested cards into the same area. `QueryInsightPanel.razor` is the left-column explanation surface for extracted signals and the compact transformation trace derived from the current `QueryPlan`. `QueryDiagnosticsPanel.razor` is the right-column diagnostics surface for the final Elasticsearch request JSON, validation output, warnings, and execution timings. `ResultExplainDrawer.razor` moves selected-result inspection into a collapsible bottom drawer so the old always-visible right-hand details pattern no longer dominates the main body.
+
+One implementation detail is worth calling out because it changes how contributors should reason about the UI. The Monaco editor is not a second source of query truth. `QueryUiState` now keeps two host-local strings: the latest generated-plan baseline returned by the raw-query path and the writable editor text shown in Monaco. The editor is hosted by `JsonEditor.razor`, which imports `wwwroot/js/monacoEditorInterop.js` through Blazor JS module loading after `App.razor` loads `require.js`. That arrangement makes the plan visible and editable in the host, but the host is still only displaying a projection of the inward `QueryPlan` contract produced by the repository-owned query services.
+
+The newest vertical slice adds an important second half to that story. `QueryPlanPanel.razor` now places a pane-level `Search` button and a `Reset to generated plan` action directly above Monaco. When a contributor presses `Search`, the host does not silently fall back to the raw-query bar. Instead, `QueryUiState` validates the Monaco contents as JSON, deserializes them into the repository-owned `QueryPlan` contract, projects any blocking validation failures into `QueryDiagnosticsPanel.razor`, and only then calls the supplied-plan execution route. The `Reset to generated plan` action is the return path: it restores the editor text to the last raw-query-generated baseline without discarding the underlying runtime separation between host and application-service layers.
+
 ## 3. `AddQueryServices()` wires the runtime in dependency order
 
 The host-local call to `AddQueryServices()` in `UKHO.Search.Infrastructure.Query.Injection` is where the query runtime becomes a concrete graph.
@@ -118,7 +130,7 @@ This is the code version of the runtime story already described conceptually on 
 
 Inside `QueryServiceHost`, the practical bridge from the Blazor UI to the inward query runtime is `QueryUiSearchClient`.
 
-That adapter matters because it keeps host-local request models and UI state out of the planner. The adapter receives a `QueryRequest`, logs the current limitation around unhandled facet selections, and delegates the raw query text into `IQuerySearchService`. The result then comes back as repository-owned hit data that the adapter projects into the host-local response model.
+That adapter matters because it keeps host-local request models and UI state out of the planner. The adapter receives a `QueryRequest`, logs the current limitation around unhandled facet selections, and delegates the raw query text into `IQuerySearchService`. The result then comes back as repository-owned hit data and a repository-owned `QueryPlan` that the adapter projects into the host-local response model. In current host behavior, the projected response now includes the retained `QueryPlan`, formatted generated-plan JSON for Monaco, formatted final Elasticsearch request JSON for the diagnostics column, search-engine timing when Elasticsearch reported one, and any non-blocking warnings surfaced by the inward pipeline.
 
 This is one of the most important boundaries on the query side. If a contributor finds themselves wanting to build Elasticsearch clauses in a Razor component, the existence of `QueryUiSearchClient` and `IQuerySearchService` is the reminder that such logic belongs inward instead.
 
@@ -134,6 +146,8 @@ Its job is intentionally small:
 4. return a repository-owned `QuerySearchResult`
 
 That small shape is useful. It means a contributor can usually ask a clean question while debugging: is the unexpected behavior already visible in the `QueryPlan`, or does it only appear after mapping and execution?
+
+That same orchestration layer now also exposes a direct supplied-plan route. `ExecutePlanAsync()` accepts a caller-supplied `QueryPlan`, skips `IQueryPlanService`, and hands the plan straight to `IQueryPlanExecutor`. This is the critical point that keeps the Onion Architecture boundary intact while the UI becomes more developer-centric. The host can execute edited plans, but only by going through the same application-service boundary that raw-query execution already used.
 
 ## 6. Normalization creates the first stable runtime contract
 
@@ -274,11 +288,14 @@ The executor posts the raw JSON to `/{indexName}/_search` using the configured E
 The current result mapping keeps:
 
 - the full executed `QueryPlan`
+- the exact Elasticsearch request JSON that the executor generated
 - the total hit count
-- the measured duration
+- the measured wall-clock duration
+- the search-engine-reported duration when Elasticsearch returns `took`
+- any non-blocking warnings that explain skipped or limited execution
 - a set of query hits with title, best available type-like value, region, matched field names, and an optional raw payload copy
 
-That means the host UI can remain presentation-oriented while the infrastructure layer stays responsible for the search engine response shape.
+That means the host UI can remain presentation-oriented while the infrastructure layer stays responsible for the search engine response shape. The host can now show contributors both the plan and the final request body side by side, but it still receives those artifacts as inward projections rather than recreating them in Razor code.
 
 ## Practical tracing recipes
 
@@ -306,6 +323,16 @@ The most useful mental model here is to separate the question into stages. Ask w
 5. If the final search still looks wrong, compare the rule-shaped intent with the actual indexed canonical fields in Kibana.
 
 This staged comparison is important because a wrong result can come from either side of the boundary. Sometimes the plan is correct and the indexed data is not. Sometimes the indexed data is correct and the plan is not. The walkthrough helps you separate those cases.
+
+### Trace an edited-plan execution
+
+1. Run a raw query first so Monaco receives the generated-plan baseline.
+2. Edit one small part of the plan in the Monaco pane, such as a keyword list, a filter value, or a sort directive.
+3. Click the pane-level `Search` button above Monaco.
+4. If the diagnostics area shows validation errors, correct the JSON in place and rerun the pane-level search.
+5. Compare the refreshed result set with the previous raw-query run, then click `Reset to generated plan` when you want to return to the last raw-query baseline.
+
+This recipe is useful because it separates two kinds of debugging that used to blur together. Sometimes the question is whether the planner produced the right plan from raw text. Sometimes the question is what Elasticsearch would do if one part of an already-understood plan changed. The new edited-plan path is designed for the second question.
 
 ### Trace a year-bearing query
 

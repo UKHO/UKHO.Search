@@ -1,9 +1,10 @@
 .query-ui-root {
     height: 100%;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    padding: 0;
-    gap: 0;
+    gap: 1rem;
+    padding: 1rem;
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -12,27 +13,53 @@
     flex: 0 0 auto;
 }
 
-.query-ui-main {
+.query-ui-workspace {
     flex: 1 1 0;
     min-height: 0;
-    overflow: auto;
+    display: grid;
+    grid-template-columns: minmax(16rem, 18rem) minmax(0, 1fr) minmax(18rem, 22rem);
+    gap: 1rem;
 }
 
-.query-ui-footer {
+.query-ui-column,
+.query-ui-center-pane,
+.query-ui-drawer-host {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.query-ui-center-workspace {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
+}
+
+.query-ui-drawer-host {
     flex: 0 0 auto;
 }
 
-.query-ui-panel {
-    height: 100%;
+::deep .query-ui-column > *,
+::deep .query-ui-center-pane > *,
+::deep .query-ui-drawer-host > * {
+    flex: 1 1 auto;
     min-height: 0;
-    display: flex;
-    flex-direction: column;
 }
 
-::deep .query-ui-panel > .rz-card {
-    flex: 1 1 0;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
+@media (max-width: 1200px) {
+    .query-ui-workspace {
+        grid-template-columns: minmax(15rem, 17rem) minmax(0, 1fr);
+    }
+
+    .query-ui-column--diagnostics {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 900px) {
+    .query-ui-workspace,
+    .query-ui-center-workspace {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }

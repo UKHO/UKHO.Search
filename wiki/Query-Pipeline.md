@@ -57,6 +57,10 @@ flowchart LR
 
 The important thing to notice is that the runtime does not jump directly from the UI to Elasticsearch. The host forwards user input into repository-owned services, the planner produces a `QueryPlan`, and only then does the infrastructure layer translate that plan into a deterministic request body.
 
+That boundary remains important even though the current `QueryServiceHost` screen now exposes the generated plan much more directly than it did earlier in the repository history. The home page is now a single-screen developer workspace rather than a nested three-column results-and-details page. A contributor enters raw text in the top command bar, the raw-query path still runs through `QueryUiSearchClient` into `IQuerySearchService`, and the resulting `QueryPlan` is projected back into the host as formatted JSON shown in Monaco beside the flat results list. The left insight column now derives extracted signals and a **transformation trace** from that same repository-owned plan, the right diagnostics column shows the final Elasticsearch request JSON plus execution warnings and timings returned by the inward pipeline, and selected-result detail lives in a collapsible bottom drawer. In other words, the host has become much better at *showing* repository-owned runtime artifacts, but it still does not *own* planning or request mapping.
+
+That distinction now matters even more because the host can also execute a caller-supplied plan directly from the Monaco pane. The generated plan produced by the raw-query path becomes a **generated-plan baseline**, meaning the last repository-owned plan produced from raw text. `QueryUiState` keeps that baseline separately from the current editable editor contents. When a contributor clicks the pane-level `Search` button, the host first validates that the editor contains valid `QueryPlan` JSON, then calls the supplied-plan path on the application service instead of regenerating a new plan from the raw-query bar. The host is therefore now capable of round-tripping a visible plan back into execution, but the architectural rule still holds: validation and UI workflow live in the host, while execution still flows inward through repository-owned query contracts and services.
+
 ## Stage-by-stage explanation
 
 ### 1. Raw query ingress stays thin in the host
@@ -64,6 +68,19 @@ The important thing to notice is that the runtime does not jump directly from th
 `QueryServiceHost` owns the interactive Blazor surface and the authentication-aware browser host composition. It does not own query semantics.
 
 The practical entry point is the host adapter `QueryUiSearchClient`, which receives the UI request and forwards the query text into `IQuerySearchService`. That is an architectural boundary, not just a convenience wrapper. It means the host can stay focused on user interaction while the actual search meaning lives inward in `UKHO.Search.Services.Query`, `UKHO.Search.Query`, and `UKHO.Search.Infrastructure.Query`.
+
+The current host shell makes that architectural rule visible in day-to-day use. `Home.razor` now lays out a top command bar, a left insight column, a centre split workspace, a right diagnostics column, and a bottom detail drawer host. The centre split is the most important part for query contributors because it keeps the generated plan and the results visible together. `QueryUiState` stores both the latest generated-plan baseline and a writable working copy for Monaco, but those are still host-local projections of repository-owned runtime data. The surrounding diagnostics now complete that story: the left column projects extracted signals and a staged transformation trace from `QueryPlan`, while the right column projects the final Elasticsearch request JSON, search-engine timing, wall-clock timing, and non-blocking warnings from `QuerySearchResult`. The host can therefore teach contributors how one run behaved without becoming a second planner.
+
+The edited-plan slice extends that same rule rather than breaking it. `QueryPlanPanel.razor` now exposes a pane-level `Search` button and a `Reset to generated plan` action above Monaco. Those controls make the developer workflow much faster because a contributor can tweak the current plan, execute it, and then return to the last generated raw-query baseline without touching the top command bar. Even so, the host still does not translate the plan into Elasticsearch JSON itself. It validates the JSON shape locally, preserves user edits when validation fails, records the blocking errors in the diagnostics area, and then delegates successful supplied-plan execution back through the same inward application-service boundary.
+
+### 1a. Two execution paths now share one runtime core
+
+The current host now has two closely related execution paths, and contributors should understand the difference between them because the user interface makes both visible.
+
+- The **raw-query path** starts with free-form text in the top command bar. The application service plans the query first and then executes the resulting plan.
+- The **edited-plan path** starts with JSON already present in Monaco. The host validates that JSON against the repository-owned `QueryPlan` contract and then asks the application service to execute that supplied plan directly.
+
+The important point is that the repository still has only one real execution core. `QuerySearchService` now exposes both `SearchAsync()` for raw text and `ExecutePlanAsync()` for caller-supplied plans, but both routes converge on `IQueryPlanExecutor`. That convergence means the edited-plan path is a developer convenience built on top of the same runtime behavior, not a second execution engine hidden in the UI.
 
 ### 2. Normalization creates one deterministic input snapshot
 
@@ -133,7 +150,7 @@ That deterministic order matters for both testing and contributor reasoning. A c
 
 `ElasticsearchQueryExecutor` sends the mapped JSON to the configured canonical index, validates the response, and parses it back into repository-owned result contracts.
 
-The parsed result does not expose raw Elasticsearch client types to the host. Instead, the runtime maps hit data into `QuerySearchResult` and `QuerySearchHit`, including the matched field names and a stable raw payload copy when present. That keeps the host UI focused on presentation while the query infrastructure remains the owner of transport details and response interpretation.
+The parsed result does not expose raw Elasticsearch client types to the host. Instead, the runtime maps hit data into `QuerySearchResult` and `QuerySearchHit`, including the matched field names and a stable raw payload copy when present. The executor also retains the exact Elasticsearch request JSON that it generated, the search-engine-reported execution duration when Elasticsearch returns one, and any non-blocking warnings that explain why execution was skipped or shaped a particular way. That keeps the host UI focused on presentation while the query infrastructure remains the owner of transport details and response interpretation.
 
 ## Worked example: `latest SOLAS`
 

@@ -1,4 +1,5 @@
 using UKHO.Search.Query.Results;
+using UKHO.Search.Query.Models;
 
 namespace UKHO.Search.Services.Query.Abstractions
 {
@@ -14,5 +15,13 @@ namespace UKHO.Search.Services.Query.Abstractions
         /// <param name="cancellationToken">The cancellation token that stops planning or execution when the caller no longer needs the result.</param>
         /// <returns>The executed query result.</returns>
         Task<QuerySearchResult> SearchAsync(string? queryText, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Executes a caller-supplied query plan without re-running the raw-query planning stage.
+        /// </summary>
+        /// <param name="plan">The repository-owned query plan supplied by the caller.</param>
+        /// <param name="cancellationToken">The cancellation token that stops execution when the caller no longer needs the result.</param>
+        /// <returns>The executed query result.</returns>
+        Task<QuerySearchResult> ExecutePlanAsync(QueryPlan plan, CancellationToken cancellationToken);
     }
 }

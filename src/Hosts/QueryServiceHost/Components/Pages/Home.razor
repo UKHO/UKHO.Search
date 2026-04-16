@@ -14,41 +14,29 @@
                 <SearchBar />
             </header>
 
-            @if (State.HasSubmitted)
-            {
-                <main class="query-ui-main">
-                    <RadzenRow Style="height: 100%; margin: 0; gap: 3px;">
-                        <RadzenColumn Size="12" SizeMD="3" Class="query-ui-panel" Style="padding: 0;">
-                            <FacetPanel />
-                        </RadzenColumn>
+            <main class="query-ui-workspace" aria-label="Query diagnostics workspace">
+                <section class="query-ui-column query-ui-column--insight">
+                    <QueryInsightPanel />
+                </section>
 
-                        <RadzenColumn Size="12" SizeMD="6" Class="query-ui-panel" Style="padding: 0;">
-                            <ResultsPanel />
-                        </RadzenColumn>
+                <section class="query-ui-center-workspace">
+                    <div class="query-ui-center-pane query-ui-center-pane--plan">
+                        <QueryPlanPanel />
+                    </div>
 
-                        <RadzenColumn Size="12" SizeMD="3" Class="query-ui-panel" Style="padding: 0;">
-                            <DetailsPanel />
-                        </RadzenColumn>
-                    </RadzenRow>
-                </main>
+                    <div class="query-ui-center-pane query-ui-center-pane--results">
+                        <ResultsPanel />
+                    </div>
+                </section>
 
-                <footer class="query-ui-footer">
-                    <RadzenCard Variant="Variant.Outlined" Style="margin: 0;">
-                        @if (State.IsLoading)
-                        {
-                            <RadzenText TextStyle="TextStyle.Body2" Text="Loading..." />
-                        }
-                        else if (State.LastResponse is not null)
-                        {
-                            <RadzenText TextStyle="TextStyle.Body2" Text="@($"{State.LastResponse.Total} results | {State.LastResponse.Duration.TotalMilliseconds:0} ms")" />
-                        }
-                        else
-                        {
-                            <RadzenText TextStyle="TextStyle.Body2" Text="Ready" />
-                        }
-                    </RadzenCard>
-                </footer>
-            }
+                <section class="query-ui-column query-ui-column--diagnostics">
+                    <QueryDiagnosticsPanel />
+                </section>
+            </main>
+
+            <footer class="query-ui-drawer-host">
+                <ResultExplainDrawer />
+            </footer>
         </div>
     </ChildContent>
 
