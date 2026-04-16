@@ -9,34 +9,43 @@
 
 <LoggedErrorBoundary @ref="_errorBoundary">
     <ChildContent>
-        <div class="query-ui-root">
-            <header class="query-ui-header">
-                <SearchBar />
-            </header>
+        <div class="query-ui-root @(State.IsResultDrawerOpen ? "query-ui-root--explanation-mode" : string.Empty)">
+            @if (State.IsResultDrawerOpen)
+            {
+                <main class="query-ui-fullscreen-explanation" aria-label="Selected result explanation workspace">
+                    <ResultExplainDrawer />
+                </main>
+            }
+            else
+            {
+                <header class="query-ui-header">
+                    <SearchBar />
+                </header>
 
-            <main class="query-ui-workspace" aria-label="Query diagnostics workspace">
-                <section class="query-ui-column query-ui-column--insight">
-                    <QueryInsightPanel />
-                </section>
+                <main class="query-ui-workspace" aria-label="Query diagnostics workspace">
+                    <section class="query-ui-column query-ui-column--insight">
+                        <QueryInsightPanel />
+                    </section>
 
-                <section class="query-ui-center-workspace">
-                    <div class="query-ui-center-pane query-ui-center-pane--plan">
-                        <QueryPlanPanel />
-                    </div>
+                    <section class="query-ui-center-workspace">
+                        <div class="query-ui-center-pane query-ui-center-pane--plan">
+                            <QueryPlanPanel />
+                        </div>
 
-                    <div class="query-ui-center-pane query-ui-center-pane--results">
-                        <ResultsPanel />
-                    </div>
-                </section>
+                        <div class="query-ui-center-pane query-ui-center-pane--results">
+                            <ResultsPanel />
+                        </div>
+                    </section>
 
-                <section class="query-ui-column query-ui-column--diagnostics">
-                    <QueryDiagnosticsPanel />
-                </section>
-            </main>
+                    <section class="query-ui-column query-ui-column--diagnostics">
+                        <QueryDiagnosticsPanel />
+                    </section>
+                </main>
 
-            <footer class="query-ui-drawer-host">
-                <ResultExplainDrawer />
-            </footer>
+                <footer class="query-ui-drawer-host">
+                    <ResultExplainDrawer />
+                </footer>
+            }
         </div>
     </ChildContent>
 

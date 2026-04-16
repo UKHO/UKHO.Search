@@ -110,12 +110,12 @@ namespace QueryServiceHost.Tests
         }
 
         /// <summary>
-        /// Verifies that selecting a result opens the bottom drawer and the explicit drawer toggle can collapse and reopen it without clearing selection.
+        /// Verifies that selecting a result opens the full-screen explanation mode and the explicit toggle can return to the workspace and reopen it without clearing state.
         /// </summary>
         [Fact]
-        public async Task SelectHit_and_ToggleResultDrawer_manage_the_bottom_drawer_without_clearing_the_selected_hit()
+        public async Task SelectHit_and_ToggleResultDrawer_manage_the_full_screen_explanation_mode_without_clearing_workspace_state()
         {
-            // Seed the state with one deterministic hit so the drawer behavior can be verified independently from result refresh logic.
+            // Seed the state with one deterministic hit so the explanation behavior can be verified independently from result refresh logic.
             var response = CreateResponse(
                 generatedPlanJson: SerializePlan(CreatePlan("wreck 42")),
                 hits:
@@ -123,23 +123,38 @@ namespace QueryServiceHost.Tests
                     CreateHit(title: "Wreck 42", type: "Wreck", region: "North Sea")
                 ]);
             var searchClient = new DelegatingQueryUiSearchClient((_, _) => Task.FromResult(response));
-            var state = new QueryUiState(searchClient, NullLogger<QueryUiState>.Instance);
+            var state = new QueryUiState(searchClient, NullLogger<QueryUiState>.Instance)
+            {
+                QueryText = "wreck 42"
+            };
 
             await state.ExecuteSearchAsync(CancellationToken.None);
 
-            // Select the hit and verify that inspection opens immediately in the bottom drawer.
+            // Select the hit and verify that inspection opens immediately in the explanation mode.
             state.SelectHit(response.Hits[0]);
             state.SelectedHit.ShouldBeSameAs(response.Hits[0]);
             state.IsResultDrawerOpen.ShouldBeTrue();
+            state.QueryText.ShouldBe("wreck 42");
+            state.LastResponse.ShouldBeSameAs(response);
+            state.GeneratedPlanText.ShouldBe(response.GeneratedPlanJson);
+            state.EditablePlanText.ShouldBe(response.GeneratedPlanJson);
 
-            // Collapse and reopen the drawer without disturbing the current selection.
+            // Return to the main workspace and reopen the explanation without disturbing the current selection or query workspace state.
             state.ToggleResultDrawer();
             state.IsResultDrawerOpen.ShouldBeFalse();
             state.SelectedHit.ShouldBeSameAs(response.Hits[0]);
+            state.QueryText.ShouldBe("wreck 42");
+            state.LastResponse.ShouldBeSameAs(response);
+            state.GeneratedPlanText.ShouldBe(response.GeneratedPlanJson);
+            state.EditablePlanText.ShouldBe(response.GeneratedPlanJson);
 
             state.ToggleResultDrawer();
             state.IsResultDrawerOpen.ShouldBeTrue();
             state.SelectedHit.ShouldBeSameAs(response.Hits[0]);
+            state.QueryText.ShouldBe("wreck 42");
+            state.LastResponse.ShouldBeSameAs(response);
+            state.GeneratedPlanText.ShouldBe(response.GeneratedPlanJson);
+            state.EditablePlanText.ShouldBe(response.GeneratedPlanJson);
         }
 
         /// <summary>

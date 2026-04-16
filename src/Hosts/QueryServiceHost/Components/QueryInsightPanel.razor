@@ -11,7 +11,6 @@
 <section class="query-insight-panel">
     <header>
         <h2 class="query-insight-panel__title">Query insight</h2>
-        <p class="query-insight-panel__subtitle">Extracted signals and a compact staged trace stay visible so the current execution path can be explained without leaving the page.</p>
     </header>
 
     <div class="query-insight-panel__section">
@@ -143,14 +142,14 @@
         {
             $"Input captured as '{State.CurrentPlan.Input.RawText}'.",
             $"Normalization produced {State.CurrentPlan.Input.Tokens.Count} token(s) and residual text '{GetResidualText()}'.",
-            $"Planning matched {State.CurrentPlan.Diagnostics.MatchedRuleIds.Count} rule(s), {State.CurrentPlan.Diagnostics.AppliedFilters.Count} filter directive(s), {State.CurrentPlan.Diagnostics.AppliedBoosts.Count} boost directive(s), and {State.CurrentPlan.Diagnostics.AppliedSorts.Count} sort directive(s).",
-            string.IsNullOrWhiteSpace(State.CurrentElasticsearchRequestJson)
-                ? "No Elasticsearch request JSON is currently available."
-                : "The final Elasticsearch request JSON is available in the diagnostics column.",
-            State.LastResponse is null
-                ? "Results are awaiting execution."
-                : $"Execution returned {State.LastResponse.Total} match(es) through the {(State.LastExecutionUsedEditedPlan ? "edited-plan" : "raw-query")} path."
+            $"Planning matched {State.CurrentPlan.Diagnostics.MatchedRuleIds.Count} rule(s), {State.CurrentPlan.Diagnostics.AppliedFilters.Count} filter directive(s), {State.CurrentPlan.Diagnostics.AppliedBoosts.Count} boost directive(s), and {State.CurrentPlan.Diagnostics.AppliedSorts.Count} sort directive(s)."
         };
+
+        if (State.LastResponse is null)
+        {
+            // Preserve the pending-execution hint because it communicates missing results without repeating data that already appears elsewhere.
+            entries.Add("Results are awaiting execution.");
+        }
 
         if (State.SelectedFacets.Count > 0)
         {

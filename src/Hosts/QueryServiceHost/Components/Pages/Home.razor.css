@@ -9,6 +9,12 @@
     overflow: hidden;
 }
 
+/* Allow the selected-result explanation to take over the page without leaving the underlying query state model. */
+.query-ui-root--explanation-mode {
+    gap: 0;
+    padding: 0;
+}
+
 .query-ui-header {
     flex: 0 0 auto;
 }
@@ -40,9 +46,19 @@
     flex: 0 0 auto;
 }
 
+.query-ui-fullscreen-explanation {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background: #050A23;
+}
+
 ::deep .query-ui-column > *,
 ::deep .query-ui-center-pane > *,
-::deep .query-ui-drawer-host > * {
+::deep .query-ui-drawer-host > *,
+::deep .query-ui-fullscreen-explanation > * {
     flex: 1 1 auto;
     min-height: 0;
 }

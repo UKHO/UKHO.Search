@@ -3,11 +3,14 @@
 @inject QueryUiState State
 
 @* Renders the generated-plan Monaco workspace that sits beside the flat results list in the centre of the query shell. *@
+@{
+    var planStatusText = GetPlanStatusText();
+}
+
 <section class="query-plan-panel">
     <header class="query-plan-panel__header">
         <div>
             <h2 class="query-plan-panel__title">Generated query plan</h2>
-            <p class="query-plan-panel__subtitle">@GetPanelSubtitle()</p>
         </div>
 
         <div class="query-plan-panel__actions">
@@ -15,14 +18,17 @@
                           ButtonStyle="ButtonStyle.Primary"
                           Disabled="@IsSearchDisabled()"
                           Click="OnExecuteEditedPlanAsync" />
-            <RadzenButton Text="Reset to generated plan"
+            <RadzenButton Text="Reset"
                           ButtonStyle="ButtonStyle.Light"
                           Disabled="@IsResetDisabled()"
                           Click="OnResetToGeneratedPlan" />
         </div>
     </header>
 
-    <div class="query-plan-panel__status">@GetPlanStatusText()</div>
+    @if (!string.IsNullOrWhiteSpace(planStatusText))
+    {
+        <div class="query-plan-panel__status">@planStatusText</div>
+    }
 
     <div class="query-plan-panel__body">
         <JsonEditor Value="@State.EditablePlanText"
@@ -76,17 +82,9 @@
         return State.IsLoading || !State.CanResetToGeneratedPlan;
     }
 
-    private string GetPanelSubtitle()
-    {
-        // Explain the two execution paths clearly so the user can tell raw-query regeneration apart from edited-plan execution.
-        return State.LastExecutionUsedEditedPlan
-            ? "The current results came from the edited plan in Monaco. Use the top command bar to regenerate the baseline from raw query text."
-            : "The top command bar regenerates the baseline plan from raw query text, while the Search button executes the current Monaco contents directly.";
-    }
-
     private string GetPlanStatusText()
     {
-        // Explain whether the editor currently holds a generated plan or is waiting for the first successful raw-query run.
+        // Keep transient and actionable editor state visible without reintroducing the removed descriptive helper copy.
         if (State.IsLoading)
         {
             return State.IsExecutingEditedPlan ? "Executing edited plan..." : "Generating plan from raw query...";
@@ -102,7 +100,7 @@
             return "Results currently reflect the edited plan.";
         }
 
-        return State.HasGeneratedPlan ? "Generated plan ready for inspection or editing." : "Waiting for raw query";
+        return State.HasGeneratedPlan ? string.Empty : "Waiting for raw query";
     }
 
     private void OnStateChanged()

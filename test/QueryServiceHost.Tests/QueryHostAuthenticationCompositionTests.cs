@@ -113,6 +113,85 @@ namespace QueryServiceHost.Tests
             appSource.ShouldContain("require.min.js");
             monacoInteropSource.ShouldContain("cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js");
             monacoInteropSource.ShouldContain("monacoLoaderPromise = null;");
+            appSource.ShouldNotContain("<script async src=\"js/highlight.pack.js\"></script>");
+        }
+
+        /// <summary>
+        /// Verifies that the query workspace removes the approved redundant helper copy while preserving the panel headings that orient keyboard and screen-reader users.
+        /// </summary>
+        [Fact]
+        public void Query_workspace_source_removes_redundant_helper_copy_without_dropping_core_panel_headings()
+        {
+            // Read the checked-in component sources directly because this regression is about the rendered copy contract rather than runtime search behavior.
+            var searchBarSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "SearchBar.razor"));
+            var queryInsightPanelSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "QueryInsightPanel.razor"));
+            var queryPlanPanelSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "QueryPlanPanel.razor"));
+            var resultsPanelSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "ResultsPanel.razor"));
+            var queryDiagnosticsPanelSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "QueryDiagnosticsPanel.razor"));
+
+            searchBarSource.ShouldContain("Query workspace");
+            searchBarSource.ShouldNotContain("Run a raw query to regenerate the plan shown in the Monaco workspace.");
+
+            queryInsightPanelSource.ShouldContain("Query insight");
+            queryInsightPanelSource.ShouldContain("Execution path");
+            queryInsightPanelSource.ShouldContain("Extracted signals");
+            queryInsightPanelSource.ShouldContain("Transformation trace");
+            queryInsightPanelSource.ShouldNotContain("Extracted signals and a compact staged trace stay visible so the current execution path can be explained without leaving the page.");
+            queryInsightPanelSource.ShouldNotContain("The final Elasticsearch request JSON is available in the diagnostics column.");
+            queryInsightPanelSource.ShouldNotContain("Execution returned {State.LastResponse.Total} match(es) through the {(State.LastExecutionUsedEditedPlan ? \"edited-plan\" : \"raw-query\")} path.");
+
+            queryPlanPanelSource.ShouldContain("Generated query plan");
+            queryPlanPanelSource.ShouldNotContain("The top command bar regenerates the baseline plan from raw query text, while the Search button executes the current Monaco contents directly.");
+            queryPlanPanelSource.ShouldNotContain("The current results came from the edited plan in Monaco. Use the top command bar to regenerate the baseline from raw query text.");
+            queryPlanPanelSource.ShouldNotContain("Generated plan ready for inspection or editing.");
+
+            resultsPanelSource.ShouldContain("Results");
+            resultsPanelSource.ShouldNotContain("Flat result rows stay visible beside the generated plan workspace.");
+
+            queryDiagnosticsPanelSource.ShouldContain("Diagnostics");
+            queryDiagnosticsPanelSource.ShouldContain("Execution metrics");
+            queryDiagnosticsPanelSource.ShouldContain("Validation and warnings");
+            queryDiagnosticsPanelSource.ShouldContain("Request JSON");
+            queryDiagnosticsPanelSource.ShouldNotContain("Final request JSON, validation output, warnings, and execution metrics remain visible beside the editor and result list.");
+        }
+
+        /// <summary>
+        /// Verifies that the generated-plan action uses the simplified Reset label so the button text matches the approved tidy-up specification.
+        /// </summary>
+        [Fact]
+        public void Query_plan_panel_uses_the_simplified_reset_label()
+        {
+            // Read the checked-in component source directly because the regression is a user-visible label change in the rendered command bar.
+            var queryPlanPanelSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "QueryPlanPanel.razor"));
+
+            queryPlanPanelSource.ShouldContain("Text=\"Reset\"");
+            queryPlanPanelSource.ShouldNotContain("Text=\"Reset to generated plan\"");
+        }
+
+        /// <summary>
+        /// Verifies that the selected-result explanation now uses a full-screen opaque mode and a Back action instead of the previous Collapse wording.
+        /// </summary>
+        [Fact]
+        public void Selected_result_explanation_uses_full_screen_mode_and_back_navigation_wording()
+        {
+            // Read the checked-in component and stylesheet sources directly because this regression is about shell composition, view-mode wording, and CSS treatment.
+            var homePageSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "Pages", "Home.razor"));
+            var homePageStyleSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "Pages", "Home.razor.css"));
+            var resultExplainDrawerSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "ResultExplainDrawer.razor"));
+            var resultExplainDrawerStyleSource = File.ReadAllText(GetRepositoryFilePath("src", "Hosts", "QueryServiceHost", "Components", "ResultExplainDrawer.razor.css"));
+
+            homePageSource.ShouldContain("query-ui-fullscreen-explanation");
+            homePageSource.ShouldContain("State.IsResultDrawerOpen");
+            homePageStyleSource.ShouldContain(".query-ui-root--explanation-mode");
+            homePageStyleSource.ShouldContain(".query-ui-fullscreen-explanation");
+            resultExplainDrawerSource.ShouldContain("\"Back\"");
+            resultExplainDrawerSource.ShouldNotContain("\"Collapse\"");
+            resultExplainDrawerSource.ShouldContain("result-explain-drawer__raw-section");
+            resultExplainDrawerStyleSource.ShouldContain(".result-explain-drawer--open");
+            resultExplainDrawerStyleSource.ShouldContain("background: #050A23;");
+            resultExplainDrawerStyleSource.ShouldContain(".result-explain-drawer--open .result-explain-drawer__raw-section");
+            resultExplainDrawerStyleSource.ShouldContain("grid-template-rows: auto auto auto minmax(0, 1fr);");
+            resultExplainDrawerStyleSource.ShouldContain("overflow-y: auto;");
         }
 
         /// <summary>

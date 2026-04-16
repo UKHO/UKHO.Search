@@ -3,19 +3,20 @@
 @implements IDisposable
 @inject QueryUiState State
 
-@* Hosts the collapsible bottom drawer so selected-result explanation no longer competes with the main diagnostics columns. *@
+@* Hosts the selected-result explanation surface so contributors can move between the main workspace and a dedicated full-screen detail mode. *@
 @{
+    var isOpen = State.IsResultDrawerOpen;
     var metadataEntries = GetMetadataEntries();
 }
 
-<section class="result-explain-drawer" aria-label="Selected result explanation">
+<section class="result-explain-drawer @(isOpen ? "result-explain-drawer--open" : string.Empty)" aria-label="Selected result explanation">
     <div class="result-explain-drawer__header">
         <div>
             <h2 class="result-explain-drawer__title">Selected result explanation</h2>
             <p class="result-explain-drawer__subtitle">@GetDrawerSummary()</p>
         </div>
 
-        <RadzenButton Text="@(State.IsResultDrawerOpen ? "Collapse" : "Expand")"
+        <RadzenButton Text="@(isOpen ? "Back" : "Expand")"
                       ButtonStyle="ButtonStyle.Light"
                       Disabled="@(State.SelectedHit is null)"
                       Click="OnToggleDrawer" />
@@ -24,11 +25,14 @@
     <div class="result-explain-drawer__content">
         @if (State.SelectedHit is null)
         {
-            <p class="result-explain-drawer__placeholder">Select a result row to inspect its lightweight explanation in the bottom drawer.</p>
+            <p class="result-explain-drawer__placeholder">Select a result row to inspect its explanation in a dedicated detail view.</p>
         }
-        else if (!State.IsResultDrawerOpen)
+        else if (!isOpen)
         {
-            <p class="result-explain-drawer__placeholder">Expand the drawer to inspect the selected result without crowding the main workspace.</p>
+            <div class="result-explain-drawer__preview">
+                <p class="result-explain-drawer__metadata">@GetExplanationSummaryText()</p>
+                <p class="result-explain-drawer__placeholder">Open the explanation to inspect the selected result in a full-screen opaque workspace.</p>
+            </div>
         }
         else
         {
@@ -61,7 +65,7 @@
                     <p class="result-explain-drawer__metadata">@GetMatchedFieldsText()</p>
                 </div>
 
-                <div>
+                <div class="result-explain-drawer__raw-section">
                     <h3 class="result-explain-drawer__section-title">Raw detail</h3>
                     <pre class="result-explain-drawer__raw">@GetRawJson()</pre>
                 </div>
@@ -79,7 +83,7 @@
 
     protected override void OnInitialized()
     {
-        // Subscribe to shared state changes so the drawer follows result selection updates from the flat list.
+        // Subscribe to shared state changes so the explanation surface follows result selection and full-screen mode updates.
         State.Changed += OnStateChanged;
     }
 
@@ -91,14 +95,16 @@
 
     private string GetDrawerSummary()
     {
-        // Keep the drawer summary informative so the footer communicates both selection status and the current execution path.
+        // Keep the explanation summary informative so the UI communicates both selection status and the current execution path.
         if (State.SelectedHit is null)
         {
             return "No result is currently selected.";
         }
 
         var executionPath = State.LastExecutionUsedEditedPlan ? "edited-plan" : "raw-query";
-        return $"Inspecting '{State.SelectedHit.Title}' from the {executionPath} path.";
+        return State.IsResultDrawerOpen
+            ? $"Inspecting '{State.SelectedHit.Title}' from the {executionPath} path in the dedicated explanation workspace."
+            : $"Inspecting '{State.SelectedHit.Title}' from the {executionPath} path.";
     }
 
     private string GetExplanationSummaryText()
@@ -133,7 +139,7 @@
 
     private string GetMatchedFieldsText()
     {
-        // Project the matched-field list into readable text for the lightweight explanation shell.
+        // Project the matched-field list into readable text for the explanation shell.
         if (State.SelectedHit is null || State.SelectedHit.MatchedFields.Count == 0)
         {
             return "No matched-field metadata was returned.";
@@ -144,7 +150,7 @@
 
     private string GetRawJson()
     {
-        // Format the raw payload when it exists so the drawer can host deeper inspection without crowding the main workspace.
+        // Format the raw payload when it exists so the dedicated explanation workspace can host deeper inspection without crowding the main workspace.
         if (State.SelectedHit?.Raw is not JsonElement raw)
         {
             return "No raw payload was returned for the selected result.";
@@ -155,7 +161,7 @@
 
     private IReadOnlyList<string> GetMetadataEntries()
     {
-        // Extract a few high-value metadata fields from the raw result payload so the drawer remains useful without full explain support.
+        // Extract a few high-value metadata fields from the raw result payload so the explanation remains useful without full explain support.
         if (State.SelectedHit is null)
         {
             return Array.Empty<string>();
@@ -181,7 +187,7 @@
 
     private void OnToggleDrawer()
     {
-        // Route footer collapse and expand requests through shared state so selection and drawer state stay coordinated.
+        // Route explanation-mode open and return requests through shared state so selection and view state stay coordinated.
         State.ToggleResultDrawer();
     }
 

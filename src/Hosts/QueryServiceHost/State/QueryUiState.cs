@@ -129,7 +129,7 @@ namespace QueryServiceHost.State
         public Hit? SelectedHit { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether the bottom result-explain drawer is currently expanded.
+        /// Gets a value indicating whether the selected-result explanation is currently open in its dedicated detail mode.
         /// </summary>
         public bool IsResultDrawerOpen { get; private set; }
 
@@ -390,23 +390,23 @@ namespace QueryServiceHost.State
         }
 
         /// <summary>
-        /// Selects a result hit so the bottom drawer can explain the chosen document.
+        /// Selects a result hit so the dedicated explanation view can explain the chosen document.
         /// </summary>
         /// <param name="hit">The result hit that should become the current selection.</param>
         public void SelectHit(Hit hit)
         {
-            // Replace the current selection with the chosen hit so the result drawer follows the flat list selection.
+            // Replace the current selection with the chosen hit so the explanation view follows the flat list selection.
             SelectedHit = hit;
             IsResultDrawerOpen = true;
             NotifyChanged();
         }
 
         /// <summary>
-        /// Toggles the expanded state of the bottom result-explain drawer for the current selection.
+        /// Toggles the dedicated selected-result explanation mode for the current selection.
         /// </summary>
         public void ToggleResultDrawer()
         {
-            // Ignore toggle requests until a result has been selected because the drawer has nothing to inspect otherwise.
+            // Ignore toggle requests until a result has been selected because the explanation view has nothing to inspect otherwise.
             if (SelectedHit is null)
             {
                 return;
