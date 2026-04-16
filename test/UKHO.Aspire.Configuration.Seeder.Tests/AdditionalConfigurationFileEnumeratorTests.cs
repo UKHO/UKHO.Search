@@ -80,6 +80,21 @@ namespace UKHO.Aspire.Configuration.Seeder.Tests
         }
 
         /// <summary>
+        /// Verifies that repository rule files under the ingestion namespace surface the namespace and provider segments separately.
+        /// </summary>
+        [Fact]
+        public void GetRelativePathSegments_WhenRuleFileStoredUnderIngestionNamespace_ShouldReturnNamespaceThenProvider()
+        {
+            // Resolve the relative path for a repository rule file beneath rules/ingestion/file-share.
+            var segments = AdditionalConfigurationFileEnumerator.GetRelativePathSegments(
+                "C:\\repo\\rules",
+                "C:\\repo\\rules\\ingestion\\file-share\\bu-sample-rule.json");
+
+            // The helper must preserve both directory levels so the seeder can generate the correct App Configuration key.
+            Assert.Equal(["ingestion", "file-share"], segments);
+        }
+
+        /// <summary>
         /// Verifies that invalid root-path and file-path inputs are rejected.
         /// </summary>
         /// <param name="rootPath">The root path value supplied to the relative path helper.</param>

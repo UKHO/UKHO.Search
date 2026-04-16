@@ -92,12 +92,14 @@ The page uses `AppConfigRulesSnapshotStore`.
 
 That store:
 
-- reads rules from configuration keys under the `rules:` prefix
+- reads rules from configuration keys under the `rules:ingestion:` namespace
 - preserves provider/rule identity metadata
 - keeps an editable in-memory view of the rules
 - supports updating a selected rule's JSON after validation
 
-In practice, the page is focused on the `file-share` provider rules loaded through the local configuration path.
+In practice, the page is focused on the `file-share` provider rules loaded through the local configuration path. The important distinction is that `ingestion` is not another provider. It is the App Configuration namespace segment that groups ingestion-authored rules beneath the wider `rules` root, while `file-share` remains the logical provider name shown in the UI and used by the runtime.
+
+That means the page now reasons about the same path-to-key mapping as the rest of the ingestion runtime. A repository file such as `rules/ingestion/file-share/bu-sample-rule.json` becomes the App Configuration entry `rules:ingestion:file-share:bu-sample-rule`. `RulesWorkbench` reads and edits that namespace-aware key directly, but still presents the provider column and rule metadata in terms of the canonical provider identity `file-share`.
 
 ### Main capabilities on the `Rules` page
 
@@ -158,10 +160,10 @@ When a rule is valid, the page can save it through `IRuleConfigurationWriter`.
 
 The current save flow:
 
-1. writes the rule JSON to App Configuration key `rules:{provider}:{ruleId}`
+1. writes the rule JSON to App Configuration key `rules:ingestion:{provider}:{ruleId}`
 2. updates the refresh sentinel (`auto.reload.sentinel`)
 
-That means the `Rules` page is not just an editor; it is the current write path for valid rules.
+That means the `Rules` page is not just an editor; it is the current write path for valid rules. It also means that stale legacy keys such as `rules:file-share:*` can remain in an App Configuration store after earlier runs or manual experiments without affecting the active RulesWorkbench flow. The tool now loads from and saves to the namespace-aware `rules:ingestion:file-share:*` contract, so any cleanup of older keys is an operational housekeeping step rather than part of the normal authoring loop.
 
 ### Important operational note
 

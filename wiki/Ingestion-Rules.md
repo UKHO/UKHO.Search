@@ -30,9 +30,11 @@ There are two useful views of the same ruleset.
 
 ### Repository authoring view
 
-Developers currently author one rule per file under the repository root:
+Developers currently author one rule per file under the repository rules tree:
 
-- `rules/file-share/...`
+- `rules/ingestion/file-share/...`
+
+The extra `ingestion` folder is a namespace segment, not a new provider name. It exists so the repository layout maps directly onto the current App Configuration key space. The logical provider for these rules is still `file-share`; the additional folder simply ensures that local seeding produces keys under `rules:ingestion:file-share:*` instead of the older `rules:file-share:*` shape.
 
 Each file usually uses this wrapper shape:
 
@@ -57,14 +59,21 @@ Each file usually uses this wrapper shape:
 
 During local services-mode development, `AppHost` loads the repository `rules/` directory into the configuration emulator under the `rules` prefix.
 
+Because the Aspire seeder walks subdirectories recursively and turns each folder into a `:`-delimited configuration segment, the physical repository path and the logical App Configuration key now line up directly:
+
+- `rules/ingestion/file-share/bu-sample-rule.json`
+- `rules:ingestion:file-share:bu-sample-rule`
+
 `IngestionRulesSource` then:
 
-- enumerates keys such as `rules:file-share:mime-app-s63`
+- enumerates keys such as `rules:ingestion:file-share:mime-app-s63`
 - unwraps file-style `{ "rule": { ... } }` JSON when present
 - assigns the runtime rule id from the configuration key
 - canonicalizes the provider name through `IProviderCatalog`
 
-That means the current local runtime is configuration-backed, but it still keeps the same per-rule JSON authoring shape that developers edit in the repository.
+That means the current local runtime is configuration-backed, but it still keeps the same per-rule JSON authoring shape that developers edit in the repository. The mental model to keep in mind is that `rules` is the top-level configuration prefix, `ingestion` is the namespace for ingestion-authored rules, `file-share` is the provider, and the remaining segment is the rule identifier derived from the file name.
+
+The same namespace-aware contract now also defines save-back behavior for App Configuration-backed editing flows. When a valid rule is persisted back to App Configuration, the effective write target is `rules:ingestion:file-share:<rule-id>`, not the older `rules:file-share:<rule-id>` shape. That matters operationally because reseeding or saving rules can leave stale legacy keys behind in the store until they are deliberately removed, but the active ingestion runtime no longer requires those old keys to load the rule set correctly.
 
 ### File-based contract still matters
 
@@ -409,7 +418,7 @@ In those cases the rule simply does not add the derived output.
 
 ## Practical local workflow
 
-1. Edit the relevant file under `rules/file-share/...`.
+1. Edit the relevant file under `rules/ingestion/file-share/...`.
 2. Restart the services-mode AppHost stack so the configuration emulator reloads the repository rules.
 3. Open [Tools: `RulesWorkbench`](Tools-RulesWorkbench) to validate and inspect the effective rule behavior.
 4. Use `FileShareEmulator` or another local batch source to push a real message through the pipeline when ZIP-dependent enrichment also matters.

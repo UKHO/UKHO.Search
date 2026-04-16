@@ -28,6 +28,6 @@
         <ProjectReference Include="..\FileShareEmulator.Common\FileShareEmulator.Common.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Rules\file-share\" />
+      <Folder Include="Rules\ingestion\file-share\" />
 	</ItemGroup>
 </Project>

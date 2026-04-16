@@ -125,6 +125,34 @@ namespace UKHO.Aspire.Configuration.Seeder.Tests
         }
 
         /// <summary>
+        /// Verifies that repository rule files stored under rules/ingestion/file-share seed into the namespace-aware App Configuration key space.
+        /// </summary>
+        [Fact]
+        public async Task SeedAsync_WhenRuleFileStoredUnderIngestionNamespace_ShouldWriteNamespaceAwareRuleKey()
+        {
+            // Arrange a repository-like rules tree so the seeder exercises the real path-to-key contract for ingestion rules.
+            using var directory = new TemporaryDirectory();
+            directory.CreateFile(System.IO.Path.Combine("ingestion", "file-share", "bu-sample-rule.json"), "{\"rule\":{\"id\":\"bu-sample-rule\"}}");
+
+            var logger = new TestLogger<AdditionalConfigurationSeeder>();
+            var seeder = new AdditionalConfigurationSeeder(logger);
+            var client = new TestConfigurationClient();
+
+            // Execute the seeder using the repository rules root and the production prefix used by AppHost.
+            await seeder.SeedAsync(client, "local", directory.Path, "rules", CancellationToken.None);
+
+            // The emitted setting must include both the ingestion namespace and the logical provider path segments.
+            var write = Assert.Single(client.Writes);
+            Assert.Equal("rules:ingestion:file-share:bu-sample-rule", write.Setting.Key);
+            Assert.Equal("local", write.Setting.Label);
+            Assert.Equal(MediaTypeNames.Text.Plain, write.Setting.ContentType);
+            Assert.Equal("{\"rule\":{\"id\":\"bu-sample-rule\"}}", write.Setting.Value);
+
+            // The seeder should complete without warning because the nested repository path is a supported generic case.
+            Assert.DoesNotContain(logger.Entries, entry => entry.LogLevel >= LogLevel.Warning);
+        }
+
+        /// <summary>
         /// Verifies that cancellation is observed before processing the first discovered file.
         /// </summary>
         [Fact]

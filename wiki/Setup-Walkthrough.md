@@ -144,7 +144,7 @@ The most common cause is that import mode did not run to completion, or `FileSha
 
 ### Example: iterating on rules after the first import
 
-When you are changing rule JSON under `rules/file-share/...`, you usually do not need to repeat the full import.
+When you are changing rule JSON under `rules/ingestion/file-share/...`, you usually do not need to repeat the full import.
 
 Instead:
 
@@ -152,6 +152,8 @@ Instead:
 2. Run in `services` mode.
 3. Use `RulesWorkbench` and `FileShareEmulator` to drive targeted indexing.
 4. Re-import only when the underlying data image needs to change.
+
+That workflow works because the local configuration seeder reads the repository `rules/` root every time services mode starts. The nested `ingestion/file-share` folders are preserved as configuration key segments, so editing a file in that location is enough to reseed the corresponding `rules:ingestion:file-share:*` entry on the next local start.
 
 ### Example: validating a Keycloak realm or mapper change
 

@@ -202,10 +202,12 @@ This makes dead-letter storage a normal debugging surface rather than an excepti
 
 ### Add or change a rule safely
 
-1. Edit the relevant JSON under `rules/file-share/...`.
+1. Edit the relevant JSON under `rules/ingestion/file-share/...`.
 2. Restart the services-mode stack so the configuration emulator reloads the repository rules.
 3. Use `RulesWorkbench` to validate and inspect the effective rule behavior.
 4. Push a real batch through the pipeline if you need to confirm ZIP-dependent enrichment alongside rules.
+
+The important mapping to remember is that the physical repository path now seeds straight into the App Configuration namespace. In practice that means a file such as `rules/ingestion/file-share/bu-sample-rule.json` becomes the key `rules:ingestion:file-share:bu-sample-rule` when AppHost starts the local configuration emulator.
 
 ### Add a provider-specific enricher
 

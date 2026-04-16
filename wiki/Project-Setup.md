@@ -167,9 +167,11 @@ In local run mode, `AppHost` loads the repository `rules/` directory into the co
 
 That means the normal local rule workflow is:
 
-- edit rule JSON under `rules/file-share/...`
+- edit rule JSON under `rules/ingestion/file-share/...`
 - run the services stack
 - let the configuration emulator and runtime rule services consume those rules locally
+
+The extra `ingestion` path element is deliberate. It becomes a configuration namespace segment when the seeder converts the repository folder structure into App Configuration keys. A rule stored at `rules/ingestion/file-share/bu-sample-rule.json` therefore appears in the local configuration store as `rules:ingestion:file-share:bu-sample-rule`. Contributors should still think of `file-share` as the provider identity; `ingestion` is the namespace that groups authored ingestion rules beneath the wider `rules` root.
 
 ### External services
 
