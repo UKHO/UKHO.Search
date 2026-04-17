@@ -1,0 +1,149 @@
+@using QueryServiceHost.State
+@implements IDisposable
+@inject QueryUiState State
+
+@* Renders stacked execution metrics, warnings, and final request JSON for the current repository-owned query execution. *@
+@{
+    var diagnosticsMessages = GetDiagnosticsMessages();
+    var metricEntries = GetMetricEntries();
+}
+
+<section class="query-diagnostics-panel">
+    <header>
+        <h2 class="query-diagnostics-panel__title">Diagnostics</h2>
+    </header>
+
+    <div class="query-diagnostics-panel__section">
+        <h3 class="query-diagnostics-panel__section-title">Execution metrics</h3>
+
+        @if (metricEntries.Count == 0)
+        {
+            <p class="query-diagnostics-panel__value">No execution metrics are available yet.</p>
+        }
+        else
+        {
+            <ul class="query-diagnostics-panel__list">
+                @foreach (var metricEntry in metricEntries)
+                {
+                    <li>@metricEntry</li>
+                }
+            </ul>
+        }
+    </div>
+
+    <div class="query-diagnostics-panel__section">
+        <h3 class="query-diagnostics-panel__section-title">Validation and warnings</h3>
+
+        @if (diagnosticsMessages.Count == 0)
+        {
+            <p class="query-diagnostics-panel__value">No validation issues or warnings are active for the current workspace state.</p>
+        }
+        else
+        {
+            <ul class="query-diagnostics-panel__list">
+                @foreach (var diagnosticsMessage in diagnosticsMessages)
+                {
+                    <li>@diagnosticsMessage</li>
+                }
+            </ul>
+        }
+    </div>
+
+    <div class="query-diagnostics-panel__section">
+        <h3 class="query-diagnostics-panel__section-title">Request JSON</h3>
+
+        @if (string.IsNullOrWhiteSpace(State.CurrentElasticsearchRequestJson))
+        {
+            <p class="query-diagnostics-panel__value">Run a raw query or execute an edited plan to populate the final Elasticsearch request JSON.</p>
+        }
+        else
+        {
+            <pre class="query-diagnostics-panel__json">@State.CurrentElasticsearchRequestJson</pre>
+        }
+    </div>
+</section>
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        // Subscribe to shared state changes so the diagnostics shell reflects the latest execution summary and error state.
+        State.Changed += OnStateChanged;
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe when the component is disposed so the scoped state container does not retain stale callbacks.
+        State.Changed -= OnStateChanged;
+    }
+
+    private IReadOnlyList<string> GetMetricEntries()
+    {
+        // Project the current execution metrics into a stable list so the right-hand diagnostics column can stay flat and readable.
+        if (State.IsLoading)
+        {
+            return
+            [
+                State.IsExecutingEditedPlan ? "Execution state: running edited-plan execution." : "Execution state: running raw-query execution."
+            ];
+        }
+
+        if (State.LastResponse is null)
+        {
+            return Array.Empty<string>();
+        }
+
+        var executionPath = State.LastExecutionUsedEditedPlan ? "edited plan" : "raw query";
+        var entries = new List<string>
+        {
+            $"Execution path: {executionPath}.",
+            $"Total matches: {State.LastResponse.Total}.",
+            $"Visible result rows: {State.LastResponse.Hits.Count}.",
+            $"Wall-clock duration: {State.LastResponse.Duration.TotalMilliseconds:0} ms."
+        };
+
+        if (State.CurrentSearchEngineDuration is not null)
+        {
+            entries.Add($"Elasticsearch engine duration: {State.CurrentSearchEngineDuration.Value.TotalMilliseconds:0} ms.");
+        }
+        else
+        {
+            entries.Add("Elasticsearch engine duration: not reported for the current execution.");
+        }
+
+        entries.Add(State.SelectedHit is null
+            ? "Selected result: none."
+            : $"Selected result: {State.SelectedHit.Title}.");
+
+        return entries;
+    }
+
+    private IReadOnlyList<string> GetDiagnosticsMessages()
+    {
+        // Combine validation errors, user-visible failures, and backend warnings into one diagnostics list for the stacked warnings section.
+        var messages = new List<string>();
+
+        foreach (var validationError in State.ValidationErrors)
+        {
+            messages.Add($"Validation: {validationError}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(State.Error))
+        {
+            messages.Add($"Error: {State.Error}");
+        }
+
+        foreach (var warning in State.CurrentWarnings)
+        {
+            messages.Add($"Warning: {warning}");
+        }
+
+        return messages;
+    }
+
+    private void OnStateChanged()
+    {
+        // Re-render on shared state updates because this component reads injected state rather than receiving parameters.
+        InvokeAsync(StateHasChanged);
+    }
+}

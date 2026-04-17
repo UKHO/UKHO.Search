@@ -1,0 +1,60 @@
+.query-diagnostics-panel {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--rz-base-300);
+    border-radius: 0.75rem;
+    background: rgba(15, 23, 42, 0.72);
+    overflow: auto;
+}
+
+.query-diagnostics-panel__title,
+.query-diagnostics-panel__section-title {
+    margin: 0;
+}
+
+.query-diagnostics-panel__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.query-diagnostics-panel__subtitle,
+.query-diagnostics-panel__value {
+    color: var(--rz-text-secondary-color);
+}
+
+.query-diagnostics-panel__subtitle {
+    margin: 0.25rem 0 0;
+}
+
+.query-diagnostics-panel__section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--rz-base-300);
+}
+
+.query-diagnostics-panel__section:first-of-type {
+    padding-top: 0;
+    border-top: 0;
+}
+
+.query-diagnostics-panel__list {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: var(--rz-text-secondary-color);
+}
+
+.query-diagnostics-panel__json {
+    margin: 0;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background: rgba(2, 6, 23, 0.75);
+    color: var(--rz-text-secondary-color);
+    overflow: auto;
+    white-space: pre-wrap;
+}

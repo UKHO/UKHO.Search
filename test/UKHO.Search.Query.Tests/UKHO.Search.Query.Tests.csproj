@@ -25,7 +25,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\src\UKHO.Search.Ingestion\UKHO.Search.Ingestion.csproj" />
+     <ProjectReference Include="..\..\src\UKHO.Search.Query\UKHO.Search.Query.csproj" />
 	</ItemGroup>
 
 </Project>

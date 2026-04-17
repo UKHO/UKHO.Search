@@ -1,15 +1,25 @@
 @using QueryServiceHost.Models
 @using QueryServiceHost.State
+@implements IDisposable
 
 @inject QueryUiState State
 
-<RadzenCard Variant="Variant.Outlined" Style="height: 100%; min-height: 0; display: flex; flex-direction: column;">
-    <RadzenText TextStyle="TextStyle.Subtitle2" Text="Results" />
+<section class="results-panel">
+    <header class="results-panel__header">
+        <div>
+            <h2 class="results-panel__title">Results</h2>
+        </div>
 
-    <div style="flex: 1; min-height: 0; overflow: auto;">
+        @if (State.LastResponse is not null)
+        {
+            <span class="results-panel__summary">@State.LastResponse.Total matches</span>
+        }
+    </header>
+
+    <div class="results-panel__body">
         @if (State.IsLoading)
         {
-            <RadzenText TextStyle="TextStyle.Body2" Text="Searching..." />
+            <p class="results-panel__empty-state">Searching...</p>
         }
         else if (!string.IsNullOrWhiteSpace(State.Error))
         {
@@ -17,34 +27,77 @@
         }
         else if (State.LastResponse is null)
         {
-            <RadzenText TextStyle="TextStyle.Body2" Text="No results yet." />
+            <p class="results-panel__empty-state">Run a raw query to populate the result workspace.</p>
         }
         else if (State.LastResponse.Hits.Count == 0)
         {
-            <RadzenText TextStyle="TextStyle.Body2" Text="No results." />
+            <p class="results-panel__empty-state">No results matched the current query.</p>
         }
         else
         {
-            <RadzenDataList Data="State.LastResponse.Hits" TItem="Hit">
-                <Template Context="hit">
-                    <div role="button"
-                         tabindex="0"
-                         @key="hit"
-                         style="padding: 0.5rem 0.5rem; border-left: 4px solid @(IsSelected(hit) ? "var(--rz-primary)" : "transparent"); border-bottom: 1px solid var(--rz-base-200); cursor: pointer; background: @(IsSelected(hit) ? "var(--rz-base-200)" : "transparent");"
-                         @onclick="(() => State.SelectHit(hit))">
-                        <RadzenText TextStyle="TextStyle.Subtitle1" Text="@hit.Title" />
-                        <RadzenText TextStyle="TextStyle.Body2" Text="@($"{hit.Type} | {hit.Region}")" />
-                    </div>
-                </Template>
-            </RadzenDataList>
+            <div class="results-panel__list" role="list" aria-label="Query results">
+                @foreach (var hit in State.LastResponse.Hits)
+                {
+                    <button type="button"
+                            role="listitem"
+                            @key="hit"
+                            class="results-panel__row @(IsSelected(hit) ? "results-panel__row--selected" : string.Empty)"
+                            @onclick="(() => State.SelectHit(hit))">
+                        <span class="results-panel__row-title">@hit.Title</span>
+                        <span class="results-panel__row-meta">@GetMetadataText(hit)</span>
+
+                        @if (hit.MatchedFields.Count > 0)
+                        {
+                            <span class="results-panel__row-matches">Matched: @string.Join(", ", hit.MatchedFields)</span>
+                        }
+                    </button>
+                }
+            </div>
         }
     </div>
-</RadzenCard>
+</section>
 
 @code
 {
+    protected override void OnInitialized()
+    {
+        // Subscribe the results panel to shared state changes so completed searches replace the loading message with hits.
+        State.Changed += OnStateChanged;
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe when the component is disposed so the scoped state service does not retain stale callbacks.
+        State.Changed -= OnStateChanged;
+    }
+
     private bool IsSelected(Hit hit)
     {
+        // Highlight the hit currently selected in the shared state container.
         return State.SelectedHit is not null && ReferenceEquals(State.SelectedHit, hit);
+    }
+
+    private static string GetMetadataText(Hit hit)
+    {
+        // Flatten the most important metadata into a single line so the result list remains easy to scan.
+        var segments = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(hit.Type))
+        {
+            segments.Add(hit.Type);
+        }
+
+        if (!string.IsNullOrWhiteSpace(hit.Region))
+        {
+            segments.Add(hit.Region);
+        }
+
+        return segments.Count == 0 ? "No additional metadata" : string.Join(" | ", segments);
+    }
+
+    private void OnStateChanged()
+    {
+        // Re-render on shared state updates because this component reads injected state rather than receiving parameters.
+        InvokeAsync(StateHasChanged);
     }
 }

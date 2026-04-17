@@ -4,8 +4,14 @@ using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests.Elastic
 {
+    /// <summary>
+    /// Verifies the defensive mapping validation that protects the canonical index against dynamic-mapping drift.
+    /// </summary>
     public sealed class ElasticsearchBulkIndexClientMappingValidationTests
     {
+        /// <summary>
+        /// Confirms that the validator accepts the canonical mapping when all expected exact-match fields are present.
+        /// </summary>
         [Fact]
         public void ValidateExpectedFieldMappings_when_documentId_is_absent_should_succeed()
         {
@@ -13,6 +19,7 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
             {
                 ["provider"] = CreateTypes("keyword"),
                 ["keywords"] = CreateTypes("keyword"),
+                ["securityTokens"] = CreateTypes("keyword"),
                 ["authority"] = CreateTypes("keyword"),
                 ["region"] = CreateTypes("keyword"),
                 ["format"] = CreateTypes("keyword"),
@@ -28,6 +35,9 @@ namespace UKHO.Search.Ingestion.Tests.Elastic
             Should.NotThrow(() => ElasticsearchBulkIndexClient.ValidateExpectedFieldMappings(fields));
         }
 
+        /// <summary>
+        /// Creates the minimal field-capabilities shape needed by the mapping validator.
+        /// </summary>
         private static IReadOnlyDictionary<string, object> CreateTypes(params string[] types)
         {
             return types.ToDictionary(type => type, _ => new object(), StringComparer.Ordinal);

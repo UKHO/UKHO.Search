@@ -10,6 +10,7 @@ It explains what the setup flow is trying to achieve, how `AppHost` orchestrates
 - Continue to [Setup walkthrough](Setup-Walkthrough) for the step-by-step execution path.
 - Use [Setup troubleshooting](Setup-Troubleshooting) if the local environment does not behave as expected.
 - Keep [Appendix: command reference](Appendix-Command-Reference) nearby when you need the exact operational commands without extra narrative around them.
+- Keep [Query pipeline](Query-Pipeline), [Query walkthrough](Query-Walkthrough), and [Query signal extraction rules](Query-Signal-Extraction-Rules) nearby when your local task is query-side rather than ingestion-side.
 
 This split is deliberate. The setup story in this repository is too broad to fit well on one page without becoming either overwhelming or overly terse. Contributors need one page that explains the shape of the local environment and why the workflow is divided into different loops, one page that gives the practical bring-up sequence, one page that helps diagnose the common failure modes, and one page that preserves verbatim-sensitive commands. Treat those pages as one setup chapter sequence rather than as disconnected notes.
 
@@ -105,6 +106,8 @@ It starts:
 
 Use this mode for daily development, debugging, index inspection, and rule iteration after the local data baseline already exists.
 
+This mode is also the normal verification surface for query-rule work. Query-side contributors should think of `runmode=services` as the loop where repository-authored `rules/query/*.json` become live `rules:query:*` configuration entries, where `QueryServiceHost` can exercise the current planner and mapper, and where Kibana can confirm that the canonical index contains the fields the query runtime expects to search.
+
 ### `runmode=import`
 
 This mode prepares the local baseline that the services stack later uses.
@@ -167,9 +170,15 @@ In local run mode, `AppHost` loads the repository `rules/` directory into the co
 
 That means the normal local rule workflow is:
 
-- edit rule JSON under `rules/file-share/...`
+- edit rule JSON under `rules/ingestion/file-share/...`
 - run the services stack
 - let the configuration emulator and runtime rule services consume those rules locally
+
+The extra `ingestion` path element is deliberate. It becomes a configuration namespace segment when the seeder converts the repository folder structure into App Configuration keys. A rule stored at `rules/ingestion/file-share/bu-sample-rule.json` therefore appears in the local configuration store as `rules:ingestion:file-share:bu-sample-rule`. Contributors should still think of `file-share` as the provider identity; `ingestion` is the namespace that groups authored ingestion rules beneath the wider `rules` root.
+
+The same local seeding path now matters on the query side as well. A file stored at `rules/query/concept-solas.json` is projected into the local configuration emulator as `rules:query:concept-solas`, and the query runtime loads those flat global rules through the refresh-aware query rules catalog in `UKHO.Search.Infrastructure.Query`. That means local query-rule iteration follows the same broad pattern as ingestion-rule iteration: edit the repository file, start or refresh the local services stack, and then verify the changed behavior through `QueryServiceHost`. The difference is conceptual rather than operational. Ingestion rules shape the canonical document that will be indexed later, while query rules shape the read-side interpretation of user-entered search text after normalization and typed signal extraction have already run.
+
+For query work, it is useful to treat this as a three-part contract rather than as one vague startup detail. The repository file is the authoring surface. The `rules:query:*` namespace is the effective runtime store. `QueryServiceHost` is the verification surface where you confirm that the currently loaded rules are actually shaping planning behavior the way you intended.
 
 ### External services
 
@@ -209,6 +218,10 @@ Once the services stack is running, the most useful local checks are:
 
 If Workbench access matters to the task you are starting, add one more check: open the Keycloak admin UI from the **HTTP** endpoint exposed by Aspire, not the HTTPS endpoint, and confirm that the expected local realm bootstrap is present. That simple validation often surfaces stale-volume or mapper drift issues early, before they look like unrelated Workbench authorization failures.
 
+If your task is query-side rather than ingestion-side, add one more readiness check after the services stack is healthy. Open `QueryServiceHost`, run a representative search such as `latest SOLAS` or `latest notice`, and confirm that the current local rules are visible in runtime behavior. For `latest SOLAS`, the expected effect is rule-driven keyword expansion and sort shaping. For `latest notice`, the expected effect is the query runtime applying the current flat rule-driven filter and boost directives before residual defaults are considered. This extra setup check matters because query-rule work can otherwise appear broken when the real issue is simply that the local services run never picked up the edited `rules/query/*.json` files.
+
+The most useful services-mode query verification loop now uses three representative searches because each one proves a different part of the runtime. `latest SOLAS` proves concept expansion plus recency sorting. `latest SOLAS msi` proves that rule-owned meaning and surviving residual defaults can coexist in one plan. `latest notice` proves that the current query rules can shape explicit filters and boosts rather than only keyword intent. A local stack that can only explain one of those searches is often only partially healthy for query-rule work.
+
 ## Test estate conventions that affect local work
 
 The repository uses a project-aligned test layout under `test/`.
@@ -230,13 +243,16 @@ Some newer matching test projects currently contain placeholder smoke tests so t
 - Continue to [Setup walkthrough](Setup-Walkthrough) for the step-by-step execution path.
 - Use [Setup troubleshooting](Setup-Troubleshooting) when the local environment does not match the expected flow.
 - Use [Appendix: command reference](Appendix-Command-Reference) for the exact ACR and AppHost commands.
-- Keep [Solution architecture](Solution-Architecture), [Architecture walkthrough](Architecture-Walkthrough), and [Ingestion pipeline](Ingestion-Pipeline) nearby when you need to understand why the services are arranged this way.
+- Keep [Solution architecture](Solution-Architecture), [Architecture walkthrough](Architecture-Walkthrough), [Query pipeline](Query-Pipeline), and [Ingestion pipeline](Ingestion-Pipeline) nearby when you need to understand why the services are arranged this way.
 
 ## Related pages
 
 - [Setup walkthrough](Setup-Walkthrough)
 - [Setup troubleshooting](Setup-Troubleshooting)
 - [Appendix: command reference](Appendix-Command-Reference)
+- [Query pipeline](Query-Pipeline)
+- [Query walkthrough](Query-Walkthrough)
+- [Query signal extraction rules](Query-Signal-Extraction-Rules)
 - [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator)
 - [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder)
 - [Tools: `RulesWorkbench`](Tools-RulesWorkbench)

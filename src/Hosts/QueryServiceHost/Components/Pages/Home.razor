@@ -1,4 +1,5 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
 @using QueryServiceHost.Models
 @implements IDisposable
@@ -8,44 +9,41 @@
 
 <LoggedErrorBoundary @ref="_errorBoundary">
     <ChildContent>
-        <div class="query-ui-root">
-            <header class="query-ui-header">
-                <SearchBar />
-            </header>
-
-            @if (State.HasSubmitted)
+        <div class="query-ui-root @(State.IsResultDrawerOpen ? "query-ui-root--explanation-mode" : string.Empty)">
+            @if (State.IsResultDrawerOpen)
             {
-                <main class="query-ui-main">
-                    <RadzenRow Style="height: 100%; margin: 0; gap: 3px;">
-                        <RadzenColumn Size="12" SizeMD="3" Class="query-ui-panel" Style="padding: 0;">
-                            <FacetPanel />
-                        </RadzenColumn>
+                <main class="query-ui-fullscreen-explanation" aria-label="Selected result explanation workspace">
+                    <ResultExplainDrawer />
+                </main>
+            }
+            else
+            {
+                <header class="query-ui-header">
+                    <SearchBar />
+                </header>
 
-                        <RadzenColumn Size="12" SizeMD="6" Class="query-ui-panel" Style="padding: 0;">
+                <main class="query-ui-workspace" aria-label="Query diagnostics workspace">
+                    <section class="query-ui-column query-ui-column--insight">
+                        <QueryInsightPanel />
+                    </section>
+
+                    <section class="query-ui-center-workspace">
+                        <div class="query-ui-center-pane query-ui-center-pane--plan">
+                            <QueryPlanPanel />
+                        </div>
+
+                        <div class="query-ui-center-pane query-ui-center-pane--results">
                             <ResultsPanel />
-                        </RadzenColumn>
+                        </div>
+                    </section>
 
-                        <RadzenColumn Size="12" SizeMD="3" Class="query-ui-panel" Style="padding: 0;">
-                            <DetailsPanel />
-                        </RadzenColumn>
-                    </RadzenRow>
+                    <section class="query-ui-column query-ui-column--diagnostics">
+                        <QueryDiagnosticsPanel />
+                    </section>
                 </main>
 
-                <footer class="query-ui-footer">
-                    <RadzenCard Variant="Variant.Outlined" Style="margin: 0;">
-                        @if (State.IsLoading)
-                        {
-                            <RadzenText TextStyle="TextStyle.Body2" Text="Loading..." />
-                        }
-                        else if (State.LastResponse is not null)
-                        {
-                            <RadzenText TextStyle="TextStyle.Body2" Text="@($"{State.LastResponse.Total} results | {State.LastResponse.Duration.TotalMilliseconds:0} ms")" />
-                        }
-                        else
-                        {
-                            <RadzenText TextStyle="TextStyle.Body2" Text="Ready" />
-                        }
-                    </RadzenCard>
+                <footer class="query-ui-drawer-host">
+                    <ResultExplainDrawer />
                 </footer>
             }
         </div>
@@ -66,21 +64,25 @@
 
     protected override void OnInitialized()
     {
+        // Subscribe the page shell to state changes so direct footer and layout content re-renders when searches complete.
         State.Changed += OnStateChanged;
     }
 
     public void Dispose()
     {
+        // Unsubscribe when the page is torn down so the scoped state service does not retain dead component references.
         State.Changed -= OnStateChanged;
     }
 
     private void OnStateChanged()
     {
+        // Marshal the re-render back onto the Blazor renderer because state changes can be raised after async search work completes.
         InvokeAsync(StateHasChanged);
     }
 
     private void Retry()
     {
+        // Clear the error boundary state so the page can render again after a transient rendering failure.
         _errorBoundary?.Recover();
     }
 }

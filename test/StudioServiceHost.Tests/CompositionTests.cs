@@ -27,7 +27,7 @@ namespace StudioServiceHost.Tests
                     builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
                     {
                         ["SkipAddsConfiguration"] = "true",
-                        ["rules:file-share:rule-1"] = """
+                        ["rules:ingestion:file-share:rule-1"] = """
                             {
                               "schemaVersion": "1.0",
                               "rule": {

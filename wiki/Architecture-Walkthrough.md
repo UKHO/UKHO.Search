@@ -110,6 +110,8 @@ The query side is intentionally simpler than ingestion because it consumes the i
 
 That simplicity is one of the architectural payoffs of the ingestion design. The repository spends complexity earlier so that query and downstream tooling do not have to keep rediscovering provider-specific structure. When query behavior looks surprising, the walkthrough should therefore send you back upstream before you assume the read-side code is the primary problem.
 
+This section is intentionally shorter than the dedicated query chapter. Use it to place the query runtime inside the wider repository story, then continue to [Query pipeline](Query-Pipeline) for the narrative entry point and the now-separate [Query walkthrough](Query-Walkthrough) for the deeper code-oriented trace.
+
 ### What to read in code
 
 - `src/Hosts/QueryServiceHost`
@@ -120,12 +122,19 @@ That simplicity is one of the architectural payoffs of the ingestion design. The
 ### What happens conceptually
 
 1. Ingestion produces and indexes the canonical representation.
-2. The query host and query-side services read that indexed form.
-3. Query logic works with the normalized search shape instead of duplicating provider-specific parsing rules.
+2. The query host passes raw user text into the query-side planner rather than building Elasticsearch requests directly in the UI layer.
+3. Query services normalize the input, run Microsoft Recognizers behind `ITypedQuerySignalExtractor`, and project repository-owned typed signals such as recognized years into the canonical query model.
+4. The flat query-rule catalog loads `rules/query/*.json` through `rules:query:*`, and the rule engine applies global search-interpretation rules that can add canonical intent, concepts, filters, boosts, sort directives, and consume directives.
+5. Only after the rule stage finishes does the planner derive residual default contributions from whatever query text remains.
+6. The Elasticsearch mapper translates the resulting repository-owned plan into deterministic filter, scoring, and sort clauses against the indexed canonical fields.
 
 ### Why this matters
 
 If you are changing query behaviour, you often need to check whether the real problem is earlier in ingestion or canonical projection rather than in the query host itself.
+
+That warning is still correct, but the query side now has more internal structure than a simple read-through adapter. A contributor debugging a search result now needs to ask several distinct questions in order. Did normalization produce the expected cleaned tokens? Did typed extraction recognize anything meaningful? Did a flat query rule match and emit filters, boosts, or sorts? Did consume semantics remove terms from the residual default path? Did the mapper translate the final plan into the Elasticsearch request shape you expected? Walking through the query path in this order keeps the diagnostic process aligned with the actual runtime architecture instead of treating the query host and Elasticsearch request body as one indivisible black box.
+
+For the staged subsystem explanation, continue to [Query pipeline](Query-Pipeline). For the dedicated code-tracing guide that now follows the query host, planner, and executor in more detail, continue to [Query walkthrough](Query-Walkthrough). For the rule-authoring and runtime-semantics guide, continue to [Query signal extraction rules](Query-Signal-Extraction-Rules).
 
 ## 4. Trace Workbench composition
 
@@ -213,5 +222,6 @@ Treat this table as a starting heuristic, not as a replacement for reading the s
 - Return to [Solution architecture](Solution-Architecture) for the stable project map.
 - Continue to [Project setup](Project-Setup) if you need to run the stack locally.
 - Continue to [Ingestion pipeline](Ingestion-Pipeline) for the detailed ingestion stages.
+- Continue to [Query pipeline](Query-Pipeline) for the dedicated overview of the query-side runtime.
 - Continue to [Workbench introduction](Workbench-Introduction) for the current shell and module runtime details.
 - Continue to [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard) when you need runtime visibility and diagnostics.

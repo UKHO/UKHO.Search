@@ -1,0 +1,200 @@
+@using QueryServiceHost.State
+@implements IDisposable
+@inject QueryUiState State
+
+@* Projects repository-owned extracted signals and a compact transformation trace for the current execution path. *@
+@{
+    var signalEntries = GetSignalEntries();
+    var traceEntries = GetTraceEntries();
+}
+
+<section class="query-insight-panel">
+    <header>
+        <h2 class="query-insight-panel__title">Query insight</h2>
+    </header>
+
+    <div class="query-insight-panel__section">
+        <h3 class="query-insight-panel__section-title">Execution path</h3>
+        <p class="query-insight-panel__value">@GetExecutionPathText()</p>
+    </div>
+
+    <div class="query-insight-panel__section">
+        <h3 class="query-insight-panel__section-title">Extracted signals</h3>
+
+        @if (signalEntries.Count == 0)
+        {
+            <p class="query-insight-panel__value">No extracted signals are available yet for the current workspace state.</p>
+        }
+        else
+        {
+            <ul class="query-insight-panel__list">
+                @foreach (var signalEntry in signalEntries)
+                {
+                    <li>@signalEntry</li>
+                }
+            </ul>
+        }
+    </div>
+
+    <div class="query-insight-panel__section">
+        <h3 class="query-insight-panel__section-title">Transformation trace</h3>
+
+        @if (traceEntries.Count == 0)
+        {
+            <p class="query-insight-panel__value">Run a raw query or execute an edited plan to populate the staged trace.</p>
+        }
+        else
+        {
+            <ol class="query-insight-panel__trace">
+                @foreach (var traceEntry in traceEntries)
+                {
+                    <li>@traceEntry</li>
+                }
+            </ol>
+        }
+    </div>
+</section>
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        // Subscribe to shared state changes so the insight shell reflects the latest raw-query execution context.
+        State.Changed += OnStateChanged;
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe when the component is disposed so the scoped state container does not retain stale callbacks.
+        State.Changed -= OnStateChanged;
+    }
+
+    private string GetExecutionPathText()
+    {
+        // Summarize the active execution path, query text, and plan availability in one sentence for the left-hand diagnostics column.
+        if (!State.HasSubmitted)
+        {
+            return "No raw query has been submitted yet.";
+        }
+
+        var queryText = string.IsNullOrWhiteSpace(State.QueryText) ? "(empty query)" : State.QueryText;
+        var executionPath = State.LastExecutionUsedEditedPlan ? "edited plan" : "raw query";
+        var planState = State.CurrentPlan is null ? "plan diagnostics unavailable" : "plan diagnostics loaded";
+        return $"Current path: {executionPath} | Query text: {queryText} | {planState}";
+    }
+
+    private IReadOnlyList<string> GetSignalEntries()
+    {
+        // Project repository-owned extracted signals into compact readable entries for the left diagnostics column.
+        if (State.CurrentPlan is null)
+        {
+            return Array.Empty<string>();
+        }
+
+        var entries = new List<string>();
+
+        foreach (var year in State.CurrentPlan.Extracted.Temporal.Years.OrderBy(static year => year))
+        {
+            entries.Add($"Temporal year: {year}");
+        }
+
+        foreach (var date in State.CurrentPlan.Extracted.Temporal.Dates)
+        {
+            entries.Add($"Temporal {date.Kind}: '{date.MatchedText}'");
+        }
+
+        foreach (var number in State.CurrentPlan.Extracted.Numbers)
+        {
+            entries.Add($"Numeric signal: '{number.MatchedText}' -> {number.NormalizedValue}");
+        }
+
+        foreach (var concept in State.CurrentPlan.Extracted.Concepts)
+        {
+            var expansions = concept.KeywordExpansions.Count == 0
+                ? "no keyword expansion"
+                : string.Join(", ", concept.KeywordExpansions);
+            entries.Add($"Concept '{concept.Id}' from '{concept.MatchedText}' -> {expansions}");
+        }
+
+        foreach (var sortHint in State.CurrentPlan.Extracted.SortHints)
+        {
+            entries.Add($"Sort hint '{sortHint.Id}' -> {string.Join(", ", sortHint.Fields)} ({sortHint.Order})");
+        }
+
+        if (entries.Count == 0 && State.SelectedFacets.Count > 0)
+        {
+            // Surface active UI filters when the planner produced no typed signals so the left column still explains current narrowing context.
+            entries.Add($"Active filters: {GetSelectedFilterSummary()}");
+        }
+
+        return entries;
+    }
+
+    private IReadOnlyList<string> GetTraceEntries()
+    {
+        // Derive a compact end-to-end trace from the current repository-owned plan and response rather than maintaining a duplicate host-only workflow model.
+        if (State.CurrentPlan is null)
+        {
+            return Array.Empty<string>();
+        }
+
+        var entries = new List<string>
+        {
+            $"Input captured as '{State.CurrentPlan.Input.RawText}'.",
+            $"Normalization produced {State.CurrentPlan.Input.Tokens.Count} token(s) and residual text '{GetResidualText()}'.",
+            $"Planning matched {State.CurrentPlan.Diagnostics.MatchedRuleIds.Count} rule(s), {State.CurrentPlan.Diagnostics.AppliedFilters.Count} filter directive(s), {State.CurrentPlan.Diagnostics.AppliedBoosts.Count} boost directive(s), and {State.CurrentPlan.Diagnostics.AppliedSorts.Count} sort directive(s)."
+        };
+
+        if (State.LastResponse is null)
+        {
+            // Preserve the pending-execution hint because it communicates missing results without repeating data that already appears elsewhere.
+            entries.Add("Results are awaiting execution.");
+        }
+
+        if (State.SelectedFacets.Count > 0)
+        {
+            entries.Insert(2, $"Active UI filters: {GetSelectedFilterSummary()}.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(State.Error))
+        {
+            entries.Add($"The latest execution surfaced a host-visible error: {State.Error}");
+        }
+
+        return entries;
+    }
+
+    private string GetSelectedFilterSummary()
+    {
+        // Flatten the selected facet dictionary into a short readable summary that fits the narrow insight column.
+        if (State.SelectedFacets.Count == 0)
+        {
+            return "No filters selected";
+        }
+
+        return string.Join(
+            " | ",
+            State.SelectedFacets
+                .OrderBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase)
+                .Select(pair => $"{pair.Key}: {string.Join(", ", pair.Value.OrderBy(value => value, StringComparer.OrdinalIgnoreCase))}"));
+    }
+
+    private string GetResidualText()
+    {
+        // Prefer residual text when it exists because it shows what remained after typed extraction and rule application.
+        if (State.CurrentPlan is null)
+        {
+            return "(no residual text)";
+        }
+
+        return string.IsNullOrWhiteSpace(State.CurrentPlan.Input.ResidualText)
+            ? "(no residual text)"
+            : State.CurrentPlan.Input.ResidualText;
+    }
+
+    private void OnStateChanged()
+    {
+        // Re-render on shared state updates because this component reads injected state rather than receiving parameters.
+        InvokeAsync(StateHasChanged);
+    }
+}

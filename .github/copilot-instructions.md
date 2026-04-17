@@ -133,3 +133,7 @@ Refer to specialized instruction files for full detail:
 
 ## Workbench Planning
 - Define the full output panel feature up front in the spec and let the work-package planning prompt split implementation. Existing module-loading messages currently shown in the status bar should be lifted into the output panel, likely as Debug-level entries.
+
+## Query-Side Search Design
+- Include Microsoft Recognizers in the query-side search design in this repository rather than deferring it.
+- Keep Microsoft Recognizers behind an `ITypedQuerySignalExtractor` abstraction.

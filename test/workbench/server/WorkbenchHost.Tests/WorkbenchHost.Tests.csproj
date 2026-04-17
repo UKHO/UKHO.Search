@@ -39,4 +39,8 @@
     <ProjectReference Include="..\..\..\..\src\workbench\server\UKHO.Workbench\UKHO.Workbench.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
 </Project>

@@ -207,6 +207,10 @@ csx/
 # ASP.NET Core / Generic Host local overrides
 configuration.override.json
 
+# Keep the checked-in browser-host launch settings files trackable because their HTTPS ports define the local Keycloak callback contract.
+!src/Hosts/QueryServiceHost/Properties/launchSettings.json
+!src/Hosts/IngestionServiceHost/Properties/launchSettings.json
+
 # Microsoft Azure Emulator
 ecf/
 rcf/

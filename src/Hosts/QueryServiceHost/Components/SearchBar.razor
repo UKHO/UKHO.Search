@@ -1,59 +1,113 @@
 @using Microsoft.AspNetCore.Components.Web
 @using QueryServiceHost.Models
 @using QueryServiceHost.State
+@implements IDisposable
 
 @inject QueryUiState State
 
-<RadzenCard Variant="Variant.Outlined">
-    <RadzenStack Gap="0.5rem">
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="width: 100%;">
-            <RadzenTextBox @bind-Value="State.QueryText"
-                           Placeholder="Start typing to search the dataset"
-                           Style="flex: 1;"
-                           @onkeydown="OnQueryInputKeyDown" />
-            <RadzenButton Text="Search"
-                          ButtonStyle="ButtonStyle.Primary"
-                          Disabled="State.IsLoading"
-                          Click="OnSubmitAsync" />
-        </RadzenStack>
+<section class="search-bar">
+    <div class="search-bar__header">
+        <div>
+            <h1 class="search-bar__title">Query workspace</h1>
+        </div>
 
-        @if (Chips.Count > 0)
-        {
-            <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" Style="flex-wrap: wrap;">
-                @foreach (var chip in Chips)
-                {
-                    <RadzenBadge Style="display: inline-flex; align-items: center; gap: 0.25rem;">
-                        <span>@chip.Label</span>
-                        <RadzenButton Icon="close"
-                                      Size="ButtonSize.Small"
-                                      ButtonStyle="ButtonStyle.Light"
-                                      Click="(() => OnRemoveChipAsync(chip))" />
-                    </RadzenBadge>
-                }
-            </RadzenStack>
-        }
-    </RadzenStack>
-</RadzenCard>
+        <div class="search-bar__summary" role="status" aria-live="polite">
+            @GetRunSummaryText()
+        </div>
+    </div>
+
+    <div class="search-bar__command-row">
+        <RadzenTextBox @bind-Value="State.QueryText"
+                       class="search-bar__input"
+                       Placeholder="Enter raw query text to regenerate the plan"
+                       @onkeydown="OnQueryInputKeyDown" />
+        <RadzenButton Text="Run raw query"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Disabled="State.IsLoading"
+                      Click="OnSubmitAsync" />
+    </div>
+
+    @if (Chips.Count > 0)
+    {
+        <div class="search-bar__chips" aria-label="Selected filters">
+            @foreach (var chip in Chips)
+            {
+                <RadzenBadge class="search-bar__chip">
+                    <span>@chip.Label</span>
+                    <RadzenButton Icon="close"
+                                  Size="ButtonSize.Small"
+                                  ButtonStyle="ButtonStyle.Light"
+                                  Click="(() => OnRemoveChipAsync(chip))" />
+                </RadzenBadge>
+            }
+        </div>
+    }
+</section>
 
 @code
 {
     private IReadOnlyList<FilterChip> Chips => State.GetSelectedFacetChips();
 
+    protected override void OnInitialized()
+    {
+        // Subscribe the search bar to shared state changes so the button disabled state and selected-facet chips stay in sync.
+        State.Changed += OnStateChanged;
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe when the component is disposed so the scoped state service does not retain stale callbacks.
+        State.Changed -= OnStateChanged;
+    }
+
     private async Task OnSubmitAsync()
     {
+        // Delegate the submitted query to the shared state container so the host keeps one search workflow.
         await State.ExecuteSearchAsync(CancellationToken.None);
     }
 
     private async Task OnRemoveChipAsync(FilterChip chip)
     {
+        // Remove the selected facet through the shared state container so residual search state stays consistent.
         await State.ClearFacetValueAsync(chip.GroupName, chip.Value, CancellationToken.None);
     }
 
     private async Task OnQueryInputKeyDown(KeyboardEventArgs e)
     {
+        // Treat Enter as an explicit submit gesture so keyboard users can trigger searches without leaving the text box.
         if (e.Key == "Enter")
         {
             await OnSubmitAsync();
         }
+    }
+
+    private void OnStateChanged()
+    {
+        // Re-render on shared state updates because this component reads injected state rather than receiving parameters.
+        InvokeAsync(StateHasChanged);
+    }
+
+    private string GetRunSummaryText()
+    {
+        // Summarize the latest execution so the command bar communicates current state without forcing the user into a side panel.
+        if (State.IsLoading)
+        {
+            return State.IsExecutingEditedPlan
+                ? "Running edited plan from Monaco..."
+                : "Running raw query and regenerating the plan...";
+        }
+
+        if (!string.IsNullOrWhiteSpace(State.Error))
+        {
+            return State.Error!;
+        }
+
+        if (State.LastResponse is not null)
+        {
+            var executionPath = State.LastExecutionUsedEditedPlan ? "edited plan active" : (State.HasGeneratedPlan ? "generated plan ready" : "plan unavailable");
+            return $"{State.LastResponse.Total} results | {State.LastResponse.Duration.TotalMilliseconds:0} ms | {executionPath}";
+        }
+
+        return "Ready to generate a plan from raw query text.";
     }
 }

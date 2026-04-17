@@ -6,6 +6,9 @@ using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests
 {
+    /// <summary>
+    /// Verifies JSON serialization and validation behaviour for the ingestion request models.
+    /// </summary>
     public sealed class IngestionModelJsonTests
     {
         private static readonly JsonSerializerOptions _options = IngestionJsonSerializerOptions.Create();
@@ -105,6 +108,26 @@ namespace UKHO.Search.Ingestion.Tests
         {
             var json = "{" + "\"Id\":\"ABC123\"," + "\"Timestamp\":\"2026-03-05T10:15:30+00:00\"," + "\"Files\":[]," + "\"Properties\":[]," + "\"SecurityTokens\":[]" + "}";
             Should.Throw<JsonException>(() => JsonSerializer.Deserialize<IndexRequest>(json, _options));
+        }
+
+        /// <summary>
+        /// Confirms that deserialization still rejects blank security-token entries now that canonical validation adds a later safeguard.
+        /// </summary>
+        [Fact]
+        public void IndexRequest_Rejects_BlankSecurityTokenEntries()
+        {
+            var json = "{" + "\"Id\":\"ABC123\"," + "\"Timestamp\":\"2026-03-05T10:15:30+00:00\"," + "\"Files\":[]," + "\"Properties\":[]," + "\"SecurityTokens\":[\"token-a\",\" \" ]" + "}";
+
+            Should.Throw<JsonException>(() => JsonSerializer.Deserialize<IndexRequest>(json, _options));
+        }
+
+        /// <summary>
+        /// Confirms that the constructor contract still rejects blank security-token entries before canonical validation is reached.
+        /// </summary>
+        [Fact]
+        public void IndexRequest_Constructor_Rejects_BlankSecurityTokenEntries()
+        {
+            Should.Throw<JsonException>(() => new IndexRequest("ABC123", Array.Empty<IngestionProperty>(), ["token-a", " "], DateTimeOffset.UnixEpoch, new IngestionFileList()));
         }
 
         [Fact]

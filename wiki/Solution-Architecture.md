@@ -86,11 +86,13 @@ The host projects are the outer entry points.
 
 They matter architecturally because they express the current runtime story in executable form. `AppHost` tells you which local services and tools belong to the expected developer environment. `IngestionServiceHost` tells you how the pipeline is composed for real work rather than for isolated unit tests. `QueryServiceHost` tells you where the canonical index is read. `WorkbenchHost` tells you how the desktop-like Blazor shell becomes the runtime container for module-driven tooling. When a contributor wants to understand what the repository is really doing today, these hosts are the most honest starting point.
 
+`QueryServiceHost` is especially important after the query bootstrap slice. The host is no longer backed by a deterministic stub search client. It now fronts a real inward query pipeline: the host-local UI adapter forwards the user's text into `UKHO.Search.Services.Query`, the planner normalizes and tokenizes the input into a repository-owned `QueryPlan`, the infrastructure-backed typed extractor runs Microsoft Recognizers behind `ITypedQuerySignalExtractor`, recognized years are projected into the canonical `majorVersion` intent before rules execute, the flat query-rule catalog loads `rules/query/*.json` through the `rules:query:*` configuration namespace, and `UKHO.Search.Infrastructure.Query` translates the resulting plan into Elasticsearch JSON that targets the canonical fields `keywords`, `searchText`, and `content`. That additional rule stage matters because it introduces a new contributor-facing concept: a query rule is now a global search interpretation rule rather than an ingestion enrichment rule. A query rule consumes normalized input and typed signals, can add canonical keywords, can emit explicit execution-time filters that constrain results without affecting score, can emit explicit boost clauses that add extra scoring weight to selected fields or values, can emit sort hints, and can consume phrases such as `latest` so defaults do not blindly search for them again. The distinction matters because it explains where future query semantics should live. Host code still owns composition and UI concerns, but typed extraction, planning rules, canonical query contracts, and Elasticsearch mapping now live in the same inward layers that the rest of the repository can evolve and test. This page stays at the subsystem-boundary level. Continue to [Query pipeline](Query-Pipeline) for the narrative entry point and then to [Query walkthrough](Query-Walkthrough) when you need the dedicated query-side chapter rather than the short architecture summary.
+
 | Area | Key paths | Responsibility |
 |---|---|---|
 | Aspire orchestration | `src/Hosts/AppHost` | Starts and coordinates the local environment, including service containers, tool processes, and run-mode switching. |
 | Ingestion runtime host | `src/Hosts/IngestionServiceHost` | Wires queue polling, provider registration, enrichment, Elasticsearch indexing, and dead-letter handling into one executable host. |
-| Query runtime host | `src/Hosts/QueryServiceHost` | Exposes the query-side runtime that reads the indexed canonical form. |
+| Query runtime host | `src/Hosts/QueryServiceHost` | Exposes the query-side runtime that accepts UI input, hands it to the repository-owned planner, and reads the indexed canonical form through Elasticsearch-backed execution. |
 | Workbench UI host | `src/workbench/server/WorkbenchHost` | Runs the desktop-like Blazor Server shell and hosts module-driven tools. |
 
 ### Domain and contracts stay inward
@@ -103,7 +105,7 @@ These projects are where the repository tries to stay stable as outer implementa
 |---|---|---|
 | Pipeline runtime | `src/UKHO.Search` | Defines channels, envelopes, nodes, supervision, metrics, and other primitives used by ingestion. |
 | Canonical ingestion model | `src/UKHO.Search.Ingestion` | Defines ingestion contracts, provider abstractions, and the shared `CanonicalDocument` discovery shape. |
-| Query model | `src/UKHO.Search.Query` | Holds the query-side domain concerns that sit on the canonical index. |
+| Query model | `src/UKHO.Search.Query` | Holds the query-side canonical model, query-plan contracts, typed extracted-signal contracts, query-rule contracts, diagnostics contracts, and search-result contracts that sit on the canonical index. |
 | Provider metadata | `src/UKHO.Search.ProviderModel` | Shares provider identity, metadata, and split registration helpers across hosts and tooling. |
 | Workbench contracts | `src/workbench/server/UKHO.Workbench` | Defines shell contracts, models, and module registration boundaries for Workbench. |
 
@@ -117,7 +119,7 @@ This bridge role is important because it stops two unhelpful extremes. It stops 
 |---|---|---|
 | Search services | `src/UKHO.Search.Services.*` | Coordinate domain behaviours into host-friendly application flows. |
 | Ingestion infrastructure | `src/UKHO.Search.Infrastructure.Ingestion` | Owns queue integration, Elasticsearch projection, dead-letter persistence, bootstrap, and rule runtime infrastructure. |
-| Query infrastructure | `src/UKHO.Search.Infrastructure.Query` | Owns query-side infrastructure adapters. |
+| Query infrastructure | `src/UKHO.Search.Infrastructure.Query` | Owns query-side infrastructure adapters, including Microsoft Recognizers-backed typed extraction, flat configuration-backed query-rule loading and refresh, Elasticsearch request mapping, and runtime execution of repository-owned query plans. |
 | Workbench services | `src/workbench/server/UKHO.Workbench.Services` | Owns tool activation, command routing, contribution composition, and shell-facing orchestration. |
 | Workbench infrastructure | `src/workbench/server/UKHO.Workbench.Infrastructure` | Owns `modules.json` reading, probe-root scanning, and bounded module loading. |
 
@@ -175,5 +177,6 @@ That mirroring is part of the architecture story rather than a separate test-onl
 
 - Continue to the [Architecture walkthrough](Architecture-Walkthrough) for code-oriented runtime flows.
 - Follow the [Ingestion pipeline](Ingestion-Pipeline) path when you need the detailed processing graph and stage-by-stage runtime explanation.
+- Follow the [Query pipeline](Query-Pipeline) path when you need the staged explanation of normalization, typed extraction, query rules, residual defaults, and Elasticsearch execution.
 - Follow the current [Workbench introduction](Workbench-Introduction) guidance when you need shell composition, module loading, and tool activation detail.
 - Return to the [Glossary](Glossary) if repository-specific terms become ambiguous while reading.

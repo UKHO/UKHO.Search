@@ -15,6 +15,8 @@ Use this page as the start of the repository reading path. It explains what the 
 
 The repository's central contract is the [`CanonicalDocument`](Glossary#canonicaldocument). Providers build or enrich that shared model, the infrastructure layer projects it into Elasticsearch, and the query side reads the indexed result.
 
+That query-side statement now has more substance than a simple host shell. `QueryServiceHost` no longer stops at a stubbed UI adapter. The active query path normalizes incoming search text, runs Microsoft Recognizers behind the inward `ITypedQuerySignalExtractor` abstraction, retains repository-owned temporal and numeric signals on the `QueryPlan`, projects recognized years into the canonical `majorVersion` field, loads flat global query rules from `rules/query` through the `rules:query:*` configuration namespace, applies rule-driven concept expansion, explicit non-scoring filters, explicit boost clauses, and sort intent before residual defaults run, and only then asks Elasticsearch to execute the resulting request. This matters for contributors because the query host is now a real vertical slice through the Onion Architecture rather than a temporary façade over fixed sample data. It also means future query semantics such as rule-driven sort intent, year-aware filtering, and score tuning now have a stable typed foundation instead of having to infer everything from raw residual text alone.
+
 ```mermaid
 flowchart LR
     Start[Start here] --> Glossary[Glossary]
@@ -25,7 +27,12 @@ flowchart LR
     SetupWalkthrough --> SetupTroubleshooting[Setup troubleshooting]
     SetupWalkthrough --> CommandReference[Command reference]
     Walkthrough --> Ingestion[Ingestion pipeline]
+    Walkthrough --> Query[Query pipeline]
     Walkthrough --> Workbench[Workbench introduction]
+    Query --> QueryWalkthrough[Query walkthrough]
+    QueryWalkthrough --> QueryRules[Query signal extraction rules]
+    QueryRules --> QueryMapping[Query model and Elasticsearch mapping]
+    QueryRules --> QueryRuleReference[Query rule syntax quick reference]
     Workbench --> WorkbenchArchitecture[Workbench architecture]
     WorkbenchArchitecture --> WorkbenchCommands[Workbench commands and tools]
     WorkbenchCommands --> WorkbenchTabs[Workbench tabs and layout]
@@ -46,6 +53,7 @@ flowchart LR
 | New to the repository | [Glossary](Glossary) | [Solution architecture](Solution-Architecture) -> [Architecture walkthrough](Architecture-Walkthrough) -> [Project setup](Project-Setup) |
 | Setting up the local stack | [Project setup](Project-Setup) | [Setup walkthrough](Setup-Walkthrough) -> [Setup troubleshooting](Setup-Troubleshooting) -> [Appendix: command reference](Appendix-Command-Reference) -> [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator) |
 | Working on ingestion | [Ingestion pipeline](Ingestion-Pipeline) | [Ingestion graph runtime foundations](Ingestion-Graph-Runtime) -> [Ingestion walkthrough](Ingestion-Walkthrough) -> [Ingestion rules](Ingestion-Rules) -> [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference) -> [Ingestion troubleshooting](Ingestion-Troubleshooting) |
+| Working on query or search semantics | [Query pipeline](Query-Pipeline) | [Query walkthrough](Query-Walkthrough) -> [Query signal extraction rules](Query-Signal-Extraction-Rules) -> [Query model and Elasticsearch mapping](Query-Model-and-Elasticsearch-Mapping) -> [Appendix: query rule syntax quick reference](Appendix-Query-Rule-Syntax-Quick-Reference) |
 | Working on Workbench or Blazor UI | [Solution architecture](Solution-Architecture) | [Architecture walkthrough](Architecture-Walkthrough) -> [Workbench introduction](Workbench-Introduction) -> [Workbench architecture](Workbench-Architecture) -> [Workbench commands and tools](Workbench-Commands-and-Tools) -> [Workbench tabs and layout](Workbench-Tabs-and-Layout) |
 | Tracing repository history or design background | [Documentation source map](Documentation-Source-Map) | Related work-package documents in `docs/` |
 
@@ -62,6 +70,10 @@ Start with [Solution architecture](Solution-Architecture) for the current reposi
 ### Ingestion
 
 [Ingestion pipeline](Ingestion-Pipeline) is the conceptual entry point for the message-processing path. Follow it with [Ingestion graph runtime foundations](Ingestion-Graph-Runtime) for the generic base library and terminology, then [Ingestion walkthrough](Ingestion-Walkthrough), [Ingestion rules](Ingestion-Rules), [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference), and [Ingestion troubleshooting](Ingestion-Troubleshooting) when you need to understand runtime flow, rule evaluation, canonical indexing, and failure handling.
+
+### Query
+
+[Query pipeline](Query-Pipeline) is the conceptual entry point for the read side. Follow it with [Query walkthrough](Query-Walkthrough) when you need the code-oriented runtime trace, [Query signal extraction rules](Query-Signal-Extraction-Rules) when you need the full explanation of `rules/query/*.json`, [Query model and Elasticsearch mapping](Query-Model-and-Elasticsearch-Mapping) when you need the contract-level mapping story, and [Appendix: query rule syntax quick reference](Appendix-Query-Rule-Syntax-Quick-Reference) when you need a shorter authoring lookup. When the conceptual pages make sense and you are ready to prove local runtime behavior, return to [Project setup](Project-Setup) and [Setup walkthrough](Setup-Walkthrough) for the services-mode query verification path.
 
 ### Workbench
 
@@ -87,7 +99,7 @@ Several pages are intentionally deeper reference material rather than first-read
 |---|---|
 | `src/Hosts/AppHost` | Starts the local Aspire-orchestrated environment and switches between import, services, and export workflows. |
 | `src/Hosts/IngestionServiceHost` | Hosts the ingestion runtime, infrastructure wiring, and indexing path. |
-| `src/Hosts/QueryServiceHost` | Hosts the query-facing runtime and endpoint surface. |
+| `src/Hosts/QueryServiceHost` | Hosts the query-facing runtime, including UI composition, query planning entry, and Elasticsearch-backed execution of repository-owned query plans. |
 | `src/workbench/server/WorkbenchHost` | Hosts the desktop-like Blazor Server Workbench shell and module composition surface. |
 | `tools/FileShareEmulator` | Provides the local File Share emulator UI and API. |
 | `tools/RulesWorkbench` | Provides rule inspection, evaluation, and checker tooling. |
@@ -99,6 +111,9 @@ Several pages are intentionally deeper reference material rather than first-read
 | `src/UKHO.Search` | Channel-based pipeline runtime, supervision, metrics, and core primitives. |
 | `src/UKHO.Search.ProviderModel` | Shared provider identity, metadata, catalogs, and split registration helpers. |
 | `src/UKHO.Search.Ingestion` | Ingestion contracts and the canonical discovery model. |
+| `src/UKHO.Search.Query` | Query-owned canonical model, query-plan contracts, and search-result contracts that sit inward of the query host. |
+| `src/UKHO.Search.Services.Query` | Query normalization and planning orchestration that turns raw search text into repository-owned query plans, including safe typed-signal projection, flat rule evaluation, concept expansion, sort-hint generation, and residual-content handling. |
+| `src/UKHO.Search.Infrastructure.Query` | Elasticsearch request mapping and execution adapters for the query-side runtime, including the Microsoft Recognizers-backed typed extraction adapter, the configuration-backed flat query-rule catalog, and rule refresh monitoring that are kept behind inward query abstractions. |
 | `src/Providers/UKHO.Search.Ingestion.Providers.FileShare` | Concrete File Share provider processing graph and enrichers. |
 | `src/UKHO.Search.Infrastructure.Ingestion` | Queue, blob dead-letter, bootstrap, and Elasticsearch integration. |
 | `src/workbench/server/UKHO.Workbench*` | Workbench contracts, services, infrastructure, and shell composition support. |
@@ -109,7 +124,7 @@ Several pages are intentionally deeper reference material rather than first-read
 2. Read [Solution architecture](Solution-Architecture) for the stable current-state map.
 3. Read [Architecture walkthrough](Architecture-Walkthrough) to trace the main repository flows.
 4. Follow [Project setup](Project-Setup) and [Setup walkthrough](Setup-Walkthrough) if you need a local environment.
-5. Move into the ingestion or Workbench pages that match the area you are changing.
+5. Move into the ingestion, query, or Workbench pages that match the area you are changing.
 
 ## Design themes that show up across the repository
 
@@ -126,6 +141,11 @@ Several pages are intentionally deeper reference material rather than first-read
 - [Setup walkthrough](Setup-Walkthrough)
 - [Setup troubleshooting](Setup-Troubleshooting)
 - [Appendix: command reference](Appendix-Command-Reference)
+- [Query pipeline](Query-Pipeline)
+- [Query walkthrough](Query-Walkthrough)
+- [Query signal extraction rules](Query-Signal-Extraction-Rules)
+- [Query model and Elasticsearch mapping](Query-Model-and-Elasticsearch-Mapping)
+- [Appendix: query rule syntax quick reference](Appendix-Query-Rule-Syntax-Quick-Reference)
 - [Ingestion graph runtime foundations](Ingestion-Graph-Runtime)
 - [Ingestion walkthrough](Ingestion-Walkthrough)
 - [Ingestion rules](Ingestion-Rules)
@@ -136,4 +156,4 @@ Several pages are intentionally deeper reference material rather than first-read
 - [Tools: `RulesWorkbench`](Tools-RulesWorkbench)
 - [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard)
 
-_Current as of 2026-04-01._
+_Current as of 2026-04-16._

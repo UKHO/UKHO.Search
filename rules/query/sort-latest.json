@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "rule": {
+    "id": "sort-latest",
+    "title": "Recognize latest intent",
+    "enabled": true,
+    "if": {
+      "any": [
+        {
+          "path": "input.cleanedText",
+          "containsPhrase": "latest"
+        },
+        {
+          "path": "input.cleanedText",
+          "containsPhrase": "most recent"
+        }
+      ]
+    },
+    "then": {
+      "sortHints": [
+        {
+          "id": "latest",
+          "matchedText": "$val",
+          "fields": [
+            "majorVersion",
+            "minorVersion"
+          ],
+          "order": "desc"
+        }
+      ],
+      "consume": {
+        "phrases": [
+          "latest",
+          "most recent"
+        ]
+      }
+    }
+  }
+}

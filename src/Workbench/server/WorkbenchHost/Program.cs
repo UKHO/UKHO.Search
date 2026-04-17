@@ -1,11 +1,5 @@
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Radzen;
 using UKHO.Search.ServiceDefaults;
 using UKHO.Workbench.Commands;
@@ -68,40 +62,8 @@ namespace WorkbenchHost
             // Provide the current HTTP context and authorization helpers required by the host.
             builder.Services.AddHttpContextAccessor().AddTransient<AuthorizationHandler>();
 
-            // Normalize realm-role claims before authorization runs against the current principal.
-            builder.Services.AddTransient<IClaimsTransformation, KeycloakRealmRoleClaimsTransformation>();
-
-            var oidcScheme = OpenIdConnectDefaults.AuthenticationScheme;
-
-            // Configure cookie-backed OpenID Connect authentication against the shared Keycloak realm.
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = oidcScheme;
-            })
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddKeycloakOpenIdConnect("keycloak", "ukho-search", oidcScheme, options =>
-                {
-                    options.ClientId = "search-workbench";
-                    options.ResponseType = OpenIdConnectResponseType.Code;
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
-                    options.SaveTokens = true;
-                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                });
-
-            // Flow the authenticated user through the Blazor component tree.
-            builder.Services.AddCascadingAuthenticationState();
-
-            // Require authenticated users by default for the workbench surface.
-            builder.Services.AddAuthorization(options =>
-            {
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
-            });
+            // Consume the shared browser-host authentication composition so Workbench and future hosts stay aligned.
+            builder.Services.AddKeycloakBrowserHostAuthentication("search-workbench", "workbench");
 
             // Discover and register module-provided services and tools before the host finalizes the service provider.
             ConfigureWorkbenchModules(builder, moduleContributionRegistry, startupNotificationStore);
@@ -137,8 +99,8 @@ namespace WorkbenchHost
             app.MapStaticAssets();
             app.UseAntiforgery();
 
-            // Expose login and logout endpoints before the authenticated UI pipeline executes.
-            app.MapLoginAndLogout();
+            // Expose the shared authentication lifecycle endpoints before the authenticated UI pipeline executes.
+            app.MapKeycloakBrowserHostAuthenticationEndpoints();
 
             // Authenticate requests before enforcing the fallback authorization policy.
             app.UseAuthentication();

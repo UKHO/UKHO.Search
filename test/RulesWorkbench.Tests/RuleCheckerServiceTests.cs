@@ -256,11 +256,11 @@ namespace RulesWorkbench.Tests
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["rules:file-share:bu-admiralty-rule-1"] = "{\"schemaVersion\":\"1.0\",\"rule\":{\"id\":\"bu-admiralty-rule-1\",\"context\":\"admiralty\",\"description\":\"Admiralty rule\",\"if\":{\"id\":\"batch-1\"},\"then\":{\"category\":{\"add\":[\"charts\"]}}}}",
-                    ["rules:file-share:bu-admiralty-rule-2"] = "{\"schemaVersion\":\"1.0\",\"rule\":{\"id\":\"bu-admiralty-rule-2\",\"context\":\"admiralty\",\"description\":\"Second admiralty rule\",\"if\":{\"id\":\"batch-1\"},\"then\":{\"series\":{\"add\":[\"series-a\"]}}}}",
-                    ["rules:file-share:bu-fisheries-rule-1"] = "{\"schemaVersion\":\"1.0\",\"rule\":{\"id\":\"bu-fisheries-rule-1\",\"context\":\"fisheries\",\"description\":\"Fisheries rule\",\"if\":{\"id\":\"batch-1\"},\"then\":{\"instance\":{\"add\":[\"instance-a\"]}}}}",
-                    ["rules:file-share:bu-adds-s100-4-base-exchange-set-product-type"] = "{\"schemaVersion\":\"1.0\",\"rule\":{\"id\":\"bu-adds-s100-4-base-exchange-set-product-type\",\"context\":\"adds-s100\",\"description\":\"ADDS-S100 rule\",\"if\":{\"id\":\"batch-1\"},\"then\":{\"instance\":{\"add\":[\"instance-a\"]}}}}",
-                    ["rules:file-share:some-unrelated-rule-id"] = "{\"schemaVersion\":\"1.0\",\"rule\":{\"id\":\"some-unrelated-rule-id\",\"context\":\"adds\",\"description\":\"ADDS rule with non-prefix id\",\"if\":{\"id\":\"batch-1\"},\"then\":{\"series\":{\"add\":[\"series-a\"]}}}}"
+                    ["rules:ingestion:file-share:bu-admiralty-rule-1"] = "{\"schemaVersion\":\"1.0\",\"rule\":{\"id\":\"bu-admiralty-rule-1\",\"context\":\"admiralty\",\"description\":\"Admiralty rule\",\"if\":{\"id\":\"batch-1\"},\"then\":{\"category\":{\"add\":[\"charts\"]}}}}",
+                    ["rules:ingestion:file-share:bu-admiralty-rule-2"] = "{\"schemaVersion\":\"1.0\",\"rule\":{\"id\":\"bu-admiralty-rule-2\",\"context\":\"admiralty\",\"description\":\"Second admiralty rule\",\"if\":{\"id\":\"batch-1\"},\"then\":{\"series\":{\"add\":[\"series-a\"]}}}}",
+                    ["rules:ingestion:file-share:bu-fisheries-rule-1"] = "{\"schemaVersion\":\"1.0\",\"rule\":{\"id\":\"bu-fisheries-rule-1\",\"context\":\"fisheries\",\"description\":\"Fisheries rule\",\"if\":{\"id\":\"batch-1\"},\"then\":{\"instance\":{\"add\":[\"instance-a\"]}}}}",
+                    ["rules:ingestion:file-share:bu-adds-s100-4-base-exchange-set-product-type"] = "{\"schemaVersion\":\"1.0\",\"rule\":{\"id\":\"bu-adds-s100-4-base-exchange-set-product-type\",\"context\":\"adds-s100\",\"description\":\"ADDS-S100 rule\",\"if\":{\"id\":\"batch-1\"},\"then\":{\"instance\":{\"add\":[\"instance-a\"]}}}}",
+                    ["rules:ingestion:file-share:some-unrelated-rule-id"] = "{\"schemaVersion\":\"1.0\",\"rule\":{\"id\":\"some-unrelated-rule-id\",\"context\":\"adds\",\"description\":\"ADDS rule with non-prefix id\",\"if\":{\"id\":\"batch-1\"},\"then\":{\"series\":{\"add\":[\"series-a\"]}}}}"
                 })
                 .Build();
 

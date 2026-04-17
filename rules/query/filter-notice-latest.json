@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "rule": {
+    "id": "filter-notice-latest",
+    "title": "Filter and boost latest notices",
+    "enabled": true,
+    "if": {
+      "path": "input.cleanedText",
+      "containsPhrase": "notice"
+    },
+    "then": {
+      "filters": {
+        "category": {
+          "add": [
+            "notice"
+          ]
+        }
+      },
+      "boosts": [
+        {
+          "field": "searchText",
+          "matchingMode": "analyzedText",
+          "text": "notice",
+          "weight": 4.0
+        },
+        {
+          "field": "keywords",
+          "values": [
+            "notice"
+          ],
+          "weight": 2.0
+        }
+      ]
+    }
+  }
+}

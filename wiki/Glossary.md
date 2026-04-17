@@ -8,6 +8,11 @@ This glossary defines the repository terms that appear repeatedly across the wik
 - [Solution architecture](Solution-Architecture) for the current repository map
 - [Architecture walkthrough](Architecture-Walkthrough) for code-oriented runtime flows
 - [Project setup](Project-Setup) for local environment setup
+- [Setup walkthrough](Setup-Walkthrough) for the practical local verification path
+- [Query pipeline](Query-Pipeline) for the query-side conceptual reading path
+- [Query walkthrough](Query-Walkthrough) for the code-oriented query runtime trace
+- [Query signal extraction rules](Query-Signal-Extraction-Rules) for the deep-dive query rules guide
+- [Query model and Elasticsearch mapping](Query-Model-and-Elasticsearch-Mapping) for the contract and request-mapping explanation
 - [Ingestion pipeline](Ingestion-Pipeline) for message-processing detail
 - [Workbench introduction](Workbench-Introduction) for the current Workbench guide
 
@@ -28,6 +33,10 @@ The shared discovery contract produced by ingestion and indexed into Elasticsear
 ### Canonical index projection
 
 The Elasticsearch-facing representation derived from `CanonicalDocument`. Query and diagnostics features use this indexed form rather than reading provider payloads directly.
+
+### ITypedQuerySignalExtractor
+
+The inward query-side abstraction that hides Microsoft Recognizers behind a repository-owned contract. The query planner calls this abstraction after normalization so recognizer-derived temporal and numeric signals can be projected into the repository-owned extracted-signal model without leaking third-party object graphs into the rest of the solution.
 
 ### Host
 
@@ -78,6 +87,64 @@ One ordered partition of the ingestion pipeline. Messages with the same key are 
 ### Rule
 
 A repository-managed mapping or enrichment rule evaluated during ingestion to derive canonical document fields without hard-coding every mapping in C#. See [Ingestion rules](Ingestion-Rules).
+
+## Query terms
+
+### Query plan
+
+The repository-owned contract in `src/UKHO.Search.Query` that captures normalized input, typed extracted signals, canonical query intent, residual default contributions, execution directives, and diagnostics before Elasticsearch execution. The query plan is the boundary between query interpretation and query execution.
+
+### Generated-plan baseline
+
+The most recent repository-owned `QueryPlan` produced from the raw-query path and then projected back into the Monaco editor as formatted JSON. In the current Query UI workspace, this baseline is kept separately from the current editable Monaco contents so contributors can experiment with plan changes and still reset the editor back to the last raw-query-generated starting point.
+
+### Edited-plan execution
+
+The developer workflow where the Query UI validates the current Monaco JSON as a repository-owned `QueryPlan` and then asks the application service to execute that supplied plan directly without regenerating it from raw query text first. This term is useful because it distinguishes “run the current plan as written” from the raw-query path, which still begins with free-form text and planning.
+
+### Normalized query input
+
+The repository-owned input snapshot produced by the query normalizer before typed extraction and rule evaluation continue. In current runtime terms this is the `QueryInputSnapshot`, which preserves raw text, a normalized lowercase form, a cleaned text form, deterministic tokens, and the residual text surfaces later used by rule consumption and default matching.
+
+### Residual defaults
+
+The fallback default query contributions built from the residual query content that remains after rule evaluation has consumed any phrases or tokens it explicitly handled. In current behavior, residual tokens become exact-match `keywords` clauses, while residual cleaned text becomes analyzed matches against `searchText` and `content`.
+
+### Canonical query model
+
+The repository-owned model inside the `QueryPlan` that mirrors the discovery-facing half of the canonical index in query terms. It holds exact-match canonical intent such as `keywords`, `category`, `series`, and `majorVersion`, and it stays separate from execution-only directives such as filters, boosts, and sorts.
+
+### Execution directives
+
+The execution-time part of the query plan that changes how Elasticsearch should run the search without itself becoming canonical subject-matter intent. In current runtime terms this includes explicit filters, explicit boosts, and explicit sort directives carried on `QueryExecutionDirectives`.
+
+### Query rule
+
+A flat global search-interpretation rule loaded from `rules/query/*.json` into the `rules:query:*` configuration namespace. Query rules inspect normalized input and extracted query signals, can mutate canonical query intent, can emit concepts, sort hints, filters, and boosts, and can consume phrases or tokens so default matching only sees the true residual query text.
+
+### Query signal extraction rule
+
+The contributor-facing name for a query rule when the emphasis is on interpreting free-form user text into typed or canonical search meaning. In practice this repository stores those rules as flat JSON files under `rules/query/*.json` and loads them into the `rules:query:*` configuration namespace.
+
+### Query rules catalog
+
+The refresh-aware runtime service that loads, validates, caches, and exposes the current flat query-rule snapshot for query planning. It gives the planner one stable rules snapshot per request while still allowing configuration refresh to replace the cached snapshot for later requests.
+
+### Matched rule diagnostics
+
+The developer-facing diagnostics retained on `QueryPlanDiagnostics` that record which query rules matched and which filters, boosts, sorts, and rule-catalog timestamp shaped the final query plan. These diagnostics help contributors explain why the planner produced a particular request shape.
+
+### Transformation trace
+
+The compact staged explanation shown in the current Query UI insight column that walks a contributor from raw query input through normalization, extracted signals, planning diagnostics, and request execution. The transformation trace is not a second repository-owned contract; it is a host-side narrative projection built from existing repository-owned artifacts such as `QueryInputSnapshot`, `QueryExtractedSignals`, `QueryPlanDiagnostics`, and the enriched `QuerySearchResult`.
+
+### Exact-match field
+
+On the query side, a canonical field that is matched as a discrete term or numeric value rather than as analyzed free text. Fields such as `keywords`, `category`, `series`, `majorVersion`, and `minorVersion` are treated this way by the current query mapper and rule validator.
+
+### Analyzed field
+
+On the query side, a text field that is matched through analyzed search text rather than exact-term equality. In current runtime terms, `searchText` and `content` are the analyzed fields used by residual defaults and analyzed-text boosts.
 
 ### RulesWorkbench
 
@@ -148,4 +215,4 @@ A text-based diagram block rendered by GitHub markdown viewers. This wiki uses M
 - Return to [Home](Home) for the full reading-path overview.
 - Continue to [Solution architecture](Solution-Architecture) for the repository-wide structure.
 - Continue to [Architecture walkthrough](Architecture-Walkthrough) if you want to trace the main code paths rather than just the project map.
-- Continue to [Ingestion pipeline](Ingestion-Pipeline) or [Workbench introduction](Workbench-Introduction) when you are ready to move into a specific subsystem.
+- Continue to [Query pipeline](Query-Pipeline), [Ingestion pipeline](Ingestion-Pipeline), or [Workbench introduction](Workbench-Introduction) when you are ready to move into a specific subsystem.

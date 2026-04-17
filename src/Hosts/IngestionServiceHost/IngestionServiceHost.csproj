@@ -19,7 +19,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Authentication\" />
-	  <Folder Include="Rules\file-share\" />
+      <Folder Include="Rules\ingestion\file-share\" />
 	</ItemGroup>
 
 </Project>

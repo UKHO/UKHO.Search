@@ -35,8 +35,8 @@ namespace StudioServiceHost.Tests
                     builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
                     {
                         ["SkipAddsConfiguration"] = "true",
-                        ["rules:FILE-SHARE:rule-1"] = CreateRuleJson("rule-1", title: "File Share Rule", context: "Adds-S100"),
-                        ["rules:other-provider:rule-2"] = CreateRuleJson("rule-2", title: "Other Provider Rule", enabled: false)
+                        ["rules:ingestion:FILE-SHARE:rule-1"] = CreateRuleJson("rule-1", title: "File Share Rule", context: "Adds-S100"),
+                        ["rules:ingestion:other-provider:rule-2"] = CreateRuleJson("rule-2", title: "Other Provider Rule", enabled: false)
                     });
                     builder.Services.AddProviderDescriptor<AdditionalProviderRegistrationMarker>(
                         new ProviderDescriptor("other-provider", "Other Provider", "Provider used by Studio rules endpoint tests."));
@@ -83,7 +83,7 @@ namespace StudioServiceHost.Tests
                     builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
                     {
                         ["SkipAddsConfiguration"] = "true",
-                        ["rules:file-share:rule-1"] = CreateRuleJson("rule-1", title: "File Share Rule")
+                        ["rules:ingestion:file-share:rule-1"] = CreateRuleJson("rule-1", title: "File Share Rule")
                     });
                     builder.Services.AddProviderDescriptor<AdditionalProviderRegistrationMarker>(
                         new ProviderDescriptor("other-provider", "Other Provider", "Provider with no Studio rules."));
@@ -127,7 +127,7 @@ namespace StudioServiceHost.Tests
                         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
                         {
                             ["SkipAddsConfiguration"] = "true",
-                            ["rules:unknown-provider:rule-1"] = CreateRuleJson("rule-1", title: "Unknown Provider Rule")
+                            ["rules:ingestion:unknown-provider:rule-1"] = CreateRuleJson("rule-1", title: "Unknown Provider Rule")
                         });
                     }));
 

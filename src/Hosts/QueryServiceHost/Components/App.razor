@@ -39,8 +39,10 @@
     <a class="dismiss">🗙</a>
 </div>
 
+<!-- Load require.js before the interactive shell starts so Monaco can import its AMD-based runtime on demand. -->
+<!-- Do not load highlight.pack.js in this host because its anonymous AMD registration conflicts with Monaco's require.js loader. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
 <script src="@Assets["_framework/blazor.web.js"]"></script>
-<script async src="js/highlight.pack.js"></script>
 <script src="_content/Radzen.Blazor/Radzen.Blazor.min.js?v=@(typeof(Colors).Assembly.GetName()
                                                                            .Version)"></script>
 <script src="js/download.js"></script>

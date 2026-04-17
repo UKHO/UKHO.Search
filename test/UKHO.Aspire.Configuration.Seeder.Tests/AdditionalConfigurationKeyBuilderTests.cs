@@ -35,6 +35,19 @@ namespace UKHO.Aspire.Configuration.Seeder.Tests
         }
 
         /// <summary>
+        /// Verifies that rule files authored beneath the ingestion namespace preserve both the namespace and provider segments.
+        /// </summary>
+        [Fact]
+        public void Build_WhenRuleFileUsesIngestionNamespace_ShouldReturnNamespaceAwareRuleKey()
+        {
+            // Build the key that should be produced for a repository rule stored under rules/ingestion/file-share.
+            var key = AdditionalConfigurationKeyBuilder.Build("rules", ["ingestion", "file-share"], "bu-sample-rule");
+
+            // The generated key must retain the ingestion namespace as well as the logical provider segment.
+            Assert.Equal("rules:ingestion:file-share:bu-sample-rule", key);
+        }
+
+        /// <summary>
         /// Verifies that blank relative path segments are ignored instead of creating empty key tokens.
         /// </summary>
         [Fact]

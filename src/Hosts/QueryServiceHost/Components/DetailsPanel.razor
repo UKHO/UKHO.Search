@@ -1,5 +1,6 @@
 @using QueryServiceHost.Models
 @using QueryServiceHost.State
+@implements IDisposable
 
 @inject QueryUiState State
 
@@ -22,6 +23,27 @@
                     <RadzenText TextStyle="TextStyle.Subtitle2" Text="Map" />
                     <RadzenText TextStyle="TextStyle.Body2" Text="(map placeholder)" />
                 </RadzenCard>
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        // Subscribe the details panel to shared state changes so selecting a hit immediately updates the details view.
+        State.Changed += OnStateChanged;
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe when the component is disposed so the scoped state service does not retain stale callbacks.
+        State.Changed -= OnStateChanged;
+    }
+
+    private void OnStateChanged()
+    {
+        // Re-render on shared state updates because this component reads injected state rather than receiving parameters.
+        InvokeAsync(StateHasChanged);
+    }
+}
 
                 <RadzenCard Variant="Variant.Outlined">
                     <RadzenText TextStyle="TextStyle.Subtitle2" Text="Attributes" />

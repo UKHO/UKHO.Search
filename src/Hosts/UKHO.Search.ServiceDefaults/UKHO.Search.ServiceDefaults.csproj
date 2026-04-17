@@ -10,6 +10,9 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
 
+    <PackageReference Include="Aspire.Keycloak.Authentication" Version="9.2.1-preview.1.25222.1" />
+    <PackageReference Include="Keycloak.AuthServices.Authentication" Version="2.8.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.4.0" />
     <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="10.4.0" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.0" />

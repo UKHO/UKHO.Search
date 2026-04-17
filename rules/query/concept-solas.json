@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "rule": {
+    "id": "concept-solas",
+    "title": "Recognize SOLAS concept",
+    "enabled": true,
+    "if": {
+      "path": "input.tokens[*]",
+      "eq": "solas"
+    },
+    "then": {
+      "concepts": [
+        {
+          "id": "solas",
+          "matchedText": "$val",
+          "keywordExpansions": [
+            "solas",
+            "maritime",
+            "safety",
+            "msi"
+          ]
+        }
+      ],
+      "model": {
+        "keywords": {
+          "add": [
+            "solas",
+            "maritime",
+            "safety",
+            "msi"
+          ]
+        }
+      },
+      "consume": {
+        "tokens": [
+          "solas"
+        ]
+      }
+    }
+  }
+}

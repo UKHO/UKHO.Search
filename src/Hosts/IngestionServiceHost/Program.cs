@@ -41,6 +41,9 @@ namespace IngestionServiceHost
             builder.Services.AddRadzenQueryStringThemeService();
             builder.Services.AddLocalization();
 
+            // Reuse the shared Workbench-aligned browser authentication model so the ingestion UI challenges through Keycloak before rendering protected content.
+            builder.Services.AddKeycloakBrowserHostAuthentication("search-workbench", "ingestion");
+
             builder.Services.AddSingleton<FileShareReadOnlyClientFactory>();
 
             builder.Services.AddSingleton<IFileShareReadOnlyClient>(sp =>
@@ -78,6 +81,14 @@ namespace IngestionServiceHost
             app.UseAntiforgery();
 
             app.MapStaticAssets();
+
+            // Expose the shared login and logout lifecycle routes before the authenticated UI pipeline begins.
+            app.MapKeycloakBrowserHostAuthenticationEndpoints();
+
+            // Restore the authenticated principal before authorization evaluates the protected ingestion UI routes.
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.MapRazorComponents<App>()
                .AddInteractiveServerRenderMode();
 

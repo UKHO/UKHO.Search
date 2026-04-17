@@ -1,18 +1,85 @@
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 using QueryServiceHost.Models;
+using UKHO.Search.Query.Models;
 
 namespace QueryServiceHost.Services
 {
+    /// <summary>
+    /// Provides a deterministic in-memory search client used by local development and fallback host scenarios.
+    /// </summary>
     public class StubQueryUiSearchClient : IQueryUiSearchClient
     {
+        private static readonly JsonSerializerOptions PlanJsonSerializerOptions = new()
+        {
+            WriteIndented = true
+        };
+
         private readonly IOptionsMonitor<StubQueryUiSearchClientOptions> _options;
 
+        /// <summary>
+        /// Initializes the deterministic stub client with its mutable options source.
+        /// </summary>
+        /// <param name="options">The options monitor that controls latency and failure simulation.</param>
         public StubQueryUiSearchClient(IOptionsMonitor<StubQueryUiSearchClientOptions> options)
         {
+            // Capture the options monitor once so each call can read the latest stub configuration.
             _options = options;
         }
 
+        /// <summary>
+        /// Executes the raw-query stub path using deterministic in-memory data.
+        /// </summary>
+        /// <param name="request">The host-local request that contains the raw query text and facet selections.</param>
+        /// <param name="cancellationToken">The cancellation token that stops the simulated execution when the caller no longer needs the result.</param>
+        /// <returns>The projected host response built from deterministic in-memory hits.</returns>
         public async Task<QueryResponse> SearchAsync(QueryRequest request, CancellationToken cancellationToken)
+        {
+            // Reuse the shared deterministic execution path and omit plan JSON because the stub raw-query path does not generate repository plans.
+            return await ExecuteDeterministicSearchAsync(
+                request.QueryText,
+                request.SelectedFacets,
+                generatedPlanJson: string.Empty,
+                usedEditedPlan: false,
+                cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Executes a caller-supplied query plan using deterministic in-memory data.
+        /// </summary>
+        /// <param name="plan">The repository-owned query plan supplied by the host editor workflow.</param>
+        /// <param name="cancellationToken">The cancellation token that stops the simulated execution when the caller no longer needs the result.</param>
+        /// <returns>The projected host response built from deterministic in-memory hits.</returns>
+        public async Task<QueryResponse> ExecutePlanAsync(QueryPlan plan, CancellationToken cancellationToken)
+        {
+            ArgumentNullException.ThrowIfNull(plan);
+
+            // Reuse the deterministic execution path and surface the supplied plan JSON so the stub behaves like the real host adapter.
+            return await ExecuteDeterministicSearchAsync(
+                plan.Input.RawText,
+                new Dictionary<string, IReadOnlySet<string>>(StringComparer.OrdinalIgnoreCase),
+                JsonSerializer.Serialize(plan, PlanJsonSerializerOptions),
+                usedEditedPlan: true,
+                cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Applies the configured stub behavior and returns deterministic hits for either raw-query or edited-plan execution.
+        /// </summary>
+        /// <param name="queryText">The text used to filter deterministic hits.</param>
+        /// <param name="selectedFacets">The selected facet filters that should be applied to the deterministic hit set.</param>
+        /// <param name="generatedPlanJson">The plan JSON that should be returned to the host editor, if any.</param>
+        /// <param name="usedEditedPlan"><see langword="true"/> when the caller executed an edited plan; otherwise <see langword="false"/>.</param>
+        /// <param name="cancellationToken">The cancellation token that stops the simulated execution when the caller no longer needs the result.</param>
+        /// <returns>The deterministic host response for the simulated execution.</returns>
+        private async Task<QueryResponse> ExecuteDeterministicSearchAsync(
+            string? queryText,
+            IReadOnlyDictionary<string, IReadOnlySet<string>> selectedFacets,
+            string generatedPlanJson,
+            bool usedEditedPlan,
+            CancellationToken cancellationToken)
         {
             var options = _options.CurrentValue;
 
@@ -28,20 +95,18 @@ namespace QueryServiceHost.Services
 
             var sw = System.Diagnostics.Stopwatch.StartNew();
 
-            var queryText = request.QueryText?.Trim();
-
-            var hasFacetSelections = request.SelectedFacets.Values.Any(v => v is not null && v.Count > 0);
+            var trimmedQueryText = queryText?.Trim();
 
             var allHits = GetDeterministicHits();
 
             IEnumerable<Hit> filtered = allHits;
 
-            if (!string.IsNullOrWhiteSpace(queryText))
+            if (!string.IsNullOrWhiteSpace(trimmedQueryText))
             {
-                filtered = filtered.Where(h => h.Title.Contains(queryText, StringComparison.OrdinalIgnoreCase));
+                filtered = filtered.Where(h => h.Title.Contains(trimmedQueryText, StringComparison.OrdinalIgnoreCase));
             }
 
-            foreach (var facetSelection in request.SelectedFacets)
+            foreach (var facetSelection in selectedFacets)
             {
                 if (facetSelection.Value is null || facetSelection.Value.Count == 0)
                 {
@@ -64,13 +129,20 @@ namespace QueryServiceHost.Services
 
             return new QueryResponse
             {
+                GeneratedPlanJson = generatedPlanJson,
                 Hits = hits,
                 Facets = facets,
                 Total = hits.Count,
-                Duration = sw.Elapsed
+                Duration = sw.Elapsed,
+                Warnings = ["The deterministic stub client does not project repository-owned diagnostics or Elasticsearch request JSON."],
+                UsedEditedPlan = usedEditedPlan
             };
         }
 
+        /// <summary>
+        /// Builds the static facet groups returned by the deterministic stub client.
+        /// </summary>
+        /// <returns>The facet groups surfaced to the host UI.</returns>
         private static IReadOnlyList<FacetGroup> GetStaticFacets()
         {
             return
@@ -98,6 +170,10 @@ namespace QueryServiceHost.Services
             ];
         }
 
+        /// <summary>
+        /// Builds the deterministic hit set used by the stub execution path.
+        /// </summary>
+        /// <returns>The fixed set of in-memory hits that back the stub client.</returns>
         private static IReadOnlyList<Hit> GetDeterministicHits()
         {
             return

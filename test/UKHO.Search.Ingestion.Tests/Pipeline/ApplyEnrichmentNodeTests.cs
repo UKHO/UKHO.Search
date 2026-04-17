@@ -17,8 +17,16 @@ using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests.Pipeline
 {
+    /// <summary>
+    /// Verifies the ingestion enrichment node ordering, retry behaviour, and canonical validation safeguards.
+    /// </summary>
     public sealed class ApplyEnrichmentNodeTests
     {
+        /// <summary>
+        /// Creates a scoped service provider that exposes the supplied enrichers to the enrichment node.
+        /// </summary>
+        /// <param name="enrichers">The enrichers that should be available from the test service provider.</param>
+        /// <returns>A service provider configured with the supplied enrichers.</returns>
         private static ServiceProvider CreateProvider(params IIngestionEnricher[] enrichers)
         {
             var services = new ServiceCollection();
@@ -108,6 +116,88 @@ namespace UKHO.Search.Ingestion.Tests.Pipeline
             failed.Error!.Category.ShouldBe(UKHO.Search.Pipelines.Errors.PipelineErrorCategory.Validation);
             failed.Error.Code.ShouldBe("CANONICAL_TITLE_REQUIRED");
             failed.Error.Message.ShouldContain("title", Case.Insensitive);
+        }
+
+        /// <summary>
+        /// Confirms that an upsert with no retained canonical security tokens is dead-lettered instead of being indexed.
+        /// </summary>
+        [Fact]
+        public async Task Upsert_without_security_tokens_is_dead_lettered_and_not_forwarded_to_indexing()
+        {
+            var input = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
+            var output = BoundedChannelFactory.Create<Envelope<IndexOperation>>(1, true, true);
+            var deadLetter = BoundedChannelFactory.Create<Envelope<IndexOperation>>(1, true, true);
+
+            await using var provider = CreateProvider();
+            var node = new ApplyEnrichmentNode("enrich", input.Reader, output.Writer, deadLetter.Writer, provider.GetRequiredService<IServiceScopeFactory>());
+
+            await node.StartAsync(CancellationToken.None);
+
+            // Start from a valid request and valid title so the failure is caused only by the missing canonical security tokens.
+            var request = new IngestionRequest(IngestionRequestType.IndexItem, new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "t1" }, DateTimeOffset.UnixEpoch, new IngestionFileList()), null, null);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
+            document.AddTitle("Retained title");
+            document.SecurityTokens.Clear();
+
+            await input.Writer.WriteAsync(new Envelope<IngestionPipelineContext>("doc-1", new IngestionPipelineContext
+            {
+                Request = request,
+                Operation = new UpsertOperation("doc-1", document)
+            }));
+            input.Writer.TryComplete();
+
+            await node.Completion.WaitAsync(TimeSpan.FromSeconds(2));
+
+            output.Reader.TryRead(out var _)
+                  .ShouldBeFalse();
+
+            deadLetter.Reader.TryRead(out var failed)
+                      .ShouldBeTrue();
+            failed.Status.ShouldBe(MessageStatus.Failed);
+            failed.Error.ShouldNotBeNull();
+            failed.Error!.Category.ShouldBe(UKHO.Search.Pipelines.Errors.PipelineErrorCategory.Validation);
+            failed.Error.Code.ShouldBe("CANONICAL_SECURITY_TOKENS_REQUIRED");
+            failed.Error.Message.ShouldContain("security", Case.Insensitive);
+        }
+
+        /// <summary>
+        /// Confirms that canonical validation remains an additional safeguard when enrichment leaves the document without retained security tokens.
+        /// </summary>
+        [Fact]
+        public async Task Upsert_with_request_security_tokens_but_no_retained_canonical_tokens_after_enrichment_is_dead_lettered()
+        {
+            var input = BoundedChannelFactory.Create<Envelope<IngestionPipelineContext>>(1, true, true);
+            var output = BoundedChannelFactory.Create<Envelope<IndexOperation>>(1, true, true);
+            var deadLetter = BoundedChannelFactory.Create<Envelope<IndexOperation>>(1, true, true);
+
+            await using var provider = CreateProvider(new TitleSettingEnricher("Retained title", 100), new SecurityTokenClearingEnricher(200));
+            var node = new ApplyEnrichmentNode("enrich", input.Reader, output.Writer, deadLetter.Writer, provider.GetRequiredService<IServiceScopeFactory>());
+
+            await node.StartAsync(CancellationToken.None);
+
+            // Keep the request contract valid so the test proves the later canonical safeguard is independent of request validation.
+            var request = new IngestionRequest(IngestionRequestType.IndexItem, new IndexRequest("doc-1", Array.Empty<IngestionProperty>(), new[] { "Mixed-Case-Token" }, DateTimeOffset.UnixEpoch, new IngestionFileList()), null, null);
+            var document = CanonicalDocument.CreateMinimal("doc-1", "file-share", request.IndexItem!, request.IndexItem.Timestamp);
+
+            await input.Writer.WriteAsync(new Envelope<IngestionPipelineContext>("doc-1", new IngestionPipelineContext
+            {
+                Request = request,
+                Operation = new UpsertOperation("doc-1", document)
+            }));
+            input.Writer.TryComplete();
+
+            await node.Completion.WaitAsync(TimeSpan.FromSeconds(2));
+
+            output.Reader.TryRead(out var _)
+                  .ShouldBeFalse();
+
+            deadLetter.Reader.TryRead(out var failed)
+                      .ShouldBeTrue();
+            failed.Status.ShouldBe(MessageStatus.Failed);
+            failed.Error.ShouldNotBeNull();
+            failed.Error!.Category.ShouldBe(UKHO.Search.Pipelines.Errors.PipelineErrorCategory.Validation);
+            failed.Error.Code.ShouldBe("CANONICAL_SECURITY_TOKENS_REQUIRED");
+            failed.Error.Message.ShouldContain("security", Case.Insensitive);
         }
 
         [Fact]
