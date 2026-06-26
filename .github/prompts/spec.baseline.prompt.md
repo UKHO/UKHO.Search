@@ -72,7 +72,7 @@ List:
 - Inconsistent naming/style patterns.
 
 ## Completion Checklist
-- All planned spec files created under `docs/specs/`.
+- All planned spec files created under the active Work Package folder in `dev/work-packages/`.
 - Naming & versioning rules followed.
 - Each spec includes required sections.
 - Cross-references added between specs where appropriate.

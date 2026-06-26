@@ -1,6 +1,6 @@
 # Ingestion rule discovery spec generator prompt (database-driven; produces a markdown discovery document)
 
-Target output path: `docs/xxx-<work-item-descriptor>/spec-domain-rule-discovery_v0.01.md`
+Target output path: `dev/work-packages/xxx-<work-item-descriptor>/spec-domain-rule-discovery_v0.01.md`
 
 Copy/paste the prompt below into ChatGPT/Copilot Chat when you want the assistant to connect to the local SQL Server database, analyse the source data, and generate a **single markdown discovery specification** for future ingestion rule authoring.
 
@@ -34,7 +34,7 @@ The source data is stored in a local SQL Server database using an **Entity Attri
 
 Produce the full markdown content for a **single** discovery specification document in the active Work Package folder, for example:
 
-- `docs/042-rule-discovery/spec-domain-rule-discovery_v0.01.md`
+- `dev/work-packages/044-rule-discovery/spec-domain-rule-discovery_v0.03.md`
 
 Do not modify rule JSON files. Only produce the markdown document content.
 

@@ -55,7 +55,7 @@ flowchart LR
 | Working on ingestion | [Ingestion pipeline](Ingestion-Pipeline) | [Ingestion graph runtime foundations](Ingestion-Graph-Runtime) -> [Ingestion walkthrough](Ingestion-Walkthrough) -> [Ingestion rules](Ingestion-Rules) -> [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference) -> [Ingestion troubleshooting](Ingestion-Troubleshooting) |
 | Working on query or search semantics | [Query pipeline](Query-Pipeline) | [Query walkthrough](Query-Walkthrough) -> [Query signal extraction rules](Query-Signal-Extraction-Rules) -> [Query model and Elasticsearch mapping](Query-Model-and-Elasticsearch-Mapping) -> [Appendix: query rule syntax quick reference](Appendix-Query-Rule-Syntax-Quick-Reference) |
 | Working on Workbench or Blazor UI | [Solution architecture](Solution-Architecture) | [Architecture walkthrough](Architecture-Walkthrough) -> [Workbench introduction](Workbench-Introduction) -> [Workbench architecture](Workbench-Architecture) -> [Workbench commands and tools](Workbench-Commands-and-Tools) -> [Workbench tabs and layout](Workbench-Tabs-and-Layout) |
-| Tracing repository history or design background | [Documentation source map](Documentation-Source-Map) | Related work-package documents in `docs/` |
+| Tracing repository history or design background | [Documentation source map](Documentation-Source-Map) | Related work-package documents in `dev/work-packages/mvp/` |
 
 ## Major areas of the wiki
 

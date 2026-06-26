@@ -1,0 +1,256 @@
+# Implementation Plan
+
+**Target output path:** `dev/work-packages/mvp/084-workbench-tabs/implementation-plan.md`
+
+**Source specification:** `dev/work-packages/mvp/084-workbench-tabs/spec-workbench-tabs_v0.01.md`
+
+## Delivery rules for all Work Items
+
+- `./.github/instructions/documentation-pass.instructions.md` is a mandatory repository standard for this work package and a hard Definition of Done gate for every code-writing task in this plan.
+- Every code-writing task in this plan must implement that instruction file in full, including XML documentation for eligible public APIs, developer-level comments for every class, method, and constructor, parameter documentation for every public method and constructor parameter, comments on every property whose meaning is not obvious from its name, and sufficient inline or block comments to explain logical flow and any algorithms used.
+- The Workbench UI must remain desktop-like, remain close to the stock Radzen Material theme, and continue to use `UKHO.Workbench.Layout` grid and splitter primitives rather than introducing docking-style behavior.
+- Blazor pages and components that must handle click, double-click, menu, tooltip, and close interactions must remain explicitly interactive with `@rendermode InteractiveServer` where required.
+- Workbench architecture must remain aligned to repository guidance: contracts and models in `src/workbench/server/UKHO.Workbench`, orchestration in `src/workbench/server/UKHO.Workbench.Services`, infrastructure in `src/workbench/server/UKHO.Workbench.Infrastructure` when needed, and composition and UI in `src/workbench/server/WorkbenchHost`.
+- Validation for this work package should stay focused on the Workbench projects and tests changed by the slice rather than the full repository suite.
+
+## Core Tabbed Activation Slice
+
+- [x] Work Item 1: Replace single active-tool hosting with a runnable tabbed Workbench surface - Completed
+  - Summary: Added bounded tab identity/state models, tab-aware shell orchestration, explorer selection plus double-click open behavior, a visible tab strip, mounted inactive tab hosting, focused tests, and wiki updates for the first runnable Workbench tab slice.
+  - **Purpose**: Deliver the first end-to-end tabbed shell slice so explorer interaction opens multiple tabs in the center surface instead of replacing the current tool, while repeated activation reuses the existing logical tab.
+  - **Acceptance Criteria**:
+    - The Workbench shell renders a visible tab strip above the central content surface.
+    - Explorer single-click selects an item without opening a tab.
+    - Explorer double-click opens a new tab when the logical target is not already open.
+    - Explorer double-click focuses the existing tab instead of opening a duplicate when the same logical target is already open.
+    - Tabs opened from the explorer become active immediately.
+    - Closing the last remaining tab leaves the center surface empty and returns focus to the explorer.
+  - **Definition of Done**:
+    - Code implemented for tab identity, tab collection state, explorer open behavior, close behavior, and central tab hosting
+    - Targeted tests passing for shell state, activation, and host rendering
+    - Logging and error handling added for activation and close-path failures
+    - Documentation updated
+    - `./.github/instructions/documentation-pass.instructions.md` fully applied and treated as a hard gate
+    - Can execute end-to-end via: `dotnet run --project src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
+  - [x] Task 1: Introduce bounded tab models and shell state in `UKHO.Workbench` - Completed
+    - Summary: Added `WorkbenchTabIdentity` and `WorkbenchTab`, reshaped shell state for ordered open tabs plus explorer selection and MRU tracking, and updated activation metadata/runtime instances for logical tab reuse and empty-shell outcomes.
+    - [x] Step 1: Add shell models for logical tab identity, ordered open tabs, active tab tracking, explorer selection state, and most-recently-active metadata needed for later close behavior.
+    - [x] Step 2: Extend or reshape `ActivationTarget`, `ToolInstance`, and `WorkbenchShellState` so the shell can distinguish explorer selection from tab opening and can represent an empty center surface when no tabs remain open.
+    - [x] Step 3: Keep the model focused on the first tabbed slice only, without introducing docking, pinned tabs, keyboard shortcuts, or duplicate-tab overrides.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`, including mandatory comments on every class, method, constructor, parameter, and non-obvious property touched by this task.
+  - [x] Task 2: Refactor activation orchestration in `UKHO.Workbench.Services` - Completed
+    - Summary: Updated activation orchestration to open-or-focus by logical tab identity, added tab switching and close operations, and expanded diagnostics and safe failure handling around activation and close flows.
+    - [x] Step 1: Update `ToolActivationManager` and `WorkbenchShellManager` so open-or-focus decisions are based on logical tab identity instead of the current single active-tool model.
+    - [x] Step 2: Add close-tab orchestration that removes disposed tabs, preserves inactive tabs, reassigns the active tab when the active tab closes, and restores explorer focus when the final tab closes.
+    - [x] Step 3: Add lightweight diagnostics for activation requests, new-tab creation, existing-tab focus, close operations, and identity-resolution failures.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`, including mandatory comments on every class, method, constructor, parameter, and non-obvious property touched by this task.
+  - [x] Task 3: Update `WorkbenchHost` explorer and center-surface UI for tabbed behavior - Completed
+    - Summary: Added selection-only explorer clicks, double-click open-or-focus behavior, a visible tab strip with switching and active-tab close, mounted inactive tab hosting, and a clear empty center-surface state.
+    - [x] Step 1: Update `MainLayout.razor` and `MainLayout.razor.cs` so explorer items support selection on single click and open-or-focus on double click while middle-click remains ignored.
+    - [x] Step 2: Add a tab-strip UI that shows the active tab, allows tab switching, renders a close affordance only on the active tab, and leaves ordering under shell control.
+    - [x] Step 3: Update `Index.razor` and `Index.razor.cs` so the active tab content is rendered from the tab collection rather than a single global active tool, while inactive tabs preserve in-memory component state for as long as they remain open.
+    - [x] Step 4: Ensure the empty-state UI clearly communicates that no Workbench tab is open and that the user should return to the explorer.
+    - [x] Step 5: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`, including mandatory comments on every class, method, constructor, parameter, and non-obvious property touched by this task.
+  - [x] Task 4: Add focused verification for the first tabbed slice - Completed
+    - Summary: Replaced the placeholder service coverage, expanded shell-state tests, added host layout and page rendering tests, and validated the targeted build plus Workbench shell test projects.
+    - [x] Step 1: Extend `test/workbench/server/UKHO.Workbench.Tests` with state-level tests for open, focus, switch, close, most-recently-active ordering, and empty-shell outcomes.
+    - [x] Step 2: Replace the current placeholder service tests in `test/workbench/server/UKHO.Workbench.Services.Tests` with activation and close-path coverage for the tabbed shell orchestration.
+    - [x] Step 3: Add host-level tests in `test/workbench/server/WorkbenchHost.Tests` that verify single-click selection only, double-click open, open-or-focus reuse, active-tab switching, and empty-state behavior.
+    - [x] Step 4: Prefer browser-driven or end-to-end-style interaction coverage where practical for tab interaction flows, consistent with the repository preference for Playwright-style UI verification over purely component-level testing.
+    - [x] Step 5: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`, including mandatory comments on every class, method, constructor, parameter, and non-obvious property touched by this task.
+  - **Files**:
+    - `src/workbench/server/UKHO.Workbench/WorkbenchShell/WorkbenchShellState.cs`: evolve shell state from a single active tool to ordered tab state plus activity history.
+    - `src/workbench/server/UKHO.Workbench/Tools/ActivationTarget.cs`: extend activation metadata so logical tab identity can support reuse checks.
+    - `src/workbench/server/UKHO.Workbench/Tools/ToolInstance.cs`: add runtime metadata needed for open tabs and per-tab state tracking.
+    - `src/workbench/server/UKHO.Workbench/WorkbenchShell/*.cs`: add new bounded tab identity and tab-descriptor models as needed.
+    - `src/workbench/server/UKHO.Workbench.Services/Tools/ToolActivationManager.cs`: implement open-or-focus and close orchestration.
+    - `src/workbench/server/UKHO.Workbench.Services/Shell/WorkbenchShellManager.cs`: expose tab-aware shell operations and diagnostics.
+    - `src/workbench/server/WorkbenchHost/Components/Layout/MainLayout.razor`: render explorer interaction and the first tab strip.
+    - `src/workbench/server/WorkbenchHost/Components/Layout/MainLayout.razor.cs`: coordinate explorer selection, double-click open, tab activation, and close actions.
+    - `src/workbench/server/WorkbenchHost/Components/Pages/Index.razor`: host active tab content and empty-state messaging.
+    - `src/workbench/server/WorkbenchHost/Components/Pages/Index.razor.cs`: project tab-aware dynamic component parameters and render behavior.
+    - `test/workbench/server/UKHO.Workbench.Tests/*.cs`: state-model tests for tab ordering and lifecycle.
+    - `test/workbench/server/UKHO.Workbench.Services.Tests/*.cs`: activation and close orchestration tests.
+    - `test/workbench/server/WorkbenchHost.Tests/*.cs`: shell interaction tests for the first runnable tab slice.
+  - **Work Item Dependencies**: Depends on the already-delivered `083-workbench-model` shell foundation.
+  - **Run / Verification Instructions**:
+    - `dotnet build src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
+    - `dotnet test test/workbench/server/UKHO.Workbench.Tests/UKHO.Workbench.Tests.csproj`
+    - `dotnet test test/workbench/server/UKHO.Workbench.Services.Tests/UKHO.Workbench.Services.Tests.csproj`
+    - `dotnet test test/workbench/server/WorkbenchHost.Tests/WorkbenchHost.Tests.csproj`
+    - `dotnet run --project src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
+    - Launch the Workbench, single-click an explorer item to verify selection-only behavior, double-click two different items to verify two tabs open, then double-click the first item again to verify the existing tab is focused instead of duplicated.
+  - **User Instructions**: Use the current local authentication and module configuration already required by `WorkbenchHost`.
+
+## Tab Lifecycle, Metadata, and Shared Reuse Rules
+
+- [x] Work Item 2: Apply full first-implementation tab lifecycle rules across shell entry points - Completed
+  - Summary: Added parameter-aware activation targets and tab identities, seeded explorer-owned tab metadata, enabled inactive-tab title and icon updates with metadata diagnostics, aligned tab-strip and context-menu close behavior, extended focused Workbench tests, and updated the wiki for the lifecycle slice.
+  - **Purpose**: Complete the core tab-management behavior so the shell handles close behavior, title and icon updates, parameter-sensitive reuse, and consistent activation across explorer and non-explorer entry points.
+  - **Acceptance Criteria**:
+    - Different parameter identities for the same view type open separate tabs, while matching parameter identities reuse the existing tab.
+    - Hosted views can update tab titles and icons immediately, including when the tab is inactive.
+    - Explorer-provided titles and icons initialize new tabs until hosted-view metadata supersedes them.
+    - Closing the active tab activates the most recently active remaining tab.
+    - Closing a non-active tab leaves the current active tab unchanged.
+    - Tab-strip close and tab-context-menu close produce the same outcomes.
+    - No first-implementation shell entry point can bypass reuse rules to force a duplicate tab.
+  - **Definition of Done**:
+    - Code implemented for parameter-aware identity, metadata updates, context-menu close, and shared reuse rules
+    - Targeted tests passing for activation identity and metadata updates
+    - Logging and error handling added for metadata and cross-entry-point activation flows
+    - Documentation updated
+    - `./.github/instructions/documentation-pass.instructions.md` fully applied and treated as a hard gate
+    - Can execute end-to-end via: `dotnet run --project src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
+  - [x] Task 1: Expand the activation contract for parameter-aware logical tab identity - Completed
+    - Summary: Expanded `ActivationTarget` and `WorkbenchTabIdentity` with bounded parameter identity and initial metadata, updated command equality checks, and aligned tool-context and command-driven activation paths around the same reuse contract.
+    - [x] Step 1: Add bounded identity inputs so the shell can distinguish the same tool opened with different parameters from the same tool reopened with matching parameters.
+    - [x] Step 2: Update explorer items, command routing, and tool-context-driven activation requests so they all flow through the same logical identity model.
+    - [x] Step 3: Preserve a clear first-implementation boundary by keeping explicit duplicate-tab behavior out of scope.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`, including mandatory comments on every class, method, constructor, parameter, and non-obvious property touched by this task.
+  - [x] Task 2: Complete runtime tab metadata behavior - Completed
+    - Summary: Seeded new tabs from explorer-owned title and icon metadata, surfaced tab metadata directly from runtime tab models, added explicit runtime-instance disposal on close, and logged title/icon metadata updates in the shell manager.
+    - [x] Step 1: Ensure a newly opened tab starts from the explorer item label and icon when those values are available.
+    - [x] Step 2: Update the tool-context bridge and runtime tab models so hosted views can push title and icon changes immediately even while inactive.
+    - [x] Step 3: Preserve in-memory state for all open tabs and dispose that state immediately when a tab is closed.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`, including mandatory comments on every class, method, constructor, parameter, and non-obvious property touched by this task.
+  - [x] Task 3: Add the first tab context menu and align all close entry points - Completed
+    - Summary: Added a close-only tab context menu in `MainLayout`, routed context-menu selection through the shared shell close path, and kept tab closability uniform through the tab model.
+    - [x] Step 1: Add a basic tab context menu in `WorkbenchHost` with `Close` as the only first-implementation action.
+    - [x] Step 2: Route strip-close and context-menu close through the same shell service method so disposal, active-tab reassignment, and explorer-focus behavior stay identical.
+    - [x] Step 3: Keep tabs uniformly closable and avoid pinned, protected, or non-closable exceptions in this slice.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`, including mandatory comments on every class, method, constructor, parameter, and non-obvious property touched by this task.
+  - [x] Task 4: Verify shared reuse and lifecycle behavior - Completed
+    - Summary: Extended shell-state, service, and host tests to cover parameter-aware reuse, tool-context activation, inactive-tab metadata updates, context-menu close routing, middle-click no-op behavior, and close-path disposal.
+    - [x] Step 1: Add state and service tests that prove same-parameter requests reuse tabs, different-parameter requests create separate tabs, and non-explorer entry points honor the same rules.
+    - [x] Step 2: Add host tests that verify inactive-tab title and icon updates appear immediately, active-tab close picks the most recently active remaining tab, non-active close preserves the current tab, and context-menu close matches strip-close behavior.
+    - [x] Step 3: Add focused interaction coverage for middle-click no-op behavior on explorer items and tabs.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`, including mandatory comments on every class, method, constructor, parameter, and non-obvious property touched by this task.
+  - **Files**:
+    - `src/workbench/server/UKHO.Workbench/Tools/ActivationTarget.cs`: carry parameter identity or equivalent logical-target metadata.
+    - `src/workbench/server/UKHO.Workbench/Explorers/ExplorerItem.cs`: provide initial tab title and icon inputs plus reusable activation metadata.
+    - `src/workbench/server/UKHO.Workbench/Tools/ToolContext.cs`: expose bounded title and icon update paths that stay tab-aware.
+    - `src/workbench/server/UKHO.Workbench/Tools/IToolContextBridge.cs`: align hosted-view metadata updates and open requests with tab-aware contracts.
+    - `src/workbench/server/UKHO.Workbench/WorkbenchShell/*.cs`: store parameter identity, title, icon, closable state, and activity-order metadata for open tabs.
+    - `src/workbench/server/UKHO.Workbench.Services/Commands/CommandManager.cs`: route all activation-capable commands through the shared open-or-focus contract.
+    - `src/workbench/server/UKHO.Workbench.Services/Shell/WorkbenchShellManager.cs`: centralize close, metadata, and reuse logic across shell entry points.
+    - `src/workbench/server/WorkbenchHost/Components/Layout/MainLayout.razor`: render tab metadata and the context-menu close affordance.
+    - `src/workbench/server/WorkbenchHost/Components/Layout/MainLayout.razor.cs`: coordinate context-menu interactions and same-behavior close routing.
+    - `test/workbench/server/UKHO.Workbench.Tests/*.cs`: parameter-identity and lifecycle tests.
+    - `test/workbench/server/UKHO.Workbench.Services.Tests/*.cs`: shared open-or-focus rule coverage.
+    - `test/workbench/server/WorkbenchHost.Tests/*.cs`: metadata-update and context-menu close tests.
+  - **Work Item Dependencies**: Depends on Work Item 1.
+  - **Run / Verification Instructions**:
+    - `dotnet build src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
+    - `dotnet test test/workbench/server/UKHO.Workbench.Tests/UKHO.Workbench.Tests.csproj`
+    - `dotnet test test/workbench/server/UKHO.Workbench.Services.Tests/UKHO.Workbench.Services.Tests.csproj`
+    - `dotnet test test/workbench/server/WorkbenchHost.Tests/WorkbenchHost.Tests.csproj`
+    - `dotnet run --project src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
+    - Open the same tool twice with matching logical parameters to verify reuse, open it again with different logical parameters to verify a separate tab, then confirm title and icon updates appear on both active and inactive tabs.
+  - **User Instructions**: Use whichever module tools currently expose enough state to demonstrate title, icon, and parameter-identity updates during manual verification.
+
+## Overflow, Tooltip, and Tab-Strip Presentation Slice
+
+- [x] Work Item 3: Deliver the first overflow dropdown and long-title presentation rules - Completed
+  - Summary: Added bounded visible-tab window state plus overflow activation orchestration, rendered an always-visible right-aligned overflow dropdown with text-only active-state entries, applied shared ellipsis and Radzen tooltip behavior to strip and overflow titles, and extended focused Workbench tests for overflow selection and hover-tooling behavior.
+  - **Purpose**: Make the tab strip usable with many open tabs while keeping the first implementation simple, text-focused, and consistent with Radzen tooltip behavior.
+  - **Acceptance Criteria**:
+    - The tab strip includes an always-visible overflow dropdown on the right side.
+    - The overflow dropdown lists all open tabs and selecting an entry activates the corresponding tab.
+    - Selecting an overflow entry reorders the visible strip minimally, only enough to bring the selected tab into view.
+    - The overflow dropdown indicates the currently active tab when opened.
+    - Overflow entries remain text-only and do not include close actions, filter input, or search input.
+    - Long tab titles truncate with ellipsis and show the full title on hover by using the Radzen tooltip service.
+    - The same tooltip behavior applies to long overflow entries, and tab hover tooltips appear on every hover.
+  - **Definition of Done**:
+    - Code implemented for overflow selection, minimal visible-strip reordering, title truncation, and tooltip behavior
+    - Targeted tests passing for overflow and tooltip presentation rules
+    - Logging and error handling added for overflow selection failures where relevant
+    - Documentation updated
+    - `./.github/instructions/documentation-pass.instructions.md` fully applied and treated as a hard gate
+    - Can execute end-to-end via: `dotnet run --project src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
+  - [x] Task 1: Add overflow-aware tab-strip presentation models and services - Completed
+    - Summary: Added `WorkbenchTabStripState`, surfaced shell-managed visible tabs separately from logical open order, and introduced dedicated overflow activation orchestration with diagnostics while keeping overflow selection-only.
+    - [x] Step 1: Extend tab-strip state so the shell can distinguish overall tab order from the minimally adjusted visible ordering used when an overflow selection is made.
+    - [x] Step 2: Keep overflow behavior first-implementation-simple by supporting selection only and deferring close actions, filter input, and ordering refinements.
+    - [x] Step 3: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`, including mandatory comments on every class, method, constructor, parameter, and non-obvious property touched by this task.
+  - [x] Task 2: Implement overflow and tooltip UI in `WorkbenchHost` - Completed
+    - Summary: Updated `MainLayout` to render only the visible tab window, added the always-visible overflow dropdown, kept overflow entries text-only with active-state indication, and wired shared Radzen tooltips plus title truncation for both strip and overflow entries.
+    - [x] Step 1: Add a small always-visible overflow dropdown aligned with the right side of the tab strip.
+    - [x] Step 2: Render text-only tab entries in the dropdown, visually indicate the active tab, and activate the chosen tab without introducing close controls.
+    - [x] Step 3: Apply ellipsis-based long-title truncation in the main strip and use the Radzen tooltip service for every tab hover using default position and timing behavior.
+    - [x] Step 4: Apply the same Radzen tooltip pattern to overflow entries while keeping overflow rows text-only.
+    - [x] Step 5: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`, including mandatory comments on every class, method, constructor, parameter, and non-obvious property touched by this task.
+  - [x] Task 3: Add targeted overflow and tooltip verification - Completed
+    - Summary: Added shell-state and service coverage for minimal visible-window movement, added host tests for overflow rendering, activation, and tooltip service usage, and validated the targeted Workbench build plus the three focused Workbench test projects.
+    - [x] Step 1: Add state and service tests for minimal visible-strip reordering and active-entry identification.
+    - [x] Step 2: Add host tests that verify the overflow control is always present, selection works, no filter or search UI appears, no close action appears in overflow, and long titles use the intended tooltip behavior.
+    - [x] Step 3: Prefer interaction-driven verification for hover and overflow selection behavior where practical so the tests exercise the rendered shell rather than only internal helpers.
+    - [x] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`, including mandatory comments on every class, method, constructor, parameter, and non-obvious property touched by this task.
+  - **Files**:
+    - `src/workbench/server/UKHO.Workbench/WorkbenchShell/*.cs`: tab-strip visibility and overflow-selection state models.
+    - `src/workbench/server/UKHO.Workbench.Services/Shell/WorkbenchShellManager.cs`: overflow-selection orchestration and visible-strip ordering decisions.
+    - `src/workbench/server/WorkbenchHost/Components/Layout/MainLayout.razor`: render the overflow dropdown, truncation markup, and Radzen tooltip hooks.
+    - `src/workbench/server/WorkbenchHost/Components/Layout/MainLayout.razor.cs`: coordinate overflow selection and active-entry indication.
+    - `src/workbench/server/WorkbenchHost/Components/Layout/*.razor.css`: add localized tab-strip truncation and layout rules without modifying the Radzen theme.
+    - `test/workbench/server/UKHO.Workbench.Tests/*.cs`: overflow-ordering tests.
+    - `test/workbench/server/UKHO.Workbench.Services.Tests/*.cs`: overflow-selection orchestration tests.
+    - `test/workbench/server/WorkbenchHost.Tests/*.cs`: overflow rendering and tooltip behavior tests.
+  - **Work Item Dependencies**: Depends on Work Items 1 and 2.
+  - **Run / Verification Instructions**:
+    - `dotnet build src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
+    - `dotnet test test/workbench/server/UKHO.Workbench.Tests/UKHO.Workbench.Tests.csproj`
+    - `dotnet test test/workbench/server/UKHO.Workbench.Services.Tests/UKHO.Workbench.Services.Tests.csproj`
+    - `dotnet test test/workbench/server/WorkbenchHost.Tests/WorkbenchHost.Tests.csproj`
+    - `dotnet run --project src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
+    - Open enough tabs to trigger overflow, use the overflow dropdown to activate a hidden tab, verify the selected tab becomes visible with minimal strip movement, and hover both strip and overflow entries to confirm Radzen tooltips show the full title.
+  - **User Instructions**: Use module tools with intentionally long display names or temporarily long runtime titles during manual verification.
+
+## Session Resilience and Work Package Completion
+
+- [ ] Work Item 4: Align tab state with per-user session semantics and finalize the work package - Removed
+  - Summary: Removed the session restore and browser-session persistence feature from the current implementation, restored the earlier singleton shell bootstrap path, deleted the temporary recovery code and tests, and updated the Workbench wiki to match the reverted scope. This work item is intentionally deferred and is not part of the current delivered package.
+  - **Purpose**: Ensure tab state behaves like a user-session Workbench experience, survives refresh or reconnect when the session survives, falls back cleanly when it does not, and ships with completed package documentation and verification guidance.
+  - **Acceptance Criteria**:
+    - Open tabs and their in-memory state restore after browser refresh or Blazor Server reconnect when the current user session survives.
+    - A non-surviving session falls back to a fresh empty shell without additional recovery UI.
+    - The first implementation does not restore tabs from earlier sessions beyond the surviving current user session.
+    - Diagnostics make recovery, fallback, activation, and disposal behavior traceable.
+    - Package documentation reflects the delivered first-implementation limits and deferred items.
+  - **Definition of Done**:
+    - Code implemented for session-aware tab-state restoration and fallback behavior
+    - Targeted tests passing for recovery and fresh-shell fallback scenarios
+    - Logging and error handling added for recovery, fallback, and disposal paths
+    - Documentation updated
+    - `./.github/instructions/documentation-pass.instructions.md` fully applied and treated as a hard gate
+    - Can execute end-to-end via: `dotnet run --project src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
+  - [ ] Task 1: Refine shell state ownership for current-user-session tab persistence - Removed
+    - Summary: Removed from the current delivery. The shell remains on the earlier singleton bootstrap path, and no session-aware persistence mechanism is currently shipped.
+    - [ ] Step 1: Review the current singleton `WorkbenchShellManager` registration and align the tab-state lifetime with current-user-session behavior rather than cross-user application state.
+    - [ ] Step 2: Add a bounded session snapshot or persistence mechanism that can restore open-tab identities, ordering, active tab, and hosted metadata when the user session survives refresh or reconnect.
+    - [ ] Step 3: Ensure the fallback path intentionally produces a fresh empty shell when the prior session context is no longer available.
+    - [ ] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`, including mandatory comments on every class, method, constructor, parameter, and non-obvious property touched by this task.
+  - [ ] Task 2: Add recovery-focused verification and observability - Removed
+    - Summary: Removed from the current delivery. The temporary restore/fallback tests and diagnostics added for this slice were deleted together with the feature code.
+    - [ ] Step 1: Add service and host tests that prove surviving-session restoration, non-surviving-session fallback, and absence of cross-session restore beyond the current session boundary.
+    - [ ] Step 2: Add or extend diagnostics for session recovery decisions, tab snapshot restore, fallback, activation, and tab disposal.
+    - [ ] Step 3: Confirm no visible fallback messaging is introduced in this first implementation because the specification defers that behavior.
+    - [ ] Step 4: Implement all new and updated code in full compliance with `./.github/instructions/documentation-pass.instructions.md`, including mandatory comments on every class, method, constructor, parameter, and non-obvious property touched by this task.
+  - [ ] Task 3: Finalize work-package documentation - Removed
+    - Summary: Removed from the current delivery. The implementation plan and wiki were updated to record the removal and to restore the earlier documented scope.
+    - [ ] Step 1: Update `dev/work-packages/mvp/084-workbench-tabs/spec-workbench-tabs_v0.01.md` only if implementation-driven clarifications are genuinely required.
+    - [ ] Step 2: Keep `dev/work-packages/mvp/084-workbench-tabs/implementation-plan.md` aligned with delivered scope and status as work progresses.
+    - [ ] Step 3: Update any affected Workbench wiki or architecture pages so the tabbed-shell behavior, reuse rules, overflow behavior, and deferred items are documented for maintainers.
+  - **Files**:
+    - Removed from the current delivery. No Work Item 4 implementation files remain active in the codebase.
+    - `dev/work-packages/mvp/084-workbench-tabs/spec-workbench-tabs_v0.01.md`: implementation-driven clarification updates only if needed.
+    - `dev/work-packages/mvp/084-workbench-tabs/implementation-plan.md`: ongoing status maintenance for the work package.
+  - **Work Item Dependencies**: Depends on Work Items 1, 2, and 3.
+  - **Run / Verification Instructions**:
+    - `dotnet build src/workbench/server/WorkbenchHost/WorkbenchHost.csproj`
+    - Removed from the current delivery.
+  - **User Instructions**: No manual action required because this work item has been removed from the current implementation scope.
+
+## Overall approach summary
+
+This plan delivers `084-workbench-tabs` as four vertical slices. The first slice replaces the current single active-tool model with a runnable tabbed Workbench shell. The second completes reuse, metadata, and close lifecycle rules across all entry points. The third adds overflow and long-title presentation behavior. The fourth session-recovery slice has been removed from the current implementation scope and is deferred for future reconsideration. Across every active slice, the implementation must preserve the desktop-like Workbench direction, avoid docking semantics, keep visual changes localized and close to the stock Radzen theme, and treat `./.github/instructions/documentation-pass.instructions.md` as a non-negotiable Definition of Done requirement.

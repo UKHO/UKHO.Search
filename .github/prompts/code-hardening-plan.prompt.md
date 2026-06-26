@@ -10,7 +10,7 @@ You are a senior software engineer working in the `UKHO.ADDS.Management` reposit
 
 The existing codebase is effectively demo/reference code. Your job is to produce a **production hardening plan** that can be executed to raise the solution to production quality.
 
-**Output only a plan** (no code changes in this run). The plan must be structured similarly to other plans in this repository (see `docs/plans/` for examples). If no examples exist, create a plan that matches the repository style: clear title, baseline, delta, carry-over, numbered work items, and validation steps.
+**Output only a plan** (no code changes in this run). The plan must be structured similarly to other plans in this repository (see `dev/work-packages/*/plans/` for examples). If no examples exist, create a plan that matches the repository style: clear title, baseline, delta, carry-over, numbered work items, and validation steps.
 
 # Hardening mindset
 Think in terms of incrementally upgrading a working demo into a secure, resilient, observable, maintainable, testable, and operable system.
@@ -73,7 +73,7 @@ Cover the following areas, tailoring to what the repo actually contains:
 Produce a plan document with:
 - A clear title that includes the area and date.
 - **Baseline**: current state summary grounded in what you found.
-- **Goals/Non-goals**: what this hardening effort will and won’t change.
+- **Goals/Non-goals**: what this hardening effort will and wonï¿½t change.
 - **Delta**: enumerated changes grouped by theme (security, reliability, observability, etc.).
 - **Carry-over**: work explicitly deferred.
 - **Work items**: numbered list where each item is actionable, reviewable, and includes:

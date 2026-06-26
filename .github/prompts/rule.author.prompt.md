@@ -12,12 +12,12 @@ You are authoring **ingestion rule JSON files** from an existing **markdown rule
 
 Your job is to read the selected mapping document, identify each proposed rule, ensure `./rules/file-share/` exists, and create the corresponding rule JSON files in that directory.
 
-Use `./docs/ingestion-rules.md` as the implementation guide whenever rule-schema or rule-authoring detail is needed.
+Use `./wiki/Ingestion-Rules.md` as the implementation guide whenever rule-schema or rule-authoring detail is needed.
 
 ## Mandatory operating rules
 
 1. **Your first response in every run must ask me which markdown rule mapping document to use, unless I already provided it in the chat.**
-   - Example: `./docs/044-rule-discovery/spec-domain-rule-discovery_v0.03.md`
+   - Example: `./dev/work-packages/044-rule-discovery/spec-domain-rule-discovery_v0.03.md`
 2. If I already provided the mapping document path/version in the chat, use it and do not ask again.
 3. Treat the selected markdown mapping document as the authoritative source for:
    - business unit name
@@ -27,7 +27,7 @@ Use `./docs/ingestion-rules.md` as the implementation guide whenever rule-schema
    - domain confirmations and resolved open questions
 4. For **each proposed rule** in the document, create **one JSON file** in `./rules/file-share/`.
 5. If `./rules/file-share/` does not exist, create it before writing any rule files.
-6. Each JSON file must follow the guidance in `./docs/ingestion-rules.md`.
+6. Each JSON file must follow the guidance in `./wiki/Ingestion-Rules.md`.
 7. Use `if` rather than `match` when authoring predicates.
 8. Do not create a new markdown spec/version while authoring rules.
 9. If a required rule detail is missing or ambiguous, ask **one concise clarification question at a time**.
@@ -41,7 +41,7 @@ Prompt me for the markdown document containing the rule mapping unless it is alr
 
 Example input document:
 
-- `./docs/044-rule-discovery/spec-domain-rule-discovery_v0.03.md`
+- `./dev/work-packages/044-rule-discovery/spec-domain-rule-discovery_v0.03.md`
 
 ## Output location
 
@@ -93,7 +93,7 @@ For each proposed rule found in the mapping document:
 
 2. Build the `if` predicate from the document's proposed discriminator.
 3. Build the `then` actions from the document's proposed canonical mapping.
-4. Follow `./docs/ingestion-rules.md` for:
+4. Follow `./wiki/Ingestion-Rules.md` for:
    - schema validity
    - path syntax
    - predicate/operator structure
@@ -115,7 +115,7 @@ If no mapping document path/version is already present in the chat, ask for it f
 
 Example:
 
-> Please provide the markdown rule mapping document to use, for example `./docs/044-rule-discovery/spec-domain-rule-discovery_v0.03.md`.
+> Please provide the markdown rule mapping document to use, for example `./dev/work-packages/044-rule-discovery/spec-domain-rule-discovery_v0.03.md`.
 
 ### Step 2 - Read the mapping document
 
@@ -134,7 +134,7 @@ For each proposed rule/class:
 
 - create one JSON file in `./rules/`
 - use the required filename convention
-- make the rule valid according to `./docs/ingestion-rules.md`
+- make the rule valid according to `./wiki/Ingestion-Rules.md`
 
 ### Step 4 - Validate your own output
 
@@ -144,7 +144,7 @@ Before finishing:
 - check that filenames are lowercase and human-readable
 - check that each file uses `schemaVersion: "1.0"`
 - check that each rule has exactly one predicate block
-- check that operators and paths conform to `./docs/ingestion-rules.md`
+- check that operators and paths conform to `./wiki/Ingestion-Rules.md`
 - check that every rule JSON file is formatted with strictly four spaces per indentation level
 
 ## Clarification rules

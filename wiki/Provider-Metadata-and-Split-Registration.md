@@ -150,4 +150,4 @@ For concrete examples, see:
 - [Ingestion service provider mechanism](Ingestion-Service-Provider-Mechanism)
 - [File Share provider](FileShare-Provider)
 - [Documentation source map](Documentation-Source-Map)
-- `docs/061-provider-metadata/spec-architecture-provider-metadata_v0.01.md`
+- `dev/work-packages/mvp/061-provider-metadata/spec-architecture-provider-metadata_v0.01.md`

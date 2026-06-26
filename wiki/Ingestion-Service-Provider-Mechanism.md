@@ -74,7 +74,7 @@ flowchart LR
 
 ## How this shows up in the code
 
-The design history in `docs/008-provider-refactor/architecture.md` describes the intended split clearly:
+The design history in `dev/work-packages/mvp/008-provider-refactor/architecture.md` describes the intended split clearly:
 
 - infrastructure queue host receives and wraps messages
 - provider processes `Envelope<IngestionRequest>` objects

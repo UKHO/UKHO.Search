@@ -1,4 +1,4 @@
-# Copilot Instructions – Coding Standards (Microsoft Best Practices)
+# Copilot Instructions ï¿½ Coding Standards (Microsoft Best Practices)
 
 Purpose: Define coding standards aligned with current Microsoft guidance. Always verify latest recommendations via `microsoft.docs.mcp` (Microsoft Learn MCP docs).
 
@@ -70,7 +70,7 @@ Testing
 
 Documentation & reviews
 - Document public APIs with XML comments where helpful.
-- Keep README and `docs/specs` updated for behavior changes.
+- Keep README and relevant Work Package docs under `dev/work-packages/` updated for behavior changes.
 - Use feature branches and PR reviews; enforce lint/build/test gates.
 
 References

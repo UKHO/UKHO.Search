@@ -25,9 +25,8 @@ High-level structural and technology guidance for the solution.
 - `/src`: Source code
 - `/infra`: Infrastructure as Code
 - `/docs`: Documentation
- - `/docs/specs`: Specifications (versioned)
- - `/docs/plans`: Plans (versioned)
- - `/docs/plans/api`, `/docs/plans/ui`, `/docs/plans/backend`, `/docs/plans/shared`, `/docs/plans/infra`, `/docs/plans/tests`
+ - `/dev/work-packages`: Work Package specifications, plans, and architecture notes
+ - `/dev/work-packages/mvp`: historical migrated MVP Work Packages
 - `/tests`: Test projects/assets
 - `azure.yaml`: Main AZD config
 
