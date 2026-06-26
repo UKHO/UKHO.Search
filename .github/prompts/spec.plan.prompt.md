@@ -21,12 +21,12 @@ When planning any work that creates or updates source code, you MUST treat `./.g
 - If the specification for a work item includes documentation-only constraints, the plan MUST preserve them exactly.
 
 ## Documentation location (Work Package folder)
-All documents for this piece of work MUST be created under a single subfolder of `./docs/`.
+All documents for this piece of work MUST be created under a single subfolder of `./dev/work-packages/`.
 
 - Folder naming: `xxx-<descriptor>` where `xxx` is the next incremental number (e.g. `001`, `002`, ...) and `<descriptor>` succinctly describes the work.
-- Use `./docs/001-Initial-Shell/` as the reference example for structure and naming.
+- Existing folders under `./dev/work-packages/mvp/` are historical references for structure only; do not create new Work Packages under `mvp`.
 - The implementation plan and architecture document MUST be stored in the same Work Package folder as the related specifications.
-- Do not write plans to `docs/plans/` for this workflow.
+- Do not write plans outside the active Work Package folder for this workflow.
 - In outputs, include the target output path for each document (relative to repo root).
 
 Vertical Slice Delivery Principle:

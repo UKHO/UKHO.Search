@@ -1,0 +1,389 @@
+# Implementation Plan
+
+- Work Package: `071-documentation`
+- Version: `v0.01`
+- Status: `Draft`
+- Target Output Path: `dev/work-packages/mvp/071-documentation/plan-documentation-code-pass_v0.01.md`
+- Based on: `dev/work-packages/mvp/071-documentation/spec-domain-code-documentation_v0.01.md`
+- Mandatory instruction: `./.github/instructions/documentation-pass.instructions.md`
+
+## Overall Approach
+
+This plan delivers the documentation uplift as a sequence of bounded project-pair work items so the pass remains auditable, predictable, and safe. Each work item covers one production project and its matching test project from the specification, with the documentation standard from `./.github/instructions/documentation-pass.instructions.md` treated as a hard gate.
+
+This is a documentation-only plan. Every work item must preserve the non-negotiable rule from the specification: comments may be added or improved, but runtime behaviour, signatures, logic, formatting, dependencies, and structure must not otherwise change.
+
+Cross-cutting rules for every work item:
+- Follow `./.github/instructions/documentation-pass.instructions.md` in full.
+- Process every hand-maintained `.cs` file in the named project pair.
+- Exclude generated or machine-maintained files such as `obj`, designer-generated, and source-generator output.
+- Add or improve explicit XML documentation for eligible public API surface.
+- Add developer-level explanatory comments inside every method, including private methods, local functions, top-level host statements where applicable, and non-trivial lambdas.
+- Ensure test code is documented to the same standard, with especially careful explanation of test intent and behaviour significance.
+- Preserve existing non-comment formatting except where the minimum change is required to insert comments.
+- Validate with build and tests as the work progresses, and complete the overall pass with a full solution build and full test suite run.
+
+## Domain and Shared Core
+
+- [ ] Work Item 1: Document `UKHO.Search` and `UKHO.Search.Tests`
+  - **Purpose**: Bring the core domain runtime and its matching tests up to the repository documentation standard while preserving all existing behaviour.
+  - **Acceptance Criteria**:
+    - Every hand-maintained `.cs` file in `src/UKHO.Search` and `test/UKHO.Search.Tests` has been reviewed.
+    - Eligible public API surface has explicit local XML documentation matching `./.github/instructions/documentation-pass.instructions.md`.
+    - Every method, including private methods and meaningful local functions/lambdas, contains developer-level explanatory comments.
+    - Test methods and fixtures explain scenario intent, behaviour significance, and expected outcomes clearly.
+    - No non-comment code changes are introduced.
+  - **Definition of Done**:
+    - Comment-only changes completed for `src/UKHO.Search` and `test/UKHO.Search.Tests`
+    - Compliance with `./.github/instructions/documentation-pass.instructions.md` verified
+    - Relevant tests for `UKHO.Search.Tests` pass
+    - No accidental behavioural changes detected
+    - Documentation updated
+    - Can execute verification via the instructions below
+  - [ ] Task 1: Review project pair scope and identify eligible files
+    - [ ] Step 1: Enumerate hand-maintained `.cs` files in `src/UKHO.Search`.
+    - [ ] Step 2: Enumerate hand-maintained `.cs` files in `test/UKHO.Search.Tests`.
+    - [ ] Step 3: Exclude generated and machine-maintained files per `./.github/instructions/documentation-pass.instructions.md`.
+    - [ ] Step 4: Note any top-level files, partial types, generics, extension methods, tuple-returning APIs, or obsolete APIs that require special documentation treatment.
+  - [ ] Task 2: Apply production-project documentation uplift
+    - [ ] Step 1: Add or improve explicit local XML comments for all eligible public API members in `src/UKHO.Search`.
+    - [ ] Step 2: Add required `<summary>`, `<param>`, `<typeparam>`, `<returns>`, `<remarks>`, and intentional `<exception>` tags where applicable.
+    - [ ] Step 3: Add `<example>` tags only where especially complex public production APIs warrant them.
+    - [ ] Step 4: Add developer-level explanatory comments to every method body, including algorithm explanation and non-obvious flow.
+    - [ ] Step 5: Add explanatory comments to private fields, properties, and constants where purpose or coupling is non-obvious.
+  - [ ] Task 3: Apply matching test-project documentation uplift
+    - [ ] Step 1: Add or improve XML comments on eligible public test types and members.
+    - [ ] Step 2: Add careful developer comments to test methods, fixtures, helpers, and setup code.
+    - [ ] Step 3: Explain test intent, setup rationale, assertions, and behavioural coverage without forcing a rigid Arrange/Act/Assert structure.
+  - [ ] Task 4: Validate the project pair safely
+    - [ ] Step 1: Run the `UKHO.Search.Tests` project tests.
+    - [ ] Step 2: Review diffs to confirm that only comments changed.
+    - [ ] Step 3: Record completion in the plan with a concise summary.
+  - **Files**:
+    - `src/UKHO.Search/**/*.cs`: XML documentation and developer comments only
+    - `test/UKHO.Search.Tests/**/*.cs`: XML documentation and developer comments only
+  - **Work Item Dependencies**: None. This is the first bounded slice in the documentation pass.
+  - **Run / Verification Instructions**:
+    - `dotnet test .\test\UKHO.Search.Tests\UKHO.Search.Tests.csproj`
+    - Confirm the diff contains comment-only changes in the scoped projects
+  - **User Instructions**: No manual action required.
+
+- [ ] Work Item 2: Document `UKHO.Search.Ingestion` and `UKHO.Search.Ingestion.Tests`
+  - **Purpose**: Apply the documentation standard to the ingestion domain layer and its tests without changing ingestion behaviour.
+  - **Acceptance Criteria**:
+    - Every hand-maintained `.cs` file in `src/UKHO.Search.Ingestion` and `test/UKHO.Search.Ingestion.Tests` has been reviewed.
+    - Public ingestion contracts, abstractions, and helpers have explicit local XML comments.
+    - All methods, including private helpers and meaningful lambdas/local functions, have developer-level explanatory comments.
+    - Tests clearly document ingestion scenarios, assertions, and behavioural significance.
+    - No non-comment code changes are introduced.
+  - **Definition of Done**:
+    - Comment-only changes completed for `src/UKHO.Search.Ingestion` and `test/UKHO.Search.Ingestion.Tests`
+    - Compliance with `./.github/instructions/documentation-pass.instructions.md` verified
+    - Relevant tests for `UKHO.Search.Ingestion.Tests` pass
+    - Documentation updated
+    - Can execute verification via the instructions below
+  - [ ] Task 1: Review project pair scope and file inventory
+    - [ ] Step 1: Enumerate eligible files in `src/UKHO.Search.Ingestion`.
+    - [ ] Step 2: Enumerate eligible files in `test/UKHO.Search.Ingestion.Tests`.
+    - [ ] Step 3: Exclude generated or machine-maintained files.
+    - [ ] Step 4: Identify special constructs needing richer XML tags, such as generics, async APIs, extension methods, and nullable semantics.
+  - [ ] Task 2: Apply production-project documentation uplift
+    - [ ] Step 1: Add or improve explicit XML comments for public ingestion types, contracts, and members.
+    - [ ] Step 2: Document parameters, returns, type parameters, nullability, cancellation semantics, and intentional exceptions where applicable.
+    - [ ] Step 3: Add developer comments inside every method explaining flow, algorithm, and rationale.
+  - [ ] Task 3: Apply matching test-project documentation uplift
+    - [ ] Step 1: Improve XML documentation for eligible public test members.
+    - [ ] Step 2: Add explanatory comments to test methods, fixtures, helpers, and setup code.
+    - [ ] Step 3: Make behavioural intent and edge-case coverage clear for each test.
+  - [ ] Task 4: Validate the project pair safely
+    - [ ] Step 1: Run the `UKHO.Search.Ingestion.Tests` project tests.
+    - [ ] Step 2: Confirm the changes remain comment-only.
+    - [ ] Step 3: Record completion in the plan with a concise summary.
+  - **Files**:
+    - `src/UKHO.Search.Ingestion/**/*.cs`: XML documentation and developer comments only
+    - `test/UKHO.Search.Ingestion.Tests/**/*.cs`: XML documentation and developer comments only
+  - **Work Item Dependencies**: Work Item 1 may inform terminology style, but no code dependency is required.
+  - **Run / Verification Instructions**:
+    - `dotnet test .\test\UKHO.Search.Ingestion.Tests\UKHO.Search.Ingestion.Tests.csproj`
+    - Confirm the diff contains comment-only changes in the scoped projects
+  - **User Instructions**: No manual action required.
+
+- [ ] Work Item 3: Document `UKHO.Search.ProviderModel` and `UKHO.Search.ProviderModel.Tests`
+  - **Purpose**: Bring the shared provider metadata and registration model, plus its tests, up to the required documentation standard.
+  - **Acceptance Criteria**:
+    - Every hand-maintained `.cs` file in `src/UKHO.Search.ProviderModel` and `test/UKHO.Search.ProviderModel.Tests` has been reviewed.
+    - Public provider model types and members have explicit local XML documentation.
+    - Internal and private implementation logic has adequate developer-level comments.
+    - Tests clearly explain provider-model intent, registration behaviour, and expected validation outcomes.
+    - No non-comment code changes are introduced.
+  - **Definition of Done**:
+    - Comment-only changes completed for `src/UKHO.Search.ProviderModel` and `test/UKHO.Search.ProviderModel.Tests`
+    - Compliance with `./.github/instructions/documentation-pass.instructions.md` verified
+    - Relevant tests for `UKHO.Search.ProviderModel.Tests` pass
+    - Documentation updated
+    - Can execute verification via the instructions below
+  - [ ] Task 1: Review project pair scope and documentation hotspots
+    - [ ] Step 1: Enumerate eligible files in `src/UKHO.Search.ProviderModel`.
+    - [ ] Step 2: Enumerate eligible files in `test/UKHO.Search.ProviderModel.Tests`.
+    - [ ] Step 3: Exclude generated files and inspect for special API forms such as records, generic types, delegates, or extension methods.
+  - [ ] Task 2: Apply production-project documentation uplift
+    - [ ] Step 1: Add or improve XML documentation across the public provider model surface.
+    - [ ] Step 2: Ensure explicit local comments are used rather than inherited-only documentation.
+    - [ ] Step 3: Add method-level developer comments covering validation, registration flow, and non-obvious behaviour.
+  - [ ] Task 3: Apply matching test-project documentation uplift
+    - [ ] Step 1: Add or improve public XML comments in the test project where applicable.
+    - [ ] Step 2: Add detailed developer comments to behavioural, validation, and regression tests.
+  - [ ] Task 4: Validate the project pair safely
+    - [ ] Step 1: Run the `UKHO.Search.ProviderModel.Tests` project tests.
+    - [ ] Step 2: Confirm the changes remain comment-only.
+    - [ ] Step 3: Record completion in the plan with a concise summary.
+  - **Files**:
+    - `src/UKHO.Search.ProviderModel/**/*.cs`: XML documentation and developer comments only
+    - `test/UKHO.Search.ProviderModel.Tests/**/*.cs`: XML documentation and developer comments only
+  - **Work Item Dependencies**: Work Item 1 may inform style consistency only.
+  - **Run / Verification Instructions**:
+    - `dotnet test .\test\UKHO.Search.ProviderModel.Tests\UKHO.Search.ProviderModel.Tests.csproj`
+    - Confirm the diff contains comment-only changes in the scoped projects
+  - **User Instructions**: No manual action required.
+
+- [ ] Work Item 4: Document `UKHO.Search.Query` and `UKHO.Search.Query.Tests`
+  - **Purpose**: Apply the documentation standard to the query-domain project and its tests while preserving search/query behaviour exactly.
+  - **Acceptance Criteria**:
+    - Every hand-maintained `.cs` file in `src/UKHO.Search.Query` and `test/UKHO.Search.Query.Tests` has been reviewed.
+    - Public query-domain API surface has explicit local XML comments.
+    - All methods and meaningful execution constructs have developer-level explanatory comments.
+    - Tests clearly document query scenarios, expected outcomes, and behavioural edge cases.
+    - No non-comment code changes are introduced.
+  - **Definition of Done**:
+    - Comment-only changes completed for `src/UKHO.Search.Query` and `test/UKHO.Search.Query.Tests`
+    - Compliance with `./.github/instructions/documentation-pass.instructions.md` verified
+    - Relevant tests for `UKHO.Search.Query.Tests` pass
+    - Documentation updated
+    - Can execute verification via the instructions below
+  - [ ] Task 1: Review project pair scope and file inventory
+    - [ ] Step 1: Enumerate eligible files in `src/UKHO.Search.Query`.
+    - [ ] Step 2: Enumerate eligible files in `test/UKHO.Search.Query.Tests`.
+    - [ ] Step 3: Exclude generated files and identify special APIs requiring richer XML documentation.
+  - [ ] Task 2: Apply production-project documentation uplift
+    - [ ] Step 1: Add or improve XML comments for public query-domain members.
+    - [ ] Step 2: Document generic parameters, returns, nullability, and intentional exceptions where relevant.
+    - [ ] Step 3: Add developer comments to explain algorithms, normalization flow, and non-obvious behaviour.
+  - [ ] Task 3: Apply matching test-project documentation uplift
+    - [ ] Step 1: Add or improve XML comments on eligible public test members.
+    - [ ] Step 2: Add detailed explanatory comments to tests, fixtures, and helpers.
+  - [ ] Task 4: Validate the project pair safely
+    - [ ] Step 1: Run the `UKHO.Search.Query.Tests` project tests.
+    - [ ] Step 2: Confirm the changes remain comment-only.
+    - [ ] Step 3: Record completion in the plan with a concise summary.
+  - **Files**:
+    - `src/UKHO.Search.Query/**/*.cs`: XML documentation and developer comments only
+    - `test/UKHO.Search.Query.Tests/**/*.cs`: XML documentation and developer comments only
+  - **Work Item Dependencies**: None beyond shared documentation style established by earlier work items.
+  - **Run / Verification Instructions**:
+    - `dotnet test .\test\UKHO.Search.Query.Tests\UKHO.Search.Query.Tests.csproj`
+    - Confirm the diff contains comment-only changes in the scoped projects
+  - **User Instructions**: No manual action required.
+
+## Services and Providers
+
+- [ ] Work Item 5: Document `UKHO.Search.Services.Ingestion` and `UKHO.Search.Services.Ingestion.Tests`
+  - **Purpose**: Bring the ingestion services layer and its tests up to the documentation standard while preserving orchestration behaviour.
+  - **Acceptance Criteria**:
+    - Every hand-maintained `.cs` file in `src/UKHO.Search.Services.Ingestion` and `test/UKHO.Search.Services.Ingestion.Tests` has been reviewed.
+    - Public service-layer members have explicit local XML documentation.
+    - Method bodies, orchestration logic, and helpers have developer-level explanatory comments.
+    - Tests clearly describe orchestration scenarios and expected interactions.
+    - No non-comment code changes are introduced.
+  - **Definition of Done**:
+    - Comment-only changes completed for `src/UKHO.Search.Services.Ingestion` and `test/UKHO.Search.Services.Ingestion.Tests`
+    - Compliance with `./.github/instructions/documentation-pass.instructions.md` verified
+    - Relevant tests for `UKHO.Search.Services.Ingestion.Tests` pass
+    - Documentation updated
+    - Can execute verification via the instructions below
+  - [ ] Task 1: Review project pair scope and documentation hotspots
+    - [ ] Step 1: Enumerate eligible files in `src/UKHO.Search.Services.Ingestion`.
+    - [ ] Step 2: Enumerate eligible files in `test/UKHO.Search.Services.Ingestion.Tests`.
+    - [ ] Step 3: Exclude generated files and identify async members, generics, and exception-bearing APIs requiring richer XML comments.
+  - [ ] Task 2: Apply production-project documentation uplift
+    - [ ] Step 1: Add or improve explicit XML documentation for public service-layer types and members.
+    - [ ] Step 2: Document async cancellation and side effects where applicable.
+    - [ ] Step 3: Add developer comments to explain orchestration flow, decision points, and non-obvious safeguards.
+  - [ ] Task 3: Apply matching test-project documentation uplift
+    - [ ] Step 1: Add or improve XML comments where the test project exposes public members.
+    - [ ] Step 2: Add detailed explanatory comments to service-layer tests, fixtures, and helpers.
+  - [ ] Task 4: Validate the project pair safely
+    - [ ] Step 1: Run the `UKHO.Search.Services.Ingestion.Tests` project tests.
+    - [ ] Step 2: Confirm the changes remain comment-only.
+    - [ ] Step 3: Record completion in the plan with a concise summary.
+  - **Files**:
+    - `src/UKHO.Search.Services.Ingestion/**/*.cs`: XML documentation and developer comments only
+    - `test/UKHO.Search.Services.Ingestion.Tests/**/*.cs`: XML documentation and developer comments only
+  - **Work Item Dependencies**: Earlier domain work items help maintain terminology consistency.
+  - **Run / Verification Instructions**:
+    - `dotnet test .\test\UKHO.Search.Services.Ingestion.Tests\UKHO.Search.Services.Ingestion.Tests.csproj`
+    - Confirm the diff contains comment-only changes in the scoped projects
+  - **User Instructions**: No manual action required.
+
+- [ ] Work Item 6: Document `UKHO.Search.Ingestion.Providers.FileShare` and `UKHO.Search.Ingestion.Providers.FileShare.Tests`
+  - **Purpose**: Apply the documentation standard to the FileShare ingestion provider and its tests while preserving provider-specific behaviour.
+  - **Acceptance Criteria**:
+    - Every hand-maintained `.cs` file in `src/Providers/UKHO.Search.Ingestion.Providers.FileShare` and `test/UKHO.Search.Ingestion.Providers.FileShare.Tests` has been reviewed.
+    - Public provider-specific API surface has explicit local XML comments.
+    - Parsing, enrichment, file-handling, and provider orchestration methods have developer-level explanatory comments.
+    - Tests clearly explain provider scenarios, fixtures, sample-data usage, and behavioural coverage.
+    - No non-comment code changes are introduced.
+  - **Definition of Done**:
+    - Comment-only changes completed for `src/Providers/UKHO.Search.Ingestion.Providers.FileShare` and `test/UKHO.Search.Ingestion.Providers.FileShare.Tests`
+    - Compliance with `./.github/instructions/documentation-pass.instructions.md` verified
+    - Relevant tests for `UKHO.Search.Ingestion.Providers.FileShare.Tests` pass
+    - Documentation updated
+    - Can execute verification via the instructions below
+  - [ ] Task 1: Review project pair scope and documentation hotspots
+    - [ ] Step 1: Enumerate eligible files in `src/Providers/UKHO.Search.Ingestion.Providers.FileShare`.
+    - [ ] Step 2: Enumerate eligible files in `test/UKHO.Search.Ingestion.Providers.FileShare.Tests`.
+    - [ ] Step 3: Exclude generated files and identify special cases such as extension methods, tuples, async APIs, and rich domain behaviours.
+  - [ ] Task 2: Apply production-project documentation uplift
+    - [ ] Step 1: Add or improve explicit XML documentation for public provider members.
+    - [ ] Step 2: Add `<remarks>`, `<exception>`, nullability notes, and cancellation/side-effect details where appropriate.
+    - [ ] Step 3: Add developer comments for parsing logic, enrichment flow, algorithms, and provider-specific rationale.
+  - [ ] Task 3: Apply matching test-project documentation uplift
+    - [ ] Step 1: Add or improve XML comments on eligible public test APIs.
+    - [ ] Step 2: Add detailed explanatory comments to tests, fixtures, sample-data helpers, and behavioural assertions.
+  - [ ] Task 4: Validate the project pair safely
+    - [ ] Step 1: Run the `UKHO.Search.Ingestion.Providers.FileShare.Tests` project tests.
+    - [ ] Step 2: Confirm the changes remain comment-only.
+    - [ ] Step 3: Record completion in the plan with a concise summary.
+  - **Files**:
+    - `src/Providers/UKHO.Search.Ingestion.Providers.FileShare/**/*.cs`: XML documentation and developer comments only
+    - `test/UKHO.Search.Ingestion.Providers.FileShare.Tests/**/*.cs`: XML documentation and developer comments only
+  - **Work Item Dependencies**: Work Items 2 and 5 help align ingestion terminology and service/provider boundaries.
+  - **Run / Verification Instructions**:
+    - `dotnet test .\test\UKHO.Search.Ingestion.Providers.FileShare.Tests\UKHO.Search.Ingestion.Providers.FileShare.Tests.csproj`
+    - Confirm the diff contains comment-only changes in the scoped projects
+  - **User Instructions**: No manual action required.
+
+- [ ] Work Item 7: Document `UKHO.Search.Infrastructure.Ingestion` and `UKHO.Search.Infrastructure.Ingestion.Tests`
+  - **Purpose**: Bring the ingestion infrastructure layer and its tests to the documentation standard while preserving infrastructure behaviour and integration semantics.
+  - **Acceptance Criteria**:
+    - Every hand-maintained `.cs` file in `src/UKHO.Search.Infrastructure.Ingestion` and `test/UKHO.Search.Infrastructure.Ingestion.Tests` has been reviewed.
+    - Public infrastructure APIs have explicit local XML comments.
+    - Method bodies and non-obvious implementation details have developer-level explanatory comments.
+    - Tests clearly explain infrastructure scenarios, mocked dependency expectations, and behaviour significance.
+    - No non-comment code changes are introduced.
+  - **Definition of Done**:
+    - Comment-only changes completed for `src/UKHO.Search.Infrastructure.Ingestion` and `test/UKHO.Search.Infrastructure.Ingestion.Tests`
+    - Compliance with `./.github/instructions/documentation-pass.instructions.md` verified
+    - Relevant tests for `UKHO.Search.Infrastructure.Ingestion.Tests` pass
+    - Documentation updated
+    - Can execute verification via the instructions below
+  - [ ] Task 1: Review project pair scope and identify special API forms
+    - [ ] Step 1: Enumerate eligible files in `src/UKHO.Search.Infrastructure.Ingestion`.
+    - [ ] Step 2: Enumerate eligible files in `test/UKHO.Search.Infrastructure.Ingestion.Tests`.
+    - [ ] Step 3: Exclude generated files and inspect async, generic, extension, and exception-heavy APIs for richer XML requirements.
+  - [ ] Task 2: Apply production-project documentation uplift
+    - [ ] Step 1: Add or improve explicit XML comments for public infrastructure types and members.
+    - [ ] Step 2: Document side effects, cancellation expectations, nullability semantics, and intentional exceptions where applicable.
+    - [ ] Step 3: Add developer comments to explain infrastructure flow, resource interaction, safety checks, and non-obvious logic.
+  - [ ] Task 3: Apply matching test-project documentation uplift
+    - [ ] Step 1: Add or improve XML comments on eligible public test project members.
+    - [ ] Step 2: Add detailed explanatory comments to tests, fixtures, and mocked interaction helpers.
+  - [ ] Task 4: Validate the project pair safely
+    - [ ] Step 1: Run the `UKHO.Search.Infrastructure.Ingestion.Tests` project tests.
+    - [ ] Step 2: Confirm the changes remain comment-only.
+    - [ ] Step 3: Record completion in the plan with a concise summary.
+  - **Files**:
+    - `src/UKHO.Search.Infrastructure.Ingestion/**/*.cs`: XML documentation and developer comments only
+    - `test/UKHO.Search.Infrastructure.Ingestion.Tests/**/*.cs`: XML documentation and developer comments only
+  - **Work Item Dependencies**: Work Items 2, 5, and 6 help keep ingestion terminology consistent across layers.
+  - **Run / Verification Instructions**:
+    - `dotnet test .\test\UKHO.Search.Infrastructure.Ingestion.Tests\UKHO.Search.Infrastructure.Ingestion.Tests.csproj`
+    - Confirm the diff contains comment-only changes in the scoped projects
+  - **User Instructions**: No manual action required.
+
+## Hosts
+
+- [ ] Work Item 8: Document `AppHost` and `AppHost.Tests`
+  - **Purpose**: Apply the documentation standard to the Aspire orchestration host and its tests, including top-level bootstrap code where present.
+  - **Acceptance Criteria**:
+    - Every hand-maintained `.cs` file in `src/Hosts/AppHost` and `test/AppHost.Tests` has been reviewed.
+    - Eligible public host APIs have explicit local XML documentation.
+    - Top-level statements, host composition, and helper methods have developer-level explanatory comments.
+    - Tests clearly explain orchestration, configuration, and expected host behaviour.
+    - No non-comment code changes are introduced.
+  - **Definition of Done**:
+    - Comment-only changes completed for `src/Hosts/AppHost` and `test/AppHost.Tests`
+    - Compliance with `./.github/instructions/documentation-pass.instructions.md` verified
+    - Relevant tests for `AppHost.Tests` pass
+    - Documentation updated
+    - Can execute verification via the instructions below
+  - [ ] Task 1: Review project pair scope and bootstrap hotspots
+    - [ ] Step 1: Enumerate eligible files in `src/Hosts/AppHost`.
+    - [ ] Step 2: Enumerate eligible files in `test/AppHost.Tests`.
+    - [ ] Step 3: Exclude generated files and identify top-level host bootstrap files, local functions, and async startup code needing richer documentation.
+  - [ ] Task 2: Apply production-project documentation uplift
+    - [ ] Step 1: Add or improve explicit XML documentation for public host members.
+    - [ ] Step 2: Add developer comments throughout top-level statements and local functions in `Program.cs` or equivalent entry-point files.
+    - [ ] Step 3: Document configuration, resource composition, side effects, and non-obvious host wiring rationale.
+  - [ ] Task 3: Apply matching test-project documentation uplift
+    - [ ] Step 1: Add or improve XML comments on eligible public test APIs.
+    - [ ] Step 2: Add detailed explanatory comments to host tests, setup logic, and verification steps.
+  - [ ] Task 4: Validate the project pair safely
+    - [ ] Step 1: Run the `AppHost.Tests` project tests.
+    - [ ] Step 2: Confirm the changes remain comment-only.
+    - [ ] Step 3: Record completion in the plan with a concise summary.
+  - **Files**:
+    - `src/Hosts/AppHost/**/*.cs`: XML documentation and developer comments only
+    - `test/AppHost.Tests/**/*.cs`: XML documentation and developer comments only
+  - **Work Item Dependencies**: Earlier work items help align terminology with the domain and ingestion layers, but this host pass is independently executable.
+  - **Run / Verification Instructions**:
+    - `dotnet test .\test\AppHost.Tests\AppHost.Tests.csproj`
+    - Confirm the diff contains comment-only changes in the scoped projects
+  - **User Instructions**: No manual action required.
+
+- [ ] Work Item 9: Document `IngestionServiceHost` and `IngestionServiceHost.Tests`
+  - **Purpose**: Complete the documentation uplift for the ingestion host and its tests, then perform the mandatory solution-wide validation for the overall work package.
+  - **Acceptance Criteria**:
+    - Every hand-maintained `.cs` file in `src/Hosts/IngestionServiceHost` and `test/IngestionServiceHost.Tests` has been reviewed.
+    - Eligible public host APIs have explicit local XML comments.
+    - Top-level host statements, orchestration flow, helpers, and tests have developer-level explanatory comments.
+    - The entire work package concludes with a full solution build and full test suite run.
+    - No non-comment code changes are introduced anywhere in scope.
+  - **Definition of Done**:
+    - Comment-only changes completed for `src/Hosts/IngestionServiceHost` and `test/IngestionServiceHost.Tests`
+    - Compliance with `./.github/instructions/documentation-pass.instructions.md` verified
+    - Relevant tests for `IngestionServiceHost.Tests` pass
+    - Full solution build succeeds
+    - Full test suite run succeeds
+    - Plan updated with completion summaries
+    - Can execute verification via the instructions below
+  - [ ] Task 1: Review project pair scope and bootstrap hotspots
+    - [ ] Step 1: Enumerate eligible files in `src/Hosts/IngestionServiceHost`.
+    - [ ] Step 2: Enumerate eligible files in `test/IngestionServiceHost.Tests`.
+    - [ ] Step 3: Exclude generated files and identify top-level bootstrap code, local functions, async APIs, and non-obvious orchestration logic requiring richer documentation.
+  - [ ] Task 2: Apply production-project documentation uplift
+    - [ ] Step 1: Add or improve explicit XML documentation for public host members.
+    - [ ] Step 2: Add developer comments throughout top-level statements and local functions in entry-point files.
+    - [ ] Step 3: Document orchestration behaviour, cancellation semantics, externally visible side effects, and intentional exceptions where applicable.
+  - [ ] Task 3: Apply matching test-project documentation uplift
+    - [ ] Step 1: Add or improve XML comments on eligible public test APIs.
+    - [ ] Step 2: Add detailed explanatory comments to host tests, setup logic, fixture behaviour, and assertions.
+  - [ ] Task 4: Complete mandatory validation and closeout
+    - [ ] Step 1: Run the `IngestionServiceHost.Tests` project tests.
+    - [ ] Step 2: Run a full solution build.
+    - [ ] Step 3: Run the full test suite across the solution.
+    - [ ] Step 4: Review the final diff to confirm only comment changes were introduced across the work package.
+    - [ ] Step 5: Update this plan with completion summaries for the final work item and overall pass.
+  - **Files**:
+    - `src/Hosts/IngestionServiceHost/**/*.cs`: XML documentation and developer comments only
+    - `test/IngestionServiceHost.Tests/**/*.cs`: XML documentation and developer comments only
+  - **Work Item Dependencies**: All previous work items should be complete before the final full-solution validation and closeout steps.
+  - **Run / Verification Instructions**:
+    - `dotnet test .\test\IngestionServiceHost.Tests\IngestionServiceHost.Tests.csproj`
+    - `dotnet build .\UKHO.Search.sln`
+    - `dotnet test .\UKHO.Search.sln`
+    - Confirm the final diff across the work package contains comment-only changes
+  - **User Instructions**: No manual action required.
+
+## Summary
+
+This plan breaks the documentation uplift into nine bounded work items, one for each project pair named in the specification. The approach keeps the pass controlled and reviewable while enforcing `./.github/instructions/documentation-pass.instructions.md` as a hard quality gate throughout. The final work item closes the package with the mandatory full solution build and full test suite validation required by the specification.

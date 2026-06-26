@@ -14,7 +14,7 @@ Your job is to:
 1. Ensure every test project in scope is evaluated with **Coverlet** using a **no-repository-code-change** approach.
 2. Run the **full automated test suite** across all discovered test projects.
 3. Gather **machine-readable coverage output** from Coverlet.
-4. Create a **new Work Package** under `./docs/` using the naming strategy defined by `./.github/prompts/spec.research.prompt.md` and the documentation instructions.
+4. Create a **new Work Package** under `./dev/work-packages/` using the naming strategy defined by `./.github/prompts/spec.research.prompt.md` and the documentation instructions.
 5. Write **exactly one markdown specification document** that describes:
    - current coverage baseline,
    - missing or weakly covered areas,
@@ -33,7 +33,7 @@ That means:
 
 Allowed outputs only:
 - coverage artifacts under `./artifacts/test-coverage/`
-- exactly one new Work Package folder under `./docs/`
+- exactly one new Work Package folder under `./dev/work-packages/`
 - exactly one markdown spec file inside that Work Package folder
 
 ## Required preparation
@@ -127,10 +127,10 @@ If some projects only emit Cobertura XML, parse that into the summary JSON rathe
 If execution is blocked because one or more projects are not Coverlet-compatible, no coverage summary should be fabricated. Instead, report the blocking projects and the required package updates.
 
 ## Documentation / Work Package requirement
-After collecting coverage data, create a **new Work Package** in `./docs/` using the numbering and folder naming strategy from `./.github/prompts/spec.research.prompt.md`.
+After collecting coverage data, create a **new Work Package** in `./dev/work-packages/` using the numbering and folder naming strategy from `./.github/prompts/spec.research.prompt.md`.
 
 ### Folder rules
-- Create the **next incremental** folder under `./docs/`
+- Create the **next incremental** folder under `./dev/work-packages/`
 - Use a descriptor aligned to this work, for example: `test-coverage-gaps`
 - Keep **all documentation for this task** in that one Work Package folder
 
@@ -222,6 +222,6 @@ This prompt is successful only if all of the following are true:
 - the full test suite was attempted across all discovered test projects, unless execution was correctly halted due to a non-Coverlet-compatible test project
 - Coverlet coverage was collected wherever possible without repository code changes
 - a consolidated machine-readable coverage summary exists
-- a new Work Package folder was created under `./docs/`
+- a new Work Package folder was created under `./dev/work-packages/`
 - exactly one markdown spec was created in that Work Package folder
 - no repository code or project files were changed

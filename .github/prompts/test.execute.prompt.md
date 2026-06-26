@@ -5,7 +5,7 @@ Purpose
 - Work iteratively
 
 How to use
-- Open the latest plan in docs/plans/tests (plan-tests-*.md).
+- Open the latest plan in `dev/work-packages/<work-package>/plans/tests` (plan-tests-*.md).
 - Execute items top-to-bottom, one Work Item and Task at a time.
 
 Process

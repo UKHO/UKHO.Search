@@ -6,7 +6,7 @@ Guidelines for authoring and maintaining specifications, plans, API docs, compon
 ## Work Package documentation
 
 ### Work Package location
-- Create a single Work Package folder under `./docs/` for all outputs.
+- Create a single Work Package folder under `./dev/work-packages/` for all outputs.
 - Folder naming: `xxx-<descriptor>` where `xxx` is the next incremental number (e.g. `001`, `002`, ...).
 - Store the overview spec, component/service specs, plans, and architecture notes inside the same Work Package folder.
 
@@ -63,7 +63,7 @@ Plans (extended note):
 5. Merge with branch checks ensuring spec & plan consistency.
 
 ## Validation Checklist
-- Correct Work Package folder placement (`docs/xxx-<descriptor>/...`).
+- Correct Work Package folder placement (`dev/work-packages/xxx-<descriptor>/...`).
 - Filename matches pattern and `Version:` field matches suffix.
 - `Supersedes:` line present (except initial v0.01).
 - Change Log includes new entry referencing previous version.
