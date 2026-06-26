@@ -1,16 +1,18 @@
-# UI Lift Discussion: Consolidating Search and Developer UI into a React Application
+# Next-Gen Consolidation Discussion: Consolidating Search and Developer UI into a React + shadcn/ui Application
 
 Date: 2026-06-26
 
 ## Purpose
 
-This report reviews the current UI and API shape in the repository to support early planning for a new, separate React-based UI. The proposed UI would eventually replace the existing Blazor/Razor developer surfaces and the current Workbench, while also becoming the future end-user search application.
+This report reviews the current UI and API shape in the repository to support early planning for a new, separate React application built on shadcn/ui. The proposed UI would eventually replace the existing Blazor/Razor developer surfaces and the current Workbench, while also becoming the future end-user search application.
+
+This discussion assumes React as the application framework and shadcn/ui as the primary component baseline for the consolidated browser experience. That narrows frontend planning around component composition, theming, and app-shell conventions, but it does not change the main conclusion that backend API extraction and contract definition remain the gating work.
 
 The review deliberately does not propose a final design. Its purpose is to expose the issues that must be narrowed into a specification and implementation plan.
 
 ## Executive summary
 
-The repository already contains useful search, ingestion, rule, provider, and emulator logic, but much of the usable UI behavior is embedded inside server-side Blazor hosts rather than exposed through stable HTTP APIs. A React UI cannot simply replace Razor components without first creating or formalizing backend API contracts.
+The repository already contains useful search, ingestion, rule, provider, and emulator logic, but much of the usable UI behavior is embedded inside server-side Blazor hosts rather than exposed through stable HTTP APIs. A React application built on shadcn/ui cannot simply replace Razor components without first creating or formalizing backend API contracts.
 
 The biggest issues are:
 
@@ -18,13 +20,15 @@ The biggest issues are:
 2. RulesWorkbench is deeply server-side and partially file-share-specific. Rule authoring, validation, save-back, evaluation, batch loading, checker workflows, and business-unit scanning are invoked directly from Blazor components and services.
 3. File-share batch-to-ingestion-payload reconstruction is duplicated in multiple places: FileShareEmulator, RulesWorkbench, and the retained Studio provider code all query the same tables and build similar ingestion payloads.
 4. The retained Studio API is the closest existing developer API, but it is intentionally detached from the active AppHost and solution after prior cleanup work. It cannot be treated as active product surface without deciding whether to revive, rename, or selectively reuse it.
-5. Workbench is mostly UI-shell machinery and dummy module composition. It contains many concepts that a React app should probably not preserve unless there is a clear product need: module assembly loading, command contribution registries, menu/status/toolbar contribution models, custom splitters, and tab management.
+5. Workbench is mostly UI-shell machinery and dummy module composition. It contains many concepts that a React and shadcn/ui app should probably not preserve unless there is a clear product need: module assembly loading, command contribution registries, menu/status/toolbar contribution models, custom splitters, and tab management.
 6. Authentication is currently optimized for multiple server-rendered browser hosts using cookie-backed OIDC through a shared Keycloak client. A React app plus APIs will need a deliberate SPA/API authentication and CORS model.
-7. The repo has no current React/Node app. There is historical Theia/Studio material in docs and retained source, but the active workspace has no package.json or React frontend project.
-8. There is a major opportunity to introduce an ingestion input journal: once a provider has normalized its source data into the ingestion request that is about to enter the pipeline, the ingestion service can shadow that input for provider-neutral tooling, rule debugging, ingestion-owned repair, replay safety, and dead-letter traceability.
-9. The new developer UI should make the whole dead-letter-driven repair loop a primary journey: inspect a dead letter, open the associated journaled ingestion input, run rules/debug processing against that exact input, fix rules or configuration, validate the fix, and then perform guarded repair replay only when it is safe.
+7. The repo has no current React/Node app. There is historical Theia/Studio material in docs and retained source, but the active workspace has no package.json-managed React frontend project, no Tailwind setup, and no shadcn/ui component baseline.
+8. Third-party .NET integrations that only need to format and submit provider queue messages do not currently have a clean, standalone contracts assembly. They should not need to reference Studio, provider implementation projects, host projects, rules tooling, ingestion pipeline internals, or Search service APIs just to create a valid ingestion queue message.
+9. Query rules already shape search meaning through normalization, typed extraction, rule evaluation, residual defaults, and Elasticsearch mapping, but there is no solid developer workflow for seeing why a query rule matched, why another rule did not match, safely editing draft query rules, comparing current versus draft output, or running a regression corpus before saving.
+10. There is a major opportunity to introduce an ingestion input journal: once a provider has normalized its source data into the ingestion request that is about to enter the pipeline, the ingestion service can shadow that input for provider-neutral tooling, rule debugging, ingestion-owned repair, replay safety, and dead-letter traceability.
+11. The new developer UI should make the whole dead-letter-driven repair loop a primary journey: inspect a dead letter, open the associated journaled ingestion input, run rules/debug processing against that exact input, fix rules or configuration, validate the fix, and then perform guarded repair replay only when it is safe.
 
-Important scope boundary: FileShareEmulator is a local-development-only project and is not in scope for migration into the new React UI. It should be left as-is. The configuration emulator is also out of scope for this work and should be treated as future externalized infrastructure, not as a candidate for React UI consolidation or repository refactoring.
+Important scope boundary: FileShareEmulator is a local-development-only project and is not in scope for migration into the new React and shadcn/ui application. It should be left as-is. The configuration emulator is also out of scope for this work and should be treated as future externalized infrastructure, not as a candidate for React plus shadcn/ui consolidation or repository refactoring.
 
 There are also clear opportunities:
 
@@ -32,20 +36,29 @@ There are also clear opportunities:
 2. `StudioServiceHost` already contains provider discovery, rule discovery, ingestion operations, operation status, and SSE endpoints. Some of this may be reusable as an internal developer API after architectural review.
 3. `IRuleConfigurationWriter`, `IProviderRulesReader`, and the ingestion rules engine provide useful rule-management primitives that can be exposed behind a provider-neutral API.
 4. The ingestion boundary can become the source of truth for developer tooling and ingestion repair: shadowed, provider-normalized ingestion inputs would avoid File Share SQL reconstruction, give the React developer view a provider-neutral substrate, and let ingestion repair post-acceptance failures without asking the provider to resend data.
-5. The dead-letter-to-rules-to-repair flow can become the central developer workflow for ingestion failures, giving the React UI a clear operational purpose beyond replacing scattered Blazor pages.
+5. The dead-letter-to-rules-to-repair flow can become the central developer workflow for ingestion failures, giving the React plus shadcn/ui application a clear operational purpose beyond replacing scattered Blazor pages.
 6. The current Workbench modules are mostly placeholders, so deleting the complex Workbench shell may have a lower functional blast radius than its size suggests.
+7. A React plus shadcn/ui direction gives the frontend a clear primitive and component baseline, but it still requires an explicit plan for design tokens, theming, Tailwind configuration, and copied-component ownership inside the repository.
+8. A queue-message-only .NET contracts package can make remote producer integrations safer and easier without expanding the public surface of the Search service or exposing provider/runtime internals.
+9. A dedicated query-rule diagnostics workbench can make search-quality tuning explainable: developers should be able to inspect the full query interpretation trace, edit draft rules, compare plan and result deltas, and run representative query suites before promoting rule changes.
+
+## Frontend stack direction
+
+The future UI direction should be treated as React plus shadcn/ui, not merely React as a rendering library. shadcn/ui should provide the primary component baseline, with application-owned workflow components composed from shadcn/ui primitives rather than a port of Radzen, Bootstrap, PrimeReact, or Workbench shell widgets.
+
+The frontend foundation still needs explicit specification: Node package setup, TypeScript, routing, Tailwind CSS, shadcn/ui initialization, design tokens, copied-component governance, API-client generation or typed fetch patterns, Monaco or comparable editor integration, linting, formatting, and a focused frontend test strategy.
 
 ## Current UI surface inventory
 
 ### Active or active-looking browser hosts
 
-| Surface | Project | Technology | Current role | React lift implication |
+| Surface | Project | Technology | Current role | React plus shadcn/ui lift implication |
 | --- | --- | --- | --- | --- |
 | Query UI | `src/Hosts/QueryServiceHost` | Blazor Server, Radzen, Monaco interop | Current query/search workspace with raw query, generated plan editor, diagnostics, results, facets, and result explanation UI | Needs a real HTTP query API. Current behavior is mostly scoped Blazor state and server-side services. |
 | Ingestion UI | `src/Hosts/IngestionServiceHost` | Blazor Server, Radzen | Hosts ingestion service and a statistics page; also starts ingestion pipeline background services | Needs separation between ingestion runtime host and any browser-facing controls. Current host is both service runtime and UI. |
 | FileShareEmulator | `tools/FileShareEmulator` | Blazor Server, Radzen, one minimal API | Local-development-only emulator UI for statistics, indexing, downloads, queue clearing, deleting indexes, and batch-file streaming | Out of scope for React migration. Leave the project and UI as-is; only shared/duplicated backend logic remains a valid architecture concern. |
 | RulesWorkbench | `tools/RulesWorkbench` | Blazor Server, Bootstrap, Monaco interop | Rule browsing/editing/saving, rule evaluation, checker, business-unit scans | Needs API extraction. It is currently a UI host with direct App Configuration, SQL, blob, and rules-engine dependencies. |
-| Configuration emulator explorer | `configuration/UKHO.Aspire.Configuration.Emulator` | Blazor Server plus API endpoints | App Configuration emulator with an explorer mounted at `/_explorer` and Azure App Configuration-compatible key endpoints | Out of scope. It is expected to move out of this solution and should not be included in future React UI or refactoring plans for this effort. |
+| Configuration emulator explorer | `configuration/UKHO.Aspire.Configuration.Emulator` | Blazor Server plus API endpoints | App Configuration emulator with an explorer mounted at `/_explorer` and Azure App Configuration-compatible key endpoints | Out of scope. It is expected to move out of this solution and should not be included in future React plus shadcn/ui work or refactoring plans for this effort. |
 | Workbench | `src/Workbench/server/WorkbenchHost` plus modules | Blazor Server, Radzen, custom shell abstractions | Desktop-like shell, module discovery, dummy tools, menus, tabs, output panel, splitter layout | Mostly should be removed rather than ported. Preserve only real workflows, not shell mechanics, unless explicitly required. |
 
 ### Legacy, retained, or detached surfaces
@@ -53,7 +66,7 @@ There are also clear opportunities:
 | Surface | Project/path | Status observed | Planning note |
 | --- | --- | --- | --- |
 | StudioServiceHost | `src/Studio/StudioServiceHost` | Source and tests exist, but the project is not in `Search.slnx` and not registered in active `AppHost` | It is retained for later refactoring per cleanup docs. Treat as candidate code, not current active architecture. |
-| UKHO.Search.Studio contracts | `src/Studio/UKHO.Search.Studio` | Source and tests exist but not active in solution | Useful abstractions may be reusable after review. Current relationship to future React UI is undecided. |
+| UKHO.Search.Studio contracts | `src/Studio/UKHO.Search.Studio` | Source and tests exist but not active in solution | Useful abstractions may be reusable after review. Current relationship to the future React plus shadcn/ui application is undecided. |
 | FileShare Studio provider | `src/Providers/UKHO.Search.Studio.Providers.FileShare` | Source and tests exist but not active in solution | Provides provider-specific ingestion API behavior; has direct SQL/queue coupling to file-share emulator data. |
 | Old Workbench hosts | `src/Workbench/server/WorkbenchHost-old`, `src/Workbench/server/OldWorkbenchHost`, samples | Present as source | Should be excluded from any future active UI plan unless there is a missing behavior only present there. |
 | Radzen source/demos | `src/Workbench/radzen-blazor` | Vendored or local Radzen code/demos in workspace | Likely removable when Blazor UI is removed, subject to dependency checks. |
@@ -71,9 +84,9 @@ There are also clear opportunities:
 
 `StudioServiceHost` is not part of the active Aspire graph. Existing documentation under `dev/work-packages/mvp/078-cleanup` explicitly says Studio/Theia and `StudioServiceHost` were removed from active Aspire and solution participation while retaining source for later refactor.
 
-FileShareEmulator and the configuration emulator appear in the current local developer orchestration, but that does not make them target surfaces for this React lift. FileShareEmulator should remain a local-dev tool, and the configuration emulator should be treated as out-of-scope infrastructure that will eventually leave the solution.
+FileShareEmulator and the configuration emulator appear in the current local developer orchestration, but that does not make them target surfaces for this React plus shadcn/ui lift. FileShareEmulator should remain a local-dev tool, and the configuration emulator should be treated as out-of-scope infrastructure that will eventually leave the solution.
 
-Planning consequence: a new React app cannot assume there is already one active backend-for-frontend. There is an active service set, plus a detached candidate Studio API. One early architecture decision must be whether to:
+Planning consequence: a new React plus shadcn/ui app cannot assume there is already one active backend-for-frontend. There is an active service set, plus a detached candidate Studio API. One early architecture decision must be whether to:
 
 1. add APIs to the existing active service hosts;
 2. revive/refactor `StudioServiceHost` as the developer API host;
@@ -108,7 +121,8 @@ The underlying query pipeline is promising:
 3. Facet selections are accepted by `QueryUiSearchClient`, but the real query path logs that facet selections are not yet translated. The real response currently projects `Facets = Array.Empty<FacetGroup>()`.
 4. The generated-plan editor flow is UI-specific but valuable for developers. A React developer view would need explicit endpoints for generating a plan, executing an edited plan, and returning diagnostics.
 5. Result explanation is UI state rather than backend capability. The current `Hit` model contains raw hit data and matched fields, but no clear API contract for explain/detail behavior.
-6. The current search UI is developer-workspace flavored, not a designed end-user search product. It should not be assumed to represent the eventual real search UI.
+6. The current query diagnostics show matched rule ids, applied filters, boosts, sorts, generated plan JSON, and Elasticsearch request JSON, but they do not expose per-rule predicate traces, no-match reasons, before/after plan deltas, or current-versus-draft rule comparisons.
+7. The current search UI is developer-workspace flavored, not a designed end-user search product. It should not be assumed to represent the eventual real search UI.
 
 ### Likely API gaps
 
@@ -121,7 +135,22 @@ The future UI likely needs at least these query-side APIs:
 5. return facets and apply facet/filter selections;
 6. return result detail/explain data;
 7. describe supported query features and available filters/sorts;
-8. expose health/readiness for UI startup and environment diagnostics.
+8. list, fetch, validate, and save query rules;
+9. evaluate current or draft query rules against a raw query and return a structured transformation trace;
+10. compare current and draft query rules for one query or a representative query suite;
+11. expose health/readiness for UI startup and environment diagnostics.
+
+### Query-rule diagnostics workbench gap
+
+Query rules are different from ingestion rules. They are global search-interpretation rules over normalized user text and extracted query signals. A matched query rule can mutate canonical query intent, emit concept signals, emit sort hints, emit filters, emit boosts, and consume tokens or phrases so residual defaults do not duplicate already-accounted-for meaning.
+
+The current query-side code already supports this runtime shape through `QueryPlanService`, `ConfigurationQueryRuleEngine`, `QueryRulesValidator`, and the flat `rules:query:*` configuration namespace. The current Blazor UI exposes only a compact view of the outcome: generated plan JSON, matched rule ids, high-level applied filters/boosts/sorts, and final Elasticsearch request JSON. That is useful for experts, but it is not enough for a developer trying to tune search quality safely.
+
+A React developer search workbench should provide a first-class query-rule lab. Given a raw query, it should show the full interpretation pipeline: raw input, normalized text, tokens, typed extracted signals, seed model, each rule's predicate evaluation, each matched rule's action outputs, consumed tokens and phrases, residual text, default contributions, final query plan, Elasticsearch request JSON, and returned results. It should also show rules that did not match and explain the resolved path values or predicate reason that caused the no-match.
+
+The workbench should support draft editing without immediately saving to App Configuration. A developer should be able to edit a rule, validate it with the backend validator, run the same query through current and draft rule sets, and compare the resulting model, filters, boosts, sorts, residual defaults, Elasticsearch request, result count, top result order, matched fields, and warnings. For serious search-quality work, it should also support named query suites so a draft rule can be checked against representative searches before promotion.
+
+This capability should be backed by API contracts rather than inferred in the browser from final `QueryPlan` JSON. The rule engine or a dedicated query-rule diagnostics service needs to emit a structured trace that records predicate resolution, match/no-match state, action application, and field-level deltas. The React app should present that trace; it should not try to recreate rule semantics locally.
 
 ## Ingestion service UI review
 
@@ -139,9 +168,47 @@ API gaps depend on desired developer features. If the React developer view repla
 6. controlled reprocessing actions, if these are intentionally exposed outside FileShareEmulator's local-dev-only workflow.
 7. ingestion input journal discovery, outcome history, supersession status, and repair eligibility.
 
-## FileShareEmulator review: local-dev-only and out of React scope
+## Remote ingestion queue contract assembly requirement
 
-FileShareEmulator is a local-development-only project. It is not in scope for migration to the new React UI and should be left as-is. The review below is retained only because FileShareEmulator contains logic that is duplicated elsewhere and therefore affects backend/API planning.
+There is a separate integration requirement that should not be confused with provider authoring or developer API design. Some third-party or remote .NET projects need to create valid ingestion queue messages and submit them to a provider ingestion queue. Those projects are queue producers, not Search service hosts and not provider implementations. They should know only the shape of the queue message they must put on the provider queue.
+
+The right output is a small .NET contracts assembly, tentatively `UKHO.Search.Ingestion.Contracts`, containing the ingestion queue message wire contract and dependency-light helpers. It should not reference Studio, Blazor, React, rules workbench code, provider implementations, Elasticsearch, Azure SDKs, Aspire, App Configuration, SQL, queue clients, logging abstractions, or ingestion pipeline runtime code. A remote producer should be able to reference the package, construct an `IngestionRequest`, serialize it with the package-provided JSON options, and hand the resulting JSON to whatever queue client or deployment-specific submission path it owns.
+
+The essential type set is deliberately small:
+
+| Type | Required role in a remote queue producer |
+| --- | --- |
+| `IngestionRequest` | The top-level queue message envelope. It must contain exactly one supported operation payload. |
+| `IngestionRequestType` | The operation discriminator: `IndexItem`, `DeleteItem`, or `UpdateAcl`. |
+| `IndexRequest` | The index/upsert payload, including document id, metadata properties, security tokens, source timestamp, and file metadata. |
+| `DeleteItemRequest` | The delete payload, carrying the document id to remove. |
+| `UpdateAclRequest` | The ACL update payload, carrying the document id and replacement security tokens. |
+| `IngestionProperty` | One provider-normalized metadata property that rules and canonical mapping can consume. |
+| `IngestionPropertyType` | The supported wire value types for metadata properties: string, text, integer, double, decimal, boolean, datetime, timespan, guid, uri, and string-array. |
+| `IngestionPropertyList` | The property collection that enforces case-insensitive uniqueness and normalized property names. |
+| `IngestionFile` | File metadata attached to an index request: filename, size, timestamp, and MIME type. |
+| `IngestionFileList` | The collection of file metadata entries. |
+| Ingestion JSON options and converters | The serializer configuration required for the exact queue-message JSON, especially the typed `IngestionProperty.Value` field and lower-case property type tokens. |
+
+That package should exclude anything that is not required to construct or validate the JSON body placed on a provider queue. In particular, it should exclude Studio API DTOs, `ProviderDescriptor`, provider catalogs, `IStudioProvider`, `IIngestionDataProvider`, operation tracking DTOs, rule DTOs, `CanonicalDocument`, dead-letter DTOs, replay DTOs, ingestion journal DTOs, File Share SQL payload loaders, File Share security-token policy, and queue submission clients. Those can live in separate API, tooling, provider, or client packages if a later slice explicitly needs them.
+
+The first version can still include queue-message-focused conveniences as long as they stay dependency-light:
+
+1. static factories such as `IngestionRequest.CreateIndex(...)`, `CreateDelete(...)`, and `CreateAclUpdate(...)`;
+2. typed property factories such as `IngestionProperty.String(...)`, `Text(...)`, `DateTime(...)`, and `StringArray(...)`;
+3. an `IndexRequestBuilder` for id, source timestamp, security tokens, files, and properties;
+4. a non-throwing validator that returns structured contract errors before a producer submits to a queue;
+5. a serializer facade so producers do not have to remember custom converter registration;
+6. golden JSON examples for `IndexItem`, `DeleteItem`, and `UpdateAcl` messages;
+7. an explicit contract version marker so queue-message compatibility can be reasoned about over time.
+
+Queue submission helpers should be treated as a separate optional package, not part of the core contracts assembly. For example, a future `UKHO.Search.Ingestion.AzureQueues` package could wrap Azure Queue Storage submission, but the core contract package should not force every producer to adopt a specific Azure SDK, authentication model, queue naming convention, or deployment topology.
+
+This package is also separate from the ingestion input journal. The remote producer creates the queue message. The ingestion service assigns any journal identity, such as `ShadowId`, after it receives and accepts the message. Producers should not generate `ShadowId` values or know blob/table journal storage details.
+
+## FileShareEmulator review: local-dev-only and out of React plus shadcn/ui scope
+
+FileShareEmulator is a local-development-only project. It is not in scope for migration to the new React plus shadcn/ui application and should be left as-is. The review below is retained only because FileShareEmulator contains logic that is duplicated elsewhere and therefore affects backend/API planning.
 
 ### What exists
 
@@ -171,7 +238,7 @@ Several FileShareEmulator indexing operations overlap conceptually with the reta
 4. reset indexing status by context/business unit;
 5. submit a specific payload/batch.
 
-However, FileShareEmulator itself must not become part of the React UI. Its controls, including deleting all Elasticsearch indexes and clearing queues, should remain local-dev-only inside the existing emulator project. Any future API design should only consider whether duplicated backend logic needs a single owner outside the UI.
+However, FileShareEmulator itself must not become part of the React plus shadcn/ui application. Its controls, including deleting all Elasticsearch indexes and clearing queues, should remain local-dev-only inside the existing emulator project. Any future API design should only consider whether duplicated backend logic needs a single owner outside the UI.
 
 ### Glaring problem
 
@@ -216,7 +283,7 @@ This is the specific problem called out in the request: the data needed for the 
 
 ### API gaps
 
-A React rules developer view will need APIs for at least:
+A React plus shadcn/ui rules developer view will need APIs for at least:
 
 1. list providers with rule support;
 2. list rules by provider and context;
@@ -281,7 +348,7 @@ An ingestion input journal changes the source of truth:
 1. Current model: File Share SQL tables -> tool-specific reconstruction -> rule evaluation.
 2. Proposed model: ingestion input journal -> actual provider-normalized `IngestionRequest` -> rule evaluation.
 
-That is powerful because it creates a provider-neutral tooling substrate. Future providers do not need RulesWorkbench or the React UI to understand their source databases. They only need to produce normalized ingestion inputs, and ingestion can journal those inputs at the boundary.
+That is powerful because it creates a provider-neutral tooling substrate. Future providers do not need RulesWorkbench or the React plus shadcn/ui application to understand their source databases. They only need to produce normalized ingestion inputs, and ingestion can journal those inputs at the boundary.
 
 ### What to capture
 
@@ -324,7 +391,7 @@ A minimal first version can still be modest:
 3. optional second blob for raw queue message JSON;
 4. table metadata for provider, document id, request type, received time, queue message id, payload hash, status, and blob pointers.
 
-Blob-only is acceptable for a spike or temporary capture path, but it will become painful once the React developer UI needs list, filter, pagination, dead-letter linkage, or replay history.
+Blob-only is acceptable for a spike or temporary capture path, but it will become painful once the React plus shadcn/ui developer workspace needs list, filter, pagination, dead-letter linkage, or replay history.
 
 ### Dead-letter linkage
 
@@ -461,7 +528,7 @@ If the journal is treated as an ingestion reliability feature, deployments may r
 
 ### Tooling and API implications
 
-The new React developer UI should be able to work against journal-backed APIs rather than provider-specific databases. Candidate APIs include:
+The new React plus shadcn/ui developer workspace should be able to work against journal-backed APIs rather than provider-specific databases. Candidate APIs include:
 
 1. list shadowed ingestion inputs by provider, time range, document id, request type, status, and replay chain;
 2. get one shadowed input and its payload pointers;
@@ -476,13 +543,13 @@ The new React developer UI should be able to work against journal-backed APIs ra
 11. distinguish diagnostic replay from live repair replay;
 12. block unsafe live repair replay unless freshness checks pass or an authorized forced replay path is used.
 
-This is likely a better foundation for the developer view than directly reviving the old Workbench or making the React UI call File Share-shaped APIs.
+This is likely a better foundation for the developer view than directly reviving the old Workbench or making the React plus shadcn/ui application call File Share-shaped APIs.
 
 ### Primary developer journey: dead letter to rule fix to guarded repair
 
 The new developer UI should make the dead-letter-driven repair loop a primary user journey. This should not be a hidden diagnostics page or a collection of disconnected resource screens. A dead letter is one of the clearest signals that developer intervention is needed, and the UI should make the next steps obvious: inspect the failure, inspect the exact accepted input, run the rules/debug path, fix the rule or configuration, validate the fix against the same input, and only then perform a guarded repair replay when live mutation is safe.
 
-Today this journey is split across several places and mental models. A user may need to inspect logs, find a blob dead-letter record, reconstruct or locate the original provider payload, open RulesWorkbench, manually load or rebuild a test payload, reason about whether the input is still current, and then decide whether to re-index. That is too much context switching. The React developer UI should turn this into a single coherent workflow backed by ingestion APIs.
+Today this journey is split across several places and mental models. A user may need to inspect logs, find a blob dead-letter record, reconstruct or locate the original provider payload, open RulesWorkbench, manually load or rebuild a test payload, reason about whether the input is still current, and then decide whether to re-index. That is too much context switching. The React plus shadcn/ui developer workspace should turn this into a single coherent workflow backed by ingestion APIs.
 
 The ideal journey is:
 
@@ -513,7 +580,7 @@ Diagnostic replay and live repair replay must be visually and operationally dist
 
 For superseded inputs, the UI should communicate the situation plainly. The expected behavior is: this input has been superseded by a later accepted or successful ingestion; live repair replay is blocked by default; diagnostic replay remains available for investigation and rule testing. This prevents the repair workflow from becoming a way to accidentally overwrite newer provider updates.
 
-This primary journey justifies the ingestion journal, dead-letter linkage, rule APIs, replay safety model, and React developer UI as one coherent capability. Without this journey, the React developer UI risks becoming only a new arrangement of old tool pages. With this journey, it becomes the operational workspace for ingestion failures.
+This primary journey justifies the ingestion journal, dead-letter linkage, rule APIs, replay safety model, and React plus shadcn/ui developer workspace as one coherent capability. Without this journey, the React plus shadcn/ui workspace risks becoming only a new arrangement of old tool pages. With this journey, it becomes the operational workspace for ingestion failures.
 
 ## Retained Studio API review
 
@@ -579,13 +646,13 @@ Recommendation for planning: define the developer UI as product workflows, not a
 
 The configuration emulator combines App Configuration-compatible endpoints with a Blazor explorer under `/_explorer`. It has APIs for `/kv`, `/keys`, `/labels`, and locks, with HMAC/JWT authentication behavior.
 
-This surface is out of scope for the React UI consolidation. It is expected to move out of this solution and should not be considered a candidate for future refactoring work in this effort. If the React developer view needs rule editing, it should call rule-focused APIs rather than exposing or refactoring the generic App Configuration emulator explorer.
+This surface is out of scope for the React plus shadcn/ui consolidation. It is expected to move out of this solution and should not be considered a candidate for future refactoring work in this effort. If the React plus shadcn/ui developer view needs rule editing, it should call rule-focused APIs rather than exposing or refactoring the generic App Configuration emulator explorer.
 
 ## Cross-cutting API and architecture issues
 
 ### 1. Missing public API boundary for the future search product
 
-The end-user search UI has no stable API contract today. The closest behavior is inside `QueryServiceHost`, but that is a Blazor host. Before a React app can become the real search UI, the backend must define request/response contracts and authentication behavior for search.
+The end-user search UI has no stable API contract today. The closest behavior is inside `QueryServiceHost`, but that is a Blazor host. Before a React plus shadcn/ui app can become the real search UI, the backend must define request/response contracts and authentication behavior for search.
 
 ### 2. Developer tools are fragmented across browser hosts
 
@@ -597,9 +664,9 @@ Today, developer tooling is spread across:
 4. WorkbenchHost;
 5. retained StudioServiceHost source.
 
-FileShareEmulator and the configuration emulator are deliberately excluded from the React consolidation target. FileShareEmulator remains a local-dev-only emulator, and the configuration emulator is expected to leave the solution.
+FileShareEmulator and the configuration emulator are deliberately excluded from the React plus shadcn/ui consolidation target. FileShareEmulator remains a local-dev-only emulator, and the configuration emulator is expected to leave the solution.
 
-The new React app needs one navigation model, but the backend does not yet have one coherent developer API surface.
+The new React plus shadcn/ui app needs one navigation model, but the backend does not yet have one coherent developer API surface.
 
 ### 3. Provider boundary is not strong enough for tooling
 
@@ -660,7 +727,7 @@ Protected Blazor hosts use fallback authorization policies. The retained Studio 
 
 ### 8. Local-only destructive operations must stay local
 
-The current FileShareEmulator UI can clear queues and delete all Elasticsearch indexes. These operations are acceptable as local emulator controls, but they should not be moved into the React UI. If future non-local APIs introduce similar destructive operations, they need separate environment and authorization controls.
+The current FileShareEmulator UI can clear queues and delete all Elasticsearch indexes. These operations are acceptable as local emulator controls, but they should not be moved into the consolidated React plus shadcn/ui application. If future non-local APIs introduce similar destructive operations, they need separate environment and authorization controls.
 
 ### 9. Solution and active source disagree about Studio
 
@@ -672,11 +739,17 @@ Docs include earlier Studio/Theia/PrimeReact paths and cleanup records. The futu
 
 ### 11. Ingestion shadowing must be named as a journal, not a UI feature
 
-The ingestion shadowing concept should be specified as an ingestion input journal owned by backend services. The React UI should consume APIs over that journal. It should not own capture semantics, token derivation, storage format, or dead-letter linkage. Those are backend architecture decisions that need to be settled before UI implementation.
+The ingestion shadowing concept should be specified as an ingestion input journal owned by backend services. The React plus shadcn/ui application should consume APIs over that journal. It should not own capture semantics, token derivation, storage format, or dead-letter linkage. Those are backend architecture decisions that need to be settled before UI implementation.
 
 ### 12. Ingestion-owned replay must be guarded against stale overwrites
 
 Once a provider-normalized request has passed initial ingestion gates, post-ingress failures are ingestion-owned. The ingestion service should not need the provider to resend the same input just because rules, canonical mapping, indexing, or other ingestion-owned processing failed. However, replaying an older journal entry can be dangerous if a later provider update has already ingested successfully. Any live repair replay must check whether the shadowed input has been superseded. Diagnostic replay can remain available for superseded inputs because it does not mutate live state.
+
+### 13. Remote queue producers need a queue-message-only contract package
+
+Remote .NET producers that submit directly to provider ingestion queues need a stable package for the queue message contract, not a developer API SDK and not provider authoring interfaces. The package should be dependency-light, centered on `IngestionRequest`, and versioned as a wire contract. It must not require references to Studio, RulesWorkbench, provider implementations, queue clients, pipeline runtime, or Search service internals.
+
+The boundary matters because a remote integration may live in a different repository, release cadence, security context, and deployment topology. It should be able to create the same JSON that the ingestion service expects without learning about AppHost, `StudioServiceHost`, `IngestionServiceHost`, journal storage, dead-letter storage, rule evaluation, or React developer tooling.
 
 ## Potential API grouping for planning
 
@@ -698,8 +771,21 @@ This is not a proposed final endpoint design. It is a way to group missing or ca
 3. Return Elasticsearch request JSON and execution diagnostics.
 4. Return rule matches/query transformations.
 5. Return warnings and typed extracted signals.
+6. Return structured query interpretation traces that distinguish normalization, typed extraction, query-rule evaluation, residual defaults, and Elasticsearch mapping.
+7. Compare current and draft query interpretation output for the same raw query.
 
-### Developer rule APIs
+### Developer query-rule APIs
+
+1. List effective query rules with rule id, title, enabled state, description, current validation state, and loaded snapshot metadata.
+2. Get an authored or effective query-rule document by id.
+3. Validate a draft query-rule document using the backend query-rule validator.
+4. Evaluate current query rules against a raw query and return matched rules, non-matched rules, predicate traces, action outputs, residual changes, generated plan, request JSON, and optional result data.
+5. Evaluate supplied draft rules without saving them to App Configuration.
+6. Compare current and draft rule evaluation for one query, including canonical model deltas, filter deltas, boost deltas, sort deltas, residual default deltas, request JSON diffs, result count changes, and top-result ordering changes.
+7. Compare current and draft rule evaluation across a named query corpus.
+8. Save or promote validated query-rule changes only after the API has enough authorization, audit, and conflict-handling rules.
+
+### Developer ingestion rule APIs
 
 1. List providers that support rules.
 2. List rules by provider/context.
@@ -751,6 +837,18 @@ The dead-letter-to-rule-fix workflow should be explicit in the API model rather 
 16. Request forced replay only through an explicitly authorized and audited path, if it is supported at all.
 17. Follow replay lineage through `ReplayOfShadowId`.
 
+### Remote ingestion queue contract package
+
+This is not a React API group. It is the .NET package surface needed by remote producers that submit queue messages directly.
+
+1. Queue message envelope: `IngestionRequest` and `IngestionRequestType`.
+2. Operation payloads: `IndexRequest`, `DeleteItemRequest`, and `UpdateAclRequest`.
+3. Metadata payloads: `IngestionProperty`, `IngestionPropertyType`, and `IngestionPropertyList`.
+4. File metadata payloads: `IngestionFile` and `IngestionFileList`.
+5. Required System.Text.Json options and converters for queue-message serialization and deserialization.
+6. Optional dependency-free builders, factories, validators, serializer facades, and golden JSON examples.
+7. Explicit exclusion of Studio API DTOs, provider catalogs, rule DTOs, journal DTOs, dead-letter DTOs, `CanonicalDocument`, provider SPI interfaces, queue clients, and provider-specific token policy.
+
 ### Out-of-scope local emulator capabilities
 
 The following capabilities exist in FileShareEmulator and should stay there. They are not candidate React APIs for this effort:
@@ -766,60 +864,74 @@ The planning concern is de-duplication of backend logic, not moving these contro
 
 ## Suggested planning questions
 
-1. Is the React app one deployed application with two modes, or are end-user search and developer tooling separate deployments sharing a component system?
+1. Is the React and shadcn/ui app one deployed application with two modes, or are end-user search and developer tooling separate deployments sharing a component system?
 2. Should there be one backend-for-frontend, or should React call Query, Ingestion, and Studio/Developer APIs directly?
-3. Should `StudioServiceHost` be revived as the developer API host, or should its useful contracts move into a new active host?
-4. Which duplicated file-share backend logic should be consolidated while leaving FileShareEmulator's local-dev UI unchanged?
-5. What is the provider-neutral model for rule evaluation payloads?
-6. Should rule checking operate on provider contexts generally, or is the first version intentionally file-share-only?
-7. Which operations are safe in non-local environments?
-8. What auth model should govern end-user search versus developer tooling?
-9. Should Workbench module/extensibility concepts be deleted entirely, or is a small metadata/navigation contribution model still required?
-10. Which existing host-local DTOs should become shared contracts, and which should be replaced?
-11. Should the ingestion input journal use table index plus blob payloads from the start, or allow a short-lived blob-only spike?
-12. Which fields must be queryable in the journal: provider, document id, request type, received time, status, context, payload hash, dead-letter id, replay lineage?
-13. Should shadow persistence be best-effort, required, or deployment-configurable per environment?
-14. Should security-token derivation remain upstream for now, or move into ingestion as a provider-owned normalization step in a later slice?
-15. What is the initial scope of replay: rule-only evaluation, queue resubmission, full pipeline replay, or all three as separate capabilities?
-16. What marks a shadowed input as superseded: later accepted input, later successful input, source timestamp, provider version, payload hash, current indexed `ShadowId`, or a combination?
-17. Where should latest-success state live: in the journal/outcome store, in the indexed document metadata, or both?
-18. Should repair replay be blocked for superseded `IndexItem`, `DeleteItem`, and `UpdateAcl` requests by default?
-19. What permissions and audit trail are required for forced replay, if forced replay is allowed at all?
-20. Should the React developer UI make ingestion failures/dead letters the default entry point for rule debugging and repair?
-21. What failure taxonomy should drive the primary work queue: provider handoff, ingress gate, rule/canonical failure, enrichment failure, indexing failure, ACL/delete failure, or dead-letter outcome?
-22. What data must the failure detail endpoint return so the UI can avoid calling storage blobs or provider-specific stores directly?
-23. Should the rule editor support a pinned `ShadowId` test case as a first-class editing mode?
-24. What audit record should be created when a user moves from diagnostic replay to guarded repair replay?
+3. What design-token, theming, Tailwind, and copied-component ownership model will govern shadcn/ui usage in the repo?
+4. Should `StudioServiceHost` be revived as the developer API host, or should its useful contracts move into a new active host?
+5. Which duplicated file-share backend logic should be consolidated while leaving FileShareEmulator's local-dev UI unchanged?
+6. What is the provider-neutral model for rule evaluation payloads?
+7. Should rule checking operate on provider contexts generally, or is the first version intentionally file-share-only?
+8. Which operations are safe in non-local environments?
+9. What auth model should govern end-user search versus developer tooling?
+10. Should Workbench module/extensibility concepts be deleted entirely, or is a small metadata/navigation contribution model still required?
+11. Which existing host-local DTOs should become shared contracts, and which should be replaced?
+12. Should the ingestion input journal use table index plus blob payloads from the start, or allow a short-lived blob-only spike?
+13. Which fields must be queryable in the journal: provider, document id, request type, received time, status, context, payload hash, dead-letter id, replay lineage?
+14. Should shadow persistence be best-effort, required, or deployment-configurable per environment?
+15. Should security-token derivation remain upstream for now, or move into ingestion as a provider-owned normalization step in a later slice?
+16. What is the initial scope of replay: rule-only evaluation, queue resubmission, full pipeline replay, or all three as separate capabilities?
+17. What marks a shadowed input as superseded: later accepted input, later successful input, source timestamp, provider version, payload hash, current indexed `ShadowId`, or a combination?
+18. Where should latest-success state live: in the journal/outcome store, in the indexed document metadata, or both?
+19. Should repair replay be blocked for superseded `IndexItem`, `DeleteItem`, and `UpdateAcl` requests by default?
+20. What permissions and audit trail are required for forced replay, if forced replay is allowed at all?
+21. Should the React plus shadcn/ui developer workspace make ingestion failures/dead letters the default entry point for rule debugging and repair?
+22. What failure taxonomy should drive the primary work queue: provider handoff, ingress gate, rule/canonical failure, enrichment failure, indexing failure, ACL/delete failure, or dead-letter outcome?
+23. What data must the failure detail endpoint return so the UI can avoid calling storage blobs or provider-specific stores directly?
+24. Should the rule editor support a pinned `ShadowId` test case as a first-class editing mode?
+25. What audit record should be created when a user moves from diagnostic replay to guarded repair replay?
+26. What should the standalone queue-message contracts package be named, and what target frameworks should it support for third-party .NET producers?
+27. Which helpers belong in the core contracts package versus a separate optional queue-client package?
+28. How should queue-message contract versioning, compatibility, and golden JSON fixtures be managed?
+29. Should security-token derivation remain entirely upstream for remote producers in the first version, or should a later provider-specific helper package own token policy for selected providers?
+30. How should remote producers be told which provider queue to target without making the contracts package depend on provider catalogs or deployment configuration?
+31. Should query-rule editing be available in the first developer UI, or should the first version support diagnostics and draft comparison before save-back?
+32. What shape should a structured query-rule trace use so the UI can show predicate resolution, match/no-match reasons, action application, residual consumption, and plan deltas without reimplementing rule evaluation?
+33. What representative query corpus should be maintained for regression comparisons before query-rule promotion?
+34. How should current-versus-draft query-rule comparison report result-order changes, score-shaping changes, and Elasticsearch request diffs without overwhelming the developer?
 
-## Recommended first specification slices
+## Recommended work package arcs
 
-1. **Search API contract slice**: define the minimum end-user search API and the developer diagnostics extension points without carrying over QueryServiceHost UI state.
-2. **Developer API host decision slice**: decide whether to revive/refactor `StudioServiceHost`, create a new host, or add APIs to existing service hosts.
-3. **Ingestion input journal slice**: define the shadow capture boundary, `ShadowId`, metadata schema, table/blob storage strategy, environment configuration, failure semantics, dead-letter linkage, outcome records, supersession semantics, and replay lineage.
-4. **Provider tooling contract slice**: define provider-neutral contexts, payload lookup, payload envelopes, pending-item scans, shadow input discovery, and operation tracking.
-5. **Rules API slice**: expose rule list/get/validate/save/evaluate/check workflows and explicitly separate provider-neutral behavior from file-share-specific adapters. Include diagnostic rule evaluation against journaled inputs as a primary path.
-6. **File-share adapter consolidation slice**: pick one owner for batch lookup, payload construction, security token calculation, queue submission, indexing status updates, and business-unit lookup. Decide how this evolves once journaled ingestion inputs exist.
-7. **Dead-letter repair journey slice**: define the primary developer journey from ingestion failure list to dead-letter detail, associated shadow input, rule diagnostics, contextual rule editing, diagnostic replay, replay eligibility, guarded repair replay, and repair outcome tracking.
-8. **Replay and repair slice**: define diagnostic replay, guarded live repair replay, forced replay, freshness checks, latest-success tracking, superseded input handling, and request-type-specific overwrite guards for `IndexItem`, `DeleteItem`, and `UpdateAcl`.
-9. **Security token derivation slice**: decide whether token creation remains in upstream producers for now or moves into ingestion as a provider-owned normalization step, and how the journal captures source input versus normalized replay source.
-10. **Workbench removal slice**: inventory what, if anything, must survive from Workbench before deleting shell infrastructure and dummy modules.
-11. **Auth and environment safety slice**: define SPA/API authentication, CORS, authorization policies, non-local destructive operation gates, and access controls for shadow payloads, security tokens, dead letters, diagnostic replay, repair replay, and forced replay, while explicitly keeping FileShareEmulator controls local-only.
+The recommended work package arcs are described in [next-gen-work-package-arcs.md](next-gen-work-package-arcs.md). The ordering is intentional: contract extraction comes first, then API ownership and authentication foundations, then backend capabilities that developer workflows depend on, then the React workspaces that consume those APIs, and finally replacement end-user search and legacy surface retirement.
+
+1. **Remote ingestion queue contracts**: define the standalone .NET assembly for third-party queue producers and reference it back into the solution.
+2. **API ownership, host strategy, and security model**: decide where React-facing APIs live, how BFF versus direct API calls work, and how authentication, authorization, CORS, and environment safety are enforced.
+3. **React plus shadcn/ui foundation and Keycloak login**: create the app shell, routing, component baseline, design-token model, API-client pattern, and Keycloak login path.
+4. **Query APIs and query-rule diagnostics foundation**: formalize search/query APIs and add backend support for structured query-rule traces, draft evaluation, current-versus-draft comparison, and query corpus comparison.
+5. **Ingestion input journal and failure model**: implement shadow capture, `ShadowId`, storage, outcomes, dead-letter linkage, supersession, and replay eligibility foundations.
+6. **Provider tooling, ingestion rules, and repair APIs**: expose provider-neutral contexts, rule management, rule evaluation against journaled inputs, file-share adapter consolidation, diagnostic replay, guarded repair replay, and token-derivation decisions.
+7. **React developer query-rule workbench**: build the developer UI for query-rule inspection, draft editing, trace explanation, current-versus-draft comparison, and query corpus regression.
+8. **React developer ingestion repair workspace**: build the failure-driven repair UI over journal, dead-letter, rule diagnostics, replay eligibility, and guarded repair APIs.
+9. **React end-user search experience**: build the production search UX over stable end-user search APIs, facets, sorting, result detail, and appropriate auth policy.
+10. **Legacy UI retirement and operational hardening**: remove or detach replaced Blazor/Workbench surfaces, keep local-only emulator controls scoped, harden observability and audit paths, and complete documentation updates.
 
 ## Architectural concerns to call out plainly
 
 1. The current repository has too many UI hosts for the amount of real UI behavior present. This increases orchestration, authentication, and maintenance cost.
 2. The Workbench is over-engineered relative to its current functional value. Porting it would be a mistake unless a concrete extension-product requirement is established.
-3. The lack of stable HTTP APIs for current Blazor UI behavior is the main blocker to a React lift.
+3. The lack of stable HTTP APIs for current Blazor UI behavior is the main blocker to a React plus shadcn/ui lift.
 4. File-share-specific data access has leaked into tools that want to become general developer tooling.
 5. The detached Studio API is both useful and risky: it contains many of the right API ideas, but its active status was deliberately removed.
 6. Duplicate payload-construction logic should be treated as a root-cause problem, not worked around in the new UI.
 7. Destructive local tooling operations must not become ordinary product APIs by accident.
 8. The ingestion input journal could become the developer tooling backbone, but only if it is specified as backend architecture with durable identity, storage/query design, dead-letter linkage, and explicit replay semantics.
 9. The ingestion input journal is also a reliability boundary: ingestion should own repair of accepted inputs that fail after ingress gates pass, but live repair replay must not overwrite newer provider updates.
-10. The React developer UI should be workflow-led. The primary ingestion workflow should be inspect failure/dead letter, inspect associated shadow input, run rules/debug, fix rules or configuration, verify against the same input, and then use guarded repair replay only when the backend says it is safe.
+10. The React plus shadcn/ui developer workspace should be workflow-led. The primary ingestion workflow should be inspect failure/dead letter, inspect associated shadow input, run rules/debug, fix rules or configuration, verify against the same input, and then use guarded repair replay only when the backend says it is safe.
+11. Choosing shadcn/ui usefully narrows the component baseline, but it does not remove the need to define shared tokens, layout conventions, and copied-component governance explicitly.
+12. Remote queue-producer integrations need a narrow .NET contracts assembly for ingestion queue messages. Expanding that package to include Studio, provider authoring, runtime pipeline, journal, or UI concepts would recreate the coupling this work is trying to remove.
+13. Query-rule diagnostics need to become a first-class developer capability. Search-quality tuning requires structured traces, draft rule evaluation, current-versus-draft comparisons, and representative query corpus regression rather than only final plan JSON and matched rule ids.
 
 ## Bottom line
 
-The React UI work should start with backend/API clarification, not component work. The main planning task is to decide the future API ownership model, provider boundary, ingestion input journal shape, replay/repair safety model, and primary dead-letter-driven repair journey. Once those decisions are made, the React app can be built around stable contracts and the existing Blazor/Workbench surfaces can be retired in stages.
+The React plus shadcn/ui work should start with backend/API clarification, not broad component work. The main planning task is to decide the future API ownership model, provider boundary, remote ingestion queue contract package, query-rule diagnostics model, ingestion input journal shape, replay/repair safety model, and primary developer journeys for both query-rule tuning and dead-letter-driven repair. Once those decisions are made, the React app can be built around stable contracts, shadcn/ui primitives, and app-owned workflow components, and the existing Blazor/Workbench surfaces can be retired in stages.
 
-The most useful existing code to mine is the query service layer, the retained Studio API contract/operation model, the ingestion rules engine, the ingestion dead-letter/diagnostics patterns, and the RulesWorkbench service logic. The least useful code to preserve is the Workbench shell machinery and dummy module contribution system. The most important new backend concept to specify is the ingestion input journal: provider-normalized input capture, table-index-plus-blob storage, `ShadowId` correlation, dead-letter linkage, outcome history, supersession handling, and separate diagnostic versus guarded live repair replay APIs over shadowed inputs. The most important developer UI journey to design is the operational repair loop: inspect dead letter, inspect accepted input, run rules/debug, fix, verify, and repair safely.
+The most useful existing code to mine is the query service layer, the retained Studio API contract/operation model, the ingestion queue request DTOs, the ingestion rules engine, the ingestion dead-letter/diagnostics patterns, and the RulesWorkbench service logic. The least useful code to preserve is the Workbench shell machinery and dummy module contribution system. The most important new backend concepts to specify are the remote ingestion queue contracts package, query-rule diagnostics and comparison APIs, and the ingestion input journal. The contracts package should expose only the queue-message shape needed by remote .NET producers. Query-rule diagnostics should expose the full interpretation trace from normalization through rule evaluation, residual defaults, request mapping, and result comparison. The journal should cover provider-normalized input capture, table-index-plus-blob storage, `ShadowId` correlation, dead-letter linkage, outcome history, supersession handling, and separate diagnostic versus guarded live repair replay APIs over shadowed inputs. The most important developer UI journeys to design are the query-rule tuning loop and the operational repair loop: inspect search interpretation, compare draft rule output, run query corpuses, inspect dead letter, inspect accepted input, run rules/debug, fix, verify, and repair safely. Frontend specification work should treat React plus shadcn/ui as a fixed baseline and define the token, theme, and component-governance model alongside the API contracts.
