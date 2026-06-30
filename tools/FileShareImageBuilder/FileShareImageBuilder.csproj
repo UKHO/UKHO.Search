@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Microsoft.Data.SqlClient" Version="13.1.3" />
-    <PackageReference Include="Aspire.Azure.Storage.Blobs" Version="13.1.3" />
+    <PackageReference Include="Aspire.Microsoft.Data.SqlClient" Version="13.4.6" />
+    <PackageReference Include="Aspire.Azure.Storage.Blobs" Version="13.4.6" />
     <PackageReference Include="Azure.Identity" Version="1.19.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.83.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
     <PackageReference Include="Microsoft.SqlServer.DacFx" Version="170.3.93" />
     <PackageReference Include="UKHO.ADDS.Clients.FileShareService.ReadOnly" Version="0.0.50728-alpha.8" />
   </ItemGroup>

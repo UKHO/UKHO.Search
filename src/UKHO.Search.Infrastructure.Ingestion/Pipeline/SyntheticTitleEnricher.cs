@@ -1,5 +1,5 @@
 using UKHO.Search.Ingestion.Pipeline.Documents;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Ingestion;
 
 namespace UKHO.Search.Infrastructure.Ingestion.Pipeline

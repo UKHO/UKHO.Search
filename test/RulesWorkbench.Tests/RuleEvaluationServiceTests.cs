@@ -4,7 +4,7 @@ using RulesWorkbench.Services;
 using RulesWorkbench.Tests.TestSupport;
 using Shouldly;
 using UKHO.Search.Infrastructure.Ingestion.Rules;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using Xunit;
 
 namespace RulesWorkbench.Tests

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 
 namespace UKHO.Search.Studio.Providers.FileShare
 {

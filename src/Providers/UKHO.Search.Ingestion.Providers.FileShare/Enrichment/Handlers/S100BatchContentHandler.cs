@@ -1,7 +1,7 @@
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using UKHO.Search.Ingestion.Pipeline.Documents;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Ingestion.Providers.FileShare.Enrichment.Handlers.Enrichers;
 
 namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment.Handlers

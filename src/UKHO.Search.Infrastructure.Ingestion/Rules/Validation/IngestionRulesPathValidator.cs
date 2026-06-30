@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Reflection;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 
 namespace UKHO.Search.Infrastructure.Ingestion.Rules.Validation
 {

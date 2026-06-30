@@ -1,7 +1,7 @@
 using Shouldly;
 using UKHO.Search.Ingestion.Pipeline;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Documents;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests.Documents

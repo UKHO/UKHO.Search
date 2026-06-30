@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\UKHO.Search.Ingestion\UKHO.Search.Ingestion.csproj" />
+    <ProjectReference Include="..\..\UKHO.Search.Ingestion.Contracts\UKHO.Search.Ingestion.Contracts.csproj" />
     <ProjectReference Include="..\..\UKHO.Search.Infrastructure.Ingestion\UKHO.Search.Infrastructure.Ingestion.csproj" />
     <ProjectReference Include="..\..\Studio\UKHO.Search.Studio\UKHO.Search.Studio.csproj" />
   </ItemGroup>

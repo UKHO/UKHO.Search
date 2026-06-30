@@ -3,7 +3,7 @@ using Shouldly;
 using UKHO.Search.Geo;
 using UKHO.Search.Ingestion.Pipeline.Documents;
 using UKHO.Search.Ingestion.Providers.FileShare.Enrichment.Handlers;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Tests.Common;
 using Xunit;
 

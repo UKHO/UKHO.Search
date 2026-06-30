@@ -11,7 +11,7 @@ using UKHO.Search.Infrastructure.Ingestion.Queue;
 using UKHO.Search.Infrastructure.Ingestion.Pipeline.Nodes;
 using UKHO.Search.Ingestion.Pipeline.Documents;
 using UKHO.Search.Ingestion.Pipeline.Operations;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Pipelines.Batching;
 using UKHO.Search.Pipelines.Channels;
 using UKHO.Search.Pipelines.Messaging;

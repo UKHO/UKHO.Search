@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyName>UKHO.Search.Ingestion.Contracts</AssemblyName>
+    <RootNamespace>UKHO.Search.Ingestion.Contracts</RootNamespace>
+    <PackageId>UKHO.Search.Ingestion.Contracts</PackageId>
+    <Title>UKHO Search Ingestion Contracts</Title>
+    <Description>Dependency-light queue-message contracts for remote UKHO Search ingestion producers.</Description>
+    <Authors>UKHO</Authors>
+    <PackageTags>ukho;search;ingestion;contracts</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

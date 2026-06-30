@@ -29,32 +29,30 @@ Include:
 11. Theming/styling approach (Bootstrap + CSS variables).
 12. Testing coverage indicators (presence of tests per area).
 
-## Output Documents (initial draft versions)
+## Output Documents (initial draft files)
 Create the following spec files as applicable:
-- `spec-system-overview_v0.01.md`
-- `spec-architecture-components_v0.01.md` (if system overview would become too large)
-- `spec-domain-[context]_v0.01.md` (one per domain context if needed)
-- `spec-api-functional_v0.01.md`
-- `spec-frontend-functional_v0.01.md`
-- `spec-infra-deployment_v0.01.md` (if infra files exist)
+- `spec-system-overview.md`
+- `spec-architecture-components.md` (if system overview would become too large)
+- `spec-domain-[context].md` (one per domain context if needed)
+- `spec-api-functional.md`
+- `spec-frontend-functional.md`
+- `spec-infra-deployment.md` (if infra files exist)
 
 If a section lacks implementation evidence, include the heading with "No current implementation" or "Unverified".
 
 ## Document Structure Template (apply to each)
 1. Title
-2. Version: v0.01 (Draft)
-3. Status: Draft / Baseline Extraction
-4. Supersedes: None
-5. Change Log: Initial draft creation
-6. Scope / Purpose
-7. Context & Overview
-8. Components / Modules
-9. Detailed Elements (domain entities, endpoints, components, infra items)
-10. Cross-Cutting Concerns
-11. Non-Functional Characteristics (performance, scalability, security, accessibility, reliability)
-12. Gaps & Unknowns
-13. Future Indicators (only existing TODOs/placeholders; no invention)
-14. Traceability (source paths, related docs)
+2. Status: Draft / Baseline Extraction
+3. Date
+4. Scope / Purpose
+5. Context & Overview
+6. Components / Modules
+7. Detailed Elements (domain entities, endpoints, components, infra items)
+8. Cross-Cutting Concerns
+9. Non-Functional Characteristics (performance, scalability, security, accessibility, reliability)
+10. Gaps & Unknowns
+11. Future Indicators (only existing TODOs/placeholders; no invention)
+12. Traceability (source paths, related docs)
 
 ## Rules & Constraints
 - Do NOT invent future features.
@@ -73,16 +71,16 @@ List:
 
 ## Completion Checklist
 - All planned spec files created under the active Work Package folder in `dev/work-packages/`.
-- Naming & versioning rules followed.
+- Naming rules followed.
 - Each spec includes required sections.
 - Cross-references added between specs where appropriate.
 - Gaps clearly identified.
 
 ## Follow-On Planning Suggestions
 After specs: propose plan document stubs, e.g.:
-- `plan-backend-refactor-auth_v0.01.md`
-- `plan-frontend-accessibility_v0.01.md`
-- `plan-tests-coverage-improvement_v0.01.md`
+- `plan-backend-refactor-auth.md`
+- `plan-frontend-accessibility.md`
+- `plan-tests-coverage-improvement.md`
 
 ---
 Responder Instructions: Use workspace exploration tools to collect real data before writing specs. Produce files iteratively starting with system overview.

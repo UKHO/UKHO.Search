@@ -1,5 +1,5 @@
 using System.Text.Json;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 
 namespace FileShareEmulator.Common
 {

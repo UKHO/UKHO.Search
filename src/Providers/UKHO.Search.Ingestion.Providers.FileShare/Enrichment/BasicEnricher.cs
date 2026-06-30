@@ -1,6 +1,6 @@
 using System.Globalization;
 using UKHO.Search.Ingestion.Pipeline.Documents;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Query;
 
 namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment

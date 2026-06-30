@@ -1,6 +1,6 @@
 using System.Threading.Channels;
 using UKHO.Search.Ingestion.Providers;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Pipelines.Messaging;
 
 namespace UKHO.Search.Services.Ingestion.Tests.TestProviders

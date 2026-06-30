@@ -1,0 +1,10 @@
+{
+  "RequestType": "UpdateAcl",
+  "UpdateAcl": {
+    "Id": "ABC123",
+    "SecurityTokens": [
+      "token-a",
+      "token-b"
+    ]
+  }
+}

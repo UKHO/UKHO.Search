@@ -1,6 +1,6 @@
 using Shouldly;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests.Rules

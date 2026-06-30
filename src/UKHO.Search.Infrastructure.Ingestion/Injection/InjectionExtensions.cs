@@ -24,7 +24,7 @@ using UKHO.Search.Ingestion.Providers;
 using UKHO.Search.Ingestion.Providers.FileShare;
 using UKHO.Search.Ingestion.Providers.FileShare.Injection;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Ingestion.Rules;
 using UKHO.Search.Pipelines.Nodes;
 using UKHO.Search.ProviderModel;

@@ -85,6 +85,8 @@ By the time a provider sees a message, the runtime has already wrapped it in an 
 - acknowledgement context
 - provider-scoped context needed later in the graph
 
+The `IngestionRequest` payload in that envelope now comes from `UKHO.Search.Ingestion.Contracts`, which is the canonical owner of the queue-message DTO and serializer contract shared with remote producers.
+
 That split is deliberate: providers should focus on request processing rather than on Azure Queue mechanics.
 
 ### 2. Validation rejects structurally bad requests early

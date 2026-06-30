@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Actions;
 using UKHO.Search.Infrastructure.Ingestion.Rules.Evaluation;
 using UKHO.Search.Ingestion.Pipeline.Documents;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 
 namespace UKHO.Search.Infrastructure.Ingestion.Rules
 {

@@ -1,8 +1,8 @@
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Ingestion.Providers;
-using UKHO.Search.Ingestion.Requests;
 using UKHO.Search.Pipelines.Messaging;
 using UKHO.Search.Pipelines.Nodes;
 using UKHO.Search.Services.Ingestion.Providers;

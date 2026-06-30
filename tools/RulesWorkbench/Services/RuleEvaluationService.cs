@@ -3,8 +3,8 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using RulesWorkbench.Contracts;
 using UKHO.Search.Infrastructure.Ingestion.Rules;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Ingestion.Pipeline.Documents;
-using UKHO.Search.Ingestion.Requests;
 
 namespace RulesWorkbench.Services
 {

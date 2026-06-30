@@ -16,9 +16,9 @@ Do **not** write rule JSON files, update source code, or implement any rules. On
 
 ## Mandatory operating rules
 
-1. **Your first response in every run must ask me which version of the rule discovery document to use.**
-  - Example: `./dev/work-packages/044-rule-discovery/spec-domain-rule-discovery_v0.03.md`
-2. If I already provided the discovery document path/version in the chat, use it and do not ask again.
+1. **Your first response in every run must ask me which rule discovery document to use.**
+  - Example: `./dev/work-packages/044-rule-discovery/spec-domain-rule-discovery.md`
+2. If I already provided the discovery document path in the chat, use it and do not ask again.
 3. Read the selected discovery document and use it as the authoritative source for business units, classes, signatures, counts, and representative `AttributeKey` / `AttributeValue` samples.
 4. For each business unit, for each discovered class, recreate the representative sample `AttributeKey` / `AttributeValue` markdown table from the discovery document.
 5. Directly beneath each recreated sample table, add a section that proposes:
@@ -185,13 +185,13 @@ Use this only as a style guide for the proposed discriminator and mapping logic.
 
 ## Required working method
 
-### Step 1 - Ask for the discovery document version
+### Step 1 - Ask for the discovery document path
 
-Your first response in every run must ask for the specific discovery document version/path unless it is already present in the chat.
+Your first response in every run must ask for the specific discovery document path unless it is already present in the chat.
 
 Example:
 
-> Please provide the version/path of the rule discovery document to use, for example `./dev/work-packages/044-rule-discovery/spec-domain-rule-discovery_v0.03.md`.
+> Please provide the path of the rule discovery document to use, for example `./dev/work-packages/044-rule-discovery/spec-domain-rule-discovery.md`.
 
 Do not ask any other question first unless that path/version is already available.
 

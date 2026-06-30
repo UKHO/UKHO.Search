@@ -294,11 +294,11 @@ namespace RulesWorkbench.Tests
                 _report = report;
             }
 
-            public void Apply(string providerName, UKHO.Search.Ingestion.Requests.IngestionRequest request, UKHO.Search.Ingestion.Pipeline.Documents.CanonicalDocument document)
+            public void Apply(string providerName, UKHO.Search.Ingestion.Contracts.IngestionRequest request, UKHO.Search.Ingestion.Pipeline.Documents.CanonicalDocument document)
             {
             }
 
-            public IngestionRulesApplyReport ApplyWithReport(string providerName, UKHO.Search.Ingestion.Requests.IngestionRequest request, UKHO.Search.Ingestion.Pipeline.Documents.CanonicalDocument document)
+            public IngestionRulesApplyReport ApplyWithReport(string providerName, UKHO.Search.Ingestion.Contracts.IngestionRequest request, UKHO.Search.Ingestion.Pipeline.Documents.CanonicalDocument document)
             {
                 if (!string.IsNullOrWhiteSpace(_report.FinalDocumentJson))
                 {

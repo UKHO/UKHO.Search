@@ -2,10 +2,10 @@ using System.Text.Json;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using UKHO.Search.Ingestion.Contracts;
+using UKHO.Search.Ingestion.Contracts.Serialization;
 using UKHO.Search.Ingestion.Pipeline;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline;
-using UKHO.Search.Ingestion.Requests;
-using UKHO.Search.Ingestion.Requests.Serialization;
 using UKHO.Search.Pipelines.Messaging;
 
 namespace UKHO.Search.Ingestion.Providers.FileShare

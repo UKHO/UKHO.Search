@@ -1,6 +1,6 @@
 using System.Threading.Channels;
 using UKHO.Search.Ingestion.Pipeline.Operations;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Pipelines.Batching;
 using UKHO.Search.Pipelines.Messaging;
 using UKHO.Search.Pipelines.Nodes;

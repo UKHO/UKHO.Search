@@ -17,7 +17,7 @@ Use `./wiki/Ingestion-Rules.md` as the implementation guide whenever rule-schema
 ## Mandatory operating rules
 
 1. **Your first response in every run must ask me which markdown rule mapping document to use, unless I already provided it in the chat.**
-   - Example: `./dev/work-packages/044-rule-discovery/spec-domain-rule-discovery_v0.03.md`
+   - Example: `./dev/work-packages/044-rule-discovery/spec-domain-rule-discovery.md`
 2. If I already provided the mapping document path/version in the chat, use it and do not ask again.
 3. Treat the selected markdown mapping document as the authoritative source for:
    - business unit name
@@ -41,7 +41,7 @@ Prompt me for the markdown document containing the rule mapping unless it is alr
 
 Example input document:
 
-- `./dev/work-packages/044-rule-discovery/spec-domain-rule-discovery_v0.03.md`
+- `./dev/work-packages/044-rule-discovery/spec-domain-rule-discovery.md`
 
 ## Output location
 
@@ -115,7 +115,7 @@ If no mapping document path/version is already present in the chat, ask for it f
 
 Example:
 
-> Please provide the markdown rule mapping document to use, for example `./dev/work-packages/044-rule-discovery/spec-domain-rule-discovery_v0.03.md`.
+> Please provide the markdown rule mapping document to use, for example `./dev/work-packages/044-rule-discovery/spec-domain-rule-discovery.md`.
 
 ### Step 2 - Read the mapping document
 

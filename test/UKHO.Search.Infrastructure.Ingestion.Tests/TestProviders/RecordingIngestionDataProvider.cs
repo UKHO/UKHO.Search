@@ -1,8 +1,8 @@
 using System.Text.Json;
 using UKHO.Search.Infrastructure.Ingestion.Queue;
 using UKHO.Search.Ingestion.Providers;
-using UKHO.Search.Ingestion.Requests;
-using UKHO.Search.Ingestion.Requests.Serialization;
+using UKHO.Search.Ingestion.Contracts;
+using UKHO.Search.Ingestion.Contracts.Serialization;
 using UKHO.Search.Pipelines.Messaging;
 
 namespace UKHO.Search.Ingestion.Tests.TestProviders

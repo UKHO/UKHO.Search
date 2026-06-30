@@ -52,6 +52,7 @@ flowchart TB
 
     subgraph Domain[Domain and shared contracts]
         SearchCore[UKHO.Search]
+        IngestionContracts[UKHO.Search.Ingestion.Contracts]
         IngestionCore[UKHO.Search.Ingestion]
         QueryCore[UKHO.Search.Query]
         ProviderModel[UKHO.Search.ProviderModel]
@@ -101,10 +102,13 @@ The inner projects define the repository's reusable runtime and model concepts.
 
 These projects are where the repository tries to stay stable as outer implementation details move. The graph runtime, ingestion contracts, canonical model, provider metadata, and Workbench contracts form the vocabulary that the rest of the solution keeps reusing. If an idea belongs in these inner layers, it usually means the repository expects that idea to survive provider changes, host reshaping, or tooling evolution. If an idea only matters because one concrete adapter or runtime process needs it, it normally belongs farther out.
 
+One recent refinement is the introduction of `UKHO.Search.Ingestion.Contracts` as the dedicated domain-layer home for remote ingestion queue contracts. That package now owns the queue-message DTOs, serializer options, JSON converters, producer-safe factories, typed property helpers, builder support, non-throwing validator entry points, and the visible contract-version marker used both by remote producers and by the active ingestion runtime path. It remains intentionally free of runtime host, infrastructure, Azure-client, and provider-implementation dependencies so the wire contract can stay reusable without pulling in the broader ingestion runtime. Contributors who need the producer-facing contract explanation should start with [Remote ingestion producer guide](Remote-Ingestion-Producer-Guide) and then continue to the canonical package guide in [../src/UKHO.Search.Ingestion.Contracts/README.md](../src/UKHO.Search.Ingestion.Contracts/README.md).
+
 | Area | Key paths | Responsibility |
 |---|---|---|
 | Pipeline runtime | `src/UKHO.Search` | Defines channels, envelopes, nodes, supervision, metrics, and other primitives used by ingestion. |
-| Canonical ingestion model | `src/UKHO.Search.Ingestion` | Defines ingestion contracts, provider abstractions, and the shared `CanonicalDocument` discovery shape. |
+| Remote ingestion contracts boundary | `src/UKHO.Search.Ingestion.Contracts` | Owns the dependency-light queue-message DTOs, serializer options, converters, producer-safe authoring helpers, validator surface, and producer-facing contract guidance shared by remote producers and runtime consumers. |
+| Canonical ingestion model | `src/UKHO.Search.Ingestion` | Defines provider abstractions, enrichment contracts, and the shared `CanonicalDocument` discovery shape. |
 | Query model | `src/UKHO.Search.Query` | Holds the query-side canonical model, query-plan contracts, typed extracted-signal contracts, query-rule contracts, diagnostics contracts, and search-result contracts that sit on the canonical index. |
 | Provider metadata | `src/UKHO.Search.ProviderModel` | Shares provider identity, metadata, and split registration helpers across hosts and tooling. |
 | Workbench contracts | `src/workbench/server/UKHO.Workbench` | Defines shell contracts, models, and module registration boundaries for Workbench. |
@@ -164,6 +168,8 @@ The repository uses a project-aligned test layout under `test/`.
 This structure matters architecturally because it mirrors ownership boundaries: tests usually live with the production project they verify, while cross-project behaviour is pushed to the outer integration layer.
 
 That mirroring is part of the architecture story rather than a separate test-only concern. The repository is trying to make ownership visible everywhere: in project references, in host composition, in provider boundaries, and in the way test projects line up with production projects. When you are deciding where a change belongs, the test layout often reinforces the same answer that the production layering already suggests.
+
+Some tests also exist as architectural guardrails rather than as behavior tests for runtime features. `test/UKHO.Search.Ingestion.Contracts.Tests`, for example, is intended to fail fast if the contracts package ever gains project or external package references that would break its dependency-light boundary, and it now also exercises checked-in fixture envelopes so the human-readable producer examples remain executable. That kind of test is useful in this repository because some work packages are about preserving architectural direction just as much as they are about adding business behavior.
 
 ## Common pitfalls when reading the architecture
 

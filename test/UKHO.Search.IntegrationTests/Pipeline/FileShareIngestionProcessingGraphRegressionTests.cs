@@ -5,7 +5,7 @@ using Shouldly;
 using UKHO.Search.Ingestion.Pipeline.Operations;
 using UKHO.Search.Ingestion.Providers.FileShare;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Ingestion.Tests.TestEnrichers;
 using UKHO.Search.Ingestion.Tests.TestNodes;
 using UKHO.Search.Pipelines.Channels;
