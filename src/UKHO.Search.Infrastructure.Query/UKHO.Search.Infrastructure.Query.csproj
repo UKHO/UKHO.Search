@@ -7,7 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aspire.Elastic.Clients.Elasticsearch" Version="13.1.0" />
+		<PackageReference Include="Aspire.Elastic.Clients.Elasticsearch" Version="13.3.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="8.5.0" />
         <PackageReference Include="Microsoft.Recognizers.Text" Version="1.8.13" />
 		<PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.8.13" />

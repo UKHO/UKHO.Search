@@ -1,6 +1,6 @@
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Pipelines.Errors;
 using UKHO.Search.Pipelines.Messaging;
 using UKHO.Search.Pipelines.Nodes;

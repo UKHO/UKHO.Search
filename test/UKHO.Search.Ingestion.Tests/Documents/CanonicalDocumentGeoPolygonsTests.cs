@@ -1,7 +1,7 @@
 using Shouldly;
 using UKHO.Search.Geo;
 using UKHO.Search.Ingestion.Pipeline.Documents;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests.Documents

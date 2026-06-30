@@ -1,4 +1,4 @@
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Pipelines.Messaging;
 
 namespace UKHO.Search.Ingestion.Providers

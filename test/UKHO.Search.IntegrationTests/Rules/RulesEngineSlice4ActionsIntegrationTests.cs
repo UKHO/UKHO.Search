@@ -3,7 +3,7 @@ using Shouldly;
 using UKHO.Search.Infrastructure.Ingestion.Injection;
 using UKHO.Search.Infrastructure.Ingestion.Rules;
 using UKHO.Search.Ingestion.Pipeline.Documents;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Ingestion.Tests.TestSupport;
 using UKHO.Search.ProviderModel;
 using UKHO.Search.ProviderModel.Injection;

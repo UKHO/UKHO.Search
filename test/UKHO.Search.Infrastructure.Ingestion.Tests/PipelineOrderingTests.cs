@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Shouldly;
 using UKHO.Search.Infrastructure.Ingestion.Pipeline;
 using UKHO.Search.Ingestion.Pipeline.Operations;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests

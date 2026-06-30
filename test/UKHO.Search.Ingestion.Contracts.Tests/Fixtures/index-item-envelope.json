@@ -1,0 +1,25 @@
+{
+  "RequestType": "IndexItem",
+  "IndexItem": {
+    "Id": "ABC123",
+    "Properties": [
+      {
+        "Name": "title",
+        "Value": "Hello",
+        "Type": "string"
+      }
+    ],
+    "SecurityTokens": [
+      "t"
+    ],
+    "Timestamp": "2026-03-05T10:15:30+00:00",
+    "Files": [
+      {
+        "Filename": "a.txt",
+        "Size": 123,
+        "Timestamp": "2026-03-05T10:15:31+00:00",
+        "MimeType": "text/plain"
+      }
+    ]
+  }
+}

@@ -2,7 +2,7 @@ using System.IO.Compression;
 using Microsoft.Extensions.Logging;
 using UKHO.Search.Configuration;
 using UKHO.Search.Ingestion.Pipeline.Documents;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 
 namespace UKHO.Search.Ingestion.Providers.FileShare.Enrichment
 {

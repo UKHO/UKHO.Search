@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/00 Domain/">
+    <Project Path="src/UKHO.Search.Ingestion.Contracts/UKHO.Search.Ingestion.Contracts.csproj" />
     <Project Path="src/UKHO.Search.ProviderModel/UKHO.Search.ProviderModel.csproj" />
     <Project Path="src/UKHO.Search.Ingestion/UKHO.Search.Ingestion.csproj" Id="c245f1bc-029a-4b84-93fc-fdf4f19c567e" />
     <Project Path="src/UKHO.Search.Query/UKHO.Search.Query.csproj" Id="52a17483-574c-441e-b037-af616b6306b2" />
@@ -70,6 +71,7 @@
     <Project Path="test/UKHO.Search.Tests.Common/UKHO.Search.Tests.Common.csproj" />
   </Folder>
   <Folder Name="/@test/00 Domain/">
+    <Project Path="test/UKHO.Search.Ingestion.Contracts.Tests/UKHO.Search.Ingestion.Contracts.Tests.csproj" />
     <Project Path="test/UKHO.Search.ProviderModel.Tests/UKHO.Search.ProviderModel.Tests.csproj" />
     <Project Path="test/UKHO.Search.Ingestion.Tests/UKHO.Search.Ingestion.Tests.csproj" />
     <Project Path="test/UKHO.Search.Query.Tests/UKHO.Search.Query.Tests.csproj" />
@@ -123,4 +125,6 @@
     <Project Path="test/UKHO.Aspire.Configuration.Seeder.Tests/UKHO.Aspire.Configuration.Seeder.Tests.csproj" />
     <Project Path="test/UKHO.Aspire.Configuration.Tests/UKHO.Aspire.Configuration.Tests.csproj" />
   </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/test/" />
 </Solution>

@@ -3,7 +3,7 @@ using UKHO.Search.Ingestion.Pipeline;
 using UKHO.Search.Ingestion.Pipeline.Operations;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Documents;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Pipelines.Channels;
 using UKHO.Search.Pipelines.Messaging;
 using Xunit;

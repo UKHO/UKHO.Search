@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Shouldly;
-using UKHO.Search.Ingestion.Requests;
-using UKHO.Search.Ingestion.Requests.Serialization;
+using UKHO.Search.Ingestion.Contracts;
+using UKHO.Search.Ingestion.Contracts.Serialization;
 using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests

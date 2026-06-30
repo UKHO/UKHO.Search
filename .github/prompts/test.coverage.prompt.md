@@ -138,9 +138,9 @@ After collecting coverage data, create a **new Work Package** in `./dev/work-pac
 Create **exactly one markdown specification document** in the new Work Package folder.
 
 Recommended filename:
-- `spec-domain-test-coverage-gaps_v0.01.md`
+- `spec-domain-test-coverage-gaps.md`
 
-Follow repository documentation conventions where applicable, including versioning fields for an initial spec.
+Follow repository documentation conventions where applicable, using the repository's single-file spec approach.
 
 Do **not** create multiple spec files.
 Do **not** create separate overview/component specs.

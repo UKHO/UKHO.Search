@@ -48,6 +48,8 @@ The host/infrastructure boundary is deliberate:
 - the envelope carries message id, key, timestamps, retry state, breadcrumbs, and acknowledgement context
 - the provider receives a ready-to-process envelope instead of needing to know Azure Queue mechanics
 
+The `IngestionRequest` queue-message type in that envelope now comes from `UKHO.Search.Ingestion.Contracts`, so the active runtime consumes the same contract surface documented for remote producers in [../src/UKHO.Search.Ingestion.Contracts/README.md](../src/UKHO.Search.Ingestion.Contracts/README.md).
+
 When you are debugging queue mechanics, start in `src/UKHO.Search.Infrastructure.Ingestion` and not in the provider project.
 
 ## 3. Provider validation happens before work starts

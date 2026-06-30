@@ -6,7 +6,7 @@ using UKHO.Search.Ingestion;
 using UKHO.Search.Ingestion.Pipeline.Documents;
 using UKHO.Search.Ingestion.Providers.FileShare.Enrichment;
 using UKHO.Search.Ingestion.Providers.FileShare.Enrichment.Handlers;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using Xunit;
 
 namespace UKHO.Search.Ingestion.Tests.Enrichment

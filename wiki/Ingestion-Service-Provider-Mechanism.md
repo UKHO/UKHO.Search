@@ -31,6 +31,8 @@ Responsibilities:
 - deserialize raw queue message text into `IngestionRequest`
 - accept an `Envelope<IngestionRequest>` and process it asynchronously
 
+The `IngestionRequest` type used here comes from `UKHO.Search.Ingestion.Contracts`. That package is the canonical owner of the queue-message DTO and JSON contract, so providers consume the same wire shape that remote producers are expected to author.
+
 ## Why the abstraction exists
 
 Without a provider abstraction, the ingestion host would need to know too much about:

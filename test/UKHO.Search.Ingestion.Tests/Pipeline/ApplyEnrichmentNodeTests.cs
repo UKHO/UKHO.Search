@@ -7,7 +7,7 @@ using UKHO.Search.Ingestion.Pipeline.Documents;
 using UKHO.Search.Ingestion.Pipeline.Nodes;
 using UKHO.Search.Ingestion.Pipeline.Operations;
 using UKHO.Search.Ingestion.Providers.FileShare.Enrichment;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Ingestion.Rules;
 using UKHO.Search.Ingestion.Tests.TestEnrichers;
 using UKHO.Search.Ingestion.Tests.TestSupport;

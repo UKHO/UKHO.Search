@@ -1,4 +1,4 @@
-﻿<Project Sdk="Aspire.AppHost.Sdk/13.1.3">
+<Project Sdk="Aspire.AppHost.Sdk/13.4.6">
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -9,10 +9,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aspire.Hosting.Azure.Storage" Version="13.1.3" />
-		<PackageReference Include="Aspire.Hosting.Elasticsearch" Version="13.1.0" />
-		<PackageReference Include="Aspire.Hosting.Keycloak" Version="13.1.2-preview.1.26125.13" />
-		<PackageReference Include="Aspire.Hosting.SqlServer" Version="13.1.3" />
+		<PackageReference Include="Aspire.Hosting.Azure.Storage" Version="13.4.6" />
+		<PackageReference Include="Aspire.Hosting.Elasticsearch" Version="13.3.0" />
+		<PackageReference Include="Aspire.Hosting.Keycloak" Version="13.4.6-preview.1.26319.6" />
+		<PackageReference Include="Aspire.Hosting.SqlServer" Version="13.4.6" />
 		<PackageReference Include="Docker.DotNet" Version="3.125.15" />
 	</ItemGroup>
 

@@ -3,8 +3,8 @@ using System.Text.Json;
 using Azure.Storage.Queues;
 using FileShareEmulator.Common;
 using Microsoft.Data.SqlClient;
-using UKHO.Search.Ingestion.Requests;
-using UKHO.Search.Ingestion.Requests.Serialization;
+using UKHO.Search.Ingestion.Contracts;
+using UKHO.Search.Ingestion.Contracts.Serialization;
 
 namespace FileShareEmulator.Services
 {

@@ -53,6 +53,7 @@ flowchart LR
 | New to the repository | [Glossary](Glossary) | [Solution architecture](Solution-Architecture) -> [Architecture walkthrough](Architecture-Walkthrough) -> [Project setup](Project-Setup) |
 | Setting up the local stack | [Project setup](Project-Setup) | [Setup walkthrough](Setup-Walkthrough) -> [Setup troubleshooting](Setup-Troubleshooting) -> [Appendix: command reference](Appendix-Command-Reference) -> [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator) |
 | Working on ingestion | [Ingestion pipeline](Ingestion-Pipeline) | [Ingestion graph runtime foundations](Ingestion-Graph-Runtime) -> [Ingestion walkthrough](Ingestion-Walkthrough) -> [Ingestion rules](Ingestion-Rules) -> [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference) -> [Ingestion troubleshooting](Ingestion-Troubleshooting) |
+| Producing remote ingestion messages | [Remote ingestion producer guide](Remote-Ingestion-Producer-Guide) | [../src/UKHO.Search.Ingestion.Contracts/README.md](../src/UKHO.Search.Ingestion.Contracts/README.md) -> [Solution architecture](Solution-Architecture) -> [Ingestion walkthrough](Ingestion-Walkthrough) |
 | Working on query or search semantics | [Query pipeline](Query-Pipeline) | [Query walkthrough](Query-Walkthrough) -> [Query signal extraction rules](Query-Signal-Extraction-Rules) -> [Query model and Elasticsearch mapping](Query-Model-and-Elasticsearch-Mapping) -> [Appendix: query rule syntax quick reference](Appendix-Query-Rule-Syntax-Quick-Reference) |
 | Working on Workbench or Blazor UI | [Solution architecture](Solution-Architecture) | [Architecture walkthrough](Architecture-Walkthrough) -> [Workbench introduction](Workbench-Introduction) -> [Workbench architecture](Workbench-Architecture) -> [Workbench commands and tools](Workbench-Commands-and-Tools) -> [Workbench tabs and layout](Workbench-Tabs-and-Layout) |
 | Tracing repository history or design background | [Documentation source map](Documentation-Source-Map) | Related work-package documents in `dev/work-packages/mvp/` |
@@ -70,6 +71,8 @@ Start with [Solution architecture](Solution-Architecture) for the current reposi
 ### Ingestion
 
 [Ingestion pipeline](Ingestion-Pipeline) is the conceptual entry point for the message-processing path. Follow it with [Ingestion graph runtime foundations](Ingestion-Graph-Runtime) for the generic base library and terminology, then [Ingestion walkthrough](Ingestion-Walkthrough), [Ingestion rules](Ingestion-Rules), [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference), and [Ingestion troubleshooting](Ingestion-Troubleshooting) when you need to understand runtime flow, rule evaluation, canonical indexing, and failure handling.
+
+For remote queue-message authoring rather than runtime processing, start instead with [Remote ingestion producer guide](Remote-Ingestion-Producer-Guide) and then continue to the canonical package guide in [../src/UKHO.Search.Ingestion.Contracts/README.md](../src/UKHO.Search.Ingestion.Contracts/README.md).
 
 ### Query
 

@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using UKHO.Search.Ingestion.Pipeline;
 using UKHO.Search.Ingestion.Providers.FileShare;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Pipelines.Messaging;
 using Xunit;
 

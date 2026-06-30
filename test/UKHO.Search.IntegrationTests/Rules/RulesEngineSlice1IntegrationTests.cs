@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using UKHO.Search.Ingestion.Pipeline.Documents;
 using UKHO.Search.Ingestion.Providers.FileShare.Enrichment;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Ingestion.Rules;
 using UKHO.Search.Ingestion.Tests.TestSupport;
 using Xunit;

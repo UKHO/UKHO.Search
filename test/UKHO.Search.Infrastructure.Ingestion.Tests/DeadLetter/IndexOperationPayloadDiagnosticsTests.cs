@@ -2,7 +2,7 @@ using Shouldly;
 using UKHO.Search.Geo;
 using UKHO.Search.Ingestion.Pipeline.Documents;
 using UKHO.Search.Ingestion.Pipeline.Operations;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Pipelines.DeadLetter;
 using Xunit;
 

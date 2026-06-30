@@ -6,6 +6,8 @@ If the repository vocabulary is unfamiliar, start with the [Glossary](Glossary) 
 
 This walkthrough exists because the stable project map on [Solution architecture](Solution-Architecture) is only half of the architectural story. Contributors also need to see how the repository behaves as a running system: which host starts first, where local dependencies enter the picture, where provider-specific behavior stops, and how the same canonical index later becomes the input for query and diagnostics. The sections below therefore follow runtime paths rather than just folder names.
 
+If your question is not about runtime flow but about how an external .NET producer should author queue messages against the contracts package, start with [Remote ingestion producer guide](Remote-Ingestion-Producer-Guide) before using this page as a code-reading route.
+
 ## How to use this page
 
 Read this page in one of two ways:
@@ -79,7 +81,8 @@ That composition step matters because it shows which parts of ingestion are inte
 Then move inward to:
 
 - `src/UKHO.Search` for channels, envelopes, nodes, supervision, and metrics
-- `src/UKHO.Search.Ingestion` for ingestion contracts and `CanonicalDocument`
+- `src/UKHO.Search.Ingestion.Contracts` for the queue-message DTOs, serializer options, converters, producer-safe authoring helpers, validator surface, and producer-facing contract guidance shared by producers and runtime consumers
+- `src/UKHO.Search.Ingestion` for provider abstractions, enrichment contracts, and `CanonicalDocument`
 - `src/UKHO.Search.Services.Ingestion` for service-layer coordination
 - `src/UKHO.Search.Infrastructure.Ingestion` for queue polling, Elasticsearch projection, dead-letter persistence, and runtime infrastructure
 
@@ -201,7 +204,8 @@ Treat this table as a starting heuristic, not as a replacement for reading the s
 | Local startup or resource wiring | `src/Hosts/AppHost` | Host / orchestration |
 | Queue polling, indexing, or dead-letter behaviour | `src/UKHO.Search.Infrastructure.Ingestion` | Infrastructure ingestion |
 | Channel runtime, nodes, or supervision | `src/UKHO.Search` | Domain runtime primitives |
-| Canonical document structure or ingestion contracts | `src/UKHO.Search.Ingestion` | Domain ingestion |
+| Queue-message DTOs, authoring helpers, or serializer/validator contract | `src/UKHO.Search.Ingestion.Contracts` | Domain shared contracts |
+| Canonical document structure or provider abstractions | `src/UKHO.Search.Ingestion` | Domain ingestion |
 | File Share-specific parsing or enrichers | `src/Providers/UKHO.Search.Ingestion.Providers.FileShare` | Concrete provider |
 | Query-side endpoint or adapter behaviour | `src/UKHO.Search.Infrastructure.Query` and `src/Hosts/QueryServiceHost` | Query infrastructure / host |
 | Workbench shell composition | `src/workbench/server/WorkbenchHost` | Workbench host |

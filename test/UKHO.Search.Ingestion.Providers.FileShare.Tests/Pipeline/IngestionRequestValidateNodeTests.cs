@@ -1,6 +1,6 @@
 using Shouldly;
 using UKHO.Search.Ingestion.Providers.FileShare.Pipeline.Nodes;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 using UKHO.Search.Pipelines.Channels;
 using UKHO.Search.Pipelines.Errors;
 using UKHO.Search.Pipelines.Messaging;

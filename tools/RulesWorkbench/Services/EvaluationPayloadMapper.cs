@@ -1,6 +1,6 @@
 using System.Text.Json;
 using RulesWorkbench.Contracts;
-using UKHO.Search.Ingestion.Requests;
+using UKHO.Search.Ingestion.Contracts;
 
 namespace RulesWorkbench.Services
 {

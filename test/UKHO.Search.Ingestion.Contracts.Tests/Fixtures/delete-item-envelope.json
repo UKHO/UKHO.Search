@@ -1,0 +1,6 @@
+{
+  "RequestType": "DeleteItem",
+  "DeleteItem": {
+    "Id": "ABC123"
+  }
+}

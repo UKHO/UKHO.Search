@@ -27,7 +27,7 @@ Operate AUTONOMOUSLY and SEQUENTIALLY through the plan:
 Workflow Per Work Item / Task / Step:
 1. Locate the next incomplete item in the plan (top-down order).
 2. Analyze its intent, related specs, and any dependencies.
-3. Gather necessary context from the repository using available tools (search, open files, project listing) – be efficient.
+3. Gather necessary context from the repository using available tools (search, open files, project listing) ï¿½ be efficient.
 4. If implementing logic: (a) write/modify tests first (TDD) where feasible; (b) implement code to satisfy tests and specs; (c) ensure error handling, logging, docs/comments).
 5. Add/adjust imports, dependencies, configuration, and registration (DI, settings) as needed.
 6. Run build and tests; fix failures before marking complete.
@@ -53,9 +53,9 @@ General Rules:
 - Implement one work item / task / step at a time; never partially complete multiple concurrently.
 - After completing any Work Item, Task, or Step, always update the plan markdown to reflect status and summary before proceeding.
 - Prefer minimal APIs, latest C# features, async/await, nullable reference types.
-- Follow repository coding standards, architecture, naming, and versioning rules.
+- Follow repository coding standards, architecture, naming, and documentation file rules.
 - Use feature branches for new work (follow naming: feature/<area>-<short-description>). If branch does not exist, create it; if solution does not exist, create it.
-- Maintain plan/spec versioning practices; never overwrite previous versions.
+- Maintain current plan practices and update canonical spec files in place.
 - Include ALL necessary imports, dependencies, configuration updates (NuGet, using directives, DI registration, JSON contexts, etc.).
 - Ensure robust error handling (try/catch where appropriate), logging, and user-friendly messages.
 - Keep code small, cohesive, and documented. Extract reusable logic.
@@ -64,7 +64,7 @@ General Rules:
 - After each item: build, run tests, lint/format if tooling is available.
 - Security: validate input, protect secrets, follow auth/authorization specs.
 - Accessibility & performance considerations applied where relevant (UI components, large data sets, etc.).
-- Update documentation or specs if implementation reveals required adjustments (create new version files per rules).
+- Update documentation or specs if implementation reveals required adjustments (edit the canonical spec files for the affected scope).
 - When writing or revising wiki-style documentation, prefer developed prose that teaches the subject in sequence. Define specialized terminology, explain why the design works the way it does, and use examples where they materially improve understanding.
 
 Testing:
