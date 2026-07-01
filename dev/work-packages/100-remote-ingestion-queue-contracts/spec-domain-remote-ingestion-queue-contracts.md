@@ -31,7 +31,7 @@ Out of scope for WP100:
 - Implementing queue-message type extraction.
 - Adding builders, helpers, or validators beyond boundary placeholders.
 - Submitting messages to Azure Queue Storage or any other transport.
-- Provider discovery, provider registration, Studio integration, React integration, or runtime pipeline changes.
+- Provider discovery, provider registration, Studio integration, browser-host integration, or runtime pipeline changes.
 - Journal, replay, dead-letter, or `CanonicalDocument` concerns.
 
 ### 1.3 Stakeholders
@@ -88,7 +88,7 @@ The new assembly will not submit queue messages and will not discover providers.
 
 ### 2.4 Constraints
 
-- The package must remain independent of Studio, React, Blazor, provider SPI, queue clients, Azure SDKs, storage SDKs, SQL, App Configuration, Aspire, Elasticsearch, runtime pipeline abstractions, and journaling concerns.
+- The package must remain independent of Studio, Blazor, browser-host UI frameworks, provider SPI, queue clients, Azure SDKs, storage SDKs, SQL, App Configuration, Aspire, Elasticsearch, runtime pipeline abstractions, and journaling concerns.
 - The package must preserve the existing queue JSON shape and validation semantics when WP101 performs the extraction.
 - The package must remain usable by third-party .NET producers without requiring solution-internal dependency graphs.
 - The package must follow repository documentation standards, including XML documentation for public API and developer-level comments for internal implementation.
@@ -206,7 +206,7 @@ The project shall not reference:
 - Storage, queue, SQL, or Elasticsearch client libraries.
 - Logging abstractions.
 - Aspire, App Configuration, or configuration-provider libraries.
-- Studio, Blazor, React, RulesWorkbench, or provider implementation assemblies.
+- Studio, Blazor, browser-host UI frameworks, RulesWorkbench, or provider implementation assemblies.
 
 ### 7.2 External integration model
 

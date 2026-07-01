@@ -1,8 +1,11 @@
-# Specification: WP124 API Contract Governance And Client Strategy
+# Specification: WP124 API Contract Governance And Host Integration Strategy
 
 Target output path: `dev/work-packages/124-api-contract-governance-client-strategy/spec-domain-api-contract-governance-client-strategy.md`
 
 Date: 2026-07-01
+
+Repository note:
+The folder name is retained for numbering continuity. The canonical decision in this file supersedes the earlier React client-strategy assumption.
 
 Source material:
 - [../../specs/next-gen-arc02-wp.md](../../specs/next-gen-arc02-wp.md)
@@ -16,233 +19,162 @@ Source material:
 
 ### 1.1 Purpose
 
-This specification defines the contract-governance baseline for `PublicApiHost` and the initial client-consumption strategy for the new React application.
+This specification defines the contract-governance baseline for the split browser-host direction and the rule for when a host should expose deliberate HTTP contracts versus when server-side composition is acceptable.
 
-The current recommendation is to use a hand-written typed fetch layer for all `PublicApiHost` APIs in the first phase, including both `/api/search/*` and `/api/admin/*`. Generated clients should not be the initial default because the query and admin API surfaces are still evolving. Client generation may be adopted later, once the new application is working and the APIs have stabilized.
+The abandoned React direction made a browser-side typed fetch layer central. That is no longer the right baseline. The new direction is:
+- keep deliberate HTTP contracts for public search and any host interactions that genuinely cross browser or host boundaries,
+- allow server-side composition inside Interactive Server Blazor hosts where that is the simplest correct implementation,
+- and require both public and internal contracts to avoid leaking host-local DTOs or storage-local detail.
 
 ### 1.2 Scope
 
 In scope for WP124:
-- Define the initial frontend client-consumption strategy.
-- Define the baseline contract-governance rules for `PublicApiHost` APIs.
-- Define the rule that public contracts must be deliberate and must not leak host-local Blazor models or internal storage shapes.
-- Define high-level expectations for error shape, request/response explicitness, and later OpenAPI use.
+- define public and internal contract-governance rules,
+- define the baseline error-shape rule,
+- define when server-side host composition is acceptable,
+- and define leak-prevention rules for host-local and storage-local shapes.
 
 Out of scope for WP124:
-- Implementing the APIs.
-- Final frontend project structure.
-- Detailed authentication model, which is defined in WP122.
-- Environment-specific release management.
-- Business audit requirements.
+- implementing the APIs,
+- detailed auth policy,
+- pagination standardization,
+- or business audit requirements.
 
 ### 1.3 Stakeholders
 
-- Frontend authors who need a usable and maintainable client-consumption strategy.
-- Backend authors who need a clear rule for what becomes a public API contract.
-- Platform owners who need a stable path from early iteration to later contract hardening.
-- Later arc work packages that will implement search, admin query, and admin ingestion/provider APIs.
+- Public-host authors who need stable customer-facing contracts.
+- Internal-host authors who need deliberate internal workflow contracts when endpoints are exposed.
+- Backend authors who need clear leak-prevention rules.
+- Later work packages that implement search, diagnostics, and repair workflows.
 
 ### 1.4 Definitions
 
-- Public API contract: The explicit request/response shape exposed by `PublicApiHost`.
-- Hand-written typed fetch: A frontend client layer written manually in TypeScript, with explicit local typing and request/response handling.
-- Generated client: A client produced from OpenAPI or an equivalent contract document.
-- Contract drift: A mismatch between backend API behavior and the client assumptions consuming it.
-- Host-local model: A model currently shaped for a retiring Blazor host or other implementation-local behavior rather than for stable public API use.
+- Deliberate contract: An explicit request and response model exposed intentionally by a host endpoint.
+- Host-local model: A model shaped for a specific Blazor host's internal state or page logic.
+- Storage-local model: A model shaped around SQL rows, storage keys, blob names, or other persistence details.
+- Server-side composition: A Blazor host calling application services directly without forcing a browser-facing HTTP layer for every interaction.
 
 ## 2. System context
 
 ### 2.1 Current state
 
-The repository does not yet have stable `PublicApiHost` APIs or an active generated-client pipeline for the new React application.
-
 Evidence checked:
-- [../121-react-facing-api-host-strategy/spec-domain-react-facing-api-host-strategy.md](../121-react-facing-api-host-strategy/spec-domain-react-facing-api-host-strategy.md) fixes `PublicApiHost` as the single public API boundary.
-- [../../../src/Hosts/QueryServiceHost/Program.cs](../../../src/Hosts/QueryServiceHost/Program.cs) and [../../../src/Hosts/IngestionServiceHost/Program.cs](../../../src/Hosts/IngestionServiceHost/Program.cs) remain current runtime hosts with retiring browser UI, not the final public API composition root.
-- OpenAPI is currently visible in local/retained surfaces such as [../../../tools/FileShareEmulator/Program.cs](../../../tools/FileShareEmulator/Program.cs) and [../../../src/Studio/StudioServiceHost/StudioServiceHostApplication.cs](../../../src/Studio/StudioServiceHost/StudioServiceHostApplication.cs), but not in the active query or ingestion browser/runtime hosts that are being replaced.
-- [../../specs/next-gen-arc02-wp.md](../../specs/next-gen-arc02-wp.md) requires explicit request/response contracts and says React must not infer semantics from final JSON blobs when structured contracts are required.
-
-The current risk is premature formalization in the wrong place: generating frontend clients too early from unstable or transitional shapes, or leaking host-local models into the public API boundary just because they exist already.
+- [../121-react-facing-api-host-strategy/spec-domain-react-facing-api-host-strategy.md](../121-react-facing-api-host-strategy/spec-domain-react-facing-api-host-strategy.md) fixes the split between `QueryServiceHost` and `WorkbenchHost`.
+- [../../../src/Hosts/QueryServiceHost/Program.cs](../../../src/Hosts/QueryServiceHost/Program.cs) and [../../../src/Hosts/IngestionServiceHost/Program.cs](../../../src/Hosts/IngestionServiceHost/Program.cs) remain current runtime hosts with host-local UI state and models.
+- [../../../src/Studio/StudioServiceHost/StudioServiceHostApplication.cs](../../../src/Studio/StudioServiceHost/StudioServiceHostApplication.cs) shows that deliberate HTTP contracts exist elsewhere in the repository, even though that surface is detached.
+- [../../../tools/RulesWorkbench/Program.cs](../../../tools/RulesWorkbench/Program.cs) shows legacy internal tooling that currently mixes UI behavior and direct service/data access.
 
 ### 2.2 Proposed state
 
 The recommended direction is:
-- `PublicApiHost` owns deliberate public API contracts,
-- the React application uses a hand-written typed fetch layer for all APIs in the first phase,
-- OpenAPI remains important as documentation and later governance material,
-- and generated clients remain a later option once the public APIs stabilize.
-
-This keeps the first implementation flexible while still requiring explicit public contracts and preventing accidental leakage of internal model shapes.
+- `QueryServiceHost` owns deliberate public search-facing contracts.
+- `WorkbenchHost` owns deliberate internal workflow contracts when the browser or another host needs them.
+- Both hosts may use direct server-side composition for internal page logic where no cross-browser or cross-host contract is needed.
+- RFC 9457-style Problem Details remains the baseline public and internal error shape for deliberate endpoints.
+- Host-local Blazor DTOs, provider SQL shapes, storage keys, blob names, and legacy shell state must not leak into deliberate contracts.
 
 ### 2.3 Assumptions
 
-- The query APIs are not stable enough yet to justify generated clients as the default.
-- The admin APIs are even less stable and should not be locked into generation-first consumption.
-- The team wants strong contract discipline, but not at the cost of making early API iteration painful.
-- Later migration from hand-written typed fetch to generated clients should remain possible if the APIs stabilize.
+- Interactive Server Blazor reduces the need for a browser-managed API client layer, but it does not remove the need for contract discipline.
+- Public search endpoints need stronger contract stability than internal workbench endpoints.
+- Internal workbench endpoints still need deliberate contracts when exposed, even if they change faster than public contracts.
 
 ### 2.4 Constraints
 
-- `PublicApiHost` remains the only public browser-facing API surface.
-- Route families, auth/session boundary, and capability boundaries are already fixed by WP121-WP123.
-- Public API contracts must not expose host-local Blazor DTOs, internal storage table keys, provider SQL shapes, blob names, or equivalent backend implementation leakage.
+- Public search contracts must not depend on host-local QueryServiceHost page models.
+- Internal workbench contracts must not depend on deleted Workbench shell state or temporary legacy tooling models.
+- Server-side composition is acceptable only when it does not hide a real cross-boundary contract need.
 
-## 3. Component / service design (high level)
+## 3. Key decisions
 
-### 3.1 Components
-
-WP124 defines four high-level deliverables:
-
-1. Public contract rules
-   - Explicit request/response contracts for `PublicApiHost`.
-
-2. Client-consumption strategy
-   - Hand-written typed fetch as the initial client pattern for all route families.
-
-3. OpenAPI governance baseline
-   - OpenAPI as a contract-governance and documentation tool, not yet as the default client-generation source.
-
-4. Contract leak-prevention rules
-   - Prevent host-local or storage-local model shapes from escaping into public APIs.
-
-### 3.2 Data flows
-
-Initial client flow:
-1. The React application calls a hand-written typed fetch layer.
-2. The typed fetch layer calls `PublicApiHost`.
-3. `PublicApiHost` returns explicit public contracts.
-4. The React application consumes those typed results without depending on generated client code.
-
-Later hardening path:
-1. APIs stabilize.
-2. OpenAPI documents become reliable enough for generation-first consumption.
-3. The client strategy may be revisited and generation may replace or augment hand-written fetch.
-
-### 3.3 Key decisions
-
-- Recommendation: use a hand-written typed fetch layer for all `PublicApiHost` APIs in the initial phase.
-- Recommendation: do not use generated clients as the initial default because the public API surfaces are still evolving.
-- Recommendation: keep OpenAPI as part of contract governance and documentation even before it becomes the basis for generated clients.
-- Recommendation: require explicit public request/response models rather than letting React infer semantics from ad hoc JSON.
-- Recommendation: standardize on RFC 9457-style Problem Details for public API error responses from the start.
-- Recommendation: prohibit leakage of host-local Blazor models and backend implementation shapes into public contracts.
-- Recommendation: do not lock one pagination convention yet for list-style admin and diagnostic APIs; defer that detail until the list workloads and UX needs are clearer.
-- Recommendation: revisit generated-client adoption after the React app is working and the APIs are genuinely stable.
+- Use deliberate HTTP contracts for customer-facing search endpoints.
+- Use deliberate HTTP contracts for internal workbench endpoints that are called from browser interactions or cross-host integration.
+- Allow direct server-side composition inside Interactive Server Blazor hosts for purely internal page and component workflows.
+- Standardize on RFC 9457-style Problem Details for deliberate endpoint errors.
+- Prohibit leakage of host-local Blazor state, provider SQL shapes, storage keys, blob names, and deleted Workbench shell artifacts into deliberate contracts.
+- Defer pagination and generated-client tooling decisions until real endpoint shapes and workloads exist.
 
 ## 4. Functional requirements
 
-FR1. `PublicApiHost` APIs shall expose explicit public request and response contracts.
+FR1. Public search-facing endpoints owned by `QueryServiceHost` shall expose explicit deliberate request and response contracts.
 
-FR2. The initial React client strategy shall use a hand-written typed fetch layer for all `PublicApiHost` APIs.
+FR2. Internal workbench endpoints owned by `WorkbenchHost` shall expose explicit deliberate request and response contracts when they cross browser or host boundaries.
 
-FR3. Generated clients shall not be the default client-consumption model in the first implementation phase.
+FR3. Direct server-side composition shall be allowed inside Interactive Server Blazor hosts when no deliberate externalized contract is required.
 
-FR4. OpenAPI shall remain part of the contract-governance and documentation baseline even when generated clients are not yet used as the default consumption model.
+FR4. Host-local Blazor page models shall not be promoted directly into deliberate contracts.
 
-FR5. Public contracts shall not leak host-local Blazor DTOs, internal domain persistence details, provider SQL shapes, storage table keys, blob names, or similar implementation-local data structures.
+FR5. Storage-local shapes such as provider SQL rows, storage keys, or blob names shall not be promoted directly into deliberate contracts unless a later work package explicitly justifies them.
 
-FR6. End-user search and admin APIs shall both follow the same explicit-contract rule even if their internal rate of change differs.
+FR6. Deliberate error responses shall use RFC 9457-style Problem Details.
 
-FR7. The client strategy shall allow a later shift to generated clients after the APIs stabilize.
+FR7. Later work packages shall document whether a given workflow uses deliberate HTTP contracts, direct host composition, or a mix of both.
 
-FR8. Error responses shall use one deliberate public error shape rather than ad hoc endpoint-specific payloads.
-
-FR8a. The deliberate public error shape shall use RFC 9457-style Problem Details from the start.
-
-FR9. Public API behavior shall not rely on the frontend reverse-engineering meaning from final JSON blobs when structured contracts are required.
-
-FR9a. WP124 shall not fix one mandatory pagination convention for list-style admin and diagnostic APIs yet.
+FR8. Contract governance shall not depend on a browser-side typed fetch layer being the primary integration mechanism.
 
 ## 5. Non-functional requirements
 
-NFR1. The initial client strategy shall optimize for API evolution speed without abandoning type safety.
+NFR1. Contract rules shall preserve strong boundary discipline without forcing unnecessary HTTP indirection.
 
-NFR2. The contract-governance rules shall reduce accidental contract drift between frontend and backend.
+NFR2. The baseline shall remain flexible enough to support fast internal workbench evolution.
 
-NFR3. The contract-governance rules shall preserve a later path to stronger OpenAPI-driven automation.
+NFR3. The baseline shall preserve stronger stability for customer-facing search contracts.
 
-NFR4. Public contract design shall remain understandable to frontend authors without exposing backend implementation detail.
-
-NFR5. The approach shall avoid locking the platform into generation-first tooling before the API shapes have proven stable.
-
-NFR6. The contract-governance baseline shall avoid premature standardization of pagination conventions before the real list workloads and UX requirements are clearer.
+NFR4. The baseline shall reduce accidental contract drift between host internals and deliberate endpoint models.
 
 ## 6. Data model
 
-WP124 does not define every concrete payload yet. It defines the categories of public contract shape that later APIs must follow.
-
 Required contract categories:
-- end-user search request/response shapes,
-- admin query diagnostics request/response shapes,
-- admin ingestion/provider/journal/failure/replay request/response shapes,
-- system endpoint response shapes,
-- and common RFC 9457-style error/problem shapes.
+- public search request and response shapes,
+- internal query diagnostics and rule-workflow shapes,
+- internal ingestion-repair and provider-tooling shapes,
+- system metadata and health shapes,
+- and common RFC 9457-style error shapes.
 
-Client-side expectation:
-- the React app owns a local typed client layer that maps those categories explicitly,
-- without assuming generated code from OpenAPI in the first phase.
+## 7. Interfaces and integration
 
-## 7. Interfaces & integration
+### 7.1 Public host rule
 
-### 7.1 Public contract rules
+`QueryServiceHost` should treat customer-facing search endpoints as deliberate contracts.
 
-Every `PublicApiHost` route should be treated as an intentional public contract surface rather than a host-local convenience endpoint.
+### 7.2 Internal host rule
 
-### 7.2 Client strategy rules
+`WorkbenchHost` should use deliberate contracts for browser-exposed workflow endpoints, but it may use direct server-side composition for internal page orchestration that does not justify an HTTP boundary.
 
-The initial frontend integration rules are:
-- hand-written typed fetch for `/api/search/*`,
-- hand-written typed fetch for `/api/admin/query/*`,
-- hand-written typed fetch for `/api/admin/ingestion/*`,
-- and explicit local typing for error and system endpoints.
+### 7.3 Runtime-host rule
 
-### 7.3 OpenAPI role
+`IngestionServiceHost` remains a runtime host. Its retained runtime role does not imply that it must become a broad browser-facing contract surface.
 
-OpenAPI should be used initially for:
-- documentation,
-- contract inspection,
-- and later governance/testing.
+## 8. Observability
 
-It should not yet be treated as the mandatory source for generated frontend clients.
+WP124 does not define the observability baseline, but deliberate contracts and deliberate error shapes should make later diagnostics more understandable.
 
-## 8. Observability (logging/metrics/tracing)
+## 9. Security and compliance
 
-WP124 does not define the technical observability baseline, but contract-governance work should support it indirectly by ensuring:
-- error shapes are deliberate,
-- route shapes are stable enough to identify,
-- and client failures are diagnosable from explicit contracts.
-
-Detailed technical observability remains part of WP125.
-
-## 9. Security & compliance
-
-WP124 does not redefine the auth model from WP122.
-
-Its security contribution is contract hygiene:
+WP124 does not redefine auth. Its security contribution is contract hygiene:
 - do not leak internal identifiers or storage-local detail,
-- do not force the client to infer secure behavior from unstable payloads,
-- and keep the API surface explicit enough for later authorization and filtering rules to remain understandable.
+- do not let host-local page state become an implicit API surface,
+- and keep public versus internal contracts understandable for later authorization review.
 
 ## 10. Testing strategy
 
-WP124 validation should focus on contract quality and client-strategy suitability.
-
 Validation anchors:
-- Confirm the chosen strategy is consistent with WP121 route families and WP122 auth assumptions.
-- Confirm the chosen strategy does not require generated clients before the APIs stabilize.
-- Confirm later work can add OpenAPI snapshots, Problem Details tests, and typed client tests without redesigning the baseline.
+- confirm the contract strategy is consistent with WP121-WP123,
+- confirm the rules permit direct host composition where appropriate,
+- confirm deliberate endpoints use Problem Details,
+- and confirm later work can add contract tests without redesigning the baseline.
 
-## 11. Rollout / migration
+## 11. Rollout and migration
 
 Recommended migration posture:
-1. Define explicit public contracts for `PublicApiHost` APIs.
-2. Consume them with hand-written typed fetch in the React app.
-3. Use OpenAPI for documentation and contract governance while the API surfaces settle.
-4. Reassess generated clients only after the application is working and the APIs are genuinely stable.
+1. decide which workflows need deliberate endpoints,
+2. define explicit contracts for those workflows,
+3. allow direct host composition where it simplifies purely internal page behavior,
+4. keep leak-prevention rules in force throughout the migration.
 
 Wiki review result:
-No wiki page update was required for this draft work-package specification. The work records contract-governance and client-strategy decisions rather than a current-state runtime change.
+No wiki page update was required for this planning work package. The work records contract and integration rules rather than a current-state runtime change.
 
 ## 12. Open questions
 
-No open questions remain in WP124 at this stage. The initial client strategy, public error shape, and contract-leak prevention rules are fixed here, while generated clients and pagination standardization are intentionally deferred until the APIs and UI workflows are more stable.
+None at this stage. WP124 now fixes the baseline rule set for deliberate contracts and host-internal composition in the split Blazor host direction.

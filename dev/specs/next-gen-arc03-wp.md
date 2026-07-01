@@ -1,13 +1,15 @@
-# Next-Gen Arc 03 Work Packages: React Plus shadcn/ui Foundation And Keycloak Login
+# Next-Gen Arc 03 Work Packages: Blazor Blueprint Foundations And Keycloak Login
 
-Date: 2026-06-26
+Date: 2026-07-01
 
 Source discussion: [../../docs/discussion/next-gen-consolidation-discussion.md](../../docs/discussion/next-gen-consolidation-discussion.md)  
 Source arc summary: [../../docs/discussion/next-gen-work-package-arcs.md](../../docs/discussion/next-gen-work-package-arcs.md)
 
 ## Arc Intent
 
-Arc 03 creates the authenticated React plus shadcn/ui foundation that later developer and end-user workspaces consume. It must create the app shell, routing, auth proof, component baseline, editor foundation, API-client pattern, linting, formatting, and frontend test strategy. It must not port Workbench, Radzen, Bootstrap, PrimeReact, or Blazor layout assumptions into React.
+Arc 03 creates the split Interactive Server Blazor foundation that later internal and public workspaces consume. It must establish the Blazor Blueprint component baseline, host shells, routing, auth proof, editor foundation, and testing approach for the public `QueryServiceHost` direction and the new internal `WorkbenchHost` direction.
+
+It must not port the deleted legacy Workbench shell architecture, and it should not preserve Radzen- or legacy-shell-specific mechanics unless a concrete requirement survives later review.
 
 ## Numbering
 
@@ -17,99 +19,96 @@ Reserved buffer before Arc 04: WP146-WP159.
 
 ## Evidence Checked
 
-- No `package.json` exists in the workspace, so there is no active React/Node app, Tailwind setup, or shadcn/ui baseline.
-- Active browser hosts are Blazor/Radzen or Blazor/Bootstrap: [../../src/Hosts/QueryServiceHost/Program.cs](../../src/Hosts/QueryServiceHost/Program.cs), [../../src/Hosts/IngestionServiceHost/Program.cs](../../src/Hosts/IngestionServiceHost/Program.cs), [../../tools/RulesWorkbench/Program.cs](../../tools/RulesWorkbench/Program.cs), and [../../src/Workbench/server/WorkbenchHost/Program.cs](../../src/Workbench/server/WorkbenchHost/Program.cs).
-- Shared Keycloak browser-host authentication exists for server-rendered hosts in [../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationServiceCollectionExtensions.cs](../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationServiceCollectionExtensions.cs).
-- AppHost starts browser-relevant services and Keycloak in services mode: [../../src/Hosts/AppHost/AppHost.cs](../../src/Hosts/AppHost/AppHost.cs).
-- Workbench module and shell concepts that should not be mechanically ported are represented by [../../src/Workbench/server/UKHO.Workbench/Modules/WorkbenchContributionRegistry.cs](../../src/Workbench/server/UKHO.Workbench/Modules/WorkbenchContributionRegistry.cs) and [../../src/Workbench/modules/UKHO.Workbench.Modules.Search/SearchWorkbenchModule.cs](../../src/Workbench/modules/UKHO.Workbench.Modules.Search/SearchWorkbenchModule.cs).
+- Active browser hosts are currently Blazor-based: [../../src/Hosts/QueryServiceHost/Program.cs](../../src/Hosts/QueryServiceHost/Program.cs), [../../src/Hosts/IngestionServiceHost/Program.cs](../../src/Hosts/IngestionServiceHost/Program.cs), and [../../tools/RulesWorkbench/Program.cs](../../tools/RulesWorkbench/Program.cs).
+- Shared Keycloak browser-host authentication already exists for server-rendered hosts in [../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationServiceCollectionExtensions.cs](../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationServiceCollectionExtensions.cs).
+- Blazor Blueprint supports Interactive Server render mode, theme.css-based theming, and optional Tailwind utility compilation for custom host code.
+- The old Workbench shell mechanics under `src/Workbench/` are legacy and should not be reused mechanically.
 
-## WP140: Scaffold The React Application And Toolchain
+## WP140: Establish Shared Browser Host Foundations
 
 Scope:
-- Create the React application project and package management baseline in the location chosen by Arc 02.
-- Establish TypeScript, routing, build, dev server, tests, linting, formatting, environment configuration, and local Aspire integration expectations.
+- Define the shared host bootstrap conventions for QueryServiceHost uplift and the new internal WorkbenchHost.
+- Establish common layout, static asset, theme, provider, and service-registration expectations.
 
 Requirements carried:
-- The repo currently has no package-managed React frontend.
-- The app should be a real authenticated application shell, not a landing page or placeholder component demo.
-- The app must run locally and expose a usable URL.
+- The direction is Interactive Server Blazor, not React.
+- Both browser hosts must support real authenticated shells, not placeholder pages.
 
 Validation anchors:
-- Install, build, lint, typecheck, unit test, and local dev-server smoke commands.
+- Host startup smoke, static asset checks, and shared layout verification.
 
-## WP141: Establish shadcn/ui, Tailwind, Tokens, And Component Governance
+## WP141: Establish Blazor Blueprint, Theme Tokens, And Component Governance
 
 Scope:
-- Initialize Tailwind and shadcn/ui, define application-owned component governance, design tokens, theme variables, copied-component update rules, naming conventions, and accessibility baseline.
+- Add Blazor Blueprint as the component baseline.
+- Define theme.css ownership, shared token conventions, optional Tailwind build guidance, and component-governance rules.
 
 Requirements carried:
-- React plus shadcn/ui is the fixed frontend direction.
-- shadcn/ui is the primary component baseline; app-owned workflow components compose from primitives.
-- Do not port Radzen, Bootstrap, PrimeReact, Workbench shell widgets, or Blazor layout assumptions.
+- Do not mechanically port Radzen, Bootstrap, legacy Workbench widgets, or old shell mechanics.
+- Shared look-and-feel should come from Blazor Blueprint plus host-owned workflow components.
 
 Validation anchors:
 - Component render tests and desktop/mobile visual smoke once Playwright is available.
 
-## WP142: Implement Authenticated Shell And Keycloak Login Proof
+## WP142: Prove QueryServiceHost Public Shell And Login Flow
 
 Scope:
-- Implement the initial authenticated shell according to Arc 02's SPA/API or BFF model.
-- Prove login, logout, identity state, protected endpoint access, and error handling.
+- Establish the customer-facing QueryServiceHost shell conventions.
+- Prove login, logout, session behavior, protected endpoint access, and public-search shell behavior.
 
 Requirements carried:
-- The app must sign in through Keycloak, hold or refresh identity state according to the chosen auth model, call a protected health/profile endpoint, and render shared navigation/layout conventions.
+- The public host must support the long-term end-user search experience.
 - Local development must work with Aspire-managed identity services.
 
 Validation anchors:
-- Keycloak login smoke where practical and API call test against protected profile/health endpoint.
+- Keycloak login smoke and protected public-host endpoint checks.
 
-## WP143: Define Navigation, Layout, And Workspace Conventions
+## WP143: Prove The New Internal WorkbenchHost Shell And Login Flow
 
 Scope:
-- Build shared shell structure for query-rule tuning, ingestion repair, and end-user search workspaces.
+- Create the new internal `WorkbenchHost` as a clean host under `src/Hosts/`.
+- Prove internal login/logout/session behavior, navigation, and shell conventions without importing the deleted legacy Workbench architecture.
 
 Requirements carried:
-- Developer UI should be workflow-led, not a port of Workbench module loading or contribution registries.
-- Workbench assembly loading, command/menu/status/toolbar contributions, custom splitters, and tab management are non-goals unless a concrete product need appears.
+- The internal host is permanently internal.
+- It should feel like a focused operations and developer tool host, not a recreation of the deleted module shell.
 
 Validation anchors:
-- Shell route tests, keyboard navigation checks, and responsive shell smoke.
+- Keycloak login smoke, route/navigation checks, and protected internal-host endpoint checks.
 
-## WP144: Integrate Editor, JSON, And API Client Foundations
+## WP144: Integrate Editor, JSON, And Host Interaction Foundations
 
 Scope:
 - Select and prove Monaco or a comparable editor for JSON-heavy rule workflows.
-- Establish generated client, typed fetch, or API-wrapper conventions.
+- Define how the hosts call backend services or deliberate HTTP endpoints without reintroducing browser-side rule semantics.
 
 Requirements carried:
 - Query-rule and ingestion-rule workflows both need JSON editing.
-- Browser must not implement backend rule semantics; it should call validate/evaluate/trace/compare APIs.
-- Error payloads and validation details must be displayable without leaking storage/provider internals.
+- Browser hosts must present backend-owned semantics rather than recreating them locally.
 
 Validation anchors:
-- Editor state tests and API-client tests for success, validation, authorization, conflict, and server-error responses.
+- Editor state tests and success/validation/error interaction checks.
 
-## WP145: Create Frontend Testing And Quality Gates
+## WP145: Create Browser Host Testing And Quality Gates
 
 Scope:
-- Define unit, component, accessibility, Playwright/E2E, lint, formatting, typecheck, build, and local smoke gates.
+- Define unit, accessibility, Playwright/E2E, lint/build, and host smoke gates for the public and internal browser hosts.
 
 Requirements carried:
 - Later developer workspaces must verify desktop/mobile rendering, keyboard navigation, text fit, non-overlap, endpoint-backed states, and auth/error flows.
 
 Validation anchors:
-- Initial frontend build/lint/typecheck/test and Playwright shell smoke when the dev server is available.
+- Initial build/test/smoke gates for the browser hosts.
 
 ## Arc Requirement Cross-Check
 
-- React app structure, Node package setup, TypeScript, routing, shell, local orchestration, scripts, linting, formatting, and tests: WP140, WP145.
-- shadcn/ui, Tailwind, tokens, theming, component governance: WP141.
-- Avoid Radzen, Bootstrap, PrimeReact, Workbench module mechanics, and Blazor layout assumptions: WP141, WP143.
-- Keycloak login and protected endpoint proof: WP142.
-- Navigation/layout conventions for later workspaces: WP143.
-- Monaco/comparable editor and API-client pattern: WP144.
-- Future UI uses backend semantics and stable APIs rather than local rule evaluation or storage details: WP144-WP145.
+- Shared Blazor host foundations: WP140.
+- Blazor Blueprint, theming, and component governance: WP141.
+- QueryServiceHost public shell and Keycloak proof: WP142.
+- New WorkbenchHost internal shell and Keycloak proof: WP143.
+- Monaco/comparable editor and host interaction foundation: WP144.
+- Browser host testing and quality gates: WP145.
 
 ## Handoff To Arc 04
 
-Arc 04 provides the query and query-rule diagnostics APIs consumed by the React developer query-rule workbench and end-user search surfaces.
+Arc 04 provides the query and query-rule diagnostics capabilities consumed by the new internal `WorkbenchHost` workbench and by the public `QueryServiceHost` search experience.

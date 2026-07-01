@@ -1,4 +1,4 @@
-# Next-Gen Arc 08 Work Packages: React Developer Ingestion Repair Workspace
+# Next-Gen Arc 08 Work Packages: WorkbenchHost Developer Ingestion Repair Workspace
 
 Date: 2026-06-26
 
@@ -7,7 +7,7 @@ Source arc summary: [../../docs/discussion/next-gen-work-package-arcs.md](../../
 
 ## Arc Intent
 
-Arc 08 builds the failure-driven ingestion repair workspace in the React app. It consumes Arc 03 frontend foundations, Arc 05 journal/failure model, and Arc 06 provider/rules/repair APIs.
+Arc 08 builds the failure-driven ingestion repair workspace in the internal `WorkbenchHost`. It consumes Arc 03 browser-host foundations, Arc 05 journal/failure model, and Arc 06 provider/rules/repair APIs.
 
 ## Numbering
 
@@ -19,7 +19,7 @@ Reserved buffer before Arc 09: WP249-WP259.
 
 - Current ingestion runtime has dead-letter and poison paths but no task-oriented repair UI or API: [../../src/UKHO.Search.Infrastructure.Ingestion/Queue/IngestionSourceNode.cs](../../src/UKHO.Search.Infrastructure.Ingestion/Queue/IngestionSourceNode.cs), [../../src/UKHO.Search.Infrastructure.Ingestion/DeadLetter/BlobDeadLetterSinkNode.cs](../../src/UKHO.Search.Infrastructure.Ingestion/DeadLetter/BlobDeadLetterSinkNode.cs), and [../../src/UKHO.Search.Infrastructure.Ingestion/Pipeline/Terminal/DeadLetterPersistAndAckSinkNode.cs](../../src/UKHO.Search.Infrastructure.Ingestion/Pipeline/Terminal/DeadLetterPersistAndAckSinkNode.cs).
 - Current RulesWorkbench evaluates file-share SQL-loaded payloads rather than journaled accepted inputs: [../../tools/RulesWorkbench/Services/RuleEvaluationService.cs](../../tools/RulesWorkbench/Services/RuleEvaluationService.cs), [../../tools/RulesWorkbench/Services/RuleCheckerService.cs](../../tools/RulesWorkbench/Services/RuleCheckerService.cs), and [../../tools/RulesWorkbench/Services/BatchPayloadLoader.cs](../../tools/RulesWorkbench/Services/BatchPayloadLoader.cs).
-- FileShareEmulator remains local-only and is not a React migration target: [../../tools/FileShareEmulator/Program.cs](../../tools/FileShareEmulator/Program.cs).
+- FileShareEmulator remains local-only and is not a product-host migration target: [../../tools/FileShareEmulator/Program.cs](../../tools/FileShareEmulator/Program.cs).
 
 ## WP240: Build Failure Work Queue
 
@@ -131,7 +131,7 @@ Scope:
 
 Requirements carried:
 - Explain diagnostic replay, guarded repair replay, and forced replay differences.
-- State that FileShareEmulator local destructive operations remain outside React.
+- State that FileShareEmulator local destructive operations remain outside the product hosts.
 - State that UI consumes task-oriented APIs rather than storage/provider internals.
 
 Validation anchors:
@@ -146,7 +146,7 @@ Validation anchors:
 - Supersession and replay eligibility before live mutation: WP245.
 - Diagnostic replay, guarded repair replay, forced replay distinction: WP245-WP246.
 - Replay lineage and repair outcome tracking: WP246-WP247.
-- FileShareEmulator local destructive operations not moved into React: WP248.
+- FileShareEmulator local destructive operations not moved into the product hosts: WP248.
 
 ## Handoff To Arc 10
 

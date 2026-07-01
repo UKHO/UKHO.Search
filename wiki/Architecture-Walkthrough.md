@@ -139,40 +139,19 @@ That warning is still correct, but the query side now has more internal structur
 
 For the staged subsystem explanation, continue to [Query pipeline](Query-Pipeline). For the dedicated code-tracing guide that now follows the query host, planner, and executor in more detail, continue to [Query walkthrough](Query-Walkthrough). For the rule-authoring and runtime-semantics guide, continue to [Query signal extraction rules](Query-Signal-Extraction-Rules).
 
-## 4. Trace Workbench composition
+## 4. Track browser-host boundaries after the Workbench deletion
 
-Workbench is the repository's desktop-like Blazor Server tool shell. It is not just one page or one component. It is a bounded runtime model made of host, contracts, services, infrastructure, and modules.
+The legacy Workbench shell under `src/Workbench/` was removed by WP126. That deletion matters because it changes the correct starting point for UI and host investigations.
 
-This distinction matters because Workbench can look deceptively like a UI-only concern if you only skim Razor components. In practice it is closer to a lightweight platform inside the repository. The shell owns composition, the core contracts define what modules are allowed to contribute, the infrastructure layer discovers and loads those modules, and the services layer turns contributions into active tools, commands, tabs, and output surfaces.
+Today the live browser-host code paths are `QueryServiceHost`, `IngestionServiceHost`, `RulesWorkbench`, and `FileShareEmulator`. The future internal `WorkbenchHost` remains a planning direction rather than an executable code path. If a contributor starts from the deleted Workbench shell mental model, they will trace into repository history instead of into current behavior.
 
-### Where to read first
+For current-state browser-host work, start from these anchors instead:
 
-- `src/workbench/server/WorkbenchHost`
-- `src/workbench/server/UKHO.Workbench`
-- `src/workbench/server/UKHO.Workbench.Services`
-- `src/workbench/server/UKHO.Workbench.Infrastructure`
-- `src/Workbench/modules/UKHO.Workbench.Modules.*`
-
-### How the Workbench flow works
-
-1. `WorkbenchHost` starts the Blazor Server shell.
-2. Workbench infrastructure reads `modules.json`, resolves probe roots, and discovers enabled module assemblies.
-3. Modules register bounded tools and services through Workbench contracts.
-4. Workbench services manage activation, commands, contributions, and active shell state.
-5. The shell renders the current explorer, tabs, output, and active tool surfaces.
-
-That layered flow is what lets Workbench stay extensible without making every module responsible for the shell itself. A contributor can usually diagnose a Workbench issue more quickly by asking which layer owns the behavior than by starting from whichever UI surface looks wrong.
-
-### Why this matters
-
-If a Workbench problem looks like a UI issue, the real owner may be one of several places:
-
-- shell composition in `WorkbenchHost`
-- command or activation logic in `UKHO.Workbench.Services`
-- module loading in `UKHO.Workbench.Infrastructure`
-- tool contribution code in a specific `UKHO.Workbench.Modules.*` project
-
-For the current shell behaviour and runtime details, continue to [Workbench introduction](Workbench-Introduction).
+- `src/Hosts/QueryServiceHost`
+- `src/Hosts/IngestionServiceHost`
+- `tools/RulesWorkbench`
+- `tools/FileShareEmulator`
+- `dev/work-packages/120-*` and `dev/work-packages/126-*` for the active host-split and deletion rationale
 
 ## 5. Use the provider model correctly
 
@@ -208,16 +187,11 @@ Treat this table as a starting heuristic, not as a replacement for reading the s
 | Canonical document structure or provider abstractions | `src/UKHO.Search.Ingestion` | Domain ingestion |
 | File Share-specific parsing or enrichers | `src/Providers/UKHO.Search.Ingestion.Providers.FileShare` | Concrete provider |
 | Query-side endpoint or adapter behaviour | `src/UKHO.Search.Infrastructure.Query` and `src/Hosts/QueryServiceHost` | Query infrastructure / host |
-| Workbench shell composition | `src/workbench/server/WorkbenchHost` | Workbench host |
-| Workbench commands, activation, or contributions | `src/workbench/server/UKHO.Workbench.Services` | Workbench services |
-| Workbench module discovery or `modules.json` handling | `src/workbench/server/UKHO.Workbench.Infrastructure` | Workbench infrastructure |
-| Tool-specific Workbench content | `src/Workbench/modules/UKHO.Workbench.Modules.*` | Workbench module |
 
 ## 7. Common architecture-reading mistakes
 
 - Starting with a provider project before understanding the host and canonical boundaries.
 - Treating the current File Share provider as if it defines the whole ingestion design.
-- Looking for Workbench behaviour only in Razor components and missing the service and module model behind them.
 - Treating tools as optional extras instead of part of the repository's intended developer workflow.
 - Tracing a query bug without checking whether the indexed canonical fields were produced correctly upstream.
 
@@ -227,5 +201,4 @@ Treat this table as a starting heuristic, not as a replacement for reading the s
 - Continue to [Project setup](Project-Setup) if you need to run the stack locally.
 - Continue to [Ingestion pipeline](Ingestion-Pipeline) for the detailed ingestion stages.
 - Continue to [Query pipeline](Query-Pipeline) for the dedicated overview of the query-side runtime.
-- Continue to [Workbench introduction](Workbench-Introduction) for the current shell and module runtime details.
 - Continue to [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard) when you need runtime visibility and diagnostics.

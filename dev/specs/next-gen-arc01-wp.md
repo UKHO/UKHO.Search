@@ -9,7 +9,7 @@ Source arc summary: [../../docs/discussion/next-gen-work-package-arcs.md](../../
 
 Arc 01 extracts the ingestion queue-message wire contract into a narrow .NET assembly for remote queue producers. The target consumer is a third-party .NET process that already knows where and how to submit to a provider queue; it only needs to construct, validate, and serialize the JSON body that ingestion accepts.
 
-This arc deliberately avoids developer API, provider authoring, runtime pipeline, journal, replay, rule, Studio, React, Azure Queue client, and file-share policy concerns. Those belong to later arcs or optional packages.
+This arc deliberately avoids developer API, provider authoring, runtime pipeline, journal, replay, rule, Studio, browser-host UI concerns, Azure Queue client, and file-share policy concerns. Those belong to later arcs or optional packages.
 
 ## Numbering
 
@@ -30,11 +30,11 @@ Reserved buffer before Arc 02: WP105-WP119.
 Scope:
 - Create the formal specification and project boundary for `UKHO.Search.Ingestion.Contracts`.
 - Decide target frameworks, nullable settings, package identity, XML documentation expectations, semantic versioning, and where the package sits in the onion architecture.
-- State that the assembly is for remote queue producers only: not providers, not Studio clients, not React clients, not Search service hosts, and not runtime pipeline extensions.
+- State that the assembly is for remote queue producers only: not providers, not Studio clients, not browser UI clients, not Search service hosts, and not runtime pipeline extensions.
 
 Requirements carried:
 - Remote .NET producers must be able to reference a dependency-light package, construct an ingestion queue message, serialize it with package-owned JSON options, and submit the resulting JSON through their own queue client or deployment-specific path.
-- The package must not reference Studio, Blazor, React, RulesWorkbench, provider implementations, Elasticsearch, Azure SDKs, Aspire, App Configuration, SQL, queue clients, logging abstractions, ingestion pipeline runtime, `CanonicalDocument`, dead-letter, replay, or journal models.
+- The package must not reference Studio, Blazor, browser-host UI frameworks, RulesWorkbench, provider implementations, Elasticsearch, Azure SDKs, Aspire, App Configuration, SQL, queue clients, logging abstractions, ingestion pipeline runtime, `CanonicalDocument`, dead-letter, replay, or journal models.
 - `ProviderDescriptor`, provider catalogs, `IStudioProvider`, `IIngestionDataProvider`, operation DTOs, rule DTOs, file-share SQL loaders, and file-share security-token policy are explicitly out of scope.
 
 Expected outputs:
@@ -128,4 +128,4 @@ This arc covers these detailed requirements from the consolidation discussion an
 
 ## Handoff To Arc 02
 
-Arc 02 must decide where React-facing APIs live and how API authentication/authorization works. It must not use the contracts package as a developer API SDK; this package remains queue-message only.
+Arc 02 must decide browser-host ownership, deliberate contract boundaries, and API authentication/authorization. It must not use the contracts package as a developer API SDK; this package remains queue-message only.

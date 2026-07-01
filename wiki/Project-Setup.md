@@ -256,5 +256,4 @@ Some newer matching test projects currently contain placeholder smoke tests so t
 - [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator)
 - [Tools (advanced): `FileShareImageBuilder`](Tools-Advanced-FileShareImageBuilder)
 - [Tools: `RulesWorkbench`](Tools-RulesWorkbench)
-- [Keycloak and Workbench integration](keycloak-workbench-integration)
 - [Ingestion pipeline](Ingestion-Pipeline)

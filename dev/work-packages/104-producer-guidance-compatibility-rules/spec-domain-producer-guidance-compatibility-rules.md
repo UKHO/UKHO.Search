@@ -34,7 +34,7 @@ Out of scope for WP104:
 - Adding a transport SDK or queue-submission helper package.
 - Changing queue-message JSON, helper behavior, or validation semantics already delivered by WP101 and WP102.
 - Moving security-token derivation into the contracts package.
-- Introducing public developer API guidance for React, Studio, or later arc concerns.
+- Introducing public developer API guidance for browser-host clients, Studio, or later arc concerns.
 
 ### 1.3 Stakeholders
 

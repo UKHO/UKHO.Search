@@ -9,7 +9,7 @@ Source arc summary: [../../docs/discussion/next-gen-work-package-arcs.md](../../
 
 Arc 04 formalizes query-side backend contracts and makes query-rule behavior explainable. It exposes raw query planning, supplied-plan execution, final search-engine diagnostics, structured query interpretation traces, draft query-rule validation/evaluation, current-versus-draft comparisons, and query corpus regression support.
 
-The React UI must present backend semantics. It must not infer query-rule behavior from final `QueryPlan` JSON or reimplement the rule engine in the browser.
+The browser hosts must present backend semantics. They must not infer query-rule behavior from final `QueryPlan` JSON or reimplement the rule engine in the browser.
 
 ## Numbering
 
@@ -49,7 +49,7 @@ Scope:
 - Add minimal API endpoints in the Arc 02-selected host for raw search, plan generation, and supplied-plan execution.
 
 Requirements carried:
-- QueryServiceHost behavior should move behind stable HTTP APIs before React replaces Razor components.
+- QueryServiceHost behavior should move behind stable HTTP APIs before later browser-host work depends on those contracts.
 - Generated-plan editor flow needs explicit endpoints.
 - Edited plan validation must happen server-side or against shared backend contracts.
 - Facets currently log as unsupported and response facets are empty; the API must implement or explicitly report unsupported facet behavior until complete.
@@ -139,4 +139,4 @@ Validation anchors:
 
 ## Handoff To Arc 07 And Arc 09
 
-Arc 07 builds the React developer query-rule workbench over WP162-WP165. Arc 09 builds end-user search over non-diagnostic query contracts from WP160-WP161 and WP166.
+Arc 07 builds the internal `WorkbenchHost` developer query-rule workbench over WP162-WP165. Arc 09 builds end-user search over non-diagnostic query contracts from WP160-WP161 and WP166.

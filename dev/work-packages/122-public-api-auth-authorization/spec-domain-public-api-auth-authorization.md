@@ -1,8 +1,11 @@
-# Specification: WP122 Public API Authentication And Authorization
+# Specification: WP122 Browser Host Authentication And Authorization
 
 Target output path: `dev/work-packages/122-public-api-auth-authorization/spec-domain-public-api-auth-authorization.md`
 
 Date: 2026-07-01
+
+Repository note:
+The folder name is retained for numbering continuity. The canonical decision in this file supersedes the earlier React/PublicApiHost assumption.
 
 Source material:
 - [../../specs/next-gen-arc02-wp.md](../../specs/next-gen-arc02-wp.md)
@@ -15,275 +18,188 @@ Source material:
 
 ### 1.1 Purpose
 
-This specification defines the recommended authentication and authorization model for `PublicApiHost` and the consolidated React application.
+This specification defines the recommended authentication and authorization model for the split browser-host direction.
 
-The current recommendation is a BFF/session-cookie model through `PublicApiHost`. The browser should authenticate through `PublicApiHost`, hold a secure server-managed session cookie, and call the public API without directly carrying bearer tokens in normal browser operation.
-
-This model must support server-side access to user claims and roles for security filtering in query execution. The query-side backend must be able to read the authenticated user's claims principal and apply security filtering in backend code rather than trusting the browser to enforce data visibility.
+The current recommendation is:
+- keep the repository's existing cookie-backed OpenID Connect model as the baseline,
+- give `QueryServiceHost` and the new `WorkbenchHost` distinct browser-host auth/session boundaries,
+- keep search-side security filtering server-side,
+- and enforce stronger policy on the internal host than on the public host.
 
 ### 1.2 Scope
 
 In scope for WP122:
-- Choose the recommended browser authentication model.
-- Define where session and sign-in/out responsibility lives.
-- Define the high-level authorization model for end-user, developer/admin, and local-only operations.
-- Define the requirement that query-side security filtering reads claims and roles server-side.
-- Define local-development and logout/refresh expectations at a high level.
+- choose the host-level auth/session posture,
+- define where login and logout responsibility lives,
+- define the high-level authorization split between public search and internal operations,
+- define the server-side claims requirement for search filtering,
+- and define the expected relationship between Keycloak clients, cookies, and host boundaries.
 
 Out of scope for WP122:
-- Detailed public API route ownership, which is defined in WP121.
-- Detailed request/response contracts, which belong to WP124.
-- React project placement, which belongs to Arc 03.
-- Concrete implementation of every authorization policy and every endpoint attribute.
+- detailed endpoint attributes for every route,
+- detailed request and response contracts,
+- business audit requirements,
+- or exact claim-to-policy mapping tables.
 
 ### 1.3 Stakeholders
 
-- Security and platform owners responsible for browser-facing auth and session behavior.
-- Query owners who need claims and roles available for backend security filtering.
-- Ingestion and admin-tooling owners who need stronger policy boundaries for replay, repair, and operational actions.
-- Frontend authors who need a secure and operable authentication model for the React application.
-- Later work packages that implement API endpoints and UI login flows.
+- Security and platform owners responsible for browser-facing auth behavior.
+- Query owners who need claims and roles available for backend filtering.
+- Internal tooling owners who need stronger boundaries for replay, repair, and rule-authoring workflows.
+- Later work packages that implement public and internal host routes.
 
 ### 1.4 Definitions
 
-- BFF/session-cookie: A backend-for-frontend model where the browser authenticates through the backend and the browser session is represented by a secure cookie rather than a frontend-managed bearer token.
-- Shared auth/session boundary: One authentication entry point and session model for both `/api/search/*` and `/api/admin/*`, with authorization separating access.
-- Claims principal: The authenticated user identity restored server-side and used by backend code for authorization and security filtering.
-- Security filtering: Backend logic that restricts search visibility or result shape based on user claims, roles, or equivalent security context.
-- Local-only operation: An operation intentionally kept within local tooling boundaries, such as `FileShareEmulator` controls.
+- Browser-host auth boundary: The combination of login entry point, session cookie, logout behavior, and authorization defaults owned by a given browser host.
+- Public host session: The session used by customer-facing search in `QueryServiceHost`.
+- Internal host session: The session used by the internal `WorkbenchHost`.
+- Server-side security filtering: Backend logic that restricts search visibility based on the authenticated principal.
 
 ## 2. System context
 
 ### 2.1 Current state
 
-The current browser hosts already use a shared cookie-backed OpenID Connect model.
-
 Evidence checked:
-- [../../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationServiceCollectionExtensions.cs](../../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationServiceCollectionExtensions.cs) configures cookie-backed authentication with OpenID Connect challenge flow, shared Keycloak wiring, host-isolated cookies, and a fallback authenticated-user policy.
-- [../../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationEndpointRouteBuilderExtensions.cs](../../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationEndpointRouteBuilderExtensions.cs) maps shared login/logout lifecycle endpoints under `/authentication`.
-- [../../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationDefaults.cs](../../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationDefaults.cs) shows the current realm and authentication route defaults.
-- [../../../src/Hosts/QueryServiceHost/Program.cs](../../../src/Hosts/QueryServiceHost/Program.cs) wires `AddKeycloakBrowserHostAuthentication("search-workbench", "query")` and protects the host with the shared authentication flow.
-- [../../../src/Hosts/IngestionServiceHost/Program.cs](../../../src/Hosts/IngestionServiceHost/Program.cs) wires `AddKeycloakBrowserHostAuthentication("search-workbench", "ingestion")` and protects the host with the same shared authentication flow.
-- [../121-react-facing-api-host-strategy/spec-domain-react-facing-api-host-strategy.md](../121-react-facing-api-host-strategy/spec-domain-react-facing-api-host-strategy.md) fixes `PublicApiHost` as the single browser-facing API composition root with one shared auth/session boundary across `/api/search/*` and `/api/admin/*`.
-
-The main issue is not that the current repository lacks a secure auth model. The issue is that the secure auth model is currently attached to retiring browser hosts rather than to the future browser-facing API boundary.
+- [../../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationServiceCollectionExtensions.cs](../../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationServiceCollectionExtensions.cs) configures cookie-backed authentication with OpenID Connect challenge flow, host-isolated cookies, and a fallback authenticated-user policy.
+- [../../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationEndpointRouteBuilderExtensions.cs](../../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationEndpointRouteBuilderExtensions.cs) maps shared login/logout lifecycle endpoints.
+- [../../../src/Hosts/QueryServiceHost/Program.cs](../../../src/Hosts/QueryServiceHost/Program.cs) already uses the shared browser-host auth composition.
+- [../../../src/Hosts/IngestionServiceHost/Program.cs](../../../src/Hosts/IngestionServiceHost/Program.cs) also uses the shared browser-host auth composition today.
+- [../121-react-facing-api-host-strategy/spec-domain-react-facing-api-host-strategy.md](../121-react-facing-api-host-strategy/spec-domain-react-facing-api-host-strategy.md) fixes the future split between `QueryServiceHost` and a new internal `WorkbenchHost`.
 
 ### 2.2 Proposed state
 
 The recommended direction is:
-- `PublicApiHost` owns browser-facing sign-in, logout, session, and auth challenge flow,
-- the browser holds a secure session cookie rather than frontend-managed bearer tokens,
-- `/api/search/*` and `/api/admin/*` share one auth/session boundary,
-- `/api/search/*` requires authentication for all search requests,
-- authorization distinguishes public search access from admin access,
-- and query-side security filtering reads claims and roles in backend code.
-
-Where `PublicApiHost` temporarily delegates to other runtime hosts during migration, the browser-facing auth model must still terminate at `PublicApiHost`. The backend should then use shared-service composition where possible or trusted server-side context propagation where transitional internal HTTP remains.
+- `QueryServiceHost` owns the public browser-host auth boundary.
+- the new `WorkbenchHost` owns the internal browser-host auth boundary.
+- each host uses host-specific cookies and login/logout routes based on the shared repository auth composition.
+- both hosts may use the same Keycloak realm, but they should not be treated as one undifferentiated browser session by design.
+- search-side security filtering reads claims and roles server-side inside backend code.
 
 ### 2.3 Assumptions
 
-- The repository benefits from one browser-facing auth/session model rather than separate browser token handling and per-host auth logic.
-- Query execution must be able to read user claims and roles in backend code to enforce security filtering correctly.
-- Security filtering is a server-side responsibility, not a frontend responsibility.
-- A BFF/session-cookie model is a better default than SPA-managed bearer tokens for this React-plus-public-host shape unless a later hard requirement proves otherwise.
+- The repository's existing cookie-backed OIDC model is a better starting point than inventing SPA token handling.
+- The permanent audience split justifies separate host auth boundaries even if the same identity realm is reused.
+- Public search still requires secure server-side filtering.
+- Internal operations need a stronger authorization posture than customer-facing search.
 
 ### 2.4 Constraints
 
-- `PublicApiHost` remains the single browser-facing API composition root defined by WP121.
-- `FileShareEmulator` remains outside this browser-facing auth model and outside React consolidation.
-- Retirement-bound UI surfaces are not the place to define future auth behavior.
-- Detailed anonymous-versus-authenticated search access remains a product decision and must stay explicit rather than accidental.
+- `FileShareEmulator` remains outside this product-host auth model.
+- The deleted legacy Workbench tree is not the place to define future auth behavior.
+- Detailed endpoint policy names remain a later implementation concern.
 
-For the current WP122 decision set, that explicit policy is now fixed as authenticated search only.
+## 3. Key decisions
 
-## 3. Component / service design (high level)
-
-### 3.1 Components
-
-WP122 defines five high-level elements:
-
-1. React application
-   - Uses browser session state established through `PublicApiHost`.
-
-2. `PublicApiHost`
-   - Owns browser-facing login/logout/session behavior and route-level authorization boundaries.
-
-3. Query-side backend execution
-   - Reads claims and roles server-side for security filtering.
-
-4. Admin and operational APIs
-   - Require stronger authorization than general end-user search routes.
-
-5. Local-only tooling boundary
-   - Keeps emulator-only destructive actions outside the public host model.
-
-### 3.2 Data flows
-
-Recommended authentication flow:
-1. The browser reaches `PublicApiHost`.
-2. `PublicApiHost` challenges through the configured identity provider when sign-in is required.
-3. `PublicApiHost` restores the authenticated principal from the secure session cookie.
-4. `PublicApiHost` authorizes the requested route.
-5. Query or admin backend code reads the restored claims principal server-side.
-6. Query execution applies security filtering using claims/roles before returning results.
-
-Recommended logout flow:
-1. The browser triggers logout through `PublicApiHost`.
-2. `PublicApiHost` clears the local session and upstream OpenID Connect session.
-3. The browser returns to the chosen public entry route.
-
-### 3.3 Key decisions
-
-- Recommendation: use a BFF/session-cookie model through `PublicApiHost`.
-- Recommendation: do not expose frontend-managed bearer tokens as the default browser auth mechanism.
-- Recommendation: keep one shared auth/session boundary across `/api/search/*` and `/api/admin/*`.
-- Recommendation: require authentication for all `/api/search/*` requests in the baseline model rather than allowing anonymous search by default.
-- Recommendation: distinguish end-user and admin access with authorization and policy rather than separate browser auth systems.
-- Recommendation: start `/api/admin/*` with one general admin role rather than splitting query-admin and ingestion-admin roles in the initial authorization model.
-- Recommendation: keep destructive or high-risk admin actions under the same general admin role in the baseline model rather than introducing an elevated operator role at this stage.
-- Recommendation: require query-side security filtering to read claims and roles server-side.
-- Recommendation: leave exact route-level authorization policy names and concrete claim-to-policy mappings to later implementation-focused work once this auth model is fixed.
-- Recommendation: if transitional internal HTTP exists, do not treat it as permission for the browser to bypass `PublicApiHost`.
+- Keep cookie-backed OIDC as the baseline browser-host auth model.
+- Give `QueryServiceHost` and `WorkbenchHost` separate browser-host session boundaries.
+- Prefer separate Keycloak clients for public and internal hosts, even if they share one realm.
+- Require authenticated access to public search unless a later product decision explicitly opens anonymous routes.
+- Require internal-role-based access to `WorkbenchHost` workflows.
+- Keep search-side filtering server-side.
 
 ## 4. Functional requirements
 
-FR1. `PublicApiHost` shall own the browser-facing authentication entry point for the consolidated React application.
+FR1. `QueryServiceHost` shall own the public browser-host login, logout, and session boundary.
 
-FR2. The browser authentication model shall be BFF/session-cookie based rather than frontend-managed bearer-token based by default.
+FR2. The new `WorkbenchHost` shall own the internal browser-host login, logout, and session boundary.
 
-FR3. The browser shall call `PublicApiHost` using the established browser session rather than supplying bearer tokens directly in the normal React-to-API flow.
+FR3. The baseline browser auth model for both hosts shall remain cookie-backed OpenID Connect rather than browser-managed bearer tokens.
 
-FR4. `PublicApiHost` shall expose login and logout behavior suitable for the chosen BFF/session-cookie model.
+FR4. The public and internal hosts shall use distinct host-specific cookies and host keys.
 
-FR5. `/api/search/*` and `/api/admin/*` shall share one auth/session boundary, with authorization and route policy distinguishing end-user and developer/admin access.
+FR5. The preferred direction is separate Keycloak clients for the public and internal hosts, even if both use the same realm.
 
-FR5a. `/api/search/*` shall require authentication for all search requests in the baseline model defined by WP122.
+FR6. `QueryServiceHost` search requests shall run with server-side access to the authenticated principal when authorization or security filtering requires it.
 
-FR6. Query-side backend logic shall be able to read the authenticated user's claims and roles server-side.
+FR7. Search-side security filtering shall be enforced in backend code rather than in the browser.
 
-FR7. Query-side security filtering shall be enforced in backend code using server-side claims/role context.
+FR8. `WorkbenchHost` shall require internal authorization stronger than a generic authenticated-user session.
 
-FR8. The frontend shall not be treated as the authority for search-result security filtering.
+FR9. Replay, forced replay, repair, rule promotion, and equivalent operational actions shall require explicit internal authorization.
 
-FR8a. `/api/admin/*` shall start with one general admin role in the baseline authorization model rather than separate query-admin and ingestion-admin roles.
+FR10. `FileShareEmulator` local-only operations shall remain outside the product-host auth model.
 
-FR8b. Destructive or high-risk admin actions such as replay, forced replay, rule promotion, or repair shall remain under the same general admin role in the baseline model rather than requiring an additional elevated operator role.
-
-FR9. Admin operations such as diagnostics, rule editing, replay, repair, and other operational actions shall require explicit authorization beyond any baseline authenticated-user session.
-
-FR10. Local-only emulator operations shall remain outside the `PublicApiHost` browser auth model.
-
-FR11. The chosen auth model shall support both same-host and separate-frontend deployment models already allowed by WP121.
-
-FR12. If `PublicApiHost` delegates to other runtime code during migration, the authenticated server-side user context required for authorization and security filtering shall remain available to backend execution.
-
-FR13. Anonymous-versus-authenticated search-route policy shall remain explicit and shall not be inferred accidentally from the transport model.
-
-FR13a. For the current WP122 decision set, `/api/search/*` shall be treated as authenticated-only rather than anonymously accessible.
-
-FR13b. Exact route-level authorization policy names and concrete claim-to-policy mappings shall be defined in later implementation-focused work rather than fixed in WP122.
+FR11. Later work packages shall define endpoint-by-endpoint policy names and claim mappings without changing the host-boundary decision made here.
 
 ## 5. Non-functional requirements
 
-NFR1. The auth model shall minimize browser-side token exposure in the normal React-to-API flow.
+NFR1. The auth model shall reuse proven repository patterns where practical.
 
-NFR2. The auth model shall preserve secure server-side access to claims and roles for query filtering.
+NFR2. The auth model shall preserve strict separation between customer-facing and internal audiences.
 
-NFR3. The auth model shall fit the single-public-host topology already defined in WP121.
+NFR3. The model shall avoid forcing browser-side token lifecycle complexity when server-managed sessions achieve the same goal.
 
-NFR4. The auth model shall avoid unnecessary CORS, token-refresh, and browser-token-lifecycle complexity when the same security outcome can be achieved with server-managed sessions.
-
-NFR5. The model shall remain secure whether the React app is served by `PublicApiHost` or deployed separately.
-
-NFR6. The auth model shall be specific enough to guide later implementation while avoiding premature commitment to policy naming and claim-mapping details that belong in implementation-focused work.
+NFR4. The model shall preserve secure server-side access to claims and roles for search filtering.
 
 ## 6. Data model
 
-WP122 does not define concrete token or session payloads. It defines the required security-context shape.
-
-Required backend security-context capabilities:
-- authenticated-user identity,
+Required host-level security context capabilities:
+- authenticated user identity,
 - role claims,
-- other claims needed for search security filtering,
-- and enough route/policy context to distinguish end-user from admin access.
+- any additional claims needed for search filtering,
+- and enough route context to distinguish public-search access from internal operational access.
 
-The spec requires those values to be available server-side to query execution and authorization logic. It does not require the browser to manage them as bearer tokens.
+The browser does not need to manage bearer tokens directly in the baseline model.
 
-## 7. Interfaces & integration
+## 7. Interfaces and integration
 
-### 7.1 Browser-facing auth surface
+### 7.1 Host auth ownership
 
-`PublicApiHost` is expected to own:
-- login entry behavior,
-- logout behavior,
-- session restoration,
-- route challenge behavior,
-- and the shared auth/session boundary for public and admin API routes.
+`QueryServiceHost` owns:
+- public login and logout behavior,
+- public session restoration,
+- and public route challenge behavior.
 
-### 7.2 Claims propagation expectation
+`WorkbenchHost` owns:
+- internal login and logout behavior,
+- internal session restoration,
+- and internal route challenge behavior.
+
+### 7.2 Claims propagation
 
 Preferred model:
-- shared-service composition where query execution can read the server-side principal directly.
+- direct server-side composition where search execution can read the principal directly.
 
 Acceptable transitional model:
-- carefully controlled server-to-server context propagation when temporary internal HTTP remains.
+- carefully controlled server-to-server context propagation when temporary internal HTTP exists.
 
-Disallowed baseline:
-- relying on the browser to enforce result security,
-- or assuming frontend-managed tokens are required just because roles must be visible to backend query logic.
+## 8. Observability
 
-## 8. Observability (logging/metrics/tracing)
-
-Authentication and authorization behavior should be observable at `PublicApiHost` as the single browser-facing boundary.
-
-That means later work should be able to track:
-- login and logout lifecycle behavior,
+WP122 does not define the technical observability baseline, but it requires the host split to be visible enough that later work can diagnose:
+- login and logout behavior,
 - authorization failures,
-- route-family access patterns,
-- and security-filtering-relevant request identity context
+- and search-filtering-relevant identity context.
 
-without spreading those concerns across multiple public hosts.
+## 9. Security and compliance
 
-Minimal technical observability remains part of WP125. Detailed business audit and operation tracking are deferred until later hardening work.
-
-## 9. Security & compliance
-
-WP122 recommends a security-first model for this repository shape:
+WP122 recommends:
 - server-managed browser sessions,
 - server-side claim evaluation,
 - backend-enforced search filtering,
-- and stronger policy boundaries for admin and operational actions.
+- and stronger internal authorization for the internal workbench.
 
-The baseline search posture in this model is authenticated access rather than anonymous access.
-
-The baseline admin posture in this model is one general admin role rather than multiple split admin roles.
-
-The baseline high-risk action posture in this model is to keep replay, forced replay, rule promotion, and repair under that same general admin role.
-
-This aligns with the requirement that query APIs must securely read user claims and roles to apply security filtering.
+Business audit remains deferred.
 
 ## 10. Testing strategy
 
-WP122 validation should focus on auth-model correctness and downstream implementability.
-
 Validation anchors:
-- Confirm the model is consistent with the public-host topology in [../121-react-facing-api-host-strategy/spec-domain-react-facing-api-host-strategy.md](../121-react-facing-api-host-strategy/spec-domain-react-facing-api-host-strategy.md).
-- Confirm the model allows server-side claims and role access for query filtering.
-- Confirm the model keeps browser-facing auth/session handling at `PublicApiHost`.
-- Confirm later work can add endpoint authorization tests for anonymous, authenticated, developer/admin, and forbidden flows.
+- confirm the model is consistent with WP121's split-host direction,
+- confirm the model allows server-side claims and role access for search filtering,
+- confirm the public and internal hosts do not collapse into one undifferentiated session model by accident,
+- and confirm later work can add endpoint authorization tests without redesigning the host boundary.
 
-## 11. Rollout / migration
+## 11. Rollout and migration
 
 Recommended migration posture:
-1. Fix `PublicApiHost` as the browser-facing auth/session owner.
-2. Reuse the repository's existing shared cookie-backed OIDC pattern as the starting point.
-3. Move browser-facing login/logout/session behavior to `PublicApiHost`.
-4. Ensure query-side execution reads claims and roles server-side for security filtering.
-5. Add detailed policy decisions and tests in later WP122 follow-on implementation work.
+1. keep the shared browser-host auth composition,
+2. assign distinct public and internal host auth boundaries,
+3. introduce separate Keycloak clients or equivalent separated configuration,
+4. keep search filtering server-side,
+5. add detailed internal policies in later implementation slices.
 
 Wiki review result:
-No wiki page update was required for this draft work-package specification. The work records a recommended auth model rather than a current-state implementation change.
+No wiki page update was required for this planning work package. The work records the target auth model rather than a current-state runtime change.
 
 ## 12. Open questions
 
-No open questions remain in WP122 at this stage. The browser auth model, session boundary, authenticated-search posture, general admin role model, and server-side claims-based filtering posture are now fixed here. Detailed policy names, claim mappings, and endpoint-by-endpoint enforcement remain for later implementation-focused work.
+None at this stage. WP122 now fixes the baseline auth direction as separate public and internal browser-host session boundaries built on the repository's existing cookie-backed OIDC approach.

@@ -7,7 +7,7 @@ Source arc summary: [../../docs/discussion/next-gen-work-package-arcs.md](../../
 
 ## Arc Intent
 
-Arc 06 builds provider-neutral developer APIs and service boundaries over ingestion rules, providers, journaled inputs, dead letters, outcomes, replay eligibility, diagnostic replay, and guarded repair replay. It also rationalizes file-share-specific duplication without moving FileShareEmulator's local UI or destructive controls into the React application.
+Arc 06 builds provider-neutral developer APIs and service boundaries over ingestion rules, providers, journaled inputs, dead letters, outcomes, replay eligibility, diagnostic replay, and guarded repair replay. It also rationalizes file-share-specific duplication without moving FileShareEmulator's local UI or destructive controls into the public or internal browser hosts.
 
 ## Numbering
 
@@ -47,7 +47,7 @@ Requirements carried:
 - Get, validate, save, and refresh rule documents.
 - Use backend primitives such as `IRuleConfigurationWriter`, `IProviderRulesReader`, and validation services.
 - Save only valid rules, enforce Arc 02 authorization/audit/conflict handling, and trigger refresh.
-- React calls rule-focused APIs, not the configuration emulator explorer.
+- The internal workbench calls rule-focused APIs, not the configuration emulator explorer.
 
 Validation anchors:
 - API tests mirroring RulesWorkbench service tests and App Configuration writer tests.
@@ -76,7 +76,7 @@ Requirements carried:
 - Scan provider contexts for problematic payloads.
 - Return candidate-but-unmatched rules and missing required fields.
 - Provide rule schema and builder metadata.
-- First implementation may be file-share-only if explicitly named, but the React API shape must not be SQL-shaped.
+- First implementation may be file-share-only if explicitly named, but the internal workbench API shape must not be SQL-shaped.
 - Preserve the file-share checker convention `bu-{businessunitname}-*` in lowercase where relevant.
 
 Validation anchors:
@@ -90,7 +90,7 @@ Scope:
 Requirements carried:
 - Current duplication across FileShareEmulator, RulesWorkbench, and retirement-bound retained Studio provider code must be addressed without treating retained Studio as a future API or provider direction.
 - FileShareEmulator UI remains local-only and unchanged except for safe internal service reuse.
-- React must not call file-share SQL-shaped APIs.
+- The internal workbench must not call file-share SQL-shaped APIs.
 - Token derivation direction remains explicit; moving it into ingestion/provider runtime is a later contract change.
 
 Validation anchors:
@@ -169,8 +169,8 @@ Validation anchors:
 - Failure APIs with `ShadowId`, payload pointers, taxonomy, and replay eligibility: WP205.
 - Diagnostic replay and guarded repair replay: WP206-WP207.
 - Forced replay authorization/audit or deferral: WP208.
-- React does not see storage/provider internals: WP200-WP209.
+- The internal workbench does not see storage/provider internals: WP200-WP209.
 
 ## Handoff To Arc 08
 
-Arc 08 builds the React ingestion repair workspace over these APIs.
+Arc 08 builds the WorkbenchHost ingestion repair workspace over these APIs.
