@@ -271,5 +271,4 @@ When you change local Keycloak users, roles, mappers, or other realm settings, k
 - [Query model and Elasticsearch mapping](Query-Model-and-Elasticsearch-Mapping)
 - [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator)
 - [Tools: `RulesWorkbench`](Tools-RulesWorkbench)
-- [Keycloak and Workbench integration](keycloak-workbench-integration)
 - [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard)

@@ -1,4 +1,4 @@
-# Next-Gen Arc 10 Work Packages: Legacy UI Retirement And Operational Hardening
+# Next-Gen Arc 10 Work Packages: Remaining Legacy Surface Retirement And Operational Hardening
 
 Date: 2026-06-26
 
@@ -7,7 +7,7 @@ Source arc summary: [../../docs/discussion/next-gen-work-package-arcs.md](../../
 
 ## Arc Intent
 
-Arc 10 retires or deactivates old UI surfaces once replacements exist, then hardens observability, audit, authorization, documentation, and operational safety. It should not remove useful local development capability prematurely.
+Arc 10 retires or deactivates the remaining legacy surfaces once replacements exist, then hardens observability, audit, authorization, documentation, and operational safety. The legacy Workbench tree is expected to be deleted earlier by WP126; Arc 10 therefore focuses on the remaining retirement set and should not remove useful local development capability prematurely.
 
 Retired projects remain available for source inspection and historical behavior reference. They are not active feature-delivery targets and should only be modified during explicit retirement work or when a broader build/solution change forces a minimal compatibility edit.
 
@@ -19,9 +19,9 @@ Reserved buffer after Arc 10: WP287-WP299.
 
 ## Evidence Checked
 
-- AppHost services mode includes Query, Ingestion, FileShareEmulator, RulesWorkbench, WorkbenchHost, Keycloak, Elasticsearch, storage, SQL, and configuration emulator support: [../../src/Hosts/AppHost/AppHost.cs](../../src/Hosts/AppHost/AppHost.cs).
-- Current UI surfaces include [../../src/Hosts/QueryServiceHost/Program.cs](../../src/Hosts/QueryServiceHost/Program.cs), [../../src/Hosts/IngestionServiceHost/Program.cs](../../src/Hosts/IngestionServiceHost/Program.cs), [../../tools/RulesWorkbench/Program.cs](../../tools/RulesWorkbench/Program.cs), [../../tools/FileShareEmulator/Program.cs](../../tools/FileShareEmulator/Program.cs), and [../../src/Workbench/server/WorkbenchHost/Program.cs](../../src/Workbench/server/WorkbenchHost/Program.cs).
-- Workbench shell/modules are under [../../src/Workbench/](../../src/Workbench/). Retained Studio source exists under [../../src/Studio/](../../src/Studio/) and [../../src/Providers/UKHO.Search.Studio.Providers.FileShare/](../../src/Providers/UKHO.Search.Studio.Providers.FileShare/), is not active in [../../Search.slnx](../../Search.slnx) or AppHost, and is already fixed as retirement-bound rather than future platform direction.
+- AppHost services mode includes Query, Ingestion, FileShareEmulator, RulesWorkbench, Keycloak, Elasticsearch, storage, SQL, and configuration emulator support: [../../src/Hosts/AppHost/AppHost.cs](../../src/Hosts/AppHost/AppHost.cs).
+- Current UI surfaces include [../../src/Hosts/QueryServiceHost/Program.cs](../../src/Hosts/QueryServiceHost/Program.cs), [../../src/Hosts/IngestionServiceHost/Program.cs](../../src/Hosts/IngestionServiceHost/Program.cs), [../../tools/RulesWorkbench/Program.cs](../../tools/RulesWorkbench/Program.cs), and [../../tools/FileShareEmulator/Program.cs](../../tools/FileShareEmulator/Program.cs).
+- The legacy Workbench tree has already been removed by WP126. Retained Studio source exists under [../../src/Studio/](../../src/Studio/) and [../../src/Providers/UKHO.Search.Studio.Providers.FileShare/](../../src/Providers/UKHO.Search.Studio.Providers.FileShare/), is not active in [../../Search.slnx](../../Search.slnx) or AppHost, and is already fixed as retirement-bound rather than future platform direction.
 
 ## WP280: Define Retirement Readiness Gates And Capability Mapping
 
@@ -29,8 +29,8 @@ Scope:
 - Define evidence required before each old UI surface can be removed, disabled, left local-only, or retained temporarily.
 
 Requirements carried:
-- Retire Blazor/Razor developer surfaces and Workbench only after replacements exist.
-- Do not remove FileShareEmulator local development controls as part of React consolidation.
+- Retire remaining legacy developer surfaces only after replacements exist.
+- Do not remove FileShareEmulator local development controls as part of the browser-host replacement direction.
 - Configuration emulator remains out of scope.
 - Map each old UI capability to a replacement API/UI capability or explicit local-only retention.
 
@@ -43,7 +43,7 @@ Scope:
 - Remove, deactivate, or repurpose QueryServiceHost browser UI once Arc 04 APIs, Arc 07 workbench, and Arc 09 end-user search cover its workflows.
 
 Validation anchors:
-- Query API tests, React query-rule workbench tests, end-user search tests, and AppHost startup tests.
+- Query API tests, WorkbenchHost query-rule workbench tests, end-user search tests, and AppHost startup tests.
 
 ## WP282: Split Or Retire IngestionServiceHost Browser UI While Preserving Runtime
 
@@ -63,7 +63,7 @@ Scope:
 - Retire RulesWorkbench or mark it as transitional once Arc 06 APIs and Arc 08 workspace replace its workflows.
 
 Requirements carried:
-- Rule browsing/editing/saving/evaluation/checker/business-unit scan workflows move behind APIs and React views.
+- Rule browsing/editing/saving/evaluation/checker/business-unit scan workflows move behind APIs and WorkbenchHost views.
 
 Validation anchors:
 - Rules API tests, repair workspace tests, and clearly scoped transitional tests if any.
@@ -96,7 +96,7 @@ Validation anchors:
 ## WP286: Update Documentation And Supersede Older UI Directions
 
 Scope:
-- Update docs/wiki to reflect React plus shadcn/ui, API-first, journal-backed repair, query diagnostics, and legacy retirement direction.
+- Update docs/wiki to reflect the split Blazor host direction, API-first contracts, journal-backed repair, query diagnostics, and legacy retirement direction.
 
 Requirements carried:
 - Older Studio/Theia/PrimeReact/Workbench directions are explicitly superseded.
@@ -116,4 +116,4 @@ Validation anchors:
 
 ## Roadmap Completion Note
 
-At the end of Arc 10, the consolidated React plus shadcn/ui application should be backed by stable APIs, the ingestion journal should be the accepted-input source of truth for repair workflows, end-user search should use production contracts, and legacy UI surfaces should be retired or deliberately retained inside documented local-only boundaries.
+At the end of Arc 10, the split browser-host direction should be backed by stable APIs, the ingestion journal should be the accepted-input source of truth for repair workflows, end-user search should use production contracts, and legacy UI surfaces should be retired or deliberately retained inside documented local-only boundaries.

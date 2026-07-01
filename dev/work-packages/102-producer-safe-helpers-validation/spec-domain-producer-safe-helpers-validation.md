@@ -34,7 +34,7 @@ Out of scope for WP102:
 - Queue submission helpers, queue clients, Azure SDK integrations, or provider-queue routing.
 - Security-token derivation logic such as File Share business-unit token policy.
 - Provider discovery, provider SPI, runtime pipeline behavior, journaling, replay, dead-letter flow, or `ShadowId` generation.
-- React-, Studio-, Workbench-, or host-facing SDK layers.
+- Browser-host-, Studio-, Workbench-, or host-facing SDK layers.
 
 ### 1.3 Stakeholders
 

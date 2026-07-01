@@ -149,5 +149,4 @@ Before moving deeper into ingestion or provider debugging, confirm the basics in
 - [Setup walkthrough](Setup-Walkthrough)
 - [Appendix: command reference](Appendix-Command-Reference)
 - [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator)
-- [Keycloak and Workbench integration](keycloak-workbench-integration)
 - [Metrics in the Aspire dashboard](Metrics-in-the-Aspire-Dashboard)

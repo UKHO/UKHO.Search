@@ -1,4 +1,4 @@
-# Next-Gen Arc 07 Work Packages: React Developer Query-Rule Workbench
+# Next-Gen Arc 07 Work Packages: WorkbenchHost Developer Query-Rule Workbench
 
 Date: 2026-06-26
 
@@ -7,7 +7,7 @@ Source arc summary: [../../docs/discussion/next-gen-work-package-arcs.md](../../
 
 ## Arc Intent
 
-Arc 07 builds the React developer workspace for query-rule inspection, draft editing, backend validation, current-versus-draft comparison, and query corpus regression. It consumes Arc 03 frontend foundations and Arc 04 query diagnostics APIs.
+Arc 07 builds the internal `WorkbenchHost` workspace for query-rule inspection, draft editing, backend validation, current-versus-draft comparison, and query corpus regression. It consumes Arc 03 browser-host foundations and Arc 04 query diagnostics APIs.
 
 ## Numbering
 
@@ -25,7 +25,7 @@ Reserved buffer before Arc 08: WP227-WP239.
 ## WP220: Build Query-Rule Workbench Shell And Data Flow
 
 Scope:
-- Add the query-rule workbench route, layout, API hooks, loading/error states, and navigation within the Arc 03 React shell.
+- Add the query-rule workbench route, layout, interaction hooks, loading/error states, and navigation within the Arc 03 internal WorkbenchHost shell.
 
 Requirements carried:
 - The workbench is a developer query-rule lab, not an end-user search product.
@@ -111,7 +111,7 @@ Validation anchors:
 
 ## Arc Requirement Cross-Check
 
-- React developer query-rule workbench over Arc 04 APIs: WP220.
+- WorkbenchHost developer query-rule workbench over Arc 04 APIs: WP220.
 - Full interpretation pipeline display and matched/non-matched rules: WP221.
 - Draft editing and backend validation without immediate save-back: WP222.
 - Current-versus-draft comparison for one query: WP223.

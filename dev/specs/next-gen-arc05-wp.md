@@ -7,7 +7,7 @@ Source arc summary: [../../docs/discussion/next-gen-work-package-arcs.md](../../
 
 ## Arc Intent
 
-Arc 05 introduces the ingestion input journal, also described as shadowing. The journal records provider-normalized inputs at the ingestion boundary after successful provider deserialization and before provider pipeline processing mutates the request. It creates the stable `ShadowId` correlation point needed for rule debugging, dead-letter linkage, outcomes, replay eligibility, supersession checks, and future React ingestion repair workflows.
+Arc 05 introduces the ingestion input journal, also described as shadowing. The journal records provider-normalized inputs at the ingestion boundary after successful provider deserialization and before provider pipeline processing mutates the request. It creates the stable `ShadowId` correlation point needed for rule debugging, dead-letter linkage, outcomes, replay eligibility, supersession checks, and future WorkbenchHost ingestion repair workflows.
 
 ## Numbering
 

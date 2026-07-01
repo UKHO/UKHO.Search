@@ -2,7 +2,7 @@
 
 Welcome to the developer wiki for `UKHO.Search`.
 
-Use this page as the start of the repository reading path. It explains what the solution does, where to go next for your role, and which pages matter most when you are tracing architecture, setting up the stack, or extending ingestion and Workbench features.
+Use this page as the start of the repository reading path. It explains what the solution does, where to go next for your role, and which pages matter most when you are tracing architecture, setting up the stack, or extending ingestion, query, and host-level features.
 
 ## What this repository does
 
@@ -11,7 +11,7 @@ Use this page as the start of the repository reading path. It explains what the 
 - a provider-aware **ingestion pipeline** that turns source messages into a shared search shape
 - a **query path** that reads from the indexed canonical form
 - an **Aspire AppHost** that orchestrates the local developer environment
-- a set of **developer tools** that make File Share workflows, rule authoring, and Workbench exploration practical during day-to-day development
+- a set of **developer tools** that make File Share workflows, rule authoring, and runtime investigation practical during day-to-day development
 
 The repository's central contract is the [`CanonicalDocument`](Glossary#canonicaldocument). Providers build or enrich that shared model, the infrastructure layer projects it into Elasticsearch, and the query side reads the indexed result.
 
@@ -28,17 +28,10 @@ flowchart LR
     SetupWalkthrough --> CommandReference[Command reference]
     Walkthrough --> Ingestion[Ingestion pipeline]
     Walkthrough --> Query[Query pipeline]
-    Walkthrough --> Workbench[Workbench introduction]
     Query --> QueryWalkthrough[Query walkthrough]
     QueryWalkthrough --> QueryRules[Query signal extraction rules]
     QueryRules --> QueryMapping[Query model and Elasticsearch mapping]
     QueryRules --> QueryRuleReference[Query rule syntax quick reference]
-    Workbench --> WorkbenchArchitecture[Workbench architecture]
-    WorkbenchArchitecture --> WorkbenchCommands[Workbench commands and tools]
-    WorkbenchCommands --> WorkbenchTabs[Workbench tabs and layout]
-    WorkbenchTabs --> WorkbenchOutput[Workbench output and notifications]
-    WorkbenchOutput --> WorkbenchTutorials[Workbench tutorials]
-    WorkbenchTutorials --> WorkbenchTroubleshooting[Workbench troubleshooting]
     Ingestion --> Runtime[Graph runtime foundations]
     Runtime --> IngestionWalkthrough[Ingestion walkthrough]
     IngestionWalkthrough --> Rules[Ingestion rules]
@@ -55,7 +48,7 @@ flowchart LR
 | Working on ingestion | [Ingestion pipeline](Ingestion-Pipeline) | [Ingestion graph runtime foundations](Ingestion-Graph-Runtime) -> [Ingestion walkthrough](Ingestion-Walkthrough) -> [Ingestion rules](Ingestion-Rules) -> [Appendix: rule syntax quick reference](Appendix-Rule-Syntax-Quick-Reference) -> [Ingestion troubleshooting](Ingestion-Troubleshooting) |
 | Producing remote ingestion messages | [Remote ingestion producer guide](Remote-Ingestion-Producer-Guide) | [../src/UKHO.Search.Ingestion.Contracts/README.md](../src/UKHO.Search.Ingestion.Contracts/README.md) -> [Solution architecture](Solution-Architecture) -> [Ingestion walkthrough](Ingestion-Walkthrough) |
 | Working on query or search semantics | [Query pipeline](Query-Pipeline) | [Query walkthrough](Query-Walkthrough) -> [Query signal extraction rules](Query-Signal-Extraction-Rules) -> [Query model and Elasticsearch mapping](Query-Model-and-Elasticsearch-Mapping) -> [Appendix: query rule syntax quick reference](Appendix-Query-Rule-Syntax-Quick-Reference) |
-| Working on Workbench or Blazor UI | [Solution architecture](Solution-Architecture) | [Architecture walkthrough](Architecture-Walkthrough) -> [Workbench introduction](Workbench-Introduction) -> [Workbench architecture](Workbench-Architecture) -> [Workbench commands and tools](Workbench-Commands-and-Tools) -> [Workbench tabs and layout](Workbench-Tabs-and-Layout) |
+| Working on browser hosts or Blazor UI | [Solution architecture](Solution-Architecture) | [Architecture walkthrough](Architecture-Walkthrough) -> [Query pipeline](Query-Pipeline) -> [Query walkthrough](Query-Walkthrough) -> current next-gen work packages under `dev/work-packages/120-*` and `dev/specs/next-gen-arc0*-wp.md` |
 | Tracing repository history or design background | [Documentation source map](Documentation-Source-Map) | Related work-package documents in `dev/work-packages/mvp/` |
 
 ## Major areas of the wiki
@@ -78,9 +71,9 @@ For remote queue-message authoring rather than runtime processing, start instead
 
 [Query pipeline](Query-Pipeline) is the conceptual entry point for the read side. Follow it with [Query walkthrough](Query-Walkthrough) when you need the code-oriented runtime trace, [Query signal extraction rules](Query-Signal-Extraction-Rules) when you need the full explanation of `rules/query/*.json`, [Query model and Elasticsearch mapping](Query-Model-and-Elasticsearch-Mapping) when you need the contract-level mapping story, and [Appendix: query rule syntax quick reference](Appendix-Query-Rule-Syntax-Quick-Reference) when you need a shorter authoring lookup. When the conceptual pages make sense and you are ready to prove local runtime behavior, return to [Project setup](Project-Setup) and [Setup walkthrough](Setup-Walkthrough) for the services-mode query verification path.
 
-### Workbench
+### Browser hosts and developer tooling
 
-[Workbench introduction](Workbench-Introduction) is the entry point for the full Workbench guide. Follow it into [Workbench architecture](Workbench-Architecture), [Workbench shell guide](Workbench-Shell-Guide), [Workbench modules and contributions](Workbench-Modules-and-Contributions), [Workbench commands and tools](Workbench-Commands-and-Tools), [Workbench tabs and layout](Workbench-Tabs-and-Layout), [Workbench output and notifications](Workbench-Output-and-Notifications), [Workbench tutorials](Workbench-Tutorials), and [Workbench troubleshooting](Workbench-Troubleshooting) when you need the current shell model, extension rules, practical recipes, and diagnostics guidance.
+The legacy Workbench tree under `src/Workbench/` was deleted by WP126 and is no longer part of the active repository runtime. Current browser-host work starts from [Solution architecture](Solution-Architecture), [Architecture walkthrough](Architecture-Walkthrough), [Project setup](Project-Setup), and the active next-gen planning material under `dev/work-packages/120-*`, `dev/work-packages/126-*`, and `dev/specs/next-gen-arc0*-wp.md`.
 
 ### Troubleshooting and observability
 
@@ -88,7 +81,7 @@ For remote queue-message authoring rather than runtime processing, start instead
 
 ### Glossary
 
-[Glossary](Glossary) centralizes repository vocabulary such as `CanonicalDocument`, provider model, Workbench module, explorer item, output panel, and AppHost terminology. Read it early if the repository-specific terms are unfamiliar.
+[Glossary](Glossary) centralizes repository vocabulary such as `CanonicalDocument`, provider model, query plan, and AppHost terminology. Read it early if the repository-specific terms are unfamiliar.
 
 ### Appendices and supporting references
 
@@ -103,7 +96,6 @@ Several pages are intentionally deeper reference material rather than first-read
 | `src/Hosts/AppHost` | Starts the local Aspire-orchestrated environment and switches between import, services, and export workflows. |
 | `src/Hosts/IngestionServiceHost` | Hosts the ingestion runtime, infrastructure wiring, and indexing path. |
 | `src/Hosts/QueryServiceHost` | Hosts the query-facing runtime, including UI composition, query planning entry, and Elasticsearch-backed execution of repository-owned query plans. |
-| `src/workbench/server/WorkbenchHost` | Hosts the desktop-like Blazor Server Workbench shell and module composition surface. |
 | `tools/FileShareEmulator` | Provides the local File Share emulator UI and API. |
 | `tools/RulesWorkbench` | Provides rule inspection, evaluation, and checker tooling. |
 
@@ -119,15 +111,13 @@ Several pages are intentionally deeper reference material rather than first-read
 | `src/UKHO.Search.Infrastructure.Query` | Elasticsearch request mapping and execution adapters for the query-side runtime, including the Microsoft Recognizers-backed typed extraction adapter, the configuration-backed flat query-rule catalog, and rule refresh monitoring that are kept behind inward query abstractions. |
 | `src/Providers/UKHO.Search.Ingestion.Providers.FileShare` | Concrete File Share provider processing graph and enrichers. |
 | `src/UKHO.Search.Infrastructure.Ingestion` | Queue, blob dead-letter, bootstrap, and Elasticsearch integration. |
-| `src/workbench/server/UKHO.Workbench*` | Workbench contracts, services, infrastructure, and shell composition support. |
-
 ### Common first workflow
 
 1. Read the [Glossary](Glossary) if the repository terms are new.
 2. Read [Solution architecture](Solution-Architecture) for the stable current-state map.
 3. Read [Architecture walkthrough](Architecture-Walkthrough) to trace the main repository flows.
 4. Follow [Project setup](Project-Setup) and [Setup walkthrough](Setup-Walkthrough) if you need a local environment.
-5. Move into the ingestion, query, or Workbench pages that match the area you are changing.
+5. Move into the ingestion, query, or browser-host planning material that matches the area you are changing.
 
 ## Design themes that show up across the repository
 
@@ -136,7 +126,7 @@ Several pages are intentionally deeper reference material rather than first-read
 - **Canonical indexing** gives query and diagnostics features one stable search shape.
 - **Rules-driven enrichment** adds mapping flexibility without hard-coding every transformation into the pipeline.
 - **Developer tooling** is part of the normal workflow, not an afterthought.
-- **Workbench composition** uses a bounded module and contribution model so tools can extend the shell without taking ownership of it.
+- **Browser-host ownership** is being split deliberately between the public query host and a future internal workbench host rather than being inherited from the deleted legacy shell.
 
 ## Related supporting pages
 

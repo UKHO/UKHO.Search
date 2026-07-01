@@ -1,6 +1,6 @@
 # Glossary
 
-This glossary defines the repository terms that appear repeatedly across the wiki. Read it before the architecture pages if the project vocabulary is new, or return to it when a term is used in a more specific ingestion or Workbench context.
+This glossary defines the repository terms that appear repeatedly across the wiki. Read it before the architecture pages if the project vocabulary is new, or return to it when a term is used in a more specific ingestion or browser-host context.
 
 ## Use this page with the main reading paths
 
@@ -14,7 +14,6 @@ This glossary defines the repository terms that appear repeatedly across the wik
 - [Query signal extraction rules](Query-Signal-Extraction-Rules) for the deep-dive query rules guide
 - [Query model and Elasticsearch mapping](Query-Model-and-Elasticsearch-Mapping) for the contract and request-mapping explanation
 - [Ingestion pipeline](Ingestion-Pipeline) for message-processing detail
-- [Workbench introduction](Workbench-Introduction) for the current Workbench guide
 
 ## Repository and runtime terms
 
@@ -40,7 +39,7 @@ The inward query-side abstraction that hides Microsoft Recognizers behind a repo
 
 ### Host
 
-An executable outer-layer project that wires together services, infrastructure, configuration, and user-facing or operational entry points. Examples include `AppHost`, `IngestionServiceHost`, `QueryServiceHost`, and `WorkbenchHost`.
+An executable outer-layer project that wires together services, infrastructure, configuration, and user-facing or operational entry points. Examples include `AppHost`, `IngestionServiceHost`, and `QueryServiceHost`.
 
 ### Onion Architecture
 
@@ -150,44 +149,6 @@ On the query side, a text field that is matched through analyzed search text rat
 
 The dedicated local tool for inspecting, evaluating, and checking ingestion rules. See [Tools: `RulesWorkbench`](Tools-RulesWorkbench).
 
-## Workbench terms
-
-### Command
-
-The shared action abstraction used across Workbench explorer items, menus, toolbars, and hosted tool interactions.
-
-### Contribution
-
-A bounded piece of Workbench UI or behaviour supplied by the host or an active tool, such as a menu item, toolbar button, status element, or explorer item.
-
-### Explorer item
-
-A Workbench navigation item that represents a tool or activation target in the left-side explorer surface.
-
-### Module
-
-A loadable Workbench assembly, usually named `UKHO.Workbench.Modules.*`, that contributes tools and services through the bounded Workbench module contract.
-
-### Output panel
-
-The shell-owned Workbench surface that keeps a session-scoped history of startup, notification, and diagnostic entries.
-
-### Singleton tool activation
-
-The Workbench behaviour where reopening the same logical tool target focuses the existing tab instead of creating a duplicate tab.
-
-### Tool
-
-A host-owned or module-contributed Workbench capability that can be activated in the shell and participate in command, menu, toolbar, or output flows.
-
-### ToolContext
-
-The bounded runtime surface exposed to an active Workbench tool so it can request activation, publish shell contributions, update metadata, and raise notifications without taking ownership of the shell.
-
-### Workbench
-
-The repository's desktop-like Blazor Server shell and module composition model, hosted in `src/workbench/server/WorkbenchHost` with shared contracts and services in `UKHO.Workbench*` projects.
-
 ## Tooling and support terms
 
 ### FileShareEmulator
@@ -215,4 +176,4 @@ A text-based diagram block rendered by GitHub markdown viewers. This wiki uses M
 - Return to [Home](Home) for the full reading-path overview.
 - Continue to [Solution architecture](Solution-Architecture) for the repository-wide structure.
 - Continue to [Architecture walkthrough](Architecture-Walkthrough) if you want to trace the main code paths rather than just the project map.
-- Continue to [Query pipeline](Query-Pipeline), [Ingestion pipeline](Ingestion-Pipeline), or [Workbench introduction](Workbench-Introduction) when you are ready to move into a specific subsystem.
+- Continue to [Query pipeline](Query-Pipeline) or [Ingestion pipeline](Ingestion-Pipeline) when you are ready to move into a specific subsystem.

@@ -109,18 +109,12 @@ namespace AppHost
                                                    .WaitFor(elasticsearch)
                                                    .WithScalar("Emulator API");
 
-                    var rulesWorkbench = builder.AddProject<RulesWorkbench>(ServiceNames.RulesWorkbench)
-                                                .WithExternalHttpEndpoints()
-                                                .WithReference(sqlServer)
-                                                .WithReference(storageBlob)
-                                                .WaitFor(sqlServer)
-                                                .WaitFor(storageBlob);
-
-                     // Start the hosted Workbench shell directly from AppHost so the Aspire endpoint opens the Blazor client at '/'.
-                     builder.AddProject<WorkbenchHost>(ServiceNames.Workbench)
-                            .WithReference(keycloak)
-                            .WaitFor(keycloak)
-                            .WithExternalHttpEndpoints();
+                          var rulesWorkbench = builder.AddProject<RulesWorkbench>(ServiceNames.RulesWorkbench)
+                                          .WithExternalHttpEndpoints()
+                                          .WithReference(sqlServer)
+                                          .WithReference(storageBlob)
+                                          .WaitFor(sqlServer)
+                                          .WaitFor(storageBlob);
 
                     // Load the shared configuration for the retained service set only.
                     if (builder.ExecutionContext.IsRunMode)

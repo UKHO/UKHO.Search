@@ -31,7 +31,7 @@ In scope for WP103:
 
 Out of scope for WP103:
 - New transport helpers or queue-submission SDK work.
-- React- or public developer-API decisions that belong to later arcs.
+- Browser-host or public developer-API decisions that belong to later arcs.
 - Journal, replay, dead-letter, or `ShadowId` generation concerns.
 - File Share security-token derivation redesign.
 - Removal of the runtime-local request-model files unless the migration proves that removal is safe and naturally part of the convergence slice.

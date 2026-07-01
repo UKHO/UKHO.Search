@@ -1,125 +1,146 @@
-# Next-Gen Arc 02 Work Packages: API Ownership, Host Strategy, And Security Model
+# Next-Gen Arc 02 Work Packages: Browser Host Ownership, Audience Split, And Security Model
 
-Date: 2026-06-26
+Date: 2026-07-01
 
 Source discussion: [../../docs/discussion/next-gen-consolidation-discussion.md](../../docs/discussion/next-gen-consolidation-discussion.md)  
 Source arc summary: [../../docs/discussion/next-gen-work-package-arcs.md](../../docs/discussion/next-gen-work-package-arcs.md)
 
 ## Arc Intent
 
-Arc 02 decides where the consolidated React application gets its backend APIs and how those APIs are protected. The retained service-side runtime is `IngestionServiceHost`, `QueryServiceHost`, and the provider mechanism. `FileShareEmulator` stays local-only and untouched. Other UI surfaces are retirement-bound and must not be treated as future platform direction, although they remain available for source inspection and should only receive minimal edits when broader build/solution changes force them.
+Arc 02 fixes the permanent browser-host topology and the associated security model.
+
+The direction is now:
+
+- `QueryServiceHost` remains the customer-facing search host.
+- a new `WorkbenchHost` becomes the permanently internal developer and admin search workbench.
+- `IngestionServiceHost` remains an ingestion/runtime host rather than a future browser product host.
+- `FileShareEmulator` stays local-only and untouched.
+- the old Workbench tree under `src/Workbench/` is legacy code, not migration input, and should be removed before the new internal `WorkbenchHost` is introduced.
 
 ## Numbering
 
-Arc 02 work packages use WP120-WP125.
+Arc 02 work packages use WP120-WP126.
 
-Reserved buffer before Arc 03: WP126-WP139.
+Reserved buffer before Arc 03: WP127-WP139.
 
 ## Evidence Checked
 
-- Active Aspire services-mode orchestration is in [../../src/Hosts/AppHost/AppHost.cs](../../src/Hosts/AppHost/AppHost.cs). It starts `IngestionServiceHost`, `QueryServiceHost`, `FileShareEmulator`, `RulesWorkbench`, `WorkbenchHost`, and configuration emulator support; it does not start `StudioServiceHost`.
+- Active Aspire services-mode orchestration is in [../../src/Hosts/AppHost/AppHost.cs](../../src/Hosts/AppHost/AppHost.cs). It starts `IngestionServiceHost`, `QueryServiceHost`, `FileShareEmulator`, `RulesWorkbench`, and configuration emulator support; it does not start `StudioServiceHost`.
 - Current browser hosts use shared cookie-backed Keycloak authentication through [../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationServiceCollectionExtensions.cs](../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationServiceCollectionExtensions.cs) and [../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationEndpointRouteBuilderExtensions.cs](../../src/Hosts/UKHO.Search.ServiceDefaults/BrowserHostAuthenticationEndpointRouteBuilderExtensions.cs).
 - Query and ingestion hosts are Blazor Server composition roots in [../../src/Hosts/QueryServiceHost/Program.cs](../../src/Hosts/QueryServiceHost/Program.cs) and [../../src/Hosts/IngestionServiceHost/Program.cs](../../src/Hosts/IngestionServiceHost/Program.cs).
+- The legacy Workbench implementation that previously lived under `src/Workbench/` has been removed by WP126 and is no longer part of the maintained runtime or solution.
 - Retained Studio API wiring is in [../../src/Studio/StudioServiceHost/StudioServiceHostApplication.cs](../../src/Studio/StudioServiceHost/StudioServiceHostApplication.cs), with endpoint groups in [../../src/Studio/StudioServiceHost/Api/](../../src/Studio/StudioServiceHost/Api/). It has CORS for `http://localhost:3000`, OpenAPI/Scalar, provider/rules/ingestion/operation endpoints, `AddAuthorization`, and `UseAuthorization`, but no reviewed endpoint-level authenticated policy requirements.
 - `StudioServiceHost`, `UKHO.Search.Studio`, and `UKHO.Search.Studio.Providers.FileShare` exist on disk but are not included in [../../Search.slnx](../../Search.slnx) or AppHost.
 - FileShareEmulator is local tooling in [../../tools/FileShareEmulator/Program.cs](../../tools/FileShareEmulator/Program.cs). RulesWorkbench is a direct Blazor tool host in [../../tools/RulesWorkbench/Program.cs](../../tools/RulesWorkbench/Program.cs).
 
-## WP120: Confirm Surface Ownership And Active Status
+## WP120: Confirm Surface Ownership, Active Status, And Legacy Workbench Disposition
 
 Scope:
-- Classify every browser/API-relevant surface as active service-side runtime, local-only emulator/tooling, out-of-scope infrastructure, or retirement candidate.
+- Classify every browser/API-relevant surface as active runtime, public host, internal host target, local-only tool, out-of-scope infrastructure, or retirement/delete candidate.
 
 Requirements carried:
-- Active services-mode resources are Query, Ingestion, FileShareEmulator, RulesWorkbench, WorkbenchHost, and configuration emulator support.
-- The retained service-side baseline is Query, Ingestion, and the provider mechanism.
-- FileShareEmulator remains local-development-only and outside React migration.
-- The configuration emulator explorer is out of scope and expected to become externalized infrastructure.
-- Old Workbench hosts, RulesWorkbench, retained Studio surfaces, samples, and Radzen/demo material are retirement-bound rather than future UI sources. They remain inspectable reference material but should not be modified except for explicit retirement work or minimal build-compatibility changes.
+- `QueryServiceHost` remains the public host target.
+- `IngestionServiceHost` remains the ingestion/runtime host.
+- `FileShareEmulator` remains local-development-only.
+- `tools/RulesWorkbench` remains a temporary legacy tool to be replaced, not a future platform direction.
+- the old Workbench tree under `src/Workbench/` is a delete-first candidate and must not be treated as future-source material.
 
 Validation anchors:
-- AppHost and solution participation tests or architecture checks.
-- Route inventory checks proving local emulator destructive operations are not React-facing APIs.
+- AppHost and solution participation checks.
+- Route inventory checks proving local emulator destructive operations are not promoted.
 
-## WP121: Choose The React-Facing API Host Strategy
+## WP121: Choose The Split Browser Host Strategy
 
 Scope:
-- Decide whether React calls existing service hosts directly, a new backend-for-frontend, or separate end-user and developer/tooling API hosts.
-- Define route ownership for end-user search, developer query diagnostics, query-rule management, ingestion rules, provider tooling, journal/failure workflows, health/profile, and operational status.
+- Fix the permanent audience split and define which host owns which workflows.
+- Define route and API ownership between `QueryServiceHost`, the new `WorkbenchHost`, and the retained runtime hosts.
 
 Requirements carried:
-- A new React app cannot assume there is already one backend-for-frontend.
-- API decisions must come before broad component work.
-- Retirement-bound UI surfaces are not backend candidates by default, even if they currently contain related browser or API behavior.
-- Host-local Blazor DTOs must be reviewed before being promoted to API contracts.
+- `QueryServiceHost` is the customer-facing search host.
+- `WorkbenchHost` is the permanently internal developer/admin workbench.
+- `IngestionServiceHost` remains a runtime host rather than a product UI host.
+- the new `WorkbenchHost` must not inherit the old Workbench shell by default.
 
 Validation anchors:
 - Architecture decision record with route map, owning project, auth policy, capability boundary assumptions, OpenAPI/versioning expectations, and rejected alternatives.
 
-## WP122: Define SPA/API Or BFF Authentication And Authorization
+## WP122: Define Browser Host Authentication And Authorization
 
 Scope:
-- Decide the authentication model for the consolidated React app and APIs: BFF with same-site cookies, SPA OIDC with bearer tokens, or a deliberate hybrid.
-- Define authorization policies for end-user search, developer diagnostics, rule editing/promotion, ingestion repair, replay, forced replay, and local-only operations.
+- Decide the auth/session posture for the public and internal browser hosts.
+- Define authorization boundaries for end-user search, internal diagnostics, rule editing, replay, repair, and other operational actions.
 
 Requirements carried:
-- Current browser hosts use cookie-backed OIDC through the shared `search-workbench` Keycloak client; naming and redirect/origin configuration need redesign for a consolidated app.
-- React/API behavior needs deliberate CORS, redirect URI, token/cookie, refresh, logout, and local-development handling.
-- Developer/admin operations require explicit endpoint or route-group authorization.
-- Destructive, sensitive, replay, repair, forced replay, and rule-promotion operations require authorization decisions before implementation; business audit is deferred until later requirements are clearer.
+- Current browser hosts already use cookie-backed OIDC through shared service defaults.
+- Public and internal hosts may use the same identity realm, but they must not be treated as one undifferentiated audience.
+- Server-side claims-based filtering remains mandatory for search.
 
 Validation anchors:
-- Keycloak realm/client tests and endpoint authorization tests for anonymous, authenticated, developer/admin, and forbidden cases.
+- Keycloak client and route-authorization tests for public, internal, forbidden, and logout flows.
 
 ## WP123: Define Capability Boundaries And Local-Only Exceptions
 
 Scope:
-- Decide which capabilities belong in `PublicApiHost`, which remain local-only exceptions, and which stay out of scope without using environment as the main design axis.
+- Decide which capabilities belong in `QueryServiceHost`, which belong in `WorkbenchHost`, which stay inside `IngestionServiceHost`, and which remain local-only exceptions.
 
 Requirements carried:
 - FileShareEmulator controls such as clearing queues, deleting Elasticsearch indexes, resetting local indexing status, and batch zip streaming stay inside the emulator project.
-- The configuration emulator explorer is not a React consolidation target.
-- PublicApiHost capabilities are assumed available in all environments for now.
-- Provider handoff failures, ingestion-owned failures, repair replay, and forced replay must be classified as platform capabilities, not environment-specific exceptions, in the current phase.
+- The configuration emulator explorer is not a product-host target.
+- Internal tooling capabilities belong in `WorkbenchHost`, not in the public host.
 
 Validation anchors:
-- Route inventory and host-boundary checks proving `FileShareEmulator`-only controls stay outside the public platform surface.
+- Capability inventory and host-boundary checks proving local-only controls stay out of the product hosts.
 
-## WP124: Define API Contract Governance And Client Strategy
+## WP124: Define API Contract Governance And Host Integration Strategy
 
 Scope:
-- Define API contract standards for explicit request/response models, OpenAPI generation, problem details, versioning, source-generated JSON where appropriate, pagination/filter conventions, and frontend client generation or typed fetch.
+- Define contract rules for public and internal host endpoints.
+- Define when a browser host should expose deliberate HTTP contracts versus when server-side composition is acceptable.
 
 Requirements carried:
-- React must not infer semantics from final JSON blobs when structured contracts are required.
-- API contracts must not leak internal domain entities, provider SQL shapes, storage table keys, blob names, or host-local Blazor state.
-- Developer APIs must return task-oriented shapes for failures, shadow inputs, rule evaluations, replay eligibility, and query diagnostics.
+- Public search contracts must be explicit and stable.
+- Internal workbench endpoints must still use deliberate contracts when they cross host or browser boundaries.
+- Host-local Blazor DTOs, provider SQL shapes, storage keys, and legacy shell state must not leak into deliberate contracts.
 
 Validation anchors:
-- Contract tests, OpenAPI snapshot tests, and problem-details tests for validation, auth, not-found, conflict, unsafe replay, and internal errors.
+- Contract tests, Problem Details tests, and host-integration design review.
 
 ## WP125: Define Minimal Technical Observability Baseline
 
 Scope:
-- Establish the minimum technical observability required for `PublicApiHost` startup, diagnostics, and debugging without defining business audit requirements yet.
+- Establish the minimum technical observability required for `QueryServiceHost` and the new `WorkbenchHost` startup, diagnostics, and debugging without defining business audit requirements yet.
 
 Requirements carried:
 - Health/readiness and minimal technical system metadata are required for UI startup and diagnostics.
-- Request correlation, authorization-failure visibility, and basic route-level diagnostics must be possible at `PublicApiHost`.
-- Business audit and operation-tracking requirements are explicitly deferred until the new React platform is working and business requirements are clearer.
+- Request correlation, authorization-failure visibility, and basic route-level diagnostics must be possible at both hosts.
+- Business audit remains deferred.
 
 Validation anchors:
-- Tests or smoke checks for health/readiness/profile-version style endpoints and basic technical diagnostics once implemented.
+- Smoke checks for health/readiness/metadata and telemetry-path participation once implemented.
+
+## WP126: Delete The Legacy Workbench First
+
+Scope:
+- Remove the old Workbench host, libraries, modules, samples, and vendored support code under `src/Workbench/` from the active solution and runtime before the new internal `WorkbenchHost` is introduced.
+
+Requirements carried:
+- remove the legacy Workbench host from AppHost,
+- remove old Workbench projects from the maintained solution,
+- delete the old Workbench tree rather than leaving a parallel meaning of `WorkbenchHost` in place,
+- and update planning/docs so the future internal host name is unambiguous.
+
+Validation anchors:
+- Solution and AppHost reference checks proving the legacy Workbench tree is no longer active.
 
 ## Arc Requirement Cross-Check
 
-- BFF/direct API and host ownership decision: WP121.
-- Active service-side hosts, retirement-bound UI surfaces, local-only emulator controls, and server-rendered auth accounted for: WP120-WP123.
-- Keycloak, CORS, auth, authorization, capability boundaries, and minimal technical observability: WP122-WP125.
-- FileShareEmulator and configuration emulator excluded from React consolidation: WP120, WP123.
-- Local destructive operations remain local: WP123.
-- API contract governance for later query, ingestion, rules, provider, repair, and frontend clients: WP124.
-- Retained Studio and other non-emulator UI surfaces are fixed as retirement-bound by WP120 and must not be treated as future platform direction.
+- Public versus internal browser-host ownership: WP121.
+- Active runtime hosts, legacy Workbench deletion, local-only emulator controls, and detached Studio code: WP120 and WP126.
+- Keycloak, auth, authorization, audience separation, and server-side claims filtering: WP122.
+- Capability boundaries and local-only exceptions: WP123.
+- Contract governance and host integration rules: WP124.
+- Minimal technical observability: WP125.
 
 ## Handoff To Arc 03
 
-Arc 03 can scaffold the React application only after this arc identifies the auth model, API host topology, and protected health/profile endpoint that the frontend will prove against.
+Arc 03 can establish the new Blazor Blueprint foundations only after this arc fixes the permanent host topology, audience split, auth posture, capability boundaries, and the deletion-first removal of the legacy Workbench tree.

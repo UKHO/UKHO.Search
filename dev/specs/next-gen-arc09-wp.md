@@ -1,4 +1,4 @@
-# Next-Gen Arc 09 Work Packages: React End-User Search Experience
+# Next-Gen Arc 09 Work Packages: QueryServiceHost End-User Search Experience
 
 Date: 2026-06-26
 
@@ -7,7 +7,7 @@ Source arc summary: [../../docs/discussion/next-gen-work-package-arcs.md](../../
 
 ## Arc Intent
 
-Arc 09 builds the production end-user search experience in the React app. It consumes Arc 03 frontend foundation and stable end-user search APIs from Arc 04. It must not reuse the current QueryServiceHost developer workspace as product design, and it must not expose developer-only diagnostics.
+Arc 09 builds the production end-user search experience in `QueryServiceHost`. It consumes Arc 03 browser-host foundations and stable end-user search APIs from Arc 04. It must not reuse the current QueryServiceHost developer workspace as product design, and it must not expose developer-only diagnostics.
 
 ## Numbering
 
@@ -42,7 +42,7 @@ Scope:
 Requirements carried:
 - First screen is the usable search experience.
 - Result display is tailored for end users and does not expose raw developer JSON.
-- Use Arc 03 shadcn/ui and component conventions.
+- Use Arc 03 Blazor Blueprint and host component conventions.
 
 Validation anchors:
 - Component and Playwright tests for query submission, results, empty results, loading, auth error, and API error.
@@ -113,7 +113,7 @@ Validation anchors:
 - Query metadata, readiness, optional suggestions: WP264.
 - Appropriate end-user auth policy: WP260.
 - Do not inherit QueryServiceHost developer workspace layout or diagnostics: WP260-WP266.
-- Responsive, accessible, shadcn/ui-based quality: WP261-WP265.
+- Responsive, accessible, Blazor Blueprint-based quality: WP261-WP265.
 
 ## Handoff To Arc 10
 

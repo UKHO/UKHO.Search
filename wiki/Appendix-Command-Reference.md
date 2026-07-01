@@ -146,4 +146,3 @@ Operational notes:
 - [Setup walkthrough](Setup-Walkthrough)
 - [Setup troubleshooting](Setup-Troubleshooting)
 - [Tools: `FileShareImageLoader` and `FileShareEmulator`](Tools-FileShareImageLoader-and-FileShareEmulator)
-- [Keycloak and Workbench integration](keycloak-workbench-integration)
