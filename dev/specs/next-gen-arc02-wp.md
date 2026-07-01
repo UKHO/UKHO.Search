@@ -7,13 +7,13 @@ Source arc summary: [../../docs/discussion/next-gen-work-package-arcs.md](../../
 
 ## Arc Intent
 
-Arc 02 decides where React-facing APIs live and how they are protected. Later React and workflow packages must not grow against accidental host boundaries, detached historical APIs, or local emulator controls.
+Arc 02 decides where the consolidated React application gets its backend APIs and how those APIs are protected. The retained service-side runtime is `IngestionServiceHost`, `QueryServiceHost`, and the provider mechanism. `FileShareEmulator` stays local-only and untouched. Other UI surfaces are retirement-bound and must not be treated as future platform direction, although they remain available for source inspection and should only receive minimal edits when broader build/solution changes force them.
 
 ## Numbering
 
-Arc 02 work packages use WP120-WP126.
+Arc 02 work packages use WP120-WP125.
 
-Reserved buffer before Arc 03: WP127-WP139.
+Reserved buffer before Arc 03: WP126-WP139.
 
 ## Evidence Checked
 
@@ -27,14 +27,14 @@ Reserved buffer before Arc 03: WP127-WP139.
 ## WP120: Confirm Surface Ownership And Active Status
 
 Scope:
-- Classify every browser/API-relevant surface as active runtime, detached candidate, local-only emulator, out-of-scope infrastructure, or retirement candidate.
+- Classify every browser/API-relevant surface as active service-side runtime, local-only emulator/tooling, out-of-scope infrastructure, or retirement candidate.
 
 Requirements carried:
 - Active services-mode resources are Query, Ingestion, FileShareEmulator, RulesWorkbench, WorkbenchHost, and configuration emulator support.
-- `StudioServiceHost` and Studio provider projects are candidate source only until revived, renamed, mined, or deleted by explicit decision.
+- The retained service-side baseline is Query, Ingestion, and the provider mechanism.
 - FileShareEmulator remains local-development-only and outside React migration.
 - The configuration emulator explorer is out of scope and expected to become externalized infrastructure.
-- Old Workbench hosts, samples, and Radzen/demo material must not be future UI sources unless a missing behavior is proven.
+- Old Workbench hosts, RulesWorkbench, retained Studio surfaces, samples, and Radzen/demo material are retirement-bound rather than future UI sources. They remain inspectable reference material but should not be modified except for explicit retirement work or minimal build-compatibility changes.
 
 Validation anchors:
 - AppHost and solution participation tests or architecture checks.
@@ -43,17 +43,17 @@ Validation anchors:
 ## WP121: Choose The React-Facing API Host Strategy
 
 Scope:
-- Decide whether React calls existing service hosts directly, a revived/refactored `StudioServiceHost`, a new backend-for-frontend, or separate end-user and developer/tooling API hosts.
+- Decide whether React calls existing service hosts directly, a new backend-for-frontend, or separate end-user and developer/tooling API hosts.
 - Define route ownership for end-user search, developer query diagnostics, query-rule management, ingestion rules, provider tooling, journal/failure workflows, health/profile, and operational status.
 
 Requirements carried:
 - A new React app cannot assume there is already one backend-for-frontend.
 - API decisions must come before broad component work.
-- Existing Studio endpoints are useful mining material but risky to revive wholesale because the host is detached, locally CORS-bound, file-share-only, and not fully protected.
+- Retirement-bound UI surfaces are not backend candidates by default, even if they currently contain related browser or API behavior.
 - Host-local Blazor DTOs must be reviewed before being promoted to API contracts.
 
 Validation anchors:
-- Architecture decision record with route map, owning project, auth policy, environment safety classification, OpenAPI/versioning expectations, and rejected alternatives.
+- Architecture decision record with route map, owning project, auth policy, capability boundary assumptions, OpenAPI/versioning expectations, and rejected alternatives.
 
 ## WP122: Define SPA/API Or BFF Authentication And Authorization
 
@@ -65,24 +65,24 @@ Requirements carried:
 - Current browser hosts use cookie-backed OIDC through the shared `search-workbench` Keycloak client; naming and redirect/origin configuration need redesign for a consolidated app.
 - React/API behavior needs deliberate CORS, redirect URI, token/cookie, refresh, logout, and local-development handling.
 - Developer/admin operations require explicit endpoint or route-group authorization.
-- Destructive, sensitive, replay, repair, forced replay, and rule-promotion operations require authorization and audit decisions before implementation.
+- Destructive, sensitive, replay, repair, forced replay, and rule-promotion operations require authorization decisions before implementation; business audit is deferred until later requirements are clearer.
 
 Validation anchors:
 - Keycloak realm/client tests and endpoint authorization tests for anonymous, authenticated, developer/admin, and forbidden cases.
 
-## WP123: Define Environment Safety And Local-Only Boundaries
+## WP123: Define Capability Boundaries And Local-Only Exceptions
 
 Scope:
-- Decide which APIs are local-only, which may run in shared/non-local environments, and which require operator roles or audit.
+- Decide which capabilities belong in `PublicApiHost`, which remain local-only exceptions, and which stay out of scope without using environment as the main design axis.
 
 Requirements carried:
 - FileShareEmulator controls such as clearing queues, deleting Elasticsearch indexes, resetting local indexing status, and batch zip streaming stay inside the emulator project.
 - The configuration emulator explorer is not a React consolidation target.
-- Future non-local destructive operations require separate environment and authorization controls.
-- Provider handoff failures, ingestion-owned failures, repair replay, and forced replay must be classified for safety.
+- PublicApiHost capabilities are assumed available in all environments for now.
+- Provider handoff failures, ingestion-owned failures, repair replay, and forced replay must be classified as platform capabilities, not environment-specific exceptions, in the current phase.
 
 Validation anchors:
-- Environment policy tests where possible and route inventory checks for destructive operations.
+- Route inventory and host-boundary checks proving `FileShareEmulator`-only controls stay outside the public platform surface.
 
 ## WP124: Define API Contract Governance And Client Strategy
 
@@ -97,42 +97,28 @@ Requirements carried:
 Validation anchors:
 - Contract tests, OpenAPI snapshot tests, and problem-details tests for validation, auth, not-found, conflict, unsafe replay, and internal errors.
 
-## WP125: Define Observability, Audit, And Operation Tracking Baseline
+## WP125: Define Minimal Technical Observability Baseline
 
 Scope:
-- Establish observability and audit requirements for rule editing, replay, repair, failure workflows, and long-running operations.
+- Establish the minimum technical observability required for `PublicApiHost` startup, diagnostics, and debugging without defining business audit requirements yet.
 
 Requirements carried:
-- Retained Studio operation tracking and SSE are candidate material, but the in-memory store and single-active-operation lock need review.
-- Rule saves/promotions, diagnostic replay, guarded repair replay, forced replay, and environment-sensitive operations need traceable audit records.
-- Health/readiness and environment metadata are required for UI startup and diagnostics.
+- Health/readiness and minimal technical system metadata are required for UI startup and diagnostics.
+- Request correlation, authorization-failure visibility, and basic route-level diagnostics must be possible at `PublicApiHost`.
+- Business audit and operation-tracking requirements are explicitly deferred until the new React platform is working and business requirements are clearer.
 
 Validation anchors:
-- Tests for audit record emission and protected health/profile endpoints once implemented.
-
-## WP126: Decide Retained Studio Source Disposition
-
-Scope:
-- Decide whether retained Studio code is revived as the developer API host, mined into new active projects, renamed/reframed, or left historical until retirement.
-
-Requirements carried:
-- Studio exposes provider discovery, rule discovery, ingestion operations, operation status, and SSE endpoints that are closer to developer APIs than Workbench shell code.
-- Reviving it wholesale would reintroduce retired Studio/Theia surface area unless explicitly redefined.
-- The retained FileShare Studio provider directly queries emulator SQL and writes to a hardcoded file-share queue, so it is not provider-neutral without refactoring.
-
-Validation anchors:
-- Decision record with source movement and test migration plan.
+- Tests or smoke checks for health/readiness/profile-version style endpoints and basic technical diagnostics once implemented.
 
 ## Arc Requirement Cross-Check
 
 - BFF/direct API and host ownership decision: WP121.
-- Revive/refactor Studio versus new API host versus existing service-host APIs: WP121, WP126.
-- Active Blazor hosts, detached Studio API, local-only emulator controls, and server-rendered auth accounted for: WP120-WP123.
-- Keycloak, CORS, auth, authorization, environment safety, audit: WP122-WP125.
+- Active service-side hosts, retirement-bound UI surfaces, local-only emulator controls, and server-rendered auth accounted for: WP120-WP123.
+- Keycloak, CORS, auth, authorization, capability boundaries, and minimal technical observability: WP122-WP125.
 - FileShareEmulator and configuration emulator excluded from React consolidation: WP120, WP123.
 - Local destructive operations remain local: WP123.
 - API contract governance for later query, ingestion, rules, provider, repair, and frontend clients: WP124.
-- Retained Studio source status resolved before React couples to it: WP126.
+- Retained Studio and other non-emulator UI surfaces are fixed as retirement-bound by WP120 and must not be treated as future platform direction.
 
 ## Handoff To Arc 03
 

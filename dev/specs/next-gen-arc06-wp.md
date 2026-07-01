@@ -20,7 +20,7 @@ Reserved buffer before Arc 07: WP210-WP219.
 - Ingestion rules engine and App Configuration writer are registered in [../../src/UKHO.Search.Infrastructure.Ingestion/Injection/InjectionExtensions.cs](../../src/UKHO.Search.Infrastructure.Ingestion/Injection/InjectionExtensions.cs). Relevant interfaces include [../../src/UKHO.Search.Infrastructure.Ingestion/Rules/IProviderRulesReader.cs](../../src/UKHO.Search.Infrastructure.Ingestion/Rules/IProviderRulesReader.cs), [../../src/UKHO.Search.Infrastructure.Ingestion/Rules/IRuleConfigurationWriter.cs](../../src/UKHO.Search.Infrastructure.Ingestion/Rules/IRuleConfigurationWriter.cs), and [../../src/UKHO.Search.Infrastructure.Ingestion/Rules/IIngestionRulesEngine.cs](../../src/UKHO.Search.Infrastructure.Ingestion/Rules/IIngestionRulesEngine.cs).
 - RulesWorkbench directly wires rule loading, validation, save-back, evaluation, checker, SQL batch loading, and business-unit scan in [../../tools/RulesWorkbench/Program.cs](../../tools/RulesWorkbench/Program.cs).
 - File Share reconstruction is duplicated in [../../tools/FileShareEmulator/Services/IndexService.cs](../../tools/FileShareEmulator/Services/IndexService.cs), [../../tools/RulesWorkbench/Services/BatchPayloadLoader.cs](../../tools/RulesWorkbench/Services/BatchPayloadLoader.cs), and [../../src/Providers/UKHO.Search.Studio.Providers.FileShare/FileShareStudioIngestionRequestFactory.cs](../../src/Providers/UKHO.Search.Studio.Providers.FileShare/FileShareStudioIngestionRequestFactory.cs).
-- Retained Studio API/provider code contains useful but detached API ideas: [../../src/Studio/StudioServiceHost/Api/IngestionApi.cs](../../src/Studio/StudioServiceHost/Api/IngestionApi.cs), [../../src/Studio/StudioServiceHost/Api/OperationsApi.cs](../../src/Studio/StudioServiceHost/Api/OperationsApi.cs), and [../../src/Providers/UKHO.Search.Studio.Providers.FileShare/FileShareStudioProvider.cs](../../src/Providers/UKHO.Search.Studio.Providers.FileShare/FileShareStudioProvider.cs).
+- Retained Studio API/provider code remains on disk as retirement-bound historical source, not future platform direction. It is relevant here only as evidence of duplicated file-share-specific behavior that later backend and cleanup work must absorb or remove: [../../src/Studio/StudioServiceHost/Api/IngestionApi.cs](../../src/Studio/StudioServiceHost/Api/IngestionApi.cs), [../../src/Studio/StudioServiceHost/Api/OperationsApi.cs](../../src/Studio/StudioServiceHost/Api/OperationsApi.cs), and [../../src/Providers/UKHO.Search.Studio.Providers.FileShare/FileShareStudioProvider.cs](../../src/Providers/UKHO.Search.Studio.Providers.FileShare/FileShareStudioProvider.cs).
 
 ## WP200: Define Provider-Neutral Developer API Surface
 
@@ -88,7 +88,7 @@ Scope:
 - Choose one backend owner for file-share batch lookup, payload construction, security-token calculation if upstream, queue submission, indexing status updates, reset operations, and business-unit lookup.
 
 Requirements carried:
-- Current duplication across FileShareEmulator, RulesWorkbench, and retained Studio provider must be addressed.
+- Current duplication across FileShareEmulator, RulesWorkbench, and retirement-bound retained Studio provider code must be addressed without treating retained Studio as a future API or provider direction.
 - FileShareEmulator UI remains local-only and unchanged except for safe internal service reuse.
 - React must not call file-share SQL-shaped APIs.
 - Token derivation direction remains explicit; moving it into ingestion/provider runtime is a later contract change.

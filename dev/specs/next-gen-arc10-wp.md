@@ -9,17 +9,19 @@ Source arc summary: [../../docs/discussion/next-gen-work-package-arcs.md](../../
 
 Arc 10 retires or deactivates old UI surfaces once replacements exist, then hardens observability, audit, authorization, documentation, and operational safety. It should not remove useful local development capability prematurely.
 
+Retired projects remain available for source inspection and historical behavior reference. They are not active feature-delivery targets and should only be modified during explicit retirement work or when a broader build/solution change forces a minimal compatibility edit.
+
 ## Numbering
 
-Arc 10 work packages use WP280-WP287.
+Arc 10 work packages use WP280-WP286.
 
-Reserved buffer after Arc 10: WP288-WP299.
+Reserved buffer after Arc 10: WP287-WP299.
 
 ## Evidence Checked
 
 - AppHost services mode includes Query, Ingestion, FileShareEmulator, RulesWorkbench, WorkbenchHost, Keycloak, Elasticsearch, storage, SQL, and configuration emulator support: [../../src/Hosts/AppHost/AppHost.cs](../../src/Hosts/AppHost/AppHost.cs).
 - Current UI surfaces include [../../src/Hosts/QueryServiceHost/Program.cs](../../src/Hosts/QueryServiceHost/Program.cs), [../../src/Hosts/IngestionServiceHost/Program.cs](../../src/Hosts/IngestionServiceHost/Program.cs), [../../tools/RulesWorkbench/Program.cs](../../tools/RulesWorkbench/Program.cs), [../../tools/FileShareEmulator/Program.cs](../../tools/FileShareEmulator/Program.cs), and [../../src/Workbench/server/WorkbenchHost/Program.cs](../../src/Workbench/server/WorkbenchHost/Program.cs).
-- Workbench shell/modules are under [../../src/Workbench/](../../src/Workbench/). Retained Studio source exists under [../../src/Studio/](../../src/Studio/) and [../../src/Providers/UKHO.Search.Studio.Providers.FileShare/](../../src/Providers/UKHO.Search.Studio.Providers.FileShare/) but is not active in [../../Search.slnx](../../Search.slnx) or AppHost.
+- Workbench shell/modules are under [../../src/Workbench/](../../src/Workbench/). Retained Studio source exists under [../../src/Studio/](../../src/Studio/) and [../../src/Providers/UKHO.Search.Studio.Providers.FileShare/](../../src/Providers/UKHO.Search.Studio.Providers.FileShare/), is not active in [../../Search.slnx](../../Search.slnx) or AppHost, and is already fixed as retirement-bound rather than future platform direction.
 
 ## WP280: Define Retirement Readiness Gates And Capability Mapping
 
@@ -66,30 +68,18 @@ Requirements carried:
 Validation anchors:
 - Rules API tests, repair workspace tests, and clearly scoped transitional tests if any.
 
-## WP284: Retire Workbench Shell, Dummy Modules, And Unneeded UI Infrastructure
+## WP284: Retire Workbench, Retained Studio, And Unneeded UI Infrastructure
 
 Scope:
-- Remove/deactivate Workbench shell machinery, dummy modules, module discovery, contribution registries, custom splitters, tabs, old hosts, samples, and demo material when no longer needed.
+- Remove/deactivate Workbench shell machinery, dummy modules, module discovery, contribution registries, custom splitters, tabs, retained Studio source, old hosts, samples, and demo material when no longer needed.
 
 Requirements carried:
 - Do not port Workbench shell mechanics unless a concrete product requirement appears.
 
 Validation anchors:
-- Solution build, AppHost startup, test cleanup, and no dangling project references.
+- Solution build, AppHost startup, test cleanup, no dangling project references, and retained Studio cleanup where applicable.
 
-## WP285: Resolve Retained Studio Source
-
-Scope:
-- Finish the retained Studio decision from Arc 02: revive/refactor, mine/delete, rename/reframe, or explicitly preserve as historical source.
-
-Requirements carried:
-- Studio contains useful API ideas but is detached and file-share-bound.
-- Ambiguous retained source is a planning hazard.
-
-Validation anchors:
-- Search.slnx/AppHost/project reference checks and Studio tests either active/passing or intentionally removed/archived.
-
-## WP286: Harden Authorization, Audit, Observability, And Local-Only Safety
+## WP285: Harden Authorization, Audit, Observability, And Local-Only Safety
 
 Scope:
 - Verify operational hardening across new APIs and retired surfaces.
@@ -103,7 +93,7 @@ Requirements carried:
 Validation anchors:
 - API auth tests, audit tests, AppHost smoke, and route inventory checks.
 
-## WP287: Update Documentation And Supersede Older UI Directions
+## WP286: Update Documentation And Supersede Older UI Directions
 
 Scope:
 - Update docs/wiki to reflect React plus shadcn/ui, API-first, journal-backed repair, query diagnostics, and legacy retirement direction.
@@ -118,12 +108,11 @@ Validation anchors:
 
 ## Arc Requirement Cross-Check
 
-- Retire old Blazor/Razor developer surfaces and Workbench in stages: WP280-WP284.
-- Preserve FileShareEmulator local-only and configuration emulator out-of-scope boundaries: WP280, WP286-WP287.
+- Retire old Blazor/Razor developer surfaces, Workbench, and retained Studio in stages: WP280-WP284.
+- Preserve FileShareEmulator local-only and configuration emulator out-of-scope boundaries: WP280, WP285-WP286.
 - Avoid porting Workbench mechanics: WP284.
-- Resolve retained Studio source status: WP285.
-- Harden observability, audit, authorization, forced replay, repair actions, and local-only destructive boundaries: WP286.
-- Update documentation and supersede older UI directions: WP287.
+- Harden observability, audit, authorization, forced replay, repair actions, and local-only destructive boundaries: WP285.
+- Update documentation and supersede older UI directions: WP286.
 
 ## Roadmap Completion Note
 
