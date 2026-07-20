@@ -6,6 +6,11 @@
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/UKHO/UKHO.Search</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/UKHO/UKHO.Search</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <IsPackable>true</IsPackable>
     <AssemblyName>UKHO.Search.Ingestion.Contracts</AssemblyName>
     <RootNamespace>UKHO.Search.Ingestion.Contracts</RootNamespace>
     <PackageId>UKHO.Search.Ingestion.Contracts</PackageId>
