@@ -55,6 +55,7 @@ stages:
           $CurrentYear = Get-Date -Format "yyyy"
           $AssemblyCopyright = "Copyright © UK Hydrographic Office $CurrentYear"
           echo "##vso[task.setvariable variable=UkhoAssemblyCopyright]${AssemblyCopyright}"
+          echo $(Build.BuildNumber)
           gci env:
 
     - task: PowerShell@2
