@@ -1,0 +1,136 @@
+name: $(BuildDefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd).$(BuildCounter)
+
+parameters:
+- name: PreReleaseVersion
+  displayName: "Pre-release version (use n/a for normal release)"
+  type: string
+  values:
+    - 'alpha'
+    - 'beta'
+    - 'rc'
+    - 'n/a'
+  default: 'alpha'
+
+trigger:
+- main
+
+pool: $(WindowPool)
+
+variables:
+- name: BuildConfiguration
+  value: "release"
+- name: BuildCounter
+  value: $[counter(format('{0:yyyyMMdd}', pipeline.startTime), 1)]
+- name: UkhoAssemblyCompany
+  value: "UK Hydrographic Office"
+- name: UkhoAssemblyVersionPrefix
+  value: "1.0."
+- name: UkhoAssemblyProduct
+  value: "UKHO Search"
+- name: WindowPool
+  value: "NautilusBuild"
+- name: SdkVersion
+  value: "10.x"
+- name: NUGET_PACKAGES
+  value: $(Build.SourcesDirectory)\packages
+
+stages:
+- stage: BuildTest
+  displayName: Build
+  dependsOn: []
+  jobs:
+  - job: MainBuildTest
+    displayName: Build
+    workspace:
+      clean: all
+    steps:
+    - checkout: self
+      clean: true
+
+    - task: PowerShell@2
+      displayName: Set UkhoAssemblyCopyright
+      inputs:
+        targetType: inline
+        script: |
+          $CurrentYear = Get-Date -Format "yyyy"
+          $AssemblyCopyright = "Copyright © UK Hydrographic Office $CurrentYear"
+          echo "##vso[task.setvariable variable=UkhoAssemblyCopyright]${AssemblyCopyright}"
+
+    - task: PowerShell@2
+      displayName: Set assembly version numbers based on build ID
+      name: SetAssemblyVersion
+      inputs:
+        targetType: inline
+        script: |
+          & '$(Build.SourcesDirectory)\.deployment\pipelines\scripts\ApplyAssemblyVersion.ps1' `
+            -buildNumber '$(Build.BuildNumber)' `
+            -solutionDirectory '$(Build.SourcesDirectory)' `
+            -UkhoAssemblyCompany '$(UkhoAssemblyCompany)' `
+            -UkhoAssemblyCopyright '$(UkhoAssemblyCopyright)' `
+            -UkhoAssemblyVersionPrefix '$(UkhoAssemblyVersionPrefix)' `
+            -UkhoAssemblyProduct '$(UkhoAssemblyProduct)' `
+            -SourceRevisionId '$(Build.SourceVersion)' `
+            -PreReleaseVersion '${{ parameters.PreReleaseVersion }}'
+
+    - task: UseDotNet@2
+      displayName: Use .NET SDK $(SdkVersion)
+      inputs:
+        packageType: sdk
+        version: $(SdkVersion)
+            
+    - task: DotNetCoreCLI@2
+      displayName: .NET - NuGet restore
+      inputs:
+        command: restore
+        projects: |
+          **/UKHO.Search.Ingestion.Contracts.csproj
+        feedsToUse: config
+        noCache: true
+        nugetConfigPath: '$(Build.SourcesDirectory)\BuildNuget.config'
+
+    - task: DotNetCoreCLI@2
+      displayName: Pack UKHO.Search.Ingestion.Contracts
+      inputs:
+        command: custom
+        custom: pack
+        arguments: $(Build.SourcesDirectory)\src\UKHO.Search.Ingestion.Contracts\UKHO.Search.Ingestion.Contracts.csproj --configuration $(BuildConfiguration) --no-restore --output $(Build.ArtifactStagingDirectory)\packages --verbosity normal
+
+    - powershell: Get-ChildItem "$(Build.ArtifactStagingDirectory)/packages" -Recurse
+      displayName: List packed NuGet packages
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish NuGet packages
+      inputs:
+        path: $(Build.ArtifactStagingDirectory)/packages
+        artifact: NuGetPackages
+
+- stage: ProGet
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ${{ ne(parameters.PreReleaseVersion, 'n/a') }}))
+  variables:
+  - group: nuget-deployment-vars
+  jobs:
+  - deployment: Publish_To_ProGetCloud
+    displayName: Publish To ProGetCloud
+    pool:
+      name: NautilusRelease
+    environment: UKHO-Search-ProGet
+    workspace:
+      clean: all
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: UseDotNet@2
+            displayName: 'Use .NET $(SdkVersion) sdk'
+            inputs:
+              packageType: sdk
+              version: $(SdkVersion)
+
+          - download: current
+            artifact: NuGetPackages
+
+          - powershell: Get-ChildItem "$(Pipeline.Workspace)/NuGetPackages/*.nupkg" -File | Foreach {dotnet nuget push $_.fullname -k $(progetApiKey) -s $(progetApiUrl) }
+            env:
+              progetApiKey : $(progetapikey)
+              progetApiUrl : $(progetapiurl)
+            displayName: Publish Package
