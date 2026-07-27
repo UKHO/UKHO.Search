@@ -130,7 +130,8 @@ stages:
           - download: current
             artifact: NuGetPackages
 
-          - powershell: Get-ChildItem "$(Pipeline.Workspace)/NuGetPackages/*.nupkg" -File | Foreach {dotnet nuget push $_.fullname -k $(progetApiKey) -s https://progetcloud.ukho.gov.uk/nuget/ukho.trusted/v3/index.json }
+          - powershell: Get-ChildItem "$(Pipeline.Workspace)/NuGetPackages/*.nupkg" -File | Foreach {dotnet nuget push $_.fullname -k $(progetApiKey) -s $(progetApiUrl) }
             env:
-              progetApiKey : $(progetApiKey)
+              progetApiKey : $(progetapikey)
+              progetApiUrl : $(progetapiurl)
             displayName: Publish Package
