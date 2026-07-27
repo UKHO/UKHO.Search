@@ -62,9 +62,17 @@ stages:
       displayName: Set assembly version numbers based on build ID
       name: SetAssemblyVersion
       inputs:
-        targetType: filePath
-        filePath: '$(Build.SourcesDirectory)\.deployment\pipelines\scripts\ApplyAssemblyVersion.ps1'
-        arguments: '-buildNumber "$(Build.BuildNumber)" -solutionDirectory "$(Build.SourcesDirectory)" -UkhoAssemblyCompany "$env:UkhoAssemblyCompany" -UkhoAssemblyCopyright "$env:UkhoAssemblyCopyright" -UkhoAssemblyVersionPrefix "$env:UkhoAssemblyVersionPrefix" -UkhoAssemblyProduct "$env:UkhoAssemblyProduct" -SourceRevisionId "$(Build.SourceVersion)" -PreReleaseVersion ${{ parameters.PreReleaseVersion }}'
+        targetType: inline
+        script: |
+          & '$(Build.SourcesDirectory)\.deployment\pipelines\scripts\ApplyAssemblyVersion.ps1' `
+            -buildNumber '$(Build.BuildNumber)' `
+            -solutionDirectory '$(Build.SourcesDirectory)' `
+            -UkhoAssemblyCompany '$(UkhoAssemblyCompany)' `
+            -UkhoAssemblyCopyright '$(UkhoAssemblyCopyright)' `
+            -UkhoAssemblyVersionPrefix '$(UkhoAssemblyVersionPrefix)' `
+            -UkhoAssemblyProduct '$(UkhoAssemblyProduct)' `
+            -SourceRevisionId '$(Build.SourceVersion)' `
+            -PreReleaseVersion '${{ parameters.PreReleaseVersion }}'
 
     - task: UseDotNet@2
       displayName: Use .NET SDK $(SdkVersion)
