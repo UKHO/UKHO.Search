@@ -48,14 +48,14 @@ stages:
       clean: true
 
     - task: PowerShell@2
-      displayName: Output environment variables
+      displayName: Set UkhoAssemblyCopyright
       inputs:
         targetType: inline
         script: |
-          gci env:
           $CurrentYear = Get-Date -Format "yyyy"
           $AssemblyCopyright = "Copyright © UK Hydrographic Office $CurrentYear"
           echo "##vso[task.setvariable variable=UkhoAssemblyCopyright]${AssemblyCopyright}"
+          gci env:
 
     - task: PowerShell@2
       displayName: Set assembly version numbers based on build ID
@@ -65,7 +65,7 @@ stages:
         filePath: '$(Build.SourcesDirectory)\.deployment\pipelines\scripts\ApplyAssemblyVersion.ps1'
         arguments: >
           -buildNumber "$(Build.BuildNumber)"
-          -solutionDirectory "$(Build.SourcesDirectory)\"
+          -solutionDirectory "$(Build.SourcesDirectory)"
           -UkhoAssemblyCompany "$env:UkhoAssemblyCompany"
           -UkhoAssemblyCopyright "$env:UkhoAssemblyCopyright"
           -UkhoAssemblyVersionPrefix "$env:UkhoAssemblyVersionPrefix"
@@ -90,7 +90,7 @@ stages:
         nugetConfigPath: '$(Build.SourcesDirectory)\BuildNuget.config'
 
     - task: DotNetCoreCLI@2
-      displayName: Pack UUKHO.Search.Ingestion.Contracts
+      displayName: Pack UKHO.Search.Ingestion.Contracts
       inputs:
         command: custom
         custom: pack

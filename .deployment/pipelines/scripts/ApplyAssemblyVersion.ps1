@@ -9,7 +9,7 @@ param (
     [Parameter(Mandatory = $true)] [string] $PreReleaseVersion
 )
 
-# Example build number: UKHO.UKHO.ADDS.Mocks_main_20260212.2
+# Example build number: UKHO.Search - packages_devops-pipelines_20260727.1
 Write-Host "Build number: " $BuildNumber
 
 $buildNumberRegex = "(.+)_202([0-9]{3,5})\.([0-9]{1,2})"
