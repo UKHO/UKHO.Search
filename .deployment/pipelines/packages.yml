@@ -95,7 +95,7 @@ stages:
       inputs:
         command: custom
         custom: pack
-        arguments: $(Build.SourcesDirectory)\src\UKHO.Search.Infrastructure.Ingestion\UKHO.Search.Infrastructure.Ingestion.csproj --configuration $(BuildConfiguration) --no-restore --output $(Build.ArtifactStagingDirectory)\packages --verbosity normal
+        arguments: $(Build.SourcesDirectory)\src\UKHO.Search.Ingestion.Contracts\UKHO.Search.Ingestion.Contracts.csproj --configuration $(BuildConfiguration) --no-restore --output $(Build.ArtifactStagingDirectory)\packages --verbosity normal
 
     - powershell: Get-ChildItem "$(Build.ArtifactStagingDirectory)/packages" -Recurse
       displayName: List packed NuGet packages
