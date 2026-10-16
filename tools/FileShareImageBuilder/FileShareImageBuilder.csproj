@@ -15,7 +15,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
     <PackageReference Include="Microsoft.SqlServer.DacFx" Version="170.3.93" />
-    <PackageReference Include="UKHO.ADDS.Clients.FileShareService.ReadOnly" Version="0.0.50728-alpha.8" />
+    <PackageReference Include="UKHO.ADDS.Clients.FileShareService.ReadOnly" Version="1.1.61015" />
   </ItemGroup>
 
   <ItemGroup>
