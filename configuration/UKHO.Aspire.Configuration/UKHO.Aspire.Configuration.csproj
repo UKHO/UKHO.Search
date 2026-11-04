@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="13.6.4" />
-    <PackageReference Include="UKHO.ADDS.Infrastructure.Serialization" Version="0.0.60930-alpha.7" />
+    <PackageReference Include="UKHO.ADDS.Infrastructure.Serialization" Version="1.0.61006" />
     <PackageReference Include="Serilog" Version="4.4.0" />
   </ItemGroup>
 
