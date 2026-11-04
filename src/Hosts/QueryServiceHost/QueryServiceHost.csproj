@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Radzen.Blazor" Version="10.4.9" />
+		<PackageReference Include="Radzen.Blazor" Version="12.1.11" />
 	</ItemGroup>
 
 	<ItemGroup>
