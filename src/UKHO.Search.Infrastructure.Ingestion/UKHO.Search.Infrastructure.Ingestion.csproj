@@ -7,12 +7,12 @@
   </PropertyGroup>
 
 	<ItemGroup>
-     <PackageReference Include="Azure.Data.AppConfiguration" Version="1.9.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="8.5.0" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.8" />
+     <PackageReference Include="Azure.Data.AppConfiguration" Version="1.11.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="8.6.1" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.14" />
 		<PackageReference Include="Aspire.Elastic.Clients.Elasticsearch" Version="13.3.0" />
-		<PackageReference Include="Aspire.Azure.Storage.Queues" Version="13.4.6" />
-		<PackageReference Include="Aspire.Azure.Storage.Blobs" Version="13.4.6" />
+		<PackageReference Include="Aspire.Azure.Storage.Queues" Version="13.6.4" />
+		<PackageReference Include="Aspire.Azure.Storage.Blobs" Version="13.6.4" />
 	</ItemGroup>
 
   <ItemGroup>
