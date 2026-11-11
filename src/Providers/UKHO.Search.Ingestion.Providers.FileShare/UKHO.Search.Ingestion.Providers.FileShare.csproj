@@ -9,10 +9,10 @@
 	<ItemGroup>
 		<PackageReference Include="Kreuzberg" Version="4.10.4" />
      <PackageReference Include="MaxRev.Gdal.Universal" Version="3.13.3.611" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.14" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.14" />
-	       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.14" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.14" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.15" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.15" />
+	       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.15" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.15" />
 		<PackageReference Include="UKHO.ADDS.Clients.FileShareService.ReadOnly" Version="1.1.61015" />
 	</ItemGroup>
 
