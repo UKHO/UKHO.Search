@@ -12,8 +12,8 @@
 		<PackageReference Include="Aspire.Microsoft.Data.SqlClient" Version="13.6.5" />
 		<PackageReference Include="Aspire.Azure.Storage.Blobs" Version="13.6.5" />
 		<PackageReference Include="Aspire.Elastic.Clients.Elasticsearch" Version="13.3.0" />
-		<PackageReference Include="Scalar.AspNetCore" Version="2.19.0" />
-		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.14" />
+		<PackageReference Include="Scalar.AspNetCore" Version="2.20.0" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.15" />
 		<PackageReference Include="Radzen.Blazor" Version="12.2.0" />
 		<PackageReference Include="Humanizer" Version="3.0.10" />
 	</ItemGroup>
